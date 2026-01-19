@@ -15,72 +15,73 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 전체 히스토리를 가져와야 diff를 제대로 비교할 수 있습니다.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install google-generativeai
+          # [중요] 구형 'google-generativeai'가 아닌 신형 'google-genai' 설치
+          pip install google-genai
 
       - name: Run Gemini Review
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
         run: |
           python -c "
           import os
           import subprocess
-          import google.generativeai as genai
+          # [중요] 최신 SDK import 방식
+          from google import genai 
 
-          # 1. API 설정
-          genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-          model = genai.GenerativeModel('gemini-1.5-pro') # 속도와 비용 효율적인 모델 선택
-
-          # 2. Git Diff 가져오기 (변경된 코드만 추출)
-          # GitHub Actions 환경에서는 origin/main과 비교
-          base_ref = os.environ.get('GITHUB_BASE_REF', 'main')
-          subprocess.run(['git', 'fetch', 'origin', base_ref], check=True)
-          diff_process = subprocess.run(['git', 'diff', f'origin/{base_ref}'], capture_output=True, text=True)
-          diff_content = diff_process.stdout
-
-          if not diff_content:
-              print('변경 사항이 없습니다.')
-              exit(0)
-
-          # 3. 프롬프트 작성 (원하는대로 수정 가능)
-          prompt = f'''
-          너는 시니어 개발자로서 코드 리뷰를 수행한다. 다음 Git Diff를 분석해라.
-
-          요구사항:
-          1. 잠재적인 버그나 성능 문제를 찾아라.
-          2. 코드 가독성과 유지보수성을 개선할 제안을 하라.
-          3. 보안 취약점이 있다면 지적하라.
-          4. 한국어로 정중하고 명확하게 작성하라.
-          5. 마크다운 형식을 사용하여 보기 좋게 출력하라.
-
-          Code Diff:
-          {diff_content[:30000]} # 토큰 제한 방지를 위해 길이 제한 (필요시 조정)
-          '''
-
-          # 4. Gemini에게 요청
           try:
-              response = model.generate_content(prompt)
+              # 1. 클라이언트 초기화
+              client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
+
+              # 2. Git Diff 가져오기
+              base_ref = os.environ.get('GITHUB_BASE_REF', 'main')
+              subprocess.run(['git', 'fetch', 'origin', base_ref], check=True)
+              diff_process = subprocess.run(['git', 'diff', f'origin/{base_ref}'], capture_output=True, text=True)
+              diff_content = diff_process.stdout
+
+              if not diff_content:
+                  print('변경 사항이 없습니다.')
+                  exit(0)
+
+              # 3. 프롬프트 작성
+              prompt = f'''
+              당신은 프론트엔드 리드 개발자입니다. 아래 코드를 리뷰하세요.
+              
+              [리뷰 중점 사항]
+              1. 버그 및 런타임 에러 가능성
+              2. React/Next.js 안티 패턴 여부
+              3. 코드 가독성 및 스타일 가이드 준수 여부
+              4. 한국어로 정중하게 작성할 것
+
+              [Code Diff]
+              {diff_content[:30000]}
+              '''
+
+              # 4. Gemini 요청 (가장 안정적인 1.5 Flash 모델 사용)
+              # 주의: Pro 모델은 404 에러가 날 수 있으므로 Flash 사용 권장
+              response = client.models.generate_content(
+                  model='gemini-1.5-flash', 
+                  contents=prompt
+              )
+              
               review_comment = response.text
               
-              # 5. 리뷰 내용을 파일로 저장 (GitHub CLI 사용을 위해)
               with open('review_comment.txt', 'w', encoding='utf-8') as f:
                   f.write(review_comment)
               
           except Exception as e:
-              print(f'Error: {e}')
+              print(f'Critical Error: {e}')
               exit(1)
           "
 
