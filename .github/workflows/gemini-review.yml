@@ -42,7 +42,7 @@ jobs:
 
           # 1. API 설정
           genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-          model = genai.GenerativeModel('gemini-2.5-pro') # 속도와 비용 효율적인 모델 선택
+          model = genai.GenerativeModel('gemini-1.5-pro') # 속도와 비용 효율적인 모델 선택
 
           # 2. Git Diff 가져오기 (변경된 코드만 추출)
           # GitHub Actions 환경에서는 origin/main과 비교
