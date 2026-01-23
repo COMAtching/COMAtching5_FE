@@ -1,63 +1,61 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="bg-surface-base flex min-h-screen items-center justify-center font-sans">
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center gap-8 px-8 py-12">
+        {/* 토큰 테스트 섹션 */}
+        <div className="w-full space-y-8 rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+          <h1 className="text-24-700 text-brand-black border-b pb-4">
+            🎨 Design Token Test
           </h1>
-          <p className="max-w-md text-lg leading-8 font-[700] text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-[158px] dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+          {/* 1. Typography */}
+          <section className="space-y-4">
+            <h2 className="text-20-600">1. Typography</h2>
+            <div className="space-y-2 rounded bg-gray-50 p-4">
+              <p className="text-24-700">Display 24px (Bold 700)</p>
+              <p className="text-20-600">Title 20px (SemiBold 600)</p>
+              <p className="text-18-500">Body 18px (Medium 500)</p>
+              <p className="text-16-400">Body 16px (Regular 400)</p>
+              <p className="text-14-400 text-disabled">
+                Caption 14px (Disabled Color)
+              </p>
+            </div>
+          </section>
+
+          {/* 2. Colors & Backgrounds */}
+          <section className="space-y-4">
+            <h2 className="text-20-600">2. Colors & Backgrounds</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-brand-secondary-pink flex h-20 items-center justify-center rounded-lg text-white">
+                Pink Secondary
+              </div>
+              <div className="bg-brand-primary-orange flex h-20 items-center justify-center rounded-lg text-white">
+                Orange Primary
+              </div>
+              <div className="bg-surface-base border-light flex h-20 items-center justify-center rounded-lg border">
+                Surface Base
+              </div>
+              <div className="bg-disabled text-disabled flex h-20 items-center justify-center rounded-lg">
+                Disabled Area
+              </div>
+            </div>
+          </section>
+
+          {/* 3. Buttons */}
+          <section className="space-y-4">
+            <h2 className="text-20-600">3. Buttons</h2>
+            <div className="flex flex-wrap gap-4">
+              <button className="btn-primary text-16-600 px-8 py-3 transition-opacity hover:opacity-90">
+                Primary Button
+              </button>
+              <button className="btn-slate text-brand-black border-light text-16-600 rounded-2xl border px-8 py-3">
+                Secondary Button
+              </button>
+              <button className="btn-disabled text-16-400 cursor-not-allowed px-8 py-3">
+                Disabled Button
+              </button>
+            </div>
+          </section>
         </div>
       </main>
     </div>
