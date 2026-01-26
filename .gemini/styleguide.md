@@ -48,7 +48,6 @@
 
 ## 5. Code Style & Clean Code (코드 스타일)
 
-- **Tailwind CSS**: Tailwind 클래스가 너무 길거나 복잡하면 `class-variance-authority (cva)` 또는 논리적 그룹핑을 제안하세요.
 - **Component Size**: 컴포넌트 파일이 200줄을 초과하면 더 작은 서브 컴포넌트로 분리할 것을 권장하세요.
 - **Naming Convention**: 변수와 함수 이름이 의미론적인지 확인하세요 (예: `onClick` 대신 `handleSubmit`).
 - **File Organization**: Server와 Client 코드가 명확히 분리되어 있는지, 파일 구조가 직관적인지 확인하세요.
