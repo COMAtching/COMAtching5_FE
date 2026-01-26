@@ -1,0 +1,25 @@
+name: PR Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  pr_agent_job:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: PR Agent action step
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          # [중요] 1. PR 설명(describe) 기능을 강제로 실행
+          PR_COMMAND: "/describe" 
+          
+          # [중요] 2. "템플릿 형식을 따르고 한글로 써라"는 지시 사항 추가
+          PR_DESCRIPTION__EXTRA_INSTRUCTIONS: 'Please write the description in Korean. Strictly follow the format of the existing PR template in pull_reqeust_template.md
