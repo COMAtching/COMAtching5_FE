@@ -1,9 +1,7 @@
 name: PR Agent
-
 on:
   pull_request:
     types: [opened, synchronize]
-
 jobs:
   pr_agent_job:
     runs-on: ubuntu-latest
@@ -18,8 +16,8 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-          # [중요] 1. PR 설명(describe) 기능을 강제로 실행
-          PR_COMMAND: "/describe" 
+          # [핵심 1] 변경된 파일들을 유형별(Frontend, Backend 등)로 묶어서 표로 보여줌
+          PR_DESCRIPTION__ENABLE_SEMANTIC_FILES_TYPES: "true"
           
-          # [중요] 2. "템플릿 형식을 따르고 한글로 써라"는 지시 사항 추가
-          PR_DESCRIPTION__EXTRA_INSTRUCTIONS: 'Please write the description in Korean. Strictly follow the format of the existing PR template in pull_reqeust_template.md
+          # [핵심 2] AI에게 "변경 요약 표를 꼭 넣어달라"고 지시
+          PR_DESCRIPTION__EXTRA_INSTRUCTIONS: 'Please include a "Summary of Changes" table describing what changed in each file. Write in Korean.'
