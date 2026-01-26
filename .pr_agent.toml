@@ -1,7 +1,7 @@
 [pr_description]
 # 1. 마커 모드 끄기 (이제 봇이 알아서 전체 구조를 잡습니다)
 use_description_markers = false
-
+publish_labels = true   # (선택) 라벨도 붙여주면 좋음
 # 2. 제목 자동 생성 켜기
 generate_title = true
 
