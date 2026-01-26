@@ -45,13 +45,13 @@ export default function Home() {
           <section className="space-y-4">
             <h2 className="text-20-600">3. Buttons</h2>
             <div className="flex flex-wrap gap-4">
-              <button className="btn-primary text-16-600 px-8 py-3 transition-opacity hover:opacity-90">
+              <button className="bg-button-primary text-white text-16-600 rounded-2xl px-8 py-3 transition-opacity hover:opacity-90">
                 Primary Button
               </button>
-              <button className="btn-slate text-brand-black border-light text-16-600 rounded-2xl border px-8 py-3">
+              <button className="bg-button-slate text-brand-black border-light text-16-600 rounded-2xl border px-8 py-3">
                 Secondary Button
               </button>
-              <button className="btn-disabled text-16-400 cursor-not-allowed px-8 py-3">
+              <button className="bg-button-disabled text-disabled text-16-400 cursor-not-allowed rounded-2xl px-8 py-3">
                 Disabled Button
               </button>
             </div>
