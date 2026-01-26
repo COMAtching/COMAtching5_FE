@@ -1,16 +1,46 @@
 import { cookies } from "next/headers";
 import { api } from "./axios";
-import type { AxiosRequestConfig } from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export async function serverApi(url: string, options: AxiosRequestConfig = {}) {
+// 서버 환경에서 사용할 API 클라이언트입니다.
+// next/headers의 cookies()를 사용하여 요청에 자동으로 쿠키를 포함시킵니다.
+async function request<T>(
+  config: AxiosRequestConfig,
+): Promise<AxiosResponse<T>> {
   const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
 
-  // 기존 api 인스턴스를 쓰되, 쿠키 헤더만 쓱 끼워넣기
-  return api.get(url, {
-    ...options,
+  return api({
+    ...config,
     headers: {
-      ...options.headers, // 기존 헤더 유지
-      Cookie: cookieStore.toString(), // 쿠키 추가
+      ...config.headers,
+      ...(cookieHeader && { Cookie: cookieHeader }),
     },
   });
 }
+
+export const serverApi = {
+  get: <T = unknown>(url: string, config?: AxiosRequestConfig) =>
+    request<T>({ ...config, method: "GET", url }),
+
+  post: <T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ) => request<T>({ ...config, method: "POST", url, data }),
+
+  put: <T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ) => request<T>({ ...config, method: "PUT", url, data }),
+
+  delete: <T = unknown>(url: string, config?: AxiosRequestConfig) =>
+    request<T>({ ...config, method: "DELETE", url }),
+
+  patch: <T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ) => request<T>({ ...config, method: "PATCH", url, data }),
+};
