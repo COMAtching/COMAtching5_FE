@@ -1,0 +1,18 @@
+[pr_description]
+# 1. 템플릿의 마커(pr_agent:...)가 있는 위치에만 내용을 채웁니다.
+use_description_markers = true
+
+# 2. 결과물을 한국어로 출력합니다.
+language = "ko" 
+
+# 3. AI에게 주는 추가 지령 (프론트엔드 관점 반영)
+extra_instructions = """
+- 답변은 한국어로 작성해주세요.
+- '요약' 섹션은 개조식(bullet point)으로 간결하게 3줄 이내로 작성해주세요.
+- '구현 사항' 섹션은 변경된 파일과 핵심 로직을 매칭하여 설명해주세요.
+- 프론트엔드 개발자 톤앤매너를 유지해주세요.
+"""
+
+# 4. 구현 사항(Walkthrough)을 너무 길지 않게 설정
+[pr_description.walkthrough]
+enable = true
