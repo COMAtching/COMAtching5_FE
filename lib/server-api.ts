@@ -2,7 +2,6 @@ import axios, { type AxiosRequestConfig, isAxiosError } from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-// 환경 변수 확인 (없으면 빌드 타임/런타임에 경고)
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 if (!API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
@@ -17,20 +16,60 @@ const serverClient = axios.create({
   },
 });
 
-// 2. [핵심] 요청 인터셉터: 브라우저의 쿠키를 통째로 헤더에 이식
+// 2. [핵심] 요청 인터셉터: 인증에 필요한 쿠키만 선별하여 전달
 serverClient.interceptors.request.use(
   async (config) => {
-    // next/headers의 cookies()는 서버 컴포넌트에서만 동작합니다.
     const cookieStore = await cookies();
-    const allCookies = cookieStore.toString(); // "key=value; key2=value2" 형태
 
-    if (allCookies) {
-      config.headers.Cookie = allCookies;
+    // 백엔드 API 인증에 필요한 쿠키만 선별
+    const authCookieNames = ["accessToken", "refreshToken", "sessionId"];
+    const authCookies: string[] = [];
+
+    authCookieNames.forEach((name) => {
+      const cookie = cookieStore.get(name);
+      if (cookie) {
+        authCookies.push(`${name}=${cookie.value}`);
+      }
+    });
+
+    // 인증 쿠키가 있을 때만 헤더에 추가
+    if (authCookies.length > 0) {
+      config.headers.Cookie = authCookies.join("; ");
     }
 
     return config;
   },
   (error) => Promise.reject(error),
+);
+
+// 3. [핵심] 응답 인터셉터: 401 에러 시 토큰 재발급 시도
+serverClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 401 에러 && 재발급 시도 전 && 재발급 API가 아닐 때
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/api/auth/login"
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        // refreshToken으로 새 accessToken 발급 (쿠키 자동 전송됨)
+        await serverClient.post("/api/auth/login");
+
+        // 원래 요청 재시도
+        return serverClient(originalRequest);
+      } catch (reissueError) {
+        // 재발급 실패 → 로그인 페이지로
+        redirect("/login");
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 // 요청 옵션 타입 정의
@@ -63,18 +102,15 @@ async function request<T>(
       const status = error.response?.status;
       const errorMessage = error.response?.data?.message || "API Error";
 
-      // 401 인증 에러 발생 시 → 로그인 페이지로 튕겨내기
-      if (status === 401) {
-        redirect("/login");
-      }
-
       console.error(`[Server API Error] ${method} ${path}`, {
         status,
         message: errorMessage,
+        data: error.response?.data,
       });
 
-      // 에러를 던져서 상위 컴포넌트나 Error Boundary가 처리하게 함
-      throw new Error(errorMessage);
+      // 원본 에러를 그대로 던져서 상위에서 전체 컨텍스트 활용 가능
+      // (401은 이미 인터셉터에서 처리됨)
+      throw error;
     }
 
     // Axios 외의 알 수 없는 에러
