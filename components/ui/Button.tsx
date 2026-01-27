@@ -7,9 +7,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   width?: string;
   height?: string;
   fixed?: boolean;
-  bottom?: string; // px 단위 문자열 (예: "20px", "0px")
-  sideGap?: string; // px 단위 문자열 (예: "16px")
-  maxWidth?: string; // fixed일 때 최대 너비 (예: "430px")
+  bottom?: number; // 하단 여백 (px)
+  sideGap?: number; // 좌우 여백 (px)
+  maxWidth?: number; // fixed일 때 최대 너비 (px)
   textColor?: string;
   fontSize?: string;
   safeArea?: boolean; // safe-area-inset-bottom 적용 여부
@@ -22,9 +22,9 @@ export default function Button({
   width = "w-full",
   height = "h-12",
   fixed = false,
-  bottom = "0px",
-  sideGap = "16px",
-  maxWidth = "max-w-[430px]",
+  bottom = 0,
+  sideGap = 16,
+  maxWidth = 430,
   textColor = "text-button-primary-text-default",
   fontSize = "typo-20-600",
   safeArea = true,
@@ -69,10 +69,10 @@ export default function Button({
     if (!fixed) return undefined;
 
     if (safeArea) {
-      return `calc(${bottom} + env(safe-area-inset-bottom))`;
+      return `calc(${bottom}px + env(safe-area-inset-bottom))`;
     }
 
-    return bottom;
+    return `${bottom}px`;
   };
 
   return (
@@ -87,7 +87,7 @@ export default function Button({
         textClass,
         fontSize,
         // fixed 속성에 따른 분기
-        fixed ? `fixed z-50 mx-auto ${maxWidth}` : width,
+        fixed ? "fixed z-50 mx-auto" : width,
         // disabled 상태에 따른 커서
         disabled ? "cursor-not-allowed" : "cursor-pointer",
         className,
@@ -96,8 +96,9 @@ export default function Button({
         ...(fixed
           ? {
               bottom: getBottomValue(),
-              left: sideGap,
-              right: sideGap,
+              left: `${sideGap}px`,
+              right: `${sideGap}px`,
+              maxWidth: `${maxWidth}px`,
             }
           : undefined),
         ...(bgStyle ? { backgroundColor: bgStyle } : undefined),
