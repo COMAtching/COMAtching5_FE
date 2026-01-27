@@ -33,11 +33,6 @@ export default function Button({
   ref,
   ...props
 }: ButtonProps) {
-  // Tailwind 클래스인지 확인 (bg-, text- 등으로 시작)
-  const isTailwindClass = (value: string) => {
-    return /^(bg-|text-|border-)/.test(value);
-  };
-
   // disabled 상태에 따른 배경색/텍스트색 결정
   const finalBackgroundColor = disabled
     ? "bg-button-background-disabled"
@@ -48,21 +43,6 @@ export default function Button({
 
   // bg-button-primary일 때 border와 shadow 추가
   const isPrimaryButton = finalBackgroundColor === "bg-button-primary";
-
-  // 색상 값을 className과 style로 분리
-  const bgClass = isTailwindClass(finalBackgroundColor)
-    ? finalBackgroundColor
-    : undefined;
-  const bgStyle = !isTailwindClass(finalBackgroundColor)
-    ? finalBackgroundColor
-    : undefined;
-
-  const textClass = isTailwindClass(finalTextColor)
-    ? finalTextColor
-    : undefined;
-  const textStyle = !isTailwindClass(finalTextColor)
-    ? finalTextColor
-    : undefined;
 
   // fixed일 때 bottom 계산 (safeArea 적용)
   const getBottomValue = () => {
@@ -82,9 +62,9 @@ export default function Button({
       className={cn(
         // 기본 스타일
         "flex items-center justify-center rounded-[12px] transition-colors duration-100",
-        bgClass,
+        finalBackgroundColor,
         height,
-        textClass,
+        finalTextColor,
         fontSize,
         // fixed 속성에 따른 분기
         fixed ? "fixed z-50 mx-auto" : width,
@@ -101,8 +81,6 @@ export default function Button({
               maxWidth: `${maxWidth}px`,
             }
           : undefined),
-        ...(bgStyle ? { backgroundColor: bgStyle } : undefined),
-        ...(textStyle ? { color: textStyle } : undefined),
         ...(isPrimaryButton
           ? {
               border: "0.8px solid rgba(255, 255, 255, 0.3)",
