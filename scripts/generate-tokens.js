@@ -9,93 +9,71 @@ const __dirname = path.dirname(__filename);
 const tokensPath = path.join(__dirname, "../app/token.json");
 const tokens = JSON.parse(fs.readFileSync(tokensPath, "utf-8"));
 
-// Semantic tokens에서 실제 색상값 추출
-const semanticMode1 = tokens["Sementic/Mode 1"] || {};
-const systemMode1 = tokens["System/Mode 1"] || {};
-
-// Grayscale, Colors, Transparent 값 추출
-const grayscale = semanticMode1.Grayscale || {};
-const colors = semanticMode1.Colors || {};
-const transparent = semanticMode1.Transparent || {};
-
-// CSS 변수 생성
-let cssVariables = [];
-
-// 키 정제 함수 (공백을 하이픈으로 변경)
+// 키 정제 함수 - 더 엄격하게
 function sanitizeKey(key) {
-  return key.replace(/\s+/g, "-").toLowerCase();
+  return key
+    .replace(/\(.*?\)/g, "") // 괄호와 내용 제거
+    .replace(/[^\w-]/g, "-") // 특수문자를 하이픈으로
+    .replace(/^-+|-+$/g, "") // 앞뒤 하이픈 제거
+    .replace(/-+/g, "-") // 연속 하이픈을 하나로
+    .toLowerCase();
 }
 
-// Grayscale 색상
-Object.entries(grayscale).forEach(([key, value]) => {
-  if (key.startsWith("color-gray-")) {
-    cssVariables.push(`  --${sanitizeKey(key)}: ${value.$value};`);
+// 유효한 CSS 변수명인지 확인
+function isValidCSSVarName(name) {
+  // 숫자로만 구성되거나, 숫자로 시작하면 안됨
+  return !/^\d+$/.test(name) && !/^-?\d/.test(name) && name.length > 0;
+}
+
+// 유효한 CSS 값인지 확인
+function isValidCSSValue(value) {
+  if (typeof value === "number") return true;
+  if (typeof value === "string" && value.trim().length > 0) {
+    // [object Object] 같은 잘못된 값 제외
+    if (value.includes("[object")) return false;
+    return true;
   }
-});
+  return false;
+}
 
-// Colors (Pink, Flame, Orange)
-if (colors.Pink) {
-  Object.entries(colors.Pink).forEach(([key, value]) => {
-    if (key.startsWith("color-pink-")) {
-      cssVariables.push(`  --${sanitizeKey(key)}: ${value.$value};`);
+// 토큰 저장소 (중복 방지를 위해 Map 사용)
+const tokenMap = new Map(); // key -> { type, value, path }
+
+// 재귀적으로 token.json 탐색
+function traverseTokens(obj, path = []) {
+  for (const [key, value] of Object.entries(obj)) {
+    if (value && typeof value === "object") {
+      // $type과 $value가 있으면 토큰임
+      if (value.$type && value.$value !== undefined) {
+        const tokenName = sanitizeKey(key);
+
+        // 유효성 검사
+        if (!isValidCSSVarName(tokenName)) continue;
+        if (!isValidCSSValue(value.$value)) continue;
+
+        // 경로를 포함한 고유 키 생성 (중복 방지)
+        const fullPath = [...path, key].map(sanitizeKey).join("-");
+        const uniqueKey = fullPath || tokenName;
+
+        // 이미 존재하지 않으면 추가
+        if (!tokenMap.has(uniqueKey)) {
+          tokenMap.set(uniqueKey, {
+            name: tokenName,
+            type: value.$type,
+            value: value.$value,
+            path: [...path, key],
+            fullPath: uniqueKey,
+          });
+        }
+      } else {
+        // 재귀적으로 탐색
+        traverseTokens(value, [...path, key]);
+      }
     }
-  });
-}
-if (colors.Flame) {
-  Object.entries(colors.Flame).forEach(([key, value]) => {
-    if (key.startsWith("color-flame-")) {
-      cssVariables.push(`  --${sanitizeKey(key)}: ${value.$value};`);
-    }
-  });
-}
-if (colors.Orange) {
-  Object.entries(colors.Orange).forEach(([key, value]) => {
-    if (key.startsWith("color-orange-")) {
-      cssVariables.push(`  --${sanitizeKey(key)}: ${value.$value};`);
-    }
-  });
+  }
 }
 
-// Transparent
-Object.entries(transparent).forEach(([key, value]) => {
-  cssVariables.push(`  --${sanitizeKey(key)}: ${value.$value};`);
-});
-
-// System tokens
-if (systemMode1.Colors) {
-  Object.entries(systemMode1.Colors).forEach(([key, value]) => {
-    if (value.$type === "color") {
-      const finalValue = resolveValue(value.$value);
-      cssVariables.push(`  --${sanitizeKey(key)}: ${finalValue};`);
-    }
-  });
-}
-
-// Radius
-if (systemMode1.Radius) {
-  Object.entries(systemMode1.Radius).forEach(([key, value]) => {
-    const varName = key.replace("radius-", "");
-    cssVariables.push(`  --radius-${sanitizeKey(varName)}: ${value.$value}px;`);
-  });
-}
-
-// Border
-if (systemMode1.Border) {
-  Object.entries(systemMode1.Border).forEach(([key, value]) => {
-    const varName = key.replace("border-width-", "");
-    cssVariables.push(`  --border-${sanitizeKey(varName)}: ${value.$value}px;`);
-  });
-}
-
-// Opacity
-if (systemMode1.Opacity) {
-  Object.entries(systemMode1.Opacity).forEach(([key, value]) => {
-    const varName = key.replace("opacity-", "");
-    cssVariables.push(`  --opacity-${sanitizeKey(varName)}: ${value.$value}%;`);
-  });
-}
-
-// 토큰 참조 해석
+// 토큰 참조 해석 (범용)
 function resolveValue(value, depth = 0) {
   if (depth > 10 || typeof value !== "string") return value;
 
@@ -103,64 +81,112 @@ function resolveValue(value, depth = 0) {
   if (!match) return value;
 
   const ref = match[1];
+  const parts = ref.split(".");
+  const lastPart = parts[parts.length - 1];
+  const tokenName = sanitizeKey(lastPart);
 
-  // Grayscale 참조
-  if (ref.startsWith("Grayscale.")) {
-    const key = ref.replace("Grayscale.", "");
-    return `var(--${key})`;
-  }
-
-  // Colors 참조
-  if (ref.startsWith("Colors.Pink.")) {
-    const key = ref.replace("Colors.Pink.", "");
-    return `var(--${key})`;
-  }
-  if (ref.startsWith("Colors.Flame.")) {
-    const key = ref.replace("Colors.Flame.", "");
-    return `var(--${key})`;
-  }
-  if (ref.startsWith("Colors.Orange.")) {
-    const key = ref.replace("Colors.Orange.", "");
-    return `var(--${key})`;
+  // tokenMap에서 찾기
+  for (const [key, token] of tokenMap.entries()) {
+    if (token.name === tokenName) {
+      return `var(--${token.name})`;
+    }
   }
 
-  // Transparent 참조
-  if (ref.startsWith("Transparent.")) {
-    const key = ref.replace("Transparent.", "");
-    return `var(--${key})`;
-  }
-
-  // System/Mode 1의 Colors 참조
-  if (ref.startsWith("Colors.")) {
-    const key = ref.replace("Colors.", "");
-    return `var(--${key})`;
-  }
-
+  // 못 찾으면 그대로 반환
   return value;
 }
 
-// Font Size - text-{size}-{weight} 형태로 생성
-const fontSizes = systemMode1?.Font || {};
-const weights = ["400", "500", "600", "700"];
-let tailwindUtilities = [];
+// 1단계: 모든 토큰 수집
+traverseTokens(tokens);
+const allTokens = Array.from(tokenMap.values());
 
-Object.entries(fontSizes).forEach(([key, value]) => {
-  if (key.startsWith("font-size-")) {
-    const size = value.$value;
-    weights.forEach((weight) => {
-      const className = `.text-${size}-${weight}`;
-      tailwindUtilities.push(`${className} {
-  font-size: ${size}px;
-  font-weight: ${weight};
-  line-height: 1.5;
-}`);
-    });
+console.log(`\n🔍 Collected ${allTokens.length} unique tokens`);
+
+// 2단계: CSS 변수 생성 (중복 제거 및 정렬)
+const uniqueVars = new Map();
+
+allTokens.forEach((token) => {
+  let cssValue = token.value;
+
+  // 참조 해석
+  if (typeof cssValue === "string" && cssValue.includes("{")) {
+    cssValue = resolveValue(cssValue);
+  }
+
+  // 타입에 따라 단위 추가
+  if (token.type === "dimension" && typeof cssValue === "number") {
+    cssValue = `${cssValue}px`;
+  } else if (token.type === "spacing" && typeof cssValue === "number") {
+    cssValue = `${cssValue}px`;
+  }
+
+  // 중복 방지: 같은 이름이 있으면 더 구체적인 경로를 우선
+  if (!uniqueVars.has(token.name)) {
+    uniqueVars.set(token.name, cssValue);
   }
 });
 
-// CSS 파일 생성
+const cssVariables = Array.from(uniqueVars.entries())
+  .map(([name, value]) => `  --${name}: ${value};`)
+  .sort(); // 알파벳 순 정렬
+
+// 3단계: Tailwind 유틸리티 클래스 생성
+const colorTokens = allTokens.filter((t) => t.type === "color");
+const fontTokens = allTokens.filter((t) => t.name.startsWith("font-size-"));
+
+// 배경색 유틸리티 (중복 제거)
+const bgUtilitiesSet = new Set();
+colorTokens
+  .filter((t) => t.name.includes("color-") || t.name.includes("background-"))
+  .forEach((t) => {
+    bgUtilitiesSet.add(
+      `  .bg-${t.name} { background-color: var(--${t.name}); }`,
+    );
+  });
+const bgUtilities = Array.from(bgUtilitiesSet).sort().join("\n");
+
+// 텍스트 색상 유틸리티 (중복 제거)
+const textColorUtilitiesSet = new Set();
+colorTokens
+  .filter((t) => t.name.includes("color-") || t.name.includes("text-"))
+  .forEach((t) => {
+    textColorUtilitiesSet.add(`  .text-${t.name} { color: var(--${t.name}); }`);
+  });
+const textColorUtilities = Array.from(textColorUtilitiesSet).sort().join("\n");
+
+// 폰트 사이즈 유틸리티 (text-{size}-{weight})
+const weights = ["400", "500", "600", "700"];
+const fontUtilitiesSet = new Set();
+fontTokens.forEach((t) => {
+  const size = t.value;
+  if (typeof size === "number") {
+    weights.forEach((weight) => {
+      fontUtilitiesSet.add(`  .text-${size}-${weight} {
+    font-size: ${size}px;
+    font-weight: ${weight};
+    line-height: 1.5;
+  }`);
+    });
+  }
+});
+const fontUtilities = Array.from(fontUtilitiesSet);
+
+// Border 유틸리티 (중복 제거)
+const borderUtilitiesSet = new Set();
+allTokens
+  .filter((t) => t.name.includes("border") && t.type === "color")
+  .forEach((t) => {
+    const className = t.name.replace(/^border-/, "");
+    borderUtilitiesSet.add(
+      `  .border-${className} { border-color: var(--${t.name}); }`,
+    );
+  });
+const borderUtilities = Array.from(borderUtilitiesSet).sort().join("\n");
+
+// 4단계: CSS 파일 생성
 const cssContent = `/* Auto-generated from token.json */
-/* Run: node scripts/generate-tokens.js to regenerate */
+/* Run: pnpm run token to regenerate */
+/* Total unique tokens: ${uniqueVars.size} */
 
 @layer base {
   :root {
@@ -169,35 +195,22 @@ ${cssVariables.join("\n")}
 }
 
 @layer utilities {
-  /* Text utilities: text-{size}-{weight} */
-${tailwindUtilities.join("\n\n")}
+  /* Font utilities */
+${fontUtilities.join("\n\n")}
 
-  /* Background utilities */
-  .bg-surface-base { background-color: var(--color-surface-base); }
-  .bg-brand-secondary-pink { background-color: var(--color-brand-secondary-pink); }
-  .bg-brand-primary-orange { background-color: var(--color-brand-primary-orange); }
-  .bg-disabled { background-color: var(--color-background-disabled); }
-  
-  /* Button utilities */
+  /* Background color utilities */
+${bgUtilities}
+
+  /* Text color utilities */
+${textColorUtilities}
+
+  /* Border utilities */
+${borderUtilities}
+
+  /* Custom gradient buttons */
   .bg-button-primary {
     background: linear-gradient(135deg, var(--color-brand-primary-flame), var(--color-brand-primary-orange));
   }
-  
-  .bg-button-disabled {
-    background-color: var(--color-background-disabled);
-  }
-  
-  .bg-button-slate {
-    background-color: var(--color-gray-0-a30);
-  }
-  
-  /* Border utilities */
-  .border-light { border-color: var(--color-border-light); }
-  
-  /* Text color utilities */
-  .text-white { color: var(--color-text-white); }
-  .text-disabled { color: var(--color-text-disabled); }
-  .text-brand-black { color: var(--color-brand-black); }
 }
 `;
 
@@ -207,8 +220,23 @@ fs.writeFileSync(outputPath, cssContent, "utf-8");
 
 console.log("✅ Tokens generated successfully!");
 console.log(`📝 Output: ${outputPath}`);
+console.log(`📊 Total unique tokens: ${uniqueVars.size}`);
+console.log(
+  `   - Colors: ${colorTokens.length}, Fonts: ${fontTokens.length}, Others: ${
+    allTokens.length - colorTokens.length - fontTokens.length
+  }`,
+);
+console.log("\n✨ Improvements:");
+console.log("   - Removed duplicate variable names");
+console.log("   - Filtered out invalid CSS values ([object Object])");
+console.log(
+  "   - Fixed variable names (removed parentheses, numbers-only names)",
+);
+console.log("   - Sorted variables alphabetically");
 console.log("\nNext steps:");
 console.log("1. Import tokens.css in your globals.css:");
 console.log('   @import "./tokens.css";');
 console.log("\n2. Use utilities in your components:");
-console.log('   <div className="bg-surface-base text-16-500">Hello</div>');
+console.log(
+  '   <div className="bg-background-app-base text-16-500">Hello</div>',
+);
