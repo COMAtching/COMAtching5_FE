@@ -31,6 +31,23 @@ function isValidCSSValue(value) {
   if (typeof value === "string" && value.trim().length > 0) {
     // [object Object] 같은 잘못된 값 제외
     if (value.includes("[object")) return false;
+    // roundTo, 수식 같은 함수 호출 제외
+    if (value.includes("roundTo(") || /\*|\^/.test(value)) return false;
+    // 참조는 나중에 해석되므로 허용
+    return true;
+  }
+  return false;
+}
+
+// 해석된 CSS 값이 유효한지 확인 (최종 검증)
+function isValidResolvedValue(value) {
+  if (typeof value === "number") return true;
+  if (typeof value === "string" && value.trim().length > 0) {
+    // 해석되지 않은 참조가 남아있으면 제외
+    if (value.includes("{") && value.includes("}")) return false;
+    // var(...) 참조는 유효
+    if (value.startsWith("var(--")) return true;
+    // 일반 CSS 값 (색상, px 등)
     return true;
   }
   return false;
@@ -118,6 +135,11 @@ allTokens.forEach((token) => {
     cssValue = `${cssValue}px`;
   } else if (token.type === "spacing" && typeof cssValue === "number") {
     cssValue = `${cssValue}px`;
+  }
+
+  // 최종 해석된 값이 유효한지 확인
+  if (!isValidResolvedValue(cssValue)) {
+    return; // 유효하지 않으면 건너뛰기
   }
 
   // 중복 방지: 같은 이름이 있으면 더 구체적인 경로를 우선

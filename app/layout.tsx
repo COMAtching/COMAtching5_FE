@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
-        className={`${pretendard.className} antialiase flex justify-center bg-white`}
+        className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
         <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden px-4 text-black md:max-w-[430px] md:shadow-lg">
           <Blur />

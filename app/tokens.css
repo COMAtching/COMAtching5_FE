@@ -1,6 +1,6 @@
 /* Auto-generated from token.json */
 /* Run: pnpm run token to regenerate */
-/* Total unique tokens: 132 */
+/* Total unique tokens: 126 */
 
 @layer base {
   :root {
@@ -11,7 +11,6 @@
   --background-border-radius: var(--radius-none);
   --background-glow-blur-radius: 280;
   --background: var(--default);
-  --bg: {colors.indigo.200};
   --black: #000000;
   --body: Roboto;
   --bodybold: Bold;
@@ -91,20 +90,16 @@
   --font-size-24: 24;
   --h1: 32;
   --h2: 26;
-  --h3: roundTo({fontSizes.body}*1.25^3);
-  --h4: roundTo({fontSizes.body}*1.25^2);
-  --h5: roundTo({fontSizes.body}*1.25^1);
   --h6: var(--body);
   --heading: Inter;
   --headingbold: Bold;
   --headingregular: Regular;
   --high: 90%;
   --increased: 150%;
-  --lg: var(--scale);
+  --lg: var(--lg);
   --low: 10%;
-  --md: var(--scale);
+  --md: var(--md);
   --multi-value: var(--xl);
-  --muted: {colors.gray.700};
   --onaccent: var(--white);
   --opacity-full: 100;
   --opacity-medium: 50;
@@ -130,11 +125,10 @@
   --radius-sm: 12;
   --radius-xs: 8;
   --scale: 2;
-  --sm: var(--scale);
-  --subtle: {colors.gray.500};
+  --sm: var(--sm);
   --text: var(--onaccent);
   --white: #ffffff;
-  --xl: var(--scale);
+  --xl: var(--xl);
   --xs: 4;
   }
 }
