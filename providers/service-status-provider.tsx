@@ -3,7 +3,7 @@
 import React, { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-const ServiceStatusContext = createContext<boolean>(false);
+const ServiceStatusContext = createContext<boolean | undefined>(undefined);
 
 export function ServiceStatusProvider({
   children,
@@ -35,5 +35,11 @@ export function ServiceStatusProvider({
 }
 
 export function useServiceStatus() {
-  return useContext(ServiceStatusContext);
+  const context = useContext(ServiceStatusContext);
+  if (context === undefined) {
+    throw new Error(
+      "useServiceStatus must be used within ServiceStatusProvider",
+    );
+  }
+  return context;
 }
