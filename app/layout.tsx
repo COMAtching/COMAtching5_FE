@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
+import { QueryProvider } from "@/providers/query-provider";
+import { ServiceStatusProvider } from "@/providers/service-status-provider";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -36,15 +38,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // TODO: 서버에서 초기 점검 모드 상태 가져오기
+  const initialMaintenanceMode = false;
+
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
-        <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden px-4 text-black md:max-w-[430px] md:shadow-lg">
-          <Blur />
-          {children}
-        </div>
+        <QueryProvider>
+          <ServiceStatusProvider
+            initialMaintenanceMode={initialMaintenanceMode}
+          >
+            <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden px-4 text-black md:max-w-[430px] md:shadow-lg">
+              <Blur />
+              {children}
+            </div>
+          </ServiceStatusProvider>
+        </QueryProvider>
       </body>
     </html>
   );
