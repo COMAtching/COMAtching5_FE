@@ -31,6 +31,7 @@ export default function Button({
   disabled = false,
   className,
   ref,
+  type = "button",
   ...props
 }: ButtonProps) {
   // disabled 상태에 따른 배경색/텍스트색 결정
@@ -58,6 +59,7 @@ export default function Button({
   return (
     <button
       ref={ref}
+      type={type}
       disabled={disabled}
       className={cn(
         // 기본 스타일
