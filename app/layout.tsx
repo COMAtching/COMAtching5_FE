@@ -33,13 +33,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function getInitialMaintenanceStatus() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/status`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.maintenance ?? false;
+  } catch (error) {
+    console.error("Failed to fetch maintenance status:", error);
+    return false;
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // TODO: 서버에서 초기 점검 모드 상태 가져오기
-  const initialMaintenanceMode = false;
+  const initialMaintenanceMode = await getInitialMaintenanceStatus();
 
   return (
     <html lang="ko" className={pretendard.variable}>
