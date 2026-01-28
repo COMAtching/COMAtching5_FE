@@ -176,14 +176,14 @@ colorTokens
   });
 const textColorUtilities = Array.from(textColorUtilitiesSet).sort().join("\n");
 
-// 폰트 사이즈 유틸리티 (text-{size}-{weight})
+// 폰트 사이즈 유틸리티 (typo-{size}-{weight})
 const weights = ["400", "500", "600", "700"];
 const fontUtilitiesSet = new Set();
 fontTokens.forEach((t) => {
   const size = t.value;
   if (typeof size === "number") {
     weights.forEach((weight) => {
-      fontUtilitiesSet.add(`  .text-${size}-${weight} {
+      fontUtilitiesSet.add(`  .typo-${size}-${weight} {
     font-size: ${size}px;
     font-weight: ${weight};
     line-height: 1.5;
