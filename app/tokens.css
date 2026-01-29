@@ -135,74 +135,26 @@
 
 @layer utilities {
   /* Font utilities */
-  .typo-16-400 {
-    font-size: 16px;
+  .typo-10-400 {
+    font-size: 10px;
     font-weight: 400;
     line-height: 1.5;
   }
 
-  .typo-16-500 {
-    font-size: 16px;
+  .typo-10-500 {
+    font-size: 10px;
     font-weight: 500;
     line-height: 1.5;
   }
 
-  .typo-16-600 {
-    font-size: 16px;
+  .typo-10-600 {
+    font-size: 10px;
     font-weight: 600;
     line-height: 1.5;
   }
 
-  .typo-16-700 {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .typo-20-400 {
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-
-  .typo-20-500 {
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-
-  .typo-20-600 {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.5;
-  }
-
-  .typo-20-700 {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .typo-24-400 {
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 1.5;
-  }
-
-  .typo-24-500 {
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 1.5;
-  }
-
-  .typo-24-600 {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.5;
-  }
-
-  .typo-24-700 {
-    font-size: 24px;
+  .typo-10-700 {
+    font-size: 10px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -255,26 +207,26 @@
     line-height: 1.5;
   }
 
-  .typo-10-400 {
-    font-size: 10px;
+  .typo-16-400 {
+    font-size: 16px;
     font-weight: 400;
     line-height: 1.5;
   }
 
-  .typo-10-500 {
-    font-size: 10px;
+  .typo-16-500 {
+    font-size: 16px;
     font-weight: 500;
     line-height: 1.5;
   }
 
-  .typo-10-600 {
-    font-size: 10px;
+  .typo-16-600 {
+    font-size: 16px;
     font-weight: 600;
     line-height: 1.5;
   }
 
-  .typo-10-700 {
-    font-size: 10px;
+  .typo-16-700 {
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -299,6 +251,150 @@
 
   .typo-18-700 {
     font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-20-400 {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-20-500 {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-20-600 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-20-700 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-22-400 {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-22-500 {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-22-600 {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-22-700 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-24-400 {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-24-500 {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-24-600 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-24-700 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-26-400 {
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-26-500 {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-26-600 {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-26-700 {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-28-400 {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-28-500 {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-28-600 {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-28-700 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-30-400 {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-30-500 {
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-30-600 {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-30-700 {
+    font-size: 30px;
     font-weight: 700;
     line-height: 1.5;
   }

@@ -179,6 +179,8 @@ const textColorUtilities = Array.from(textColorUtilitiesSet).sort().join("\n");
 // 폰트 사이즈 유틸리티 (typo-{size}-{weight})
 const weights = ["400", "500", "600", "700"];
 const fontUtilitiesSet = new Set();
+
+// token.json에서 가져온 폰트 사이즈
 fontTokens.forEach((t) => {
   const size = t.value;
   if (typeof size === "number") {
@@ -191,7 +193,25 @@ fontTokens.forEach((t) => {
     });
   }
 });
-const fontUtilities = Array.from(fontUtilitiesSet);
+
+// 추가 폰트 사이즈 (10~30까지 2 간격)
+const additionalSizes = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+additionalSizes.forEach((size) => {
+  weights.forEach((weight) => {
+    fontUtilitiesSet.add(`  .typo-${size}-${weight} {
+    font-size: ${size}px;
+    font-weight: ${weight};
+    line-height: 1.5;
+  }`);
+  });
+});
+
+const fontUtilities = Array.from(fontUtilitiesSet).sort((a, b) => {
+  const sizeA = parseInt(a.match(/typo-(\d+)-/)?.[1] || 0);
+  const sizeB = parseInt(b.match(/typo-(\d+)-/)?.[1] || 0);
+  if (sizeA !== sizeB) return sizeA - sizeB;
+  return a.localeCompare(b);
+});
 
 // Border 유틸리티 (중복 제거)
 const borderUtilitiesSet = new Set();
