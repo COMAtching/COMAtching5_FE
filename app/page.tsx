@@ -23,6 +23,9 @@ export default function Home() {
       </section>
       <section className="flex flex-col items-center">
         <BubbleDiv />
+        <Button className="mt-8" bgColor="bg-[#FEE500]">
+          코매칭 시작하기
+        </Button>
       </section>
     </main>
   );

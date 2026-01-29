@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  backgroundColor?: string;
+  bgColor?: string;
   width?: string;
   height?: string;
   fixed?: boolean;
@@ -18,7 +18,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function Button({
   children,
-  backgroundColor = "bg-button-primary",
+  bgColor = "bg-button-primary",
   width = "w-full",
   height = "h-12",
   fixed = false,
@@ -37,7 +37,7 @@ export default function Button({
   // disabled 상태에 따른 배경색/텍스트색 결정
   const finalBackgroundColor = disabled
     ? "bg-button-background-disabled"
-    : backgroundColor;
+    : bgColor;
   const finalTextColor = disabled
     ? "text-button-primary-text-disabled"
     : textColor;
