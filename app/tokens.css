@@ -1,6 +1,6 @@
 /* Auto-generated from token.json */
 /* Run: pnpm run token to regenerate */
-/* Total unique tokens: 126 */
+/* Total unique tokens: 144 */
 
 @layer base {
   :root {
@@ -20,6 +20,13 @@
   --border-width-thin: 0.8;
   --borderradius: var(--lg);
   --borderwidth: var(--sm);
+  --bottomsheet-background-main: var(--color-background-white);
+  --bottomsheet-text-caption: var(--color-text-caption2);
+  --bottomsheet-text-title: var(--color-text-black);
+  --bottomsheet-toggle-close: var(--color-toggle-default);
+  --bubble-background-white: var(--color-text-white);
+  --bubble-text-highight: var(--color-text-highlight);
+  --bubble-text-main: var(--color-text-black);
   --button-background-bold: var(--color-brand-black);
   --button-background-disabled: var(--color-background-disabled);
   --button-background-gradient-1-end: var(--color-brand-primary-orange);
@@ -32,6 +39,7 @@
   --button-primary-text-disabled: var(--color-text-disabled);
   --button-slate-default: var(--color-gray-0-a30);
   --color-background-disabled: var(--color-gray-300-a40);
+  --color-background-white: var(--color-gray-0);
   --color-border-light: var(--color-gray-0-a30);
   --color-brand-black: var(--color-gray-900);
   --color-brand-primary-flame: var(--color-flame-700);
@@ -71,8 +79,14 @@
   --color-pink-700: #f57db2;
   --color-pink-900: #e3468b;
   --color-surface-base: var(--color-gray-64);
+  --color-text-black: var(--color-gray-900);
+  --color-text-caption1: var(--color-gray-600);
+  --color-text-caption2: var(--color-gray-500);
+  --color-text-caption3: var(--color-gray-400);
   --color-text-disabled: var(--color-gray-300);
+  --color-text-highlight: var(--color-flame-700);
   --color-text-white: var(--color-gray-0);
+  --color-toggle-default: var(--color-gray-400);
   --decreased: -5%;
   --default: 0;
   --flame100: #ffc4cd;
@@ -88,6 +102,7 @@
   --font-size-18: 18;
   --font-size-20: 20;
   --font-size-24: 24;
+  --footo-text-main: var(--color-text-caption1);
   --h1: 32;
   --h2: 26;
   --h6: var(--body);
@@ -97,6 +112,9 @@
   --high: 90%;
   --increased: 150%;
   --lg: var(--lg);
+  --logo-text-black: var(--color-brand-black);
+  --logo-text-pink: var(--color-brand-primary-flame);
+  --logo-text-white: var(--color-text-white);
   --low: 10%;
   --md: var(--md);
   --multi-value: var(--xl);
@@ -403,11 +421,14 @@
   .bg-background-app-base { background-color: var(--background-app-base); }
   .bg-background-app-blur-bottom-left { background-color: var(--background-app-blur-bottom-left); }
   .bg-background-app-blur-bottom-right { background-color: var(--background-app-blur-bottom-right); }
+  .bg-bottomsheet-background-main { background-color: var(--bottomsheet-background-main); }
+  .bg-bubble-background-white { background-color: var(--bubble-background-white); }
   .bg-button-background-bold { background-color: var(--button-background-bold); }
   .bg-button-background-disabled { background-color: var(--button-background-disabled); }
   .bg-button-background-gradient-1-end { background-color: var(--button-background-gradient-1-end); }
   .bg-button-background-gradient-1-start { background-color: var(--button-background-gradient-1-start); }
   .bg-color-background-disabled { background-color: var(--color-background-disabled); }
+  .bg-color-background-white { background-color: var(--color-background-white); }
   .bg-color-border-light { background-color: var(--color-border-light); }
   .bg-color-brand-black { background-color: var(--color-brand-black); }
   .bg-color-brand-primary-flame { background-color: var(--color-brand-primary-flame); }
@@ -447,13 +468,24 @@
   .bg-color-pink-700 { background-color: var(--color-pink-700); }
   .bg-color-pink-900 { background-color: var(--color-pink-900); }
   .bg-color-surface-base { background-color: var(--color-surface-base); }
+  .bg-color-text-black { background-color: var(--color-text-black); }
+  .bg-color-text-caption1 { background-color: var(--color-text-caption1); }
+  .bg-color-text-caption2 { background-color: var(--color-text-caption2); }
+  .bg-color-text-caption3 { background-color: var(--color-text-caption3); }
   .bg-color-text-disabled { background-color: var(--color-text-disabled); }
+  .bg-color-text-highlight { background-color: var(--color-text-highlight); }
   .bg-color-text-white { background-color: var(--color-text-white); }
+  .bg-color-toggle-default { background-color: var(--color-toggle-default); }
 
   /* Text color utilities */
+  .text-bottomsheet-text-caption { color: var(--bottomsheet-text-caption); }
+  .text-bottomsheet-text-title { color: var(--bottomsheet-text-title); }
+  .text-bubble-text-highight { color: var(--bubble-text-highight); }
+  .text-bubble-text-main { color: var(--bubble-text-main); }
   .text-button-primary-text-default { color: var(--button-primary-text-default); }
   .text-button-primary-text-disabled { color: var(--button-primary-text-disabled); }
   .text-color-background-disabled { color: var(--color-background-disabled); }
+  .text-color-background-white { color: var(--color-background-white); }
   .text-color-border-light { color: var(--color-border-light); }
   .text-color-brand-black { color: var(--color-brand-black); }
   .text-color-brand-primary-flame { color: var(--color-brand-primary-flame); }
@@ -493,8 +525,18 @@
   .text-color-pink-700 { color: var(--color-pink-700); }
   .text-color-pink-900 { color: var(--color-pink-900); }
   .text-color-surface-base { color: var(--color-surface-base); }
+  .text-color-text-black { color: var(--color-text-black); }
+  .text-color-text-caption1 { color: var(--color-text-caption1); }
+  .text-color-text-caption2 { color: var(--color-text-caption2); }
+  .text-color-text-caption3 { color: var(--color-text-caption3); }
   .text-color-text-disabled { color: var(--color-text-disabled); }
+  .text-color-text-highlight { color: var(--color-text-highlight); }
   .text-color-text-white { color: var(--color-text-white); }
+  .text-color-toggle-default { color: var(--color-toggle-default); }
+  .text-footo-text-main { color: var(--footo-text-main); }
+  .text-logo-text-black { color: var(--logo-text-black); }
+  .text-logo-text-pink { color: var(--logo-text-pink); }
+  .text-logo-text-white { color: var(--logo-text-white); }
 
   /* Border utilities */
   .border-button-border-color { border-color: var(--button-border-color); }
