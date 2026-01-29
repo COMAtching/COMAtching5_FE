@@ -39,6 +39,14 @@ async function getInitialMaintenanceStatus() {
       cache: "no-store",
     });
     if (!res.ok) return false;
+
+    // Check if response is JSON before parsing
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn("Status endpoint returned non-JSON response");
+      return false;
+    }
+
     const data = await res.json();
     return data.maintenance ?? false;
   } catch (error) {
@@ -59,16 +67,16 @@ export default async function RootLayout({
       <body
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
-        <QueryProvider>
-          <ServiceStatusProvider
-            initialMaintenanceMode={initialMaintenanceMode}
-          >
-            <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden px-4 text-black md:max-w-[430px] md:shadow-lg">
-              <Blur />
-              {children}
-            </div>
-          </ServiceStatusProvider>
-        </QueryProvider>
+        {/* <QueryProvider> */}
+        {/* <ServiceStatusProvider */}
+        {/* initialMaintenanceMode={initialMaintenanceMode} */}
+        {/* > */}
+        <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+          <Blur />
+          {children}
+        </div>
+        {/* </ServiceStatusProvider> */}
+        {/* </QueryProvider> */}
       </body>
     </html>
   );
