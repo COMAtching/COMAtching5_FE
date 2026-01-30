@@ -33,9 +33,12 @@ export default function ScreenLoginActionSection() {
         <div className="typo-14-600 text-color-text-caption2 flex flex-col items-center leading-[1.6]">
           <span>또는</span>
           <DrawerTrigger asChild>
-            <span className="cursor-pointer underline">
+            <button
+              type="button"
+              className="all-[unset] cursor-pointer underline"
+            >
               다른 방법으로 로그인
-            </span>
+            </button>
           </DrawerTrigger>
         </div>
         <DrawerContent
