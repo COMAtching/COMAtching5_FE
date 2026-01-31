@@ -26,6 +26,7 @@ export default function ScreenLoginActionSection() {
       <KakaoLoginButton
         className="mt-[1.6vh] mb-[0.49vh]"
         onClick={handleKakaoLogin}
+        shadow={true}
       >
         카카오로 빠르게 시작하기
       </KakaoLoginButton>
@@ -43,19 +44,34 @@ export default function ScreenLoginActionSection() {
         </div>
         <DrawerContent
           showHandle={false}
-          className="mx-auto flex h-[44.33vh] w-full flex-col items-center gap-4 p-6 md:max-w-[430px]"
+          className="mx-auto flex h-[44.33vh] w-full flex-col items-center px-4 pt-6 md:max-w-[430px]"
         >
           <DrawerTitle className="sr-only">다른 로그인 방법</DrawerTitle>
-          <div className="typo-18-700 mb-2">다른 로그인 방법</div>
-          <KakaoLoginButton
-            className="mt-[1.6vh] mb-[0.49vh]"
-            onClick={handleKakaoLogin}
-          >
+          <div className="flex w-full flex-col items-start gap-2">
+            <span className="typo-20-700 text-bottomsheet-text-title">
+              로그인/회원가입
+            </span>
+            <span className="typo-14-500 text-[#999]">
+              로그인과 회원가입 수단은 동일합니다.
+              <br />
+              원하는 계정으로 시작하세요.
+            </span>
+          </div>
+          <KakaoLoginButton onClick={handleKakaoLogin} className="mt-8 mb-4">
             카카오로 시작하기
           </KakaoLoginButton>
           <GoogleLoginButton className="w-full" onClick={handleGoogleLogin}>
             구글로 시작하기
           </GoogleLoginButton>
+          <div className="typo-14-500 text-bottomsheet-text-caption mt-6 flex flex-col items-center">
+            <span>혹은</span>
+            <button
+              type="button"
+              className="all-[unset] cursor-pointer underline"
+            >
+              이메일로 로그인
+            </button>
+          </div>
         </DrawerContent>
       </Drawer>
       <span className="typo-12-600 text-footo-text-main mt-[6.75vh] mb-[6.15vh]">
