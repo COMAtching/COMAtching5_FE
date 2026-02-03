@@ -8,8 +8,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useRouter } from "next/navigation";
 
 export default function ScreenLoginActionSection() {
+  const router = useRouter();
+
+  const handleEmailLogin = () => {
+    router.push("/login");
+  };
   const handleKakaoLogin = () => {
     // window.location.href = "https://backend.comatching.site/oauth2/authorization/kakao";
     alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
@@ -68,6 +74,7 @@ export default function ScreenLoginActionSection() {
             <button
               type="button"
               className="all-[unset] cursor-pointer underline"
+              onClick={handleEmailLogin}
             >
               이메일로 로그인
             </button>
