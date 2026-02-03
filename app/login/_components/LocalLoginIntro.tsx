@@ -2,7 +2,7 @@ import React from "react";
 
 const LocalLoginIntro = () => {
   return (
-    <section className="flex flex-col items-start gap-2">
+    <section className="mt-6 flex flex-col items-start gap-2">
       <span className="typo-26-700 leading-[1.4] text-black">
         이메일로
         <br /> 코매칭 시작하기
