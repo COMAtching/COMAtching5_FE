@@ -1,6 +1,5 @@
 "use client";
 import BubbleDiv from "@/app/_components/BubbleDiv";
-import Button from "@/components/ui/Button";
 import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
 import {
   Drawer,
@@ -8,14 +7,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
-  const router = useRouter();
-
-  const handleEmailLogin = () => {
-    router.push("/login");
-  };
   const handleKakaoLogin = () => {
     // window.location.href = "https://backend.comatching.site/oauth2/authorization/kakao";
     alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
@@ -71,13 +65,12 @@ export default function ScreenLoginActionSection() {
           </GoogleLoginButton>
           <div className="typo-14-500 text-bottomsheet-text-caption mt-6 flex flex-col items-center">
             <span>혹은</span>
-            <button
-              type="button"
+            <Link
+              href="/login"
               className="all-[unset] cursor-pointer underline"
-              onClick={handleEmailLogin}
             >
               이메일로 로그인
-            </button>
+            </Link>
           </div>
         </DrawerContent>
       </Drawer>
