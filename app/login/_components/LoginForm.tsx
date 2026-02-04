@@ -3,6 +3,7 @@ import BubbleDiv from "@/app/_components/BubbleDiv";
 import Button from "@/components/ui/Button";
 import { User } from "lucide-react";
 import React, { useActionState } from "react";
+import Link from "next/link";
 import { loginAction } from "@/lib/actions/loginAction";
 
 const INPUT_STYLE = {
@@ -63,9 +64,13 @@ export const LoginForm = () => {
         </Button>
       </form>
       <div className="typo-14-500 text-color-text-caption2 flex w-full justify-center">
-        <button type="button">이메일 찾기</button>
+        <Link href="/find-email" className="cursor-pointer">
+          이메일 찾기
+        </Link>
         <span className="mx-4">|</span>
-        <button type="button">비밀번호 변경</button>
+        <Link href="/reset-password" className="cursor-pointer">
+          비밀번호 변경
+        </Link>
       </div>
 
       <div className="mt-auto flex w-full flex-col items-center gap-4">
