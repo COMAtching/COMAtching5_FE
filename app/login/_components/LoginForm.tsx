@@ -65,16 +65,19 @@ export const LoginForm = () => {
         </Button>
       </form>
       <div className="typo-14-500 text-color-text-caption2 flex w-full justify-center">
-        <button>이메일 찾기</button>
+        <button type="button">이메일 찾기</button>
         <span className="mx-4">|</span>
-        <button>비밀번호 변경</button>
+        <button type="button">비밀번호 변경</button>
       </div>
 
       <div className="mt-auto flex w-full flex-col items-center gap-4">
         <BubbleDiv w={162} h={26} typo="typo-12-600" top={3}>
           아직 계정이 없으신가요?!
         </BubbleDiv>
-        <button className="typo-14-500 flex items-center gap-1 border-b-2 border-gray-500 text-gray-500">
+        <button
+          type="button"
+          className="typo-14-500 flex items-center gap-1 border-b-2 border-gray-500 text-gray-500"
+        >
           <User />
           이메일로 회원가입
         </button>

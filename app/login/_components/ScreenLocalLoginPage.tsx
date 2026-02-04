@@ -1,5 +1,5 @@
 import React from "react";
-import { BackButton } from "./BackButton";
+import { BackButton } from "../../../components/ui/BackButton";
 import LocalLoginIntro from "./LocalLoginIntro";
 import { LoginForm } from "./LoginForm";
 

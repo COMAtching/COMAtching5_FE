@@ -27,7 +27,7 @@ const BubbleDiv = ({
           </>
         )}
       </span>
-      <Image src="/bubble/bubble.svg" alt="bubble" width={w} height={h} />
+      <Image src="/bubble/bubble.svg" alt="말풍선" width={w} height={h} />
     </div>
   );
 };
