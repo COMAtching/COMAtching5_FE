@@ -10,16 +10,16 @@ importScripts(
 
 // 1. 아까 복사한 firebaseConfig 내용을 여기에도 똑같이 한 번 더 넣어줍니다.
 // (서비스 워커는 메인 코드(firebase.ts)랑 별개로 돌아가서 설정이 또 필요해요)
-const firebaseConfig = {
-  apiKey: "AIzaSyDAE4IwNPU33dniaBSnHA7hjw33ByoQ-14",
-  authDomain: "comatching-59f3e.firebaseapp.com",
-  projectId: "comatching-59f3e",
-  storageBucket: "comatching-59f3e.firebasestorage.app",
-  messagingSenderId: "106298040488",
-  appId: "1:106298040488:web:e4e7b9c54d55dcaab4229d",
-  measurementId: "G-188J563VND",
-};
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCmwNjO2gXNy92-FBguQUXvPcQDaVk7lD0",
+  authDomain: "comatching5.firebaseapp.com",
+  projectId: "comatching5",
+  storageBucket: "comatching5.firebasestorage.app",
+  messagingSenderId: "179266935580",
+  appId: "1:179266935580:web:3b56e0f8cf763787f838d9",
+  measurementId: "G-P0WBX4VND7",
+};
 firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
