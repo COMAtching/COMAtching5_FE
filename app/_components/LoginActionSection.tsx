@@ -22,7 +22,7 @@ export default function ScreenLoginActionSection() {
 
   return (
     <section className="flex flex-col items-center">
-      <BubbleDiv />
+      <BubbleDiv top={5} />
       <KakaoLoginButton
         className="mt-[1.6vh] mb-[0.49vh]"
         onClick={handleKakaoLogin}
