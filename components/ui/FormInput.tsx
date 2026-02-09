@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface FormInputProps {
   id: string; // input 요소의 고유 식별자 (label의 htmlFor와 연결)
@@ -20,7 +21,7 @@ const INPUT_STYLE = {
 const INPUT_CLASSNAME =
   "all:unset box-border w-full border-b border-gray-300 px-2 py-[14.5px] leading-[19px] typo-16-500 placeholder:text-[#B3B3B3] text-color-gray-900 outline-none";
 
-const FormInput: React.FC<FormInputProps> = ({
+const FormInput = ({
   id,
   type,
   name,
@@ -30,7 +31,7 @@ const FormInput: React.FC<FormInputProps> = ({
   className = "",
   style = {},
   ...rest
-}) => {
+}: FormInputProps) => {
   return (
     <input
       id={id}
@@ -39,7 +40,7 @@ const FormInput: React.FC<FormInputProps> = ({
       placeholder={placeholder}
       autoComplete={autoComplete}
       required={required}
-      className={`${INPUT_CLASSNAME} ${className}`}
+      className={cn(INPUT_CLASSNAME, className)}
       style={{ ...INPUT_STYLE, ...style }}
       {...rest}
     />
