@@ -1,6 +1,5 @@
 "use client";
 import BubbleDiv from "@/app/_components/BubbleDiv";
-import Button from "@/components/ui/Button";
 import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
 import {
   Drawer,
@@ -8,6 +7,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
@@ -65,12 +65,12 @@ export default function ScreenLoginActionSection() {
           </GoogleLoginButton>
           <div className="typo-14-500 text-bottomsheet-text-caption mt-6 flex flex-col items-center">
             <span>혹은</span>
-            <button
-              type="button"
+            <Link
+              href="/login"
               className="all-[unset] cursor-pointer underline"
             >
               이메일로 로그인
-            </button>
+            </Link>
           </div>
         </DrawerContent>
       </Drawer>
