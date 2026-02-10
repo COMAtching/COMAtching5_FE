@@ -1,7 +1,7 @@
 # ===========================
 # Stage 1: Dependencies
 # ===========================
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 
 # pnpm 설치
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -18,7 +18,7 @@ RUN pnpm install --prod --frozen-lockfile
 # ===========================
 # Stage 2: Builder
 # ===========================
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # pnpm 설치
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -62,7 +62,7 @@ RUN pnpm run build
 # ===========================
 # Stage 3: Runner (Production)
 # ===========================
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
