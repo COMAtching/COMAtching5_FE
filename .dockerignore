@@ -1,55 +1,41 @@
-# ===========================
-# Stage 1: Dependencies
-# ===========================
-FROM node:20-alpine AS deps
+# Dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-WORKDIR /app
+# Next.js
+.next
+out
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+# Git
+.git
+.gitignore
 
+# Docker
+Dockerfile
+.dockerignore
 
-# ===========================
-# Stage 2: Builder
-# ===========================
-FROM node:20-alpine AS builder
+# Documentation
+README.md
+*.md
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-WORKDIR /app
+# IDE
+.vscode
+.idea
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+# Environment (보안상 Docker 이미지에 포함하지 않음)
+; .env
+; .env*.local
+; .env.development
+; .env.test
+; .env.production
 
-# 🔥 .env 포함
-COPY .env .env
-COPY . .
+# Testing
+coverage
+.nyc_output
 
-RUN pnpm run build
-
-
-# ===========================
-# Stage 3: Runner
-# ===========================
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-ENV NODE_ENV=production
-
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
-
-# 🔥 .env 복사
-COPY --from=builder /app/.env ./.env
-
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-RUN chown -R nextjs:nodejs /app
-USER nextjs
-
-EXPOSE 3000
-
-# 🔥 .env → 환경변수 export 후 실행
-CMD ["sh", "-c", "set -a && . ./.env && set +a && node server.js"]
+# Misc
+.DS_Store
+*.pem
