@@ -1,0 +1,16 @@
+{
+  "name": "코매칭 - 개발자 매칭 서비스",
+  "short_name": "코매칭",
+  "description": "최고의 개발자 매칭 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/logo/comatching-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
