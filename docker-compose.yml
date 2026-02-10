@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  comatching-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # 환경 변수 로드 (.env 우선, 없으면 .env.example)
+    env_file:
+      - .env.example
+      - .env # .env 파일이 있으면 이 값이 우선 적용됨
+    restart: unless-stopped
