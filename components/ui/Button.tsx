@@ -16,7 +16,7 @@ export default function Button({
   fixed = false,
   bottom = 0,
   sideGap = 16,
-  safeArea = true,
+  safeArea = false,
   disabled = false,
   shadow,
   className,
