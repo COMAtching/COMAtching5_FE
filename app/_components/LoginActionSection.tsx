@@ -44,7 +44,7 @@ export default function ScreenLoginActionSection() {
         </div>
         <DrawerContent
           showHandle={false}
-          className="mx-auto flex h-[44.33vh] w-full flex-col items-center px-4 pt-6 md:max-w-[430px]"
+          className="mx-auto flex h-[44.33dvh] w-full flex-col items-center px-4 pt-6 md:max-w-[430px]"
         >
           <DrawerTitle className="sr-only">다른 로그인 방법</DrawerTitle>
           <div className="flex w-full flex-col items-start gap-2">
