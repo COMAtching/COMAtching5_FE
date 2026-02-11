@@ -48,7 +48,7 @@ export default function Button({
       disabled={disabled}
       className={cn(
         // 기본 스타일 (기본 높이 h-12, 너비 w-full, 폰트 등 복구)
-        "typo-20-600 text-button-primary-text-default bg-button-primary flex h-12 w-full items-center justify-center rounded-[16px] transition-colors duration-100",
+        "typo-20-600 text-button-primary-text-default bg-button-primary flex h-12 w-full shrink-0 items-center justify-center rounded-[16px] transition-colors duration-100",
         fixed && "fixed z-50 mx-auto",
         disabled ? "cursor-not-allowed" : "cursor-pointer",
         // 1. 사용자 className 먼저 적용 (여기서 h-10 등을 넣으면 위 h-12가 덮어씌워짐)
