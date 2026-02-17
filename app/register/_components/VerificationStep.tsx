@@ -18,6 +18,7 @@ export const VerificationStep = ({
   onResend,
 }: VerificationStepProps) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5분 = 300초
+  const [isWrong, setIsWrong] = useState(false);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -35,8 +36,30 @@ export const VerificationStep = ({
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleVerificationCodeChange = (value: string) => {
+    onVerificationCodeChange(value);
+    if (isWrong && value) {
+      setIsWrong(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // TODO: API 호출하여 인증번호 검증
+    // 임시로 6자리 숫자인지만 확인
+    if (verificationCode.length !== 6) {
+      setIsWrong(true);
+      return;
+    }
+
+    setIsWrong(false);
+    onSubmit(e);
+  };
+
   const handleResend = () => {
     setTimeLeft(300); // 타이머 리셋
+    setIsWrong(false); // 에러 상태 초기화
     onResend();
   };
 
@@ -63,7 +86,10 @@ export const VerificationStep = ({
         </h2>
       </div>
 
-      <form className="flex w-full flex-1 flex-col gap-4" onSubmit={onSubmit}>
+      <form
+        className="flex w-full flex-1 flex-col gap-4"
+        onSubmit={handleSubmit}
+      >
         <div className="flex w-full flex-col gap-2">
           <label htmlFor="verification-code" className="sr-only">
             인증번호
@@ -76,7 +102,8 @@ export const VerificationStep = ({
               placeholder={formatTime(timeLeft)}
               required
               value={verificationCode}
-              onChange={(e) => onVerificationCodeChange(e.target.value)}
+              onChange={(e) => handleVerificationCodeChange(e.target.value)}
+              error={isWrong}
               maxLength={6}
               inputMode="numeric"
               className="flex-1"
@@ -90,9 +117,20 @@ export const VerificationStep = ({
               재전송
             </Button>
           </div>
+          {isWrong && (
+            <span className="typo-12-400 text-color-text-highlight">
+              *인증번호를 다시 확인해 주세요
+            </span>
+          )}
         </div>
-        <div className="w-full"></div>
-        <div className="mt-auto">
+        <div className="mt-auto flex w-full flex-col gap-4">
+          <div className="bg-color-gray-50-a80 w-full rounded-[16px] border-[#b3b3b34d] p-4 leading-0">
+            <span className="typo-12-500 text-color-text-caption3">
+              인증번호가 오지 않았나요?
+              <br /> 이전 단계에서 이메일을 재확인하거나, 스팸함을 확인해주세요.
+            </span>
+          </div>
+
           <Button
             shadow={true}
             type="submit"

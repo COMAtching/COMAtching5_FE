@@ -51,7 +51,7 @@ export default async function RootLayout({
         {/* <ServiceStatusProvider */}
         {/* initialMaintenanceMode={initialMaintenanceMode} */}
         {/* > */}
-        <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+        <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
           <Blur />
           {children}
         </div>

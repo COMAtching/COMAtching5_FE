@@ -1,6 +1,6 @@
 /* Auto-generated from token.json */
 /* Run: pnpm run token to regenerate */
-/* Total unique tokens: 144 */
+/* Total unique tokens: 160 */
 
 @layer base {
   :root {
@@ -54,11 +54,14 @@
   --color-flame-900: #ed1134;
   --color-gray-0-a30: #ffffff4d;
   --color-gray-0: #ffffff;
+  --color-gray-100-a30: #b3b3b34d;
   --color-gray-100: #e5e5e5;
   --color-gray-200: #cccccc;
   --color-gray-300-a40: #b3b3b366;
   --color-gray-300: #b3b3b3;
   --color-gray-400: #999999;
+  --color-gray-50-a10: #f5f5f51a;
+  --color-gray-50-a80: #f5f5f5cc;
   --color-gray-500: #808080;
   --color-gray-50: #f5f5f5;
   --color-gray-600: #666666;
@@ -66,6 +69,8 @@
   --color-gray-700: #4d4d4d;
   --color-gray-800: #333333;
   --color-gray-900: #1a1a1a;
+  --color-icon-background: var(--color-gray-100);
+  --color-icon-stroke-400: var(--color-gray-400);
   --color-orange-100: #ffc7b9;
   --color-orange-300: #ffa188;
   --color-orange-500: #ff8a6f;
@@ -78,6 +83,8 @@
   --color-pink-50: #fdeaf5;
   --color-pink-700: #f57db2;
   --color-pink-900: #e3468b;
+  --color-stroke-300: var(--color-gray-300);
+  --color-stroke-error: var(--color-flame-500);
   --color-surface-base: var(--color-gray-64);
   --color-text-black: var(--color-gray-900);
   --color-text-caption1: var(--color-gray-600);
@@ -111,6 +118,15 @@
   --headingregular: Regular;
   --high: 90%;
   --increased: 150%;
+  --inputfield-close-fill: var(--color-icon-background);
+  --inputfield-close-icon: var(--color-icon-stroke-400);
+  --inputfield-close-stroke: var(--color-gray-0-a30);
+  --inputfield-icon-stroke: var(--color-stroke-300);
+  --inputfield-stroke-default: var(--color-stroke-300);
+  --inputfield-stroke-error: var(--color-stroke-error);
+  --inputfield-text-hint: var(--color-text-caption3);
+  --inputfield-text-indicator: var(--color-brand-primary-flame);
+  --inputfield-text-primary: var(--color-text-black);
   --lg: var(--lg);
   --logo-text-black: var(--color-brand-black);
   --logo-text-pink: var(--color-brand-primary-flame);
@@ -684,17 +700,22 @@
   .bg-color-gray-0 { background-color: var(--color-gray-0); }
   .bg-color-gray-0-a30 { background-color: var(--color-gray-0-a30); }
   .bg-color-gray-100 { background-color: var(--color-gray-100); }
+  .bg-color-gray-100-a30 { background-color: var(--color-gray-100-a30); }
   .bg-color-gray-200 { background-color: var(--color-gray-200); }
   .bg-color-gray-300 { background-color: var(--color-gray-300); }
   .bg-color-gray-300-a40 { background-color: var(--color-gray-300-a40); }
   .bg-color-gray-400 { background-color: var(--color-gray-400); }
   .bg-color-gray-50 { background-color: var(--color-gray-50); }
+  .bg-color-gray-50-a10 { background-color: var(--color-gray-50-a10); }
+  .bg-color-gray-50-a80 { background-color: var(--color-gray-50-a80); }
   .bg-color-gray-500 { background-color: var(--color-gray-500); }
   .bg-color-gray-600 { background-color: var(--color-gray-600); }
   .bg-color-gray-64 { background-color: var(--color-gray-64); }
   .bg-color-gray-700 { background-color: var(--color-gray-700); }
   .bg-color-gray-800 { background-color: var(--color-gray-800); }
   .bg-color-gray-900 { background-color: var(--color-gray-900); }
+  .bg-color-icon-background { background-color: var(--color-icon-background); }
+  .bg-color-icon-stroke-400 { background-color: var(--color-icon-stroke-400); }
   .bg-color-orange-100 { background-color: var(--color-orange-100); }
   .bg-color-orange-300 { background-color: var(--color-orange-300); }
   .bg-color-orange-50 { background-color: var(--color-orange-50); }
@@ -707,6 +728,8 @@
   .bg-color-pink-500 { background-color: var(--color-pink-500); }
   .bg-color-pink-700 { background-color: var(--color-pink-700); }
   .bg-color-pink-900 { background-color: var(--color-pink-900); }
+  .bg-color-stroke-300 { background-color: var(--color-stroke-300); }
+  .bg-color-stroke-error { background-color: var(--color-stroke-error); }
   .bg-color-surface-base { background-color: var(--color-surface-base); }
   .bg-color-text-black { background-color: var(--color-text-black); }
   .bg-color-text-caption1 { background-color: var(--color-text-caption1); }
@@ -741,17 +764,22 @@
   .text-color-gray-0 { color: var(--color-gray-0); }
   .text-color-gray-0-a30 { color: var(--color-gray-0-a30); }
   .text-color-gray-100 { color: var(--color-gray-100); }
+  .text-color-gray-100-a30 { color: var(--color-gray-100-a30); }
   .text-color-gray-200 { color: var(--color-gray-200); }
   .text-color-gray-300 { color: var(--color-gray-300); }
   .text-color-gray-300-a40 { color: var(--color-gray-300-a40); }
   .text-color-gray-400 { color: var(--color-gray-400); }
   .text-color-gray-50 { color: var(--color-gray-50); }
+  .text-color-gray-50-a10 { color: var(--color-gray-50-a10); }
+  .text-color-gray-50-a80 { color: var(--color-gray-50-a80); }
   .text-color-gray-500 { color: var(--color-gray-500); }
   .text-color-gray-600 { color: var(--color-gray-600); }
   .text-color-gray-64 { color: var(--color-gray-64); }
   .text-color-gray-700 { color: var(--color-gray-700); }
   .text-color-gray-800 { color: var(--color-gray-800); }
   .text-color-gray-900 { color: var(--color-gray-900); }
+  .text-color-icon-background { color: var(--color-icon-background); }
+  .text-color-icon-stroke-400 { color: var(--color-icon-stroke-400); }
   .text-color-orange-100 { color: var(--color-orange-100); }
   .text-color-orange-300 { color: var(--color-orange-300); }
   .text-color-orange-50 { color: var(--color-orange-50); }
@@ -764,6 +792,8 @@
   .text-color-pink-500 { color: var(--color-pink-500); }
   .text-color-pink-700 { color: var(--color-pink-700); }
   .text-color-pink-900 { color: var(--color-pink-900); }
+  .text-color-stroke-300 { color: var(--color-stroke-300); }
+  .text-color-stroke-error { color: var(--color-stroke-error); }
   .text-color-surface-base { color: var(--color-surface-base); }
   .text-color-text-black { color: var(--color-text-black); }
   .text-color-text-caption1 { color: var(--color-text-caption1); }
@@ -774,6 +804,9 @@
   .text-color-text-white { color: var(--color-text-white); }
   .text-color-toggle-default { color: var(--color-toggle-default); }
   .text-footo-text-main { color: var(--footo-text-main); }
+  .text-inputfield-text-hint { color: var(--inputfield-text-hint); }
+  .text-inputfield-text-indicator { color: var(--inputfield-text-indicator); }
+  .text-inputfield-text-primary { color: var(--inputfield-text-primary); }
   .text-logo-text-black { color: var(--logo-text-black); }
   .text-logo-text-pink { color: var(--logo-text-pink); }
   .text-logo-text-white { color: var(--logo-text-white); }
