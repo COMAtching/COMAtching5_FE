@@ -68,12 +68,11 @@ export default function Button({
           !disabled && {
             border: "0.8px solid rgba(255, 255, 255, 0.3)",
           }),
-        // shadow가 true이거나 primary일 때 그림자 추가 (disabled 제외)
-        ...(hasShadow &&
-          !disabled && {
-            boxShadow:
-              "0px 4px 8px rgba(0, 0, 0, 0.08), 0px 0px 16px rgba(0, 0, 0, 0.16)",
-          }),
+        // shadow가 true이거나 primary일 때 그림자 추가
+        ...(hasShadow && {
+          boxShadow:
+            "0px 4px 8px rgba(0, 0, 0, 0.08), 0px 0px 16px rgba(0, 0, 0, 0.16)",
+        }),
       }}
       {...props}
     >
