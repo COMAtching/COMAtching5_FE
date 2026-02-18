@@ -1,5 +1,8 @@
 "use client";
 import { BackButton } from "@/components/ui/BackButton";
+import { useSendEmail } from "@/hooks/useSendEmail";
+import { useSignUp } from "@/hooks/useSignUp";
+import { useVerifyEmail } from "@/hooks/useVerifyEmail";
 import React, { useState } from "react";
 import { EmailStep } from "./EmailStep";
 import { VerificationStep } from "./VerificationStep";
@@ -11,36 +14,59 @@ export const ScreenRegister = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
 
+  const { mutate: sendEmail, isPending: isSendingEmail } = useSendEmail();
+  const { mutate: verifyEmail, isPending: isVerifyingEmail } = useVerifyEmail();
+  const { mutate: signUp, isPending: isSigningUp } = useSignUp();
+
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call to send verification code
-    // await sendVerificationCode(email);
-    setStep(2);
+    sendEmail(email, {
+      onSuccess: () => setStep(2),
+    });
   };
 
-  const handleVerificationSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: API call to verify code
-    // await verifyCode(email, verificationCode);
-    setStep(3);
+  const handleVerify = (code: string, onError: () => void) => {
+    verifyEmail(
+      { email, code },
+      {
+        onSuccess: (data) => {
+          if (data.status === 200) {
+            setStep(3);
+          } else {
+            onError();
+          }
+        },
+        onError,
+      },
+    );
   };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call to complete registration
-    // await registerUser(email, password);
-    // Navigate to next step or complete registration
+    signUp(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          if (data.status === 200) {
+            // TODO: 회원가입 완료 후 이동 (예: router.push("/login"))
+          } else {
+            alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+          }
+        },
+        onError: () => alert("회원가입에 실패했습니다. 다시 시도해주세요."),
+      },
+    );
   };
 
   const handleResendCode = () => {
-    // TODO: API call to resend verification code
-    // await sendVerificationCode(email);
+    sendEmail(email, {
+      onError: () => alert("재전송에 실패했습니다. 다시 시도해주세요."),
+    });
   };
 
   return (
     <main className="flex min-h-dvh flex-col items-start px-4 pt-2 pb-[6.2vh]">
       <BackButton text="회원가입" />
-
       {step === 1 && (
         <EmailStep
           email={email}
@@ -48,17 +74,16 @@ export const ScreenRegister = () => {
           onSubmit={handleEmailSubmit}
         />
       )}
-
       {step === 2 && (
         <VerificationStep
           email={email}
           verificationCode={verificationCode}
           onVerificationCodeChange={setVerificationCode}
-          onSubmit={handleVerificationSubmit}
+          onVerify={handleVerify}
           onResend={handleResendCode}
+          isVerifying={isVerifyingEmail}
         />
       )}
-
       {step === 3 && (
         <PasswordStep
           password={password}
@@ -66,6 +91,7 @@ export const ScreenRegister = () => {
           onSubmit={handlePasswordSubmit}
         />
       )}
+      ㅇ
     </main>
   );
 };

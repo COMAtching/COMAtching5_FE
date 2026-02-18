@@ -61,16 +61,16 @@ export default async function RootLayout({
       <body
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
-        {/* <QueryProvider> */}
-        {/* <ServiceStatusProvider */}
-        {/* initialMaintenanceMode={initialMaintenanceMode} */}
-        {/* > */}
-        <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
-          <Blur />
-          {children}
-        </div>
-        {/* </ServiceStatusProvider> */}
-        {/* </QueryProvider> */}
+        <QueryProvider>
+          {/* <ServiceStatusProvider */}
+          {/* initialMaintenanceMode={initialMaintenanceMode} */}
+          {/* > */}
+          <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+            <Blur />
+            {children}
+          </div>
+          {/* </ServiceStatusProvider> */}
+        </QueryProvider>
       </body>
     </html>
   );

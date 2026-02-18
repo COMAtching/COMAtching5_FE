@@ -6,16 +6,18 @@ type VerificationStepProps = {
   email: string;
   verificationCode: string;
   onVerificationCodeChange: (code: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onVerify: (code: string, onError: () => void) => void;
   onResend: () => void;
+  isVerifying?: boolean;
 };
 
 export const VerificationStep = ({
   email,
   verificationCode,
   onVerificationCodeChange,
-  onSubmit,
+  onVerify,
   onResend,
+  isVerifying = false,
 }: VerificationStepProps) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5분 = 300초
   const [isWrong, setIsWrong] = useState(false);
@@ -45,16 +47,7 @@ export const VerificationStep = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // TODO: API 호출하여 인증번호 검증
-    // 임시로 6자리 숫자인지만 확인
-    if (verificationCode.length !== 6) {
-      setIsWrong(true);
-      return;
-    }
-
-    setIsWrong(false);
-    onSubmit(e);
+    onVerify(verificationCode, () => setIsWrong(true));
   };
 
   const handleResend = () => {
@@ -134,9 +127,9 @@ export const VerificationStep = ({
           <Button
             shadow={true}
             type="submit"
-            disabled={!verificationCode.trim()}
+            disabled={!verificationCode.trim() || isVerifying}
           >
-            인증확인
+            {isVerifying ? "확인 중..." : "인증확인"}
           </Button>
         </div>
       </form>
