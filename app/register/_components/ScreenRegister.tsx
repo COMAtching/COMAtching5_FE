@@ -10,7 +10,6 @@ export const ScreenRegister = () => {
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,9 +62,7 @@ export const ScreenRegister = () => {
       {step === 3 && (
         <PasswordStep
           password={password}
-          passwordConfirm={passwordConfirm}
           onPasswordChange={setPassword}
-          onPasswordConfirmChange={setPasswordConfirm}
           onSubmit={handlePasswordSubmit}
         />
       )}
