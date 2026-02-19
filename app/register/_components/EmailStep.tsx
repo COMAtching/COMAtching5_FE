@@ -1,11 +1,12 @@
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
+import { validateEmail } from "@/lib/validators";
 import React, { useState } from "react";
 
 type EmailStepProps = {
   email: string;
   onEmailChange: (email: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.SyntheticEvent<HTMLFormElement>) => void;
 };
 
 export const EmailStep = ({
@@ -15,11 +16,6 @@ export const EmailStep = ({
 }: EmailStepProps) => {
   const [emailError, setEmailError] = useState(false);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const handleEmailChange = (value: string) => {
     onEmailChange(value);
     if (emailError && value) {
@@ -27,7 +23,7 @@ export const EmailStep = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateEmail(email)) {

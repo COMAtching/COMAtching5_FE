@@ -18,7 +18,7 @@ export const ScreenRegister = () => {
   const { mutate: verifyEmail, isPending: isVerifyingEmail } = useVerifyEmail();
   const { mutate: signUp, isPending: isSigningUp } = useSignUp();
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     sendEmail(email, {
       onSuccess: () => setStep(2),
@@ -41,7 +41,7 @@ export const ScreenRegister = () => {
     );
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     signUp(
       { email, password },
@@ -91,7 +91,6 @@ export const ScreenRegister = () => {
           onSubmit={handlePasswordSubmit}
         />
       )}
-      ㅇ
     </main>
   );
 };

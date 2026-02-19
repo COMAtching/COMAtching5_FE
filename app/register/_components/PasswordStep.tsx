@@ -1,12 +1,16 @@
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
-import { Check, X } from "lucide-react";
+import {
+  validatePasswordLength,
+  validatePasswordPattern,
+} from "@/lib/validators";
+import { Check, Eye, EyeOff, X } from "lucide-react";
 import React, { useState } from "react";
 
 type PasswordStepProps = {
   password: string;
   onPasswordChange: (password: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.SyntheticEvent<HTMLFormElement>) => void;
 };
 
 export const PasswordStep = ({
@@ -16,8 +20,8 @@ export const PasswordStep = ({
 }: PasswordStepProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const isLengthValid = password.length >= 8 && password.length <= 20;
-  const isPatternValid = /[a-zA-Z]/.test(password) && /[0-9]/.test(password);
+  const isLengthValid = validatePasswordLength(password);
+  const isPatternValid = validatePasswordPattern(password);
 
   return (
     <section className="mt-10 flex w-full flex-1 flex-col items-start gap-8">
@@ -57,38 +61,9 @@ export const PasswordStep = ({
                 className="flex items-center text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? (
-                  // Eye-off icon
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
+                  <EyeOff width={18} height={18} strokeWidth={2} />
                 ) : (
-                  // Eye icon
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                  <Eye width={18} height={18} strokeWidth={2} />
                 )}
               </button>
             )}
