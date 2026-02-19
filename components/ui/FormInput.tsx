@@ -10,6 +10,7 @@ interface FormInputProps extends Omit<
   type: string; // input 타입 (예: text, email, password 등)
   name: string; // form 데이터 전송 시 key 역할
   placeholder: string; // 입력란에 표시되는 안내 텍스트
+  error?: boolean; // 에러 상태 여부
 }
 
 const INPUT_STYLE = {
@@ -57,6 +58,7 @@ const FormInput = ({
   placeholder,
   className = "",
   style = {},
+  error = false,
   ...rest
 }: FormInputProps) => {
   // 화이트리스트에 있는 안전한 속성만 추출
@@ -72,7 +74,11 @@ const FormInput = ({
       type={type}
       name={name}
       placeholder={placeholder}
-      className={cn(INPUT_CLASSNAME, className)}
+      className={cn(
+        INPUT_CLASSNAME,
+        error && "border-color-flame-500",
+        className,
+      )}
       style={{ ...INPUT_STYLE, ...style }}
       {...safeProps}
     />

@@ -194,8 +194,11 @@ fontTokens.forEach((t) => {
   }
 });
 
-// 추가 폰트 사이즈 (10~30까지 2 간격)
-const additionalSizes = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+// 추가 폰트 사이즈 (10~30까지 모든 사이즈)
+const additionalSizes = [
+  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+  29, 30,
+];
 additionalSizes.forEach((size) => {
   weights.forEach((weight) => {
     fontUtilitiesSet.add(`  .typo-${size}-${weight} {
@@ -215,12 +218,11 @@ const fontUtilities = Array.from(fontUtilitiesSet).sort((a, b) => {
 
 // Border 유틸리티 (중복 제거)
 const borderUtilitiesSet = new Set();
-allTokens
-  .filter((t) => t.name.includes("border") && t.type === "color")
+colorTokens
+  .filter((t) => t.name.includes("color-") || t.name.includes("border-"))
   .forEach((t) => {
-    const className = t.name.replace(/^border-/, "");
     borderUtilitiesSet.add(
-      `  .border-${className} { border-color: var(--${t.name}); }`,
+      `  .border-${t.name} { border-color: var(--${t.name}); }`,
     );
   });
 const borderUtilities = Array.from(borderUtilitiesSet).sort().join("\n");
