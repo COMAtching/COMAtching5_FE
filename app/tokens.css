@@ -813,7 +813,62 @@
 
   /* Border utilities */
   .border-button-border-color { border-color: var(--button-border-color); }
+  .border-color-background-disabled { border-color: var(--color-background-disabled); }
+  .border-color-background-white { border-color: var(--color-background-white); }
   .border-color-border-light { border-color: var(--color-border-light); }
+  .border-color-brand-black { border-color: var(--color-brand-black); }
+  .border-color-brand-primary-flame { border-color: var(--color-brand-primary-flame); }
+  .border-color-brand-primary-orange { border-color: var(--color-brand-primary-orange); }
+  .border-color-brand-primary-pink { border-color: var(--color-brand-primary-pink); }
+  .border-color-brand-secondary-pink { border-color: var(--color-brand-secondary-pink); }
+  .border-color-flame-100 { border-color: var(--color-flame-100); }
+  .border-color-flame-300 { border-color: var(--color-flame-300); }
+  .border-color-flame-50 { border-color: var(--color-flame-50); }
+  .border-color-flame-500 { border-color: var(--color-flame-500); }
+  .border-color-flame-700 { border-color: var(--color-flame-700); }
+  .border-color-flame-900 { border-color: var(--color-flame-900); }
+  .border-color-gray-0 { border-color: var(--color-gray-0); }
+  .border-color-gray-0-a30 { border-color: var(--color-gray-0-a30); }
+  .border-color-gray-100 { border-color: var(--color-gray-100); }
+  .border-color-gray-100-a30 { border-color: var(--color-gray-100-a30); }
+  .border-color-gray-200 { border-color: var(--color-gray-200); }
+  .border-color-gray-300 { border-color: var(--color-gray-300); }
+  .border-color-gray-300-a40 { border-color: var(--color-gray-300-a40); }
+  .border-color-gray-400 { border-color: var(--color-gray-400); }
+  .border-color-gray-50 { border-color: var(--color-gray-50); }
+  .border-color-gray-50-a10 { border-color: var(--color-gray-50-a10); }
+  .border-color-gray-50-a80 { border-color: var(--color-gray-50-a80); }
+  .border-color-gray-500 { border-color: var(--color-gray-500); }
+  .border-color-gray-600 { border-color: var(--color-gray-600); }
+  .border-color-gray-64 { border-color: var(--color-gray-64); }
+  .border-color-gray-700 { border-color: var(--color-gray-700); }
+  .border-color-gray-800 { border-color: var(--color-gray-800); }
+  .border-color-gray-900 { border-color: var(--color-gray-900); }
+  .border-color-icon-background { border-color: var(--color-icon-background); }
+  .border-color-icon-stroke-400 { border-color: var(--color-icon-stroke-400); }
+  .border-color-orange-100 { border-color: var(--color-orange-100); }
+  .border-color-orange-300 { border-color: var(--color-orange-300); }
+  .border-color-orange-50 { border-color: var(--color-orange-50); }
+  .border-color-orange-500 { border-color: var(--color-orange-500); }
+  .border-color-orange-700 { border-color: var(--color-orange-700); }
+  .border-color-orange-900 { border-color: var(--color-orange-900); }
+  .border-color-pink-100 { border-color: var(--color-pink-100); }
+  .border-color-pink-300 { border-color: var(--color-pink-300); }
+  .border-color-pink-50 { border-color: var(--color-pink-50); }
+  .border-color-pink-500 { border-color: var(--color-pink-500); }
+  .border-color-pink-700 { border-color: var(--color-pink-700); }
+  .border-color-pink-900 { border-color: var(--color-pink-900); }
+  .border-color-stroke-300 { border-color: var(--color-stroke-300); }
+  .border-color-stroke-error { border-color: var(--color-stroke-error); }
+  .border-color-surface-base { border-color: var(--color-surface-base); }
+  .border-color-text-black { border-color: var(--color-text-black); }
+  .border-color-text-caption1 { border-color: var(--color-text-caption1); }
+  .border-color-text-caption2 { border-color: var(--color-text-caption2); }
+  .border-color-text-caption3 { border-color: var(--color-text-caption3); }
+  .border-color-text-disabled { border-color: var(--color-text-disabled); }
+  .border-color-text-highlight { border-color: var(--color-text-highlight); }
+  .border-color-text-white { border-color: var(--color-text-white); }
+  .border-color-toggle-default { border-color: var(--color-toggle-default); }
 
   /* Custom gradient buttons */
   .bg-button-primary {

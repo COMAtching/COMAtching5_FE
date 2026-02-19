@@ -218,12 +218,11 @@ const fontUtilities = Array.from(fontUtilitiesSet).sort((a, b) => {
 
 // Border 유틸리티 (중복 제거)
 const borderUtilitiesSet = new Set();
-allTokens
-  .filter((t) => t.name.includes("border") && t.type === "color")
+colorTokens
+  .filter((t) => t.name.includes("color-") || t.name.includes("border-"))
   .forEach((t) => {
-    const className = t.name.replace(/^border-/, "");
     borderUtilitiesSet.add(
-      `  .border-${className} { border-color: var(--${t.name}); }`,
+      `  .border-${t.name} { border-color: var(--${t.name}); }`,
     );
   });
 const borderUtilities = Array.from(borderUtilitiesSet).sort().join("\n");

@@ -81,13 +81,13 @@ export const PasswordStep = ({
         </div>
         <div className="typo-14-400 flex gap-[13px]">
           <span
-            className={`flex items-center gap-1 ${!password || isLengthValid ? "text-[#808080]" : "text-[#FF4D61]"}`}
+            className={`flex items-center gap-1 ${!password || isLengthValid ? "text-color-text-caption2" : "text-color-text-highlight"}`}
           >
             <Check width={14} height={14} strokeWidth={2.5} />
             8~20자 이내
           </span>
           <span
-            className={`flex items-center gap-1 ${!password || isPatternValid ? "text-[#808080]" : "text-[#FF4D61]"}`}
+            className={`flex items-center gap-1 ${!password || isPatternValid ? "text-color-text-caption2" : "text-color-text-highlight"}`}
           >
             <Check width={14} height={14} strokeWidth={2.5} />
             영문 대소문자, 숫자 포함
