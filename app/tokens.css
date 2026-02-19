@@ -1,6 +1,6 @@
 /* Auto-generated from token.json */
 /* Run: pnpm run token to regenerate */
-/* Total unique tokens: 144 */
+/* Total unique tokens: 160 */
 
 @layer base {
   :root {
@@ -54,11 +54,14 @@
   --color-flame-900: #ed1134;
   --color-gray-0-a30: #ffffff4d;
   --color-gray-0: #ffffff;
+  --color-gray-100-a30: #b3b3b34d;
   --color-gray-100: #e5e5e5;
   --color-gray-200: #cccccc;
   --color-gray-300-a40: #b3b3b366;
   --color-gray-300: #b3b3b3;
   --color-gray-400: #999999;
+  --color-gray-50-a10: #f5f5f51a;
+  --color-gray-50-a80: #f5f5f5cc;
   --color-gray-500: #808080;
   --color-gray-50: #f5f5f5;
   --color-gray-600: #666666;
@@ -66,6 +69,8 @@
   --color-gray-700: #4d4d4d;
   --color-gray-800: #333333;
   --color-gray-900: #1a1a1a;
+  --color-icon-background: var(--color-gray-100);
+  --color-icon-stroke-400: var(--color-gray-400);
   --color-orange-100: #ffc7b9;
   --color-orange-300: #ffa188;
   --color-orange-500: #ff8a6f;
@@ -78,6 +83,8 @@
   --color-pink-50: #fdeaf5;
   --color-pink-700: #f57db2;
   --color-pink-900: #e3468b;
+  --color-stroke-300: var(--color-gray-300);
+  --color-stroke-error: var(--color-flame-500);
   --color-surface-base: var(--color-gray-64);
   --color-text-black: var(--color-gray-900);
   --color-text-caption1: var(--color-gray-600);
@@ -111,6 +118,15 @@
   --headingregular: Regular;
   --high: 90%;
   --increased: 150%;
+  --inputfield-close-fill: var(--color-icon-background);
+  --inputfield-close-icon: var(--color-icon-stroke-400);
+  --inputfield-close-stroke: var(--color-gray-0-a30);
+  --inputfield-icon-stroke: var(--color-stroke-300);
+  --inputfield-stroke-default: var(--color-stroke-300);
+  --inputfield-stroke-error: var(--color-stroke-error);
+  --inputfield-text-hint: var(--color-text-caption3);
+  --inputfield-text-indicator: var(--color-brand-primary-flame);
+  --inputfield-text-primary: var(--color-text-black);
   --lg: var(--lg);
   --logo-text-black: var(--color-brand-black);
   --logo-text-pink: var(--color-brand-primary-flame);
@@ -177,6 +193,30 @@
     line-height: 1.5;
   }
 
+  .typo-11-400 {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-11-500 {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-11-600 {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-11-700 {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
   .typo-12-400 {
     font-size: 12px;
     font-weight: 400;
@@ -197,6 +237,30 @@
 
   .typo-12-700 {
     font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-13-400 {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-13-500 {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-13-600 {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-13-700 {
+    font-size: 13px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -225,6 +289,30 @@
     line-height: 1.5;
   }
 
+  .typo-15-400 {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-15-500 {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-15-600 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-15-700 {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
   .typo-16-400 {
     font-size: 16px;
     font-weight: 400;
@@ -245,6 +333,30 @@
 
   .typo-16-700 {
     font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-17-400 {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-17-500 {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-17-600 {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-17-700 {
+    font-size: 17px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -273,6 +385,30 @@
     line-height: 1.5;
   }
 
+  .typo-19-400 {
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-19-500 {
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-19-600 {
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-19-700 {
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
   .typo-20-400 {
     font-size: 20px;
     font-weight: 400;
@@ -293,6 +429,30 @@
 
   .typo-20-700 {
     font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-21-400 {
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-21-500 {
+    font-size: 21px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-21-600 {
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-21-700 {
+    font-size: 21px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -321,6 +481,30 @@
     line-height: 1.5;
   }
 
+  .typo-23-400 {
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-23-500 {
+    font-size: 23px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-23-600 {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-23-700 {
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
   .typo-24-400 {
     font-size: 24px;
     font-weight: 400;
@@ -341,6 +525,30 @@
 
   .typo-24-700 {
     font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-25-400 {
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-25-500 {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-25-600 {
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-25-700 {
+    font-size: 25px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -369,6 +577,30 @@
     line-height: 1.5;
   }
 
+  .typo-27-400 {
+    font-size: 27px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-27-500 {
+    font-size: 27px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-27-600 {
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-27-700 {
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
   .typo-28-400 {
     font-size: 28px;
     font-weight: 400;
@@ -389,6 +621,30 @@
 
   .typo-28-700 {
     font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .typo-29-400 {
+    font-size: 29px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .typo-29-500 {
+    font-size: 29px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .typo-29-600 {
+    font-size: 29px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .typo-29-700 {
+    font-size: 29px;
     font-weight: 700;
     line-height: 1.5;
   }
@@ -444,17 +700,22 @@
   .bg-color-gray-0 { background-color: var(--color-gray-0); }
   .bg-color-gray-0-a30 { background-color: var(--color-gray-0-a30); }
   .bg-color-gray-100 { background-color: var(--color-gray-100); }
+  .bg-color-gray-100-a30 { background-color: var(--color-gray-100-a30); }
   .bg-color-gray-200 { background-color: var(--color-gray-200); }
   .bg-color-gray-300 { background-color: var(--color-gray-300); }
   .bg-color-gray-300-a40 { background-color: var(--color-gray-300-a40); }
   .bg-color-gray-400 { background-color: var(--color-gray-400); }
   .bg-color-gray-50 { background-color: var(--color-gray-50); }
+  .bg-color-gray-50-a10 { background-color: var(--color-gray-50-a10); }
+  .bg-color-gray-50-a80 { background-color: var(--color-gray-50-a80); }
   .bg-color-gray-500 { background-color: var(--color-gray-500); }
   .bg-color-gray-600 { background-color: var(--color-gray-600); }
   .bg-color-gray-64 { background-color: var(--color-gray-64); }
   .bg-color-gray-700 { background-color: var(--color-gray-700); }
   .bg-color-gray-800 { background-color: var(--color-gray-800); }
   .bg-color-gray-900 { background-color: var(--color-gray-900); }
+  .bg-color-icon-background { background-color: var(--color-icon-background); }
+  .bg-color-icon-stroke-400 { background-color: var(--color-icon-stroke-400); }
   .bg-color-orange-100 { background-color: var(--color-orange-100); }
   .bg-color-orange-300 { background-color: var(--color-orange-300); }
   .bg-color-orange-50 { background-color: var(--color-orange-50); }
@@ -467,6 +728,8 @@
   .bg-color-pink-500 { background-color: var(--color-pink-500); }
   .bg-color-pink-700 { background-color: var(--color-pink-700); }
   .bg-color-pink-900 { background-color: var(--color-pink-900); }
+  .bg-color-stroke-300 { background-color: var(--color-stroke-300); }
+  .bg-color-stroke-error { background-color: var(--color-stroke-error); }
   .bg-color-surface-base { background-color: var(--color-surface-base); }
   .bg-color-text-black { background-color: var(--color-text-black); }
   .bg-color-text-caption1 { background-color: var(--color-text-caption1); }
@@ -501,17 +764,22 @@
   .text-color-gray-0 { color: var(--color-gray-0); }
   .text-color-gray-0-a30 { color: var(--color-gray-0-a30); }
   .text-color-gray-100 { color: var(--color-gray-100); }
+  .text-color-gray-100-a30 { color: var(--color-gray-100-a30); }
   .text-color-gray-200 { color: var(--color-gray-200); }
   .text-color-gray-300 { color: var(--color-gray-300); }
   .text-color-gray-300-a40 { color: var(--color-gray-300-a40); }
   .text-color-gray-400 { color: var(--color-gray-400); }
   .text-color-gray-50 { color: var(--color-gray-50); }
+  .text-color-gray-50-a10 { color: var(--color-gray-50-a10); }
+  .text-color-gray-50-a80 { color: var(--color-gray-50-a80); }
   .text-color-gray-500 { color: var(--color-gray-500); }
   .text-color-gray-600 { color: var(--color-gray-600); }
   .text-color-gray-64 { color: var(--color-gray-64); }
   .text-color-gray-700 { color: var(--color-gray-700); }
   .text-color-gray-800 { color: var(--color-gray-800); }
   .text-color-gray-900 { color: var(--color-gray-900); }
+  .text-color-icon-background { color: var(--color-icon-background); }
+  .text-color-icon-stroke-400 { color: var(--color-icon-stroke-400); }
   .text-color-orange-100 { color: var(--color-orange-100); }
   .text-color-orange-300 { color: var(--color-orange-300); }
   .text-color-orange-50 { color: var(--color-orange-50); }
@@ -524,6 +792,8 @@
   .text-color-pink-500 { color: var(--color-pink-500); }
   .text-color-pink-700 { color: var(--color-pink-700); }
   .text-color-pink-900 { color: var(--color-pink-900); }
+  .text-color-stroke-300 { color: var(--color-stroke-300); }
+  .text-color-stroke-error { color: var(--color-stroke-error); }
   .text-color-surface-base { color: var(--color-surface-base); }
   .text-color-text-black { color: var(--color-text-black); }
   .text-color-text-caption1 { color: var(--color-text-caption1); }
@@ -534,13 +804,71 @@
   .text-color-text-white { color: var(--color-text-white); }
   .text-color-toggle-default { color: var(--color-toggle-default); }
   .text-footo-text-main { color: var(--footo-text-main); }
+  .text-inputfield-text-hint { color: var(--inputfield-text-hint); }
+  .text-inputfield-text-indicator { color: var(--inputfield-text-indicator); }
+  .text-inputfield-text-primary { color: var(--inputfield-text-primary); }
   .text-logo-text-black { color: var(--logo-text-black); }
   .text-logo-text-pink { color: var(--logo-text-pink); }
   .text-logo-text-white { color: var(--logo-text-white); }
 
   /* Border utilities */
   .border-button-border-color { border-color: var(--button-border-color); }
+  .border-color-background-disabled { border-color: var(--color-background-disabled); }
+  .border-color-background-white { border-color: var(--color-background-white); }
   .border-color-border-light { border-color: var(--color-border-light); }
+  .border-color-brand-black { border-color: var(--color-brand-black); }
+  .border-color-brand-primary-flame { border-color: var(--color-brand-primary-flame); }
+  .border-color-brand-primary-orange { border-color: var(--color-brand-primary-orange); }
+  .border-color-brand-primary-pink { border-color: var(--color-brand-primary-pink); }
+  .border-color-brand-secondary-pink { border-color: var(--color-brand-secondary-pink); }
+  .border-color-flame-100 { border-color: var(--color-flame-100); }
+  .border-color-flame-300 { border-color: var(--color-flame-300); }
+  .border-color-flame-50 { border-color: var(--color-flame-50); }
+  .border-color-flame-500 { border-color: var(--color-flame-500); }
+  .border-color-flame-700 { border-color: var(--color-flame-700); }
+  .border-color-flame-900 { border-color: var(--color-flame-900); }
+  .border-color-gray-0 { border-color: var(--color-gray-0); }
+  .border-color-gray-0-a30 { border-color: var(--color-gray-0-a30); }
+  .border-color-gray-100 { border-color: var(--color-gray-100); }
+  .border-color-gray-100-a30 { border-color: var(--color-gray-100-a30); }
+  .border-color-gray-200 { border-color: var(--color-gray-200); }
+  .border-color-gray-300 { border-color: var(--color-gray-300); }
+  .border-color-gray-300-a40 { border-color: var(--color-gray-300-a40); }
+  .border-color-gray-400 { border-color: var(--color-gray-400); }
+  .border-color-gray-50 { border-color: var(--color-gray-50); }
+  .border-color-gray-50-a10 { border-color: var(--color-gray-50-a10); }
+  .border-color-gray-50-a80 { border-color: var(--color-gray-50-a80); }
+  .border-color-gray-500 { border-color: var(--color-gray-500); }
+  .border-color-gray-600 { border-color: var(--color-gray-600); }
+  .border-color-gray-64 { border-color: var(--color-gray-64); }
+  .border-color-gray-700 { border-color: var(--color-gray-700); }
+  .border-color-gray-800 { border-color: var(--color-gray-800); }
+  .border-color-gray-900 { border-color: var(--color-gray-900); }
+  .border-color-icon-background { border-color: var(--color-icon-background); }
+  .border-color-icon-stroke-400 { border-color: var(--color-icon-stroke-400); }
+  .border-color-orange-100 { border-color: var(--color-orange-100); }
+  .border-color-orange-300 { border-color: var(--color-orange-300); }
+  .border-color-orange-50 { border-color: var(--color-orange-50); }
+  .border-color-orange-500 { border-color: var(--color-orange-500); }
+  .border-color-orange-700 { border-color: var(--color-orange-700); }
+  .border-color-orange-900 { border-color: var(--color-orange-900); }
+  .border-color-pink-100 { border-color: var(--color-pink-100); }
+  .border-color-pink-300 { border-color: var(--color-pink-300); }
+  .border-color-pink-50 { border-color: var(--color-pink-50); }
+  .border-color-pink-500 { border-color: var(--color-pink-500); }
+  .border-color-pink-700 { border-color: var(--color-pink-700); }
+  .border-color-pink-900 { border-color: var(--color-pink-900); }
+  .border-color-stroke-300 { border-color: var(--color-stroke-300); }
+  .border-color-stroke-error { border-color: var(--color-stroke-error); }
+  .border-color-surface-base { border-color: var(--color-surface-base); }
+  .border-color-text-black { border-color: var(--color-text-black); }
+  .border-color-text-caption1 { border-color: var(--color-text-caption1); }
+  .border-color-text-caption2 { border-color: var(--color-text-caption2); }
+  .border-color-text-caption3 { border-color: var(--color-text-caption3); }
+  .border-color-text-disabled { border-color: var(--color-text-disabled); }
+  .border-color-text-highlight { border-color: var(--color-text-highlight); }
+  .border-color-text-white { border-color: var(--color-text-white); }
+  .border-color-toggle-default { border-color: var(--color-toggle-default); }
 
   /* Custom gradient buttons */
   .bg-button-primary {
