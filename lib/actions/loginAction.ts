@@ -1,16 +1,11 @@
 "use server";
 
-import { serverApi } from "@/lib/server-api";
+import { serverClient } from "@/lib/server-api";
 import { isAxiosError } from "axios";
+import { redirect } from "next/navigation";
 
 type LoginState = {
   success: boolean;
-  message: string;
-};
-
-type LoginResponse = {
-  code: string;
-  status: number;
   message: string;
 };
 
@@ -21,11 +16,39 @@ export async function loginAction(
   const email = formData.get("email");
   const password = formData.get("password");
 
+  let redirectUrl = "/";
+
   try {
-    await serverApi.post<LoginResponse>({
-      path: "/api/auth/login",
-      body: { email, password },
-    });
+    const response = await serverClient.post(
+      "/api/auth/login",
+      {
+        email,
+        password,
+      },
+      {
+        maxRedirects: 0,
+        validateStatus: (status) => status < 400,
+      },
+    );
+
+    // 백엔드가 보낸 Location 헤더가 있으면 그 경로로 이동
+    const location = response.headers["location"];
+    console.log(
+      "[loginAction] status:",
+      response.status,
+      "| Location:",
+      location ?? "(없음)",
+    );
+    console.log("[loginAction] response headers:", response.headers);
+    console.log("[loginAction] response data:", response.data);
+    if (location) {
+      try {
+        // 절대 URL이면 pathname만 추출, 상대 경로면 그대로 사용
+        redirectUrl = new URL(location).pathname;
+      } catch {
+        redirectUrl = location;
+      }
+    }
   } catch (error) {
     if (isAxiosError(error)) {
       const status = error.response?.status;
@@ -45,5 +68,5 @@ export async function loginAction(
     };
   }
 
-  return { success: true, message: "로그인 성공" };
+  redirect(redirectUrl);
 }

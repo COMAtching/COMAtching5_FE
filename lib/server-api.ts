@@ -42,9 +42,44 @@ serverClient.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 3. [핵심] 응답 인터셉터: 401 에러 시 토큰 재발급 시도
+// 3. [핵심] 응답 인터셉터: Set-Cookie 포워딩 + 401 에러 시 토큰 재발급 시도
 serverClient.interceptors.response.use(
-  (response) => response,
+  async (response) => {
+    // 백엔드 응답의 Set-Cookie 헤더를 브라우저로 포워딩
+    const setCookieHeader = response.headers["set-cookie"];
+    if (setCookieHeader) {
+      const cookieStore = await cookies();
+      setCookieHeader.forEach((cookieStr) => {
+        const [nameValue, ...attributes] = cookieStr
+          .split(";")
+          .map((s) => s.trim());
+        const eqIdx = nameValue.indexOf("=");
+        const name = nameValue.slice(0, eqIdx);
+        const value = nameValue.slice(eqIdx + 1);
+
+        const cookieOptions: Parameters<typeof cookieStore.set>[2] = {};
+        attributes.forEach((attr) => {
+          const lower = attr.toLowerCase();
+          if (lower === "httponly") cookieOptions.httpOnly = true;
+          else if (lower === "secure") cookieOptions.secure = true;
+          else if (lower.startsWith("path="))
+            cookieOptions.path = attr.split("=")[1];
+          else if (lower.startsWith("max-age="))
+            cookieOptions.maxAge = parseInt(attr.split("=")[1]);
+          else if (lower.startsWith("expires="))
+            cookieOptions.expires = new Date(attr.slice(8));
+          else if (lower.startsWith("samesite="))
+            cookieOptions.sameSite = attr.split("=")[1].toLowerCase() as
+              | "strict"
+              | "lax"
+              | "none";
+        });
+
+        cookieStore.set(name, value, cookieOptions);
+      });
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
@@ -118,7 +153,10 @@ async function request<T>(
   }
 }
 
-// 4. 사용하기 편하게 메서드별 export
+// 4. 인터셉터가 설정된 raw 클라이언트 export (특수 케이스용)
+export { serverClient };
+
+// 5. 사용하기 편하게 메서드별 export
 export const serverApi = {
   // GET 요청은 body가 없으므로 Omit으로 타입 제외
   get: <T>(options: Omit<RequestOptions, "body">) => request<T>("GET", options),
