@@ -6,7 +6,7 @@ type VerificationStepProps = {
   email: string;
   verificationCode: string;
   onVerificationCodeChange: (code: string) => void;
-  onVerify: (code: string, onError: () => void) => void;
+  onVerify: (code: string, onError: (msg?: string) => void) => void;
   onResend: () => void;
   isVerifying?: boolean;
 };
@@ -20,7 +20,7 @@ export const VerificationStep = ({
   isVerifying = false,
 }: VerificationStepProps) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5분 = 300초
-  const [isWrong, setIsWrong] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -40,19 +40,21 @@ export const VerificationStep = ({
 
   const handleVerificationCodeChange = (value: string) => {
     onVerificationCodeChange(value);
-    if (isWrong && value) {
-      setIsWrong(false);
+    if (errorMessage && value) {
+      setErrorMessage("");
     }
   };
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onVerify(verificationCode, () => setIsWrong(true));
+    onVerify(verificationCode, (msg?: string) =>
+      setErrorMessage(msg || "인증번호를 다시 확인해 주세요"),
+    );
   };
 
   const handleResend = () => {
     setTimeLeft(300); // 타이머 리셋
-    setIsWrong(false); // 에러 상태 초기화
+    setErrorMessage(""); // 에러 상태 초기화
     onResend();
   };
 
@@ -96,7 +98,7 @@ export const VerificationStep = ({
               required
               value={verificationCode}
               onChange={(e) => handleVerificationCodeChange(e.target.value)}
-              error={isWrong}
+              error={!!errorMessage}
               maxLength={6}
               inputMode="numeric"
               className="flex-1"
@@ -110,9 +112,9 @@ export const VerificationStep = ({
               재전송
             </Button>
           </div>
-          {isWrong && (
+          {errorMessage && (
             <span className="typo-12-400 text-color-text-highlight">
-              *인증번호를 다시 확인해 주세요
+              *{errorMessage}
             </span>
           )}
         </div>
