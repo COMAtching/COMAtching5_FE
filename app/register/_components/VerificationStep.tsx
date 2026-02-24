@@ -20,6 +20,7 @@ export const VerificationStep = ({
   isVerifying = false,
 }: VerificationStepProps) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5분 = 300초
+  const [resendCooldown, setResendCooldown] = useState(0); // 재전송 쿨다운 (초)
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -31,6 +32,16 @@ export const VerificationStep = ({
 
     return () => clearInterval(timer);
   }, [timeLeft]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+
+    const cooldownTimer = setInterval(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(cooldownTimer);
+  }, [resendCooldown]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -54,6 +65,7 @@ export const VerificationStep = ({
 
   const handleResend = () => {
     setTimeLeft(300); // 타이머 리셋
+    setResendCooldown(180); // 재전송 쿨다운 3분
     setErrorMessage(""); // 에러 상태 초기화
     onResend();
   };
@@ -103,14 +115,20 @@ export const VerificationStep = ({
               inputMode="numeric"
               className="flex-1"
             />
-            <Button
-              type="button"
-              onClick={handleResend}
-              className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-[48px] w-[120px] shrink-0"
-              shadow={false}
-            >
-              재전송
-            </Button>
+            {resendCooldown > 0 ? (
+              <span className="bg-bubble-background-white text-color-text-caption1 typo-18-600 flex h-[48px] w-[120px] shrink-0 items-center justify-center rounded-[16px]">
+                {formatTime(resendCooldown)}
+              </span>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleResend}
+                className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-[48px] w-[120px] shrink-0"
+                shadow={false}
+              >
+                재전송
+              </Button>
+            )}
           </div>
           {errorMessage && (
             <span className="typo-12-400 text-color-text-highlight">
