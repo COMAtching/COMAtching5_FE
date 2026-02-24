@@ -1,8 +1,5 @@
-import React from "react";
 import ScreenOnBoarding from "./_components/ScreenOnBoarding";
 
-const page = () => {
+export default function OnboardingPage() {
   return <ScreenOnBoarding />;
-};
-
-export default page;
+}
