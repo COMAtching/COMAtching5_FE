@@ -115,20 +115,15 @@ export const VerificationStep = ({
               inputMode="numeric"
               className="flex-1"
             />
-            {resendCooldown > 0 ? (
-              <span className="bg-bubble-background-white text-color-text-caption1 typo-18-600 flex h-[48px] w-[120px] shrink-0 items-center justify-center rounded-[16px]">
-                {formatTime(resendCooldown)}
-              </span>
-            ) : (
-              <Button
-                type="button"
-                onClick={handleResend}
-                className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-[48px] w-[120px] shrink-0"
-                shadow={false}
-              >
-                재전송
-              </Button>
-            )}
+            <Button
+              type="button"
+              onClick={handleResend}
+              disabled={resendCooldown > 0}
+              className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-[48px] w-[120px] shrink-0"
+              shadow={false}
+            >
+              {resendCooldown > 0 ? formatTime(resendCooldown) : "재전송"}
+            </Button>
           </div>
           {errorMessage && (
             <span className="typo-12-400 text-color-text-highlight">
