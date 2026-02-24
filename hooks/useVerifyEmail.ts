@@ -26,7 +26,7 @@ const verifyEmail = async (
 export const useVerifyEmail = () => {
   const mutation = useMutation({
     mutationFn: verifyEmail,
-    retry: 1,
+    retry: false,
   });
 
   const verify = (

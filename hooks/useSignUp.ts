@@ -20,6 +20,6 @@ const signUp = async (payload: SignUpRequest): Promise<SignUpResponse> => {
 export const useSignUp = () => {
   return useMutation({
     mutationFn: signUp,
-    retry: 1,
+    retry: false,
   });
 };
