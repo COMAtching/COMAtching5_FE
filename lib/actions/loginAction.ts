@@ -38,7 +38,8 @@ export async function loginAction(
       setCookie.forEach((cookieStr) => {
         // Axios가 준 쿠키 문자열을 파싱합니다 (name=value; Path=/ ...)
         const [nameValue, ...options] = cookieStr.split(";");
-        const [name, value] = nameValue.split("=");
+        const [name, ...nameParts] = nameValue.split("=");
+        const value = nameParts.join("=");
 
         const cookieOptions: {
           path?: string;
@@ -50,7 +51,8 @@ export async function loginAction(
         } = {};
 
         options.forEach((opt) => {
-          const [key, val] = opt.trim().split("=");
+          const [key, ...valueParts] = opt.trim().split("=");
+          const val = valueParts.join("=");
           const k = key.toLowerCase();
           if (k === "path") cookieOptions.path = val;
           if (k === "httponly") cookieOptions.httpOnly = true;

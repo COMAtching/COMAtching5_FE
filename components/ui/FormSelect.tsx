@@ -58,7 +58,7 @@ const FormSelect = ({
         className={cn(
           SELECT_CLASSNAME,
           error && "border-color-flame-500",
-          !rest.value && "text-[#B3B3B3]", // placeholder 색상 처리
+          !rest.value && "text-color-text-caption2", // placeholder 색상 처리
           className,
         )}
         style={{ ...SELECT_CONTAINER_STYLE, ...style }}

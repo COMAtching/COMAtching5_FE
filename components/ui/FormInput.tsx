@@ -18,7 +18,7 @@ const INPUT_STYLE = {
     "linear-gradient(180deg, rgba(248, 248, 248, 0.03) 0%, rgba(248, 248, 248, 0.24) 100%)",
 };
 const INPUT_CLASSNAME =
-  "all:unset box-border w-full border-b border-gray-300 px-2 py-[14.5px] leading-[19px] typo-16-500 placeholder:text-[#B3B3B3] text-color-gray-900 outline-none";
+  "all:unset box-border w-full border-b border-gray-300 px-2 py-[14.5px] leading-[19px] typo-16-500 placeholder:text-color-text-caption2 text-color-gray-900 outline-none";
 
 // 안전한 속성 화이트리스트 (XSS 방지)
 const SAFE_INPUT_ATTRIBUTES = [

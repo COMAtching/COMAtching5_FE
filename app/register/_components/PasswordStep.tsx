@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+﻿import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import {
   validatePasswordLength,
@@ -22,6 +22,7 @@ export const PasswordStep = ({
 
   const isLengthValid = validatePasswordLength(password);
   const isPatternValid = validatePasswordPattern(password);
+  const isPasswordValid = isLengthValid && isPatternValid;
 
   return (
     <section className="mt-10 flex w-full flex-1 flex-col items-start gap-8">
@@ -93,7 +94,7 @@ export const PasswordStep = ({
                   : "stroke-color-text-caption2"
               }
             />
-            8자 이상
+            8자 이상 20자 이하
           </span>
           <span
             className={`flex items-center gap-1 ${password && isPatternValid ? "text-color-text-highlight" : "text-color-text-caption2"}`}
@@ -113,7 +114,7 @@ export const PasswordStep = ({
         </div>
 
         <div className="mt-auto">
-          <Button shadow={true} type="submit">
+          <Button shadow={true} type="submit" disabled={!isPasswordValid}>
             완료
           </Button>
         </div>
