@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+﻿import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import {
   validatePasswordLength,
@@ -22,6 +22,7 @@ export const PasswordStep = ({
 
   const isLengthValid = validatePasswordLength(password);
   const isPatternValid = validatePasswordPattern(password);
+  const isPasswordValid = isLengthValid && isPatternValid;
 
   return (
     <section className="mt-10 flex w-full flex-1 flex-col items-start gap-8">
@@ -79,23 +80,41 @@ export const PasswordStep = ({
             )}
           </div>
         </div>
-        <div className="typo-14-400 flex gap-[13px]">
+        <div className="typo-14-400 flex flex-col gap-[8px]">
           <span
-            className={`flex items-center gap-1 ${!password || isLengthValid ? "text-color-text-caption2" : "text-color-text-highlight"}`}
+            className={`flex items-center gap-1 ${password && isLengthValid ? "text-color-text-highlight" : "text-color-text-caption2"}`}
           >
-            <Check width={14} height={14} strokeWidth={2.5} />
-            8~20자 이내
+            <Check
+              width={14}
+              height={14}
+              strokeWidth={2.5}
+              className={
+                password && isLengthValid
+                  ? "stroke-color-text-highlight"
+                  : "stroke-color-text-caption2"
+              }
+            />
+            8자 이상 20자 이하
           </span>
           <span
-            className={`flex items-center gap-1 ${!password || isPatternValid ? "text-color-text-caption2" : "text-color-text-highlight"}`}
+            className={`flex items-center gap-1 ${password && isPatternValid ? "text-color-text-highlight" : "text-color-text-caption2"}`}
           >
-            <Check width={14} height={14} strokeWidth={2.5} />
-            영문 대소문자, 숫자 포함
+            <Check
+              width={14}
+              height={14}
+              strokeWidth={2.5}
+              className={
+                password && isPatternValid
+                  ? "stroke-color-text-highlight"
+                  : "stroke-color-text-caption2"
+              }
+            />
+            영문, 숫자, 특수문자(@$!%*#?&) 포함
           </span>
         </div>
 
         <div className="mt-auto">
-          <Button shadow={true} type="submit">
+          <Button shadow={true} type="submit" disabled={!isPasswordValid}>
             완료
           </Button>
         </div>

@@ -3,8 +3,14 @@ export const validateEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export const validatePasswordLength = (password: string): boolean =>
-  password.length >= 8 && password.length <= 20;
+export const validatePasswordLength = (
+  password: string,
+  minLength = 8,
+  maxLength = 20,
+): boolean => password.length >= minLength && password.length <= maxLength;
 
-export const validatePasswordPattern = (password: string): boolean =>
-  /[a-zA-Z]/.test(password) && /[0-9]/.test(password);
+export const validatePasswordPattern = (password: string): boolean => {
+  const passwordRegex =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]+$/;
+  return passwordRegex.test(password);
+};

@@ -1,18 +1,23 @@
 "use client";
 import Button from "@/components/ui/Button";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const StartOnBoarding = () => {
+  const router = useRouter();
   const [showFirst, setShowFirst] = useState(false);
   const [showSecond, setShowSecond] = useState(false);
+  const [showThird, setShowThird] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
     const t2 = setTimeout(() => setShowSecond(true), 2100);
+    const t3 = setTimeout(() => setShowThird(true), 4100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
     };
   }, []);
 
@@ -43,12 +48,24 @@ const StartOnBoarding = () => {
             opacity: showSecond ? 1 : 0,
             transition: "opacity 0.7s ease",
           }}
-          onTransitionEnd={() => setButtonDisabled(false)}
         >
           원활한 매칭을 위해 여러분의 정보가 필요해요!
         </span>
+        <span
+          style={{
+            opacity: showThird ? 1 : 0,
+            transition: "opacity 0.7s ease",
+          }}
+          onTransitionEnd={() => setButtonDisabled(false)}
+        >
+          다음 설문을 빠르게 진행해 볼까요?
+        </span>
       </div>
-      <Button disabled={buttonDisabled} shadow={true}>
+      <Button
+        disabled={buttonDisabled}
+        shadow={true}
+        onClick={() => router.push("/profile-builder")}
+      >
         네, 좋아요!
       </Button>
     </section>

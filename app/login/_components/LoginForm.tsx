@@ -49,7 +49,7 @@ export const LoginForm = () => {
           />
           {!state.success && state.message && (
             <span className="typo-12-400 text-color-flame-700 absolute bottom-[-25px] left-0">
-              * 이메일 혹은 비밀번호가 틀립니다
+              * {state.message}
             </span>
           )}
         </div>
