@@ -3,12 +3,15 @@ import { BackButton } from "@/components/ui/BackButton";
 import { useSendEmail } from "@/hooks/useSendEmail";
 import { useSignUp } from "@/hooks/useSignUp";
 import { useVerifyEmail } from "@/hooks/useVerifyEmail";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { EmailStep } from "./EmailStep";
 import { VerificationStep } from "./VerificationStep";
 import { PasswordStep } from "./PasswordStep";
 
 export const ScreenRegister = () => {
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -47,7 +50,14 @@ export const ScreenRegister = () => {
             alert("회원가입에 실패했습니다. 다시 시도해주세요.");
           }
         },
-        onError: () => alert("회원가입에 실패했습니다. 다시 시도해주세요."),
+        onError: (error) => {
+          const message =
+            axios.isAxiosError(error) && error.response?.data?.message
+              ? error.response.data.message
+              : "회원가입에 실패했습니다. 다시 시도해주세요.";
+          alert(message);
+          router.replace("/login");
+        },
       },
     );
   };
