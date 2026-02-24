@@ -4,6 +4,8 @@ import "./globals.css";
 import Blur from "@/components/common/Blur";
 import { QueryProvider } from "@/providers/query-provider";
 import { ProfileProvider } from "@/providers/profile-provider";
+// import { ServiceStatusProvider } from "@/providers/service-status-provider";
+// import { getInitialMaintenanceStatus } from "@/lib/status";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -53,6 +55,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const initialMaintenanceMode = await getInitialMaintenanceStatus();
+
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
