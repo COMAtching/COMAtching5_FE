@@ -47,14 +47,14 @@ export default function Step4ContactFrequency({
           </button>
           <button
             type="button"
-            onClick={() => handleSelect("많음")}
+            onClick={() => handleSelect("적음")}
             className={`typo-16-600 flex-1 rounded-full py-3 transition-colors ${
-              selected === "많음"
+              selected === "적음"
                 ? "bg-[#FF69B4] text-white"
                 : "bg-gray-100 text-gray-400"
             }`}
           >
-            많음
+            적음
           </button>
         </div>
       </div>

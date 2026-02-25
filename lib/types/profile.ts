@@ -19,7 +19,7 @@ export type MBTI =
   | "ENFJ"
   | "ENTJ";
 export type SocialType = "INSTAGRAM" | "FACEBOOK" | "TWITTER" | "KAKAO";
-export type ContactFrequency = "FREQUENT" | "MODERATE" | "RARE";
+export type ContactFrequency = "FREQUENT" | "NORMAL" | "RARE";
 
 export interface ProfileData {
   // 기본 정보
