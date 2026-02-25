@@ -62,7 +62,7 @@ export default function Step1Basic({
           name="university"
           options={universityOptions}
           placeholder="선택"
-          defaultValue="가톨릭대학교"
+          defaultValue=""
           onChange={(e) => onUniversityChange(e.target.value)}
           error={!!errors?.university}
         />

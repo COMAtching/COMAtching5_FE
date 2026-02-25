@@ -35,9 +35,7 @@ export const ScreenProfileBuilder = () => {
     initialState,
   );
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedUniversity, setSelectedUniversity] = useState<string>(
-    profile.university || "가톨릭대학교",
-  );
+  const [selectedUniversity, setSelectedUniversity] = useState<string>("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedMajor, setSelectedMajor] = useState<string>("");
   const [selectedGender, setSelectedGender] = useState<string>("");
@@ -84,7 +82,7 @@ export const ScreenProfileBuilder = () => {
           handleNext();
         }
       }}
-      className="relative flex min-h-screen flex-col bg-white px-4 pb-32"
+      className="relative flex min-h-screen flex-col px-4 pb-32"
     >
       {/* 헤더 영역 */}
       <ProgressStepBar currentStep={1} totalSteps={3} />
