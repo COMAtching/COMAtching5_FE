@@ -1,30 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import ProfileButton from "./ProfileButton";
 
 interface Step3MBTIProps {
   onMBTISelect: (mbti: string) => void;
   defaultValue?: string;
-}
-
-interface MBTIButtonProps {
-  value: string;
-  selected: boolean;
-  onClick: () => void;
-}
-
-function MBTIButton({ value, selected, onClick }: MBTIButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`typo-16-600 flex-1 rounded-full py-3 transition-colors ${
-        selected ? "bg-[#FF69B4] text-white" : "bg-gray-100 text-gray-400"
-      }`}
-    >
-      {value}
-    </button>
-  );
 }
 
 export default function Step3MBTI({
@@ -42,7 +23,6 @@ export default function Step3MBTI({
     if (category === "tf") setTf(value);
     if (category === "jp") setJp(value);
 
-    // MBTI 조합 완성 시 콜백 호출
     const newMBTI =
       (category === "ei" ? value : ei) +
       (category === "sn" ? value : sn) +
@@ -59,60 +39,62 @@ export default function Step3MBTI({
       <div className="flex flex-col gap-2">
         <label className="typo-16-600 text-black">MBTI</label>
 
-        {/* E/I */}
-        <div className="flex gap-3">
-          <MBTIButton
-            value="E"
-            selected={ei === "E"}
-            onClick={() => handleSelect("ei", "E")}
-          />
-          <MBTIButton
-            value="I"
-            selected={ei === "I"}
-            onClick={() => handleSelect("ei", "I")}
-          />
-        </div>
+        <div className="flex flex-col gap-2">
+          {/* 상단 행: E S F P */}
+          <div className="flex gap-1.5">
+            <ProfileButton
+              selected={ei === "E"}
+              onClick={() => handleSelect("ei", "E")}
+            >
+              E
+            </ProfileButton>
+            <ProfileButton
+              selected={sn === "S"}
+              onClick={() => handleSelect("sn", "S")}
+            >
+              S
+            </ProfileButton>
+            <ProfileButton
+              selected={tf === "F"}
+              onClick={() => handleSelect("tf", "F")}
+            >
+              F
+            </ProfileButton>
+            <ProfileButton
+              selected={jp === "P"}
+              onClick={() => handleSelect("jp", "P")}
+            >
+              P
+            </ProfileButton>
+          </div>
 
-        {/* S/N */}
-        <div className="flex gap-3">
-          <MBTIButton
-            value="S"
-            selected={sn === "S"}
-            onClick={() => handleSelect("sn", "S")}
-          />
-          <MBTIButton
-            value="N"
-            selected={sn === "N"}
-            onClick={() => handleSelect("sn", "N")}
-          />
-        </div>
-
-        {/* T/F */}
-        <div className="flex gap-3">
-          <MBTIButton
-            value="T"
-            selected={tf === "T"}
-            onClick={() => handleSelect("tf", "T")}
-          />
-          <MBTIButton
-            value="F"
-            selected={tf === "F"}
-            onClick={() => handleSelect("tf", "F")}
-          />
-        </div>
-
-        {/* J/P */}
-        <div className="flex gap-3">
-          <MBTIButton
-            value="J"
-            selected={jp === "J"}
-            onClick={() => handleSelect("jp", "J")}
-          />
-          <MBTIButton
-            value="P"
-            selected={jp === "P"}
-            onClick={() => handleSelect("jp", "P")}
-          />
+          {/* 하단 행: I N T J */}
+          <div className="flex gap-1.5">
+            <ProfileButton
+              selected={ei === "I"}
+              onClick={() => handleSelect("ei", "I")}
+            >
+              I
+            </ProfileButton>
+            <ProfileButton
+              selected={sn === "N"}
+              onClick={() => handleSelect("sn", "N")}
+            >
+              N
+            </ProfileButton>
+            <ProfileButton
+              selected={tf === "T"}
+              onClick={() => handleSelect("tf", "T")}
+            >
+              T
+            </ProfileButton>
+            <ProfileButton
+              selected={jp === "J"}
+              onClick={() => handleSelect("jp", "J")}
+            >
+              J
+            </ProfileButton>
+          </div>
         </div>
       </div>
       <input type="hidden" name="mbti" value={ei + sn + tf + jp} />

@@ -36,10 +36,12 @@ export interface ProfileData {
 
   // 학교 정보
   university?: string;
+  department?: string;
   major?: string;
 
   // 기타
   contactFrequency?: ContactFrequency;
+  hobbies?: string[];
 }
 
 // 백엔드 전송용 타입 (필수 필드)
@@ -55,4 +57,5 @@ export interface ProfileSubmitData {
   university: string;
   major: string;
   contactFrequency: ContactFrequency;
+  hobbies: string[];
 }

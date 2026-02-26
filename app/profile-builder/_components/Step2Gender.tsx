@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import ProfileButton from "./ProfileButton";
+
+// GenderButton 컴포넌트 제거
 
 interface Step2GenderProps {
   onGenderSelect: (gender: string) => void;
@@ -22,29 +25,19 @@ export default function Step2Gender({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <label className="typo-16-600 text-black">성별</label>
-        <div className="flex gap-3">
-          <button
-            type="button"
+        <div className="flex gap-1.5">
+          <ProfileButton
             onClick={() => handleSelect("남자")}
-            className={`typo-16-600 flex-1 rounded-full py-3 transition-colors ${
-              selected === "남자"
-                ? "bg-[#FF69B4] text-white"
-                : "bg-gray-100 text-gray-400"
-            }`}
+            selected={selected === "남자"}
           >
             남자
-          </button>
-          <button
-            type="button"
+          </ProfileButton>
+          <ProfileButton
             onClick={() => handleSelect("여자")}
-            className={`typo-16-600 flex-1 rounded-full py-3 transition-colors ${
-              selected === "여자"
-                ? "bg-[#FF69B4] text-white"
-                : "bg-gray-100 text-gray-400"
-            }`}
+            selected={selected === "여자"}
           >
             여자
-          </button>
+          </ProfileButton>
         </div>
       </div>
       <input type="hidden" name="gender" value={selected} />

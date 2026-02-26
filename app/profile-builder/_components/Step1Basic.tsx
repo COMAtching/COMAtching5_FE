@@ -17,12 +17,6 @@ interface Step1BasicProps {
   onUniversityChange: (value: string) => void;
   onDepartmentChange: (value: string) => void;
   onMajorChange: (value: string) => void;
-  errors?: {
-    birthYear?: boolean;
-    university?: boolean;
-    department?: boolean;
-    major?: boolean;
-  };
 }
 
 export default function Step1Basic({
@@ -38,7 +32,6 @@ export default function Step1Basic({
   onUniversityChange,
   onDepartmentChange,
   onMajorChange,
-  errors,
 }: Step1BasicProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -55,7 +48,6 @@ export default function Step1Basic({
           placeholder="태어난 년도"
           value={selectedBirthYear}
           onChange={(e) => onBirthYearChange(e.target.value)}
-          error={!!errors?.birthYear}
         />
       </div>
 
@@ -72,7 +64,6 @@ export default function Step1Basic({
           placeholder="선택"
           value={selectedUniversity}
           onChange={(e) => onUniversityChange(e.target.value)}
-          error={!!errors?.university}
         />
       </div>
 
@@ -91,7 +82,6 @@ export default function Step1Basic({
             value={selectedDepartment}
             onChange={(e) => onDepartmentChange(e.target.value)}
             disabled={!selectedUniversity}
-            error={!!errors?.department}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -107,7 +97,6 @@ export default function Step1Basic({
             value={selectedMajor}
             onChange={(e) => onMajorChange(e.target.value)}
             disabled={!selectedDepartment}
-            error={!!errors?.major}
           />
         </div>
       </div>

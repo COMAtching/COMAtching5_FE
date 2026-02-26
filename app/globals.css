@@ -124,3 +124,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================
+   Shared bg-pink-conic utility
+   ============================ */
+
+.bg-pink-conic {
+  background:
+    conic-gradient(
+      from -36.07deg at 108.5px -49.1px,
+      #e83abc -66.6deg,
+      rgba(255, 119, 94, 0.1) 0.04deg,
+      rgba(255, 77, 97, 0.6) 169.2deg,
+      #e83abc 192.6deg,
+      rgba(255, 98, 95, 0.344627) 208.31deg,
+      #e83abc 293.4deg,
+      rgba(255, 119, 94, 0.1) 360.04deg
+    ),
+    rgba(255, 255, 255, 0.2);
+}
