@@ -9,9 +9,11 @@ interface Step1BasicProps {
   universityOptions: SelectOption[];
   departmentOptions: SelectOption[];
   majorOptions: SelectOption[];
+  selectedBirthYear: string;
   selectedUniversity: string;
   selectedDepartment: string;
   selectedMajor: string;
+  onBirthYearChange: (value: string) => void;
   onUniversityChange: (value: string) => void;
   onDepartmentChange: (value: string) => void;
   onMajorChange: (value: string) => void;
@@ -28,9 +30,11 @@ export default function Step1Basic({
   universityOptions,
   departmentOptions,
   majorOptions,
+  selectedBirthYear,
   selectedUniversity,
   selectedDepartment,
   selectedMajor,
+  onBirthYearChange,
   onUniversityChange,
   onDepartmentChange,
   onMajorChange,
@@ -44,10 +48,13 @@ export default function Step1Basic({
           나이
         </label>
         <FormSelect
+          key="select-birthYear"
           id="birthYear"
           name="birthYear"
           options={yearOptions}
           placeholder="태어난 년도"
+          value={selectedBirthYear}
+          onChange={(e) => onBirthYearChange(e.target.value)}
           error={!!errors?.birthYear}
         />
       </div>
@@ -58,11 +65,12 @@ export default function Step1Basic({
           학교
         </label>
         <FormSelect
+          key="select-university"
           id="university"
           name="university"
           options={universityOptions}
           placeholder="선택"
-          defaultValue=""
+          value={selectedUniversity}
           onChange={(e) => onUniversityChange(e.target.value)}
           error={!!errors?.university}
         />
@@ -75,6 +83,7 @@ export default function Step1Basic({
             학과
           </label>
           <FormSelect
+            key="select-department"
             id="department"
             name="department"
             options={departmentOptions}
@@ -90,6 +99,7 @@ export default function Step1Basic({
             전공
           </label>
           <FormSelect
+            key="select-major"
             id="major"
             name="major"
             options={majorOptions}

@@ -35,12 +35,19 @@ export const ScreenProfileBuilder = () => {
     initialState,
   );
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedBirthYear, setSelectedBirthYear] = useState<string>("");
   const [selectedUniversity, setSelectedUniversity] = useState<string>("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedMajor, setSelectedMajor] = useState<string>("");
   const [selectedGender, setSelectedGender] = useState<string>("");
   const [selectedMBTI, setSelectedMBTI] = useState<string>("");
   const [selectedFrequency, setSelectedFrequency] = useState<string>("");
+
+  console.log(
+    `[ScreenProfileBuilder Render] Step: ${currentStep}, ` +
+      `Birth: ${selectedBirthYear}, Univ: ${selectedUniversity}, ` +
+      `Dept: ${selectedDepartment}, Major: ${selectedMajor}`,
+  );
 
   // 성공 시 Context 업데이트 및 다음 페이지로 이동
   useEffect(() => {
@@ -75,7 +82,7 @@ export const ScreenProfileBuilder = () => {
 
   return (
     <form
-      action={currentStep === 4 ? formAction : undefined}
+      action={formAction}
       onSubmit={(e) => {
         if (currentStep < 4) {
           e.preventDefault();
@@ -129,9 +136,11 @@ export const ScreenProfileBuilder = () => {
           universityOptions={universityOptions}
           departmentOptions={departmentOptions}
           majorOptions={majorOptions}
+          selectedBirthYear={selectedBirthYear}
           selectedUniversity={selectedUniversity}
           selectedDepartment={selectedDepartment}
           selectedMajor={selectedMajor}
+          onBirthYearChange={setSelectedBirthYear}
           onUniversityChange={setSelectedUniversity}
           onDepartmentChange={(value) => {
             setSelectedDepartment(value);
