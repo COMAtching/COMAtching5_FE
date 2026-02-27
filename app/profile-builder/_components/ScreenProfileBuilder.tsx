@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useProfile } from "@/providers/profile-provider";
@@ -39,14 +39,75 @@ export const ScreenProfileBuilder = () => {
   const router = useRouter();
   const { profile, updateProfile, isReady } = useProfile();
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedBirthYear, setSelectedBirthYear] = useState<string>("");
-  const [selectedUniversity, setSelectedUniversity] = useState<string>("");
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-  const [selectedMajor, setSelectedMajor] = useState<string>("");
-  const [selectedGender, setSelectedGender] = useState<string>("");
-  const [selectedMBTI, setSelectedMBTI] = useState<string>("");
-  const [selectedFrequency, setSelectedFrequency] = useState<string>("");
+  // Derive initial values from profile or localStorage synchronously
+  const getInitialValues = () => {
+    if (profile) {
+      return {
+        birthYear: profile.birthDate ? profile.birthDate.split("-")[0] : "",
+        university: profile.university || "",
+        department: profile.department || "",
+        major: profile.major || "",
+        gender:
+          Object.keys(genderMap).find(
+            (key) => genderMap[key] === profile.gender,
+          ) || "",
+        mbti: profile.mbti || "",
+        frequency:
+          Object.keys(contactFrequencyMap).find(
+            (key) => contactFrequencyMap[key] === profile.contactFrequency,
+          ) || "",
+      };
+    }
+    try {
+      const saved = localStorage.getItem("profileBuilder");
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore
+    }
+    return {};
+  };
+
+  const initialValues = getInitialValues();
+  const allFilled = Boolean(
+    initialValues.birthYear &&
+    initialValues.university &&
+    initialValues.department &&
+    initialValues.major &&
+    initialValues.gender &&
+    initialValues.mbti &&
+    initialValues.frequency,
+  );
+
+  const [currentStep, setCurrentStep] = useState(allFilled ? 4 : 1);
+  const [selectedBirthYear, setSelectedBirthYear] = useState<string>(
+    initialValues.birthYear || "",
+  );
+  const [selectedUniversity, setSelectedUniversity] = useState<string>(
+    initialValues.university || "",
+  );
+  const [selectedDepartment, setSelectedDepartment] = useState<string>(
+    initialValues.department || "",
+  );
+  const [selectedMajor, setSelectedMajor] = useState<string>(
+    initialValues.major || "",
+  );
+  const [selectedGender, setSelectedGender] = useState<string>(
+    initialValues.gender || "",
+  );
+  const [selectedMBTI, setSelectedMBTI] = useState<string>(
+    initialValues.mbti || "",
+  );
+  const [selectedFrequency, setSelectedFrequency] = useState<string>(
+    initialValues.frequency || "",
+  );
+
+  // isReady ref — kept to avoid re-running on profile change during session
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    if (!isReady || initializedRef.current) return;
+    initializedRef.current = true;
+    // Values are already set via lazy init above; nothing extra needed here
+  }, [isReady]);
 
   const yearOptions = getYearOptions();
   const universityOptions = getUniversityOptions(universities);
@@ -102,46 +163,48 @@ export const ScreenProfileBuilder = () => {
 
       {/* 폼 영역 */}
       <div className="flex flex-col gap-6">
-        {currentStep === 1 && (
-          <Step1Basic
-            yearOptions={yearOptions}
-            universityOptions={universityOptions}
-            departmentOptions={departmentOptions}
-            majorOptions={majorOptions}
-            selectedBirthYear={selectedBirthYear}
-            selectedUniversity={selectedUniversity}
-            selectedDepartment={selectedDepartment}
-            selectedMajor={selectedMajor}
-            onBirthYearChange={setSelectedBirthYear}
-            onUniversityChange={setSelectedUniversity}
-            onDepartmentChange={(value) => {
-              setSelectedDepartment(value);
-              setSelectedMajor("");
-            }}
-            onMajorChange={setSelectedMajor}
+        {/* Step 4: Contact Frequency */}
+        {currentStep >= 4 && (
+          <Step4ContactFrequency
+            onFrequencySelect={setSelectedFrequency}
+            defaultValue={selectedFrequency}
           />
         )}
 
-        {currentStep === 2 && (
-          <Step2Gender
-            onGenderSelect={setSelectedGender}
-            defaultValue={selectedGender}
-          />
-        )}
-
-        {currentStep === 3 && (
+        {/* Step 3: MBTI */}
+        {currentStep >= 3 && (
           <Step3MBTI
             onMBTISelect={setSelectedMBTI}
             defaultValue={selectedMBTI}
           />
         )}
 
-        {currentStep === 4 && (
-          <Step4ContactFrequency
-            onFrequencySelect={setSelectedFrequency}
-            defaultValue={selectedFrequency}
+        {/* Step 2: Gender */}
+        {currentStep >= 2 && (
+          <Step2Gender
+            onGenderSelect={setSelectedGender}
+            defaultValue={selectedGender}
           />
         )}
+
+        {/* Step 1: Basic */}
+        <Step1Basic
+          yearOptions={yearOptions}
+          universityOptions={universityOptions}
+          departmentOptions={departmentOptions}
+          majorOptions={majorOptions}
+          selectedBirthYear={selectedBirthYear}
+          selectedUniversity={selectedUniversity}
+          selectedDepartment={selectedDepartment}
+          selectedMajor={selectedMajor}
+          onBirthYearChange={setSelectedBirthYear}
+          onUniversityChange={setSelectedUniversity}
+          onDepartmentChange={(value) => {
+            setSelectedDepartment(value);
+            setSelectedMajor("");
+          }}
+          onMajorChange={setSelectedMajor}
+        />
       </div>
 
       {/* 하단 고정 버튼 */}
