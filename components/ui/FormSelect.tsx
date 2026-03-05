@@ -69,15 +69,10 @@ const FormSelect = ({
   const currentValue = isControlled ? value : internalValue;
 
   const handleSelect = (selectedValue: string) => {
-    // 닫기
     setIsOpen(false);
-
-    // 내부 상태 업데이트
     setInternalValue(selectedValue);
 
-    // onChange(faked event)
     if (onChange) {
-      // Create a fake event object to match the signature of a typical input onChange
       const event = {
         target: { name, value: selectedValue },
       } as React.ChangeEvent<HTMLInputElement>;
@@ -133,10 +128,13 @@ const FormSelect = ({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={`${id}-listbox`}
         className={cn(
           SELECT_CLASSNAME,
           error && "border-color-flame-700",
-          isPlaceholder && "text-color-text-caption2", // placeholder 색상 처리
+          isPlaceholder && "text-color-text-caption2",
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -159,12 +157,19 @@ const FormSelect = ({
 
       {/* 드롭다운 메뉴 영역 */}
       {isOpen && !disabled && (
-        <div className="custom-scrollbar animate-in fade-in slide-in-from-top-2 absolute top-[calc(100%+4px)] left-0 z-[100] flex max-h-[300px] w-full flex-col overflow-y-auto rounded-xl border border-gray-100 bg-white py-2 shadow-[0px_4px_16px_rgba(0,0,0,0.1)] duration-200">
+        <div
+          id={`${id}-listbox`}
+          role="listbox"
+          aria-label={placeholder}
+          className="custom-scrollbar animate-in fade-in slide-in-from-top-2 absolute top-[calc(100%+4px)] left-0 z-[100] flex max-h-[300px] w-full flex-col overflow-y-auto rounded-xl border border-gray-100 bg-white py-2 shadow-[0px_4px_16px_rgba(0,0,0,0.1)] duration-200"
+        >
           {options.map((item, index) => {
             if (isOptionGroup(item)) {
               return (
                 <div
                   key={`${item.label}-${index}`}
+                  role="group"
+                  aria-label={item.label}
                   className="mb-1 flex flex-col last:mb-0"
                 >
                   <div className="typo-12-600 text-color-text-caption1 sticky top-0 z-10 bg-gray-50/50 px-4 py-2 backdrop-blur-sm">
@@ -175,6 +180,8 @@ const FormSelect = ({
                       <button
                         key={opt.value}
                         type="button"
+                        role="option"
+                        aria-selected={currentValue === opt.value}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelect(opt.value);
@@ -198,6 +205,8 @@ const FormSelect = ({
               <button
                 key={item.value}
                 type="button"
+                role="option"
+                aria-selected={currentValue === item.value}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSelect(item.value);
