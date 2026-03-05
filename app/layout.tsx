@@ -3,8 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
 import { QueryProvider } from "@/providers/query-provider";
-import { ServiceStatusProvider } from "@/providers/service-status-provider";
-import { getInitialMaintenanceStatus } from "@/lib/status";
+import { ProfileProvider } from "@/providers/profile-provider";
+// import { ServiceStatusProvider } from "@/providers/service-status-provider";
+// import { getInitialMaintenanceStatus } from "@/lib/status";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -54,7 +55,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialMaintenanceMode = await getInitialMaintenanceStatus();
+  // const initialMaintenanceMode = await getInitialMaintenanceStatus();
 
   return (
     <html lang="ko" className={pretendard.variable}>
@@ -62,14 +63,16 @@ export default async function RootLayout({
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
         <QueryProvider>
-          {/* <ServiceStatusProvider */}
-          {/* initialMaintenanceMode={initialMaintenanceMode} */}
-          {/* > */}
-          <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
-            <Blur />
-            {children}
-          </div>
-          {/* </ServiceStatusProvider> */}
+          <ProfileProvider>
+            {/* <ServiceStatusProvider */}
+            {/* initialMaintenanceMode={initialMaintenanceMode} */}
+            {/* > */}
+            <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+              <Blur />
+              {children}
+            </div>
+            {/* </ServiceStatusProvider> */}
+          </ProfileProvider>
         </QueryProvider>
       </body>
     </html>

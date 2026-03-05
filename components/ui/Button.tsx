@@ -60,10 +60,11 @@ export default function Button({
       style={{
         ...(fixed && {
           bottom: getBottomValue(),
-          left: `${sideGap}px`,
-          right: `${sideGap}px`,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: `calc(100% - ${sideGap * 2}px)`,
+          maxWidth: `${430 - sideGap * 2}px`,
         }),
-        // bg-button-primary일 때 border 자동 추가
         ...(isPrimaryButton &&
           !disabled && {
             border: "0.8px solid rgba(255, 255, 255, 0.3)",
