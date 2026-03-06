@@ -145,7 +145,10 @@ const ScreenHobbySelect = () => {
                   나만의 관심사를 추가해 보세요.
                 </p>
               </div>
-              <DrawerClose className="shrink-0 rounded-sm opacity-70 transition-opacity hover:opacity-100">
+              <DrawerClose
+                aria-label="닫기"
+                className="shrink-0 rounded-sm opacity-70 transition-opacity hover:opacity-100"
+              >
                 <X className="h-5 w-5" />
               </DrawerClose>
             </DrawerHeader>
