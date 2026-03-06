@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/ui/Button";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -58,14 +59,15 @@ const StartExtraInfo = () => {
       >
         네, 좋아요!
       </Button>
-      <Button
-        disabled={buttonDisabled}
-        shadow={false}
-        className="typo-14-500 mt-7 border-none bg-transparent text-gray-500"
-        onClick={() => router.push("/profile-image")}
-      >
-        다음에 할게요
-      </Button>
+      <Link href="/profile-image">
+        <Button
+          disabled={buttonDisabled}
+          shadow={false}
+          className="typo-14-500 mt-7 border-none bg-transparent text-gray-500"
+        >
+          다음에 할게요
+        </Button>
+      </Link>
     </section>
   );
 };

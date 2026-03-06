@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
@@ -170,17 +171,18 @@ const ScreenExtraInfoDetail = () => {
       >
         다음으로
       </Button>
-      <Button
-        type="button"
-        fixed
-        bottom={40}
-        shadow={false}
-        safeArea
-        className="typo-14-500 border-none bg-transparent text-gray-500"
-        // TODO: onClick 핸들러 필요시 추가
-      >
-        다음에 할게요
-      </Button>
+      <Link href="/profile-image">
+        <Button
+          type="button"
+          fixed
+          bottom={40}
+          shadow={false}
+          safeArea
+          className="typo-14-500 border-none bg-transparent text-gray-500"
+        >
+          다음에 할게요
+        </Button>
+      </Link>
     </main>
   );
 };
