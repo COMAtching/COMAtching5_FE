@@ -2,6 +2,7 @@
 import Button from "@/components/ui/Button";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const StartExtraInfo = () => {
   const router = useRouter();
@@ -25,26 +26,26 @@ const StartExtraInfo = () => {
     <section className="flex w-full flex-col items-center px-[15px]">
       <div className="typo-18-600 mt-[18.1vh] mb-[44.2vh] flex flex-col items-center gap-2 leading-2 text-gray-800">
         <span
-          style={{
-            opacity: showFirst ? 1 : 0,
-            transition: "opacity 0.7s ease",
-          }}
+          className={cn(
+            "transition-opacity duration-700 ease-in-out",
+            showFirst ? "opacity-100" : "opacity-0",
+          )}
         >
           거의 다 왔어요!
         </span>
         <span
-          style={{
-            opacity: showSecond ? 1 : 0,
-            transition: "opacity 0.7s ease",
-          }}
+          className={cn(
+            "transition-opacity duration-700 ease-in-out",
+            showSecond ? "opacity-100" : "opacity-0",
+          )}
         >
           추가 정보를 적으면 매칭 확률이 올라가요!
         </span>
         <span
-          style={{
-            opacity: showThird ? 1 : 0,
-            transition: "opacity 0.7s ease",
-          }}
+          className={cn(
+            "transition-opacity duration-700 ease-in-out",
+            showThird ? "opacity-100" : "opacity-0",
+          )}
           onTransitionEnd={() => setButtonDisabled(false)}
         >
           물론, 나중에 수정할 수 있어요.

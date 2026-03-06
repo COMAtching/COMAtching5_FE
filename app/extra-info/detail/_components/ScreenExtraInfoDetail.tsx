@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
+import { cn } from "@/lib/utils";
 
 const ScreenExtraInfoDetail = () => {
   const [contactType, setContactType] = useState<"instagram" | "kakao">(
@@ -41,7 +42,10 @@ const ScreenExtraInfoDetail = () => {
       : contactId.trim().length > 0;
 
   const isValid =
-    advantages.length === 5 && isContactValid && favoriteSong.trim().length > 0;
+    advantages.length >= 1 &&
+    advantages.length <= 5 &&
+    isContactValid &&
+    favoriteSong.trim().length > 0;
 
   return (
     <main className="relative flex min-h-svh flex-col overflow-x-hidden px-4 pb-[120px]">
@@ -96,17 +100,19 @@ const ScreenExtraInfoDetail = () => {
               <button
                 key={opt.key}
                 type="button"
-                className={`flex h-[48px] min-w-0 flex-1 flex-col items-center justify-center rounded-[16px] border px-0 transition-colors ${contactType === opt.key ? "border-gray-100 bg-[#FFFFFF]" : "border-[#E8E8E8]"}`}
-                style={
+                className={cn(
+                  "flex h-[48px] min-w-0 flex-1 flex-col items-center justify-center rounded-[16px] border px-0 transition-colors",
                   contactType === opt.key
-                    ? { height: 48 }
-                    : {
+                    ? "border-gray-100 bg-[#FFFFFF]"
+                    : "border-[#E8E8E8]",
+                )}
+                style={
+                  contactType !== opt.key
+                    ? {
                         background:
                           "linear-gradient(102deg, rgba(255,255,255,0.5) 9.36%, rgba(255,255,255,0.3) 95.75%)",
-                        borderRadius: 16,
-                        border: "1px solid #E8E8E8",
-                        height: 48,
                       }
+                    : undefined
                 }
                 onClick={() => {
                   setContactType(opt.key as typeof contactType);

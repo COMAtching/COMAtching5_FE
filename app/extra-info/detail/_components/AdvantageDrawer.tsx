@@ -26,6 +26,13 @@ const AdvantageDrawer = ({
   const [selected, setSelected] = useState<string[]>(selectedAdvantages);
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setSelected(selectedAdvantages);
+    }
+  };
+
   const toggleAdvantage = (advantage: string) => {
     setSelected((prev) => {
       if (prev.includes(advantage)) {
@@ -45,7 +52,7 @@ const AdvantageDrawer = ({
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={handleOpenChange}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent
         showHandle={false}
