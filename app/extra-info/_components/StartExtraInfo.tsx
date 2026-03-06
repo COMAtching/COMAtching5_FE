@@ -57,13 +57,14 @@ const StartExtraInfo = () => {
       >
         네, 좋아요!
       </Button>
-      <button
+      <Button
         disabled={buttonDisabled}
-        className="typo-14-500 mt-7 text-gray-500"
+        shadow={false}
+        className="typo-14-500 mt-7 border-none bg-transparent text-gray-500"
         onClick={() => router.push("/profile-image")}
       >
         다음에 할게요
-      </button>
+      </Button>
     </section>
   );
 };

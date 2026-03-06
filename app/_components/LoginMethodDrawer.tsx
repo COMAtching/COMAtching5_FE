@@ -1,0 +1,58 @@
+import React from "react";
+import Link from "next/link";
+import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+interface LoginMethodDrawerProps {
+  children: React.ReactNode;
+  onKakaoLogin: () => void;
+  onGoogleLogin: () => void;
+}
+
+export default function LoginMethodDrawer({
+  children,
+  onKakaoLogin,
+  onGoogleLogin,
+}: LoginMethodDrawerProps) {
+  return (
+    <Drawer>
+      <div className="typo-14-600 text-color-text-caption2 flex flex-col items-center leading-[1.6]">
+        <span>또는</span>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
+      </div>
+      <DrawerContent
+        showHandle={false}
+        className="mx-auto flex h-auto min-h-[44.33dvh] w-full flex-col items-center px-4 pt-6 pb-[32px] md:max-w-[430px]"
+      >
+        <DrawerTitle className="sr-only">다른 로그인 방법</DrawerTitle>
+        <div className="flex w-full flex-col items-start gap-2">
+          <span className="typo-20-700 text-bottomsheet-text-title">
+            로그인/회원가입
+          </span>
+          <span className="typo-14-500 text-[#999]">
+            로그인과 회원가입 수단은 동일합니다.
+            <br />
+            원하는 계정으로 시작하세요.
+          </span>
+        </div>
+        <KakaoLoginButton onClick={onKakaoLogin} className="mt-8 mb-4">
+          카카오로 시작하기
+        </KakaoLoginButton>
+        <GoogleLoginButton className="w-full" onClick={onGoogleLogin}>
+          구글로 시작하기
+        </GoogleLoginButton>
+        <div className="typo-14-500 text-bottomsheet-text-caption mt-6 flex flex-col items-center">
+          <span>혹은</span>
+          <Link href="/login" className="all-[unset] cursor-pointer underline">
+            이메일로 로그인
+          </Link>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
