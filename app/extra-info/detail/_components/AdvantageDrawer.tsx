@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 import {
   Drawer,
@@ -8,24 +8,54 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import HobbyButton from "@/app/hobby-select/_components/HobbyButton";
+import { ADVANTAGES, type AdvantageCategory } from "@/lib/constants/advantages";
+import Button from "@/components/ui/Button";
 
 interface AdvantageDrawerProps {
   children: React.ReactNode;
+  selectedAdvantages: string[];
+  onComplete: (advantages: string[]) => void;
 }
 
-const AdvantageDrawer = ({ children }: AdvantageDrawerProps) => {
+const AdvantageDrawer = ({
+  children,
+  selectedAdvantages,
+  onComplete,
+}: AdvantageDrawerProps) => {
+  const [selected, setSelected] = useState<string[]>(selectedAdvantages);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleAdvantage = (advantage: string) => {
+    setSelected((prev) => {
+      if (prev.includes(advantage)) {
+        return prev.filter((a) => a !== advantage);
+      }
+      if (prev.length >= 5) {
+        alert("최대 5개까지 선택할 수 있어요.");
+        return prev;
+      }
+      return [...prev, advantage];
+    });
+  };
+
+  const handleComplete = () => {
+    onComplete(selected);
+    setIsOpen(false);
+  };
+
   return (
-    <Drawer>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent
         showHandle={false}
-        className="mx-auto w-full rounded-t-[24px] px-[15px] pt-6 md:max-w-[430px]"
+        className="mx-auto w-full rounded-t-[24px] px-[15px] pt-6 pb-6 md:max-w-[430px]"
       >
         <DrawerHeader className="flex flex-row items-start justify-between p-0">
           <div className="flex flex-col gap-1 text-left">
             <DrawerTitle>제 장점은요...</DrawerTitle>
             <p className="typo-12-400 text-[#858585]">
-              내가 생각하는 나의 장점을 골라주세요
+              내가 생각하는 나의 장점을 골라주세요 (최대 5개)
             </p>
           </div>
           <DrawerClose
@@ -35,11 +65,36 @@ const AdvantageDrawer = ({ children }: AdvantageDrawerProps) => {
             <X className="h-5 w-5" />
           </DrawerClose>
         </DrawerHeader>
-        <div className="mt-6 flex flex-col gap-4 pb-8">
-          {/* 추후 장점 데이터가 제공되면 이곳에 UI 구현 */}
-          <p className="typo-14-500 text-center text-gray-400">
-            장점 목록을 준비 중입니다.
-          </p>
+
+        {/* 장점 목록 스크롤 영역 */}
+        <div className="scrollbar-hide mt-6 flex max-h-[60vh] flex-col gap-8 overflow-y-auto pb-8">
+          {(Object.keys(ADVANTAGES) as AdvantageCategory[]).map((category) => (
+            <div key={category} className="flex flex-col">
+              <h2 className="typo-16-600 mb-3 text-black">{category}</h2>
+              <div className="flex flex-wrap gap-3">
+                {ADVANTAGES[category].map((adv) => (
+                  <HobbyButton
+                    key={adv}
+                    onClick={() => toggleAdvantage(adv)}
+                    selected={selected.includes(adv)}
+                  >
+                    {adv}
+                  </HobbyButton>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 하단 고정 버튼 영역 */}
+        <div className="mt-4 w-full">
+          <Button
+            type="button"
+            className="bg-button-primary text-button-primary-text-default"
+            onClick={handleComplete}
+          >
+            확인
+          </Button>
         </div>
       </DrawerContent>
     </Drawer>

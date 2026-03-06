@@ -8,9 +8,12 @@ import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
 
 const ScreenExtraInfoDetail = () => {
-  const [contactType, setContactType] = useState<
-    "instagram" | "kakao" | "phone"
-  >("instagram");
+  const [contactType, setContactType] = useState<"instagram" | "kakao">(
+    "instagram",
+  );
+  const [contactId, setContactId] = useState("");
+  const [favoriteSong, setFavoriteSong] = useState("");
+  const [advantages, setAdvantages] = useState<string[]>([]);
   const contactOptions = [
     {
       key: "instagram",
@@ -32,6 +35,14 @@ const ScreenExtraInfoDetail = () => {
 
   const selectedOption = contactOptions.find((opt) => opt.key === contactType)!;
 
+  const isContactValid =
+    contactType === "instagram"
+      ? contactId.startsWith("@") && contactId.length > 1
+      : contactId.trim().length > 0;
+
+  const isValid =
+    advantages.length === 5 && isContactValid && favoriteSong.trim().length > 0;
+
   return (
     <main className="relative flex min-h-svh flex-col overflow-x-hidden px-4 pb-[120px]">
       <ProgressStepBar currentStep={3} totalSteps={3} />
@@ -51,7 +62,10 @@ const ScreenExtraInfoDetail = () => {
               내가 생각하는 나의 장점을 골라주세요
             </p>
           </div>
-          <AdvantageDrawer>
+          <AdvantageDrawer
+            selectedAdvantages={advantages}
+            onComplete={(newAdvantages) => setAdvantages(newAdvantages)}
+          >
             <button
               aria-label="장점 선택 열기"
               type="button"
@@ -61,6 +75,18 @@ const ScreenExtraInfoDetail = () => {
             </button>
           </AdvantageDrawer>
         </div>
+        {advantages.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {advantages.map((adv) => (
+              <span
+                key={adv}
+                className="typo-14-500 rounded-full bg-[#FFEBED] px-3 py-[7.5px] text-[#FF4D61]"
+              >
+                {adv}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* 연락 수단 */}
         <div className="flex flex-col gap-3">
@@ -82,7 +108,10 @@ const ScreenExtraInfoDetail = () => {
                         height: 48,
                       }
                 }
-                onClick={() => setContactType(opt.key as typeof contactType)}
+                onClick={() => {
+                  setContactType(opt.key as typeof contactType);
+                  setContactId(""); // 타입 변경 시 입력값 초기화
+                }}
               >
                 <span className="flex flex-row items-center justify-center gap-2">
                   <Image
@@ -102,6 +131,8 @@ const ScreenExtraInfoDetail = () => {
             type="text"
             placeholder={selectedOption.placeholder}
             className="typo-18-600 text-black"
+            value={contactId}
+            onChange={(e) => setContactId(e.target.value)}
           />
         </div>
 
@@ -116,12 +147,21 @@ const ScreenExtraInfoDetail = () => {
             type="text"
             placeholder="예: 이찬혁 - 멸종위기사랑"
             className="typo-18-600 text-black"
+            value={favoriteSong}
+            onChange={(e) => setFavoriteSong(e.target.value)}
           />
         </div>
       </div>
 
       {/* 하단 고정 버튼 */}
-      <Button type="button" fixed bottom={100} sideGap={16} safeArea>
+      <Button
+        type="button"
+        fixed
+        bottom={100}
+        sideGap={16}
+        safeArea
+        disabled={!isValid}
+      >
         다음으로
       </Button>
       <Button
