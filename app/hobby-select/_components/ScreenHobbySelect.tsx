@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import HobbyButton from "./HobbyButton";
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
@@ -13,6 +13,7 @@ import Blur from "@/components/common/Blur";
 import { HOBBIES, type HobbyCategory } from "@/lib/constants/hobbies";
 import HobbySearchInput from "./HobbySearchInput";
 import { createChoseongRegex } from "@/lib/utils/hangul";
+import AddHobbyDrawer from "./AddHobbyDrawer";
 
 const ALL_HOBBIES = Object.values(HOBBIES).flat();
 
@@ -121,7 +122,9 @@ const ScreenHobbySelect = () => {
       </div>
       <div className="typo-14-600 mt-8 flex flex-col items-start gap-3">
         <h2>내가 좋아하는 관심사가 없나요?</h2>
-        <HobbyButton plus>내 관심사 추가하기</HobbyButton>
+        <AddHobbyDrawer>
+          <HobbyButton plus>내 관심사 추가하기</HobbyButton>
+        </AddHobbyDrawer>
       </div>
 
       <Button
