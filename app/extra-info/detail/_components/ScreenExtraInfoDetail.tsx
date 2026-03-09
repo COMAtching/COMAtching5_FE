@@ -21,6 +21,7 @@ const ScreenExtraInfoDetail = () => {
       key: "instagram",
       label: "인스타",
       img: "/sns/insta-sns.svg",
+      unactiveImg: "/sns/unactive-insta.svg",
       placeholder: "인스타 아이디 (예: @winterizcoming_)",
       inputId: "contact-instagram",
       inputName: "contactInstagram",
@@ -29,6 +30,7 @@ const ScreenExtraInfoDetail = () => {
       key: "kakao",
       label: "카카오",
       img: "/sns/kakao-sns.svg",
+      unactiveImg: "/sns/unactive-kakao.svg",
       placeholder: "카카오톡 아이디",
       inputId: "contact-kakao",
       inputName: "contactKakao",
@@ -122,12 +124,12 @@ const ScreenExtraInfoDetail = () => {
               >
                 <span className="flex flex-row items-center justify-center gap-2">
                   <Image
-                    src={opt.img}
+                    src={contactType === opt.key ? opt.img : opt.unactiveImg}
                     alt={opt.label + " 아이콘"}
-                    width={24}
-                    height={24}
+                    width={contactType === opt.key ? 24 : 12}
+                    height={contactType === opt.key ? 24 : 12}
                   />
-                  <span className="typo-14-600">{opt.label}</span>
+                  <span className="typo-16-600">{opt.label}</span>
                 </span>
               </button>
             ))}

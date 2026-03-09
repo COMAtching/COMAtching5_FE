@@ -1,19 +1,22 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import DefaultProfileDrawer, { DEFAULT_PROFILES } from "./DefaultProfileDrawer";
 
 type SelectCheckButtonProps = {
   label: string;
   isSelected: boolean;
   onClick: () => void;
   gradient: string;
+  marginClassName?: string;
 };
 
-const SelectCheckButton = ({
+export const SelectCheckButton = ({
   label,
   isSelected,
   onClick,
   gradient,
+  marginClassName = "mt-2",
 }: SelectCheckButtonProps) => {
   return (
     <button
@@ -21,7 +24,7 @@ const SelectCheckButton = ({
       aria-label={label}
       aria-pressed={isSelected}
       onClick={onClick}
-      className={`mt-2 flex h-[20px] w-[20px] items-center justify-center rounded-full border text-[14px] leading-none ${
+      className={`${marginClassName} flex h-[20px] w-[20px] items-center justify-center rounded-full border text-[14px] leading-none ${
         isSelected
           ? "border-[#FF4D61] text-white"
           : "border-gray-300 bg-white text-transparent"
@@ -36,17 +39,38 @@ const SelectCheckButton = ({
 interface ProfileImageSelectionProps {
   selected: "default" | "custom";
   onSelect: (type: "default" | "custom") => void;
+  selectedProfile: string;
+  onProfileSelect: (profileId: string) => void;
+  customImage: string | null;
+  onCustomImageChange: (image: string | null) => void;
 }
 
 const ProfileImageSelection = ({
   selected,
   onSelect,
+  selectedProfile,
+  onProfileSelect,
+  customImage,
+  onCustomImageChange,
 }: ProfileImageSelectionProps) => {
   const checkGradient =
     "linear-gradient(220.53deg, #FF775E -18.87%, #FF4D61 62.05%, #E83ABC 125.76%)";
 
   const actionLabel =
     selected === "default" ? "기본 이미지 변경" : "프로필 사진 변경";
+
+  const currentProfile = DEFAULT_PROFILES.find((p) => p.id === selectedProfile);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onCustomImageChange(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <>
@@ -58,10 +82,20 @@ const ProfileImageSelection = ({
             className="flex h-[100px] w-[100px] items-center justify-center rounded-full"
             onClick={() => onSelect("default")}
           >
-            {/* 기본 이미지 (임시) */}
-            <span className="block flex h-[90px] w-[90px] items-center justify-center rounded-full bg-gray-200 text-3xl text-gray-400">
-              기본
-            </span>
+            {currentProfile ? (
+              <span className="relative block h-[90px] w-[90px] overflow-hidden rounded-full">
+                <Image
+                  src={currentProfile.image}
+                  alt={currentProfile.name}
+                  fill
+                  className="object-cover"
+                />
+              </span>
+            ) : (
+              <span className="flex h-[90px] w-[90px] items-center justify-center rounded-full bg-gray-200 text-3xl text-gray-400">
+                기본
+              </span>
+            )}
           </button>
           <SelectCheckButton
             label="기본 이미지 선택"
@@ -77,14 +111,22 @@ const ProfileImageSelection = ({
             className="flex h-[100px] w-[100px] items-center justify-center rounded-full"
             onClick={() => onSelect("custom")}
           >
-            {/* 업로드 이미지 (임시) */}
             <span className="relative block h-[90px] w-[90px] overflow-hidden rounded-full bg-gray-100">
-              <Image
-                src="/profile/default-profile.svg"
-                alt="기본 프로필 이미지"
-                fill
-                className="object-cover"
-              />
+              {customImage ? (
+                <Image
+                  src={customImage}
+                  alt="업로드된 프로필 이미지"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <Image
+                  src="/profile/default-profile.svg"
+                  alt="기본 프로필 이미지"
+                  fill
+                  className="object-cover"
+                />
+              )}
             </span>
           </button>
           <SelectCheckButton
@@ -97,12 +139,33 @@ const ProfileImageSelection = ({
       </div>
 
       <div className="flex justify-center">
-        <button
-          type="button"
-          className="flex h-[33px] items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 text-[14px] leading-[17px] font-semibold tracking-[-0.03em] text-[#4D4D4D]"
-        >
-          {actionLabel}
-        </button>
+        {selected === "default" ? (
+          <DefaultProfileDrawer
+            selectedProfile={selectedProfile}
+            onSelect={onProfileSelect}
+          >
+            <button
+              type="button"
+              className="flex h-[33px] items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 text-[14px] leading-[17px] font-semibold tracking-[-0.03em] text-[#4D4D4D]"
+            >
+              {actionLabel}
+            </button>
+          </DefaultProfileDrawer>
+        ) : (
+          <label
+            htmlFor="profile-image-upload"
+            className="flex h-[33px] cursor-pointer items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 text-[14px] leading-[17px] font-semibold tracking-[-0.03em] text-[#4D4D4D]"
+          >
+            {actionLabel}
+            <input
+              id="profile-image-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+        )}
       </div>
     </>
   );

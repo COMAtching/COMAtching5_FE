@@ -14,7 +14,7 @@ const NicknameSection = ({
 }: NicknameSectionProps) => {
   return (
     <div className="mt-4 flex flex-col gap-2">
-      <label htmlFor="nickname" className="typo-14-500 px-2 text-[#4D4D4D]">
+      <label htmlFor="nickname" className="typo-14-500 text-[#4D4D4D]">
         닉네임
       </label>
       <div className="flex items-center gap-3">
