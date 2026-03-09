@@ -59,14 +59,11 @@ const StartExtraInfo = () => {
       >
         네, 좋아요!
       </Button>
-      <Link href="/profile-image">
-        <Button
-          disabled={buttonDisabled}
-          shadow={false}
-          className="typo-14-500 mt-7 border-none bg-transparent text-gray-500"
-        >
-          다음에 할게요
-        </Button>
+      <Link
+        href="/profile-image"
+        className="typo-14-500 mt-7 text-gray-500 transition-colors duration-300 hover:text-gray-800"
+      >
+        다음에 할게요
       </Link>
     </section>
   );

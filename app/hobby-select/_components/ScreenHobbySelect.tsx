@@ -122,7 +122,7 @@ const ScreenHobbySelect = () => {
       </div>
       <div className="typo-14-600 mt-8 flex flex-col items-start gap-3">
         <h2>내가 좋아하는 관심사가 없나요?</h2>
-        <AddHobbyDrawer>
+        <AddHobbyDrawer onAdd={(hobby) => toggleHobby(hobby)}>
           <HobbyButton plus>내 관심사 추가하기</HobbyButton>
         </AddHobbyDrawer>
       </div>

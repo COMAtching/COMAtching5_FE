@@ -171,17 +171,12 @@ const ScreenExtraInfoDetail = () => {
       >
         다음으로
       </Button>
-      <Link href="/profile-image">
-        <Button
-          type="button"
-          fixed
-          bottom={40}
-          shadow={false}
-          safeArea
-          className="typo-14-500 border-none bg-transparent text-gray-500"
-        >
-          다음에 할게요
-        </Button>
+      <Link
+        href="/profile-image"
+        className="typo-14-500 fixed left-1/2 z-50 -translate-x-1/2 whitespace-nowrap text-gray-500 transition-colors duration-300 hover:text-gray-800"
+        style={{ bottom: "calc(40px + env(safe-area-inset-bottom))" }}
+      >
+        다음에 할게요
       </Link>
     </main>
   );
