@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { ProfileData } from "@/lib/types/profile";
 
 const STORAGE_KEY = "onboarding-profile-data";
+const LEGACY_STORAGE_KEYS = ["profileBuilder"];
 
 interface ProfileContextType {
   profile: ProfileData;
@@ -50,6 +51,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setProfile({});
     try {
       localStorage.removeItem(STORAGE_KEY);
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     } catch (error) {
       console.error("Failed to clear profile from localStorage:", error);
     }

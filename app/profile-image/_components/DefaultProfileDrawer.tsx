@@ -17,7 +17,9 @@ export const DEFAULT_PROFILES = [
 ];
 
 interface DefaultProfileDrawerProps {
-  children: React.ReactElement;
+  children: React.ReactElement<{
+    onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+  }>;
   selectedProfile: string;
   onSelect: (profileId: string) => void;
 }
@@ -42,9 +44,9 @@ const DefaultProfileDrawer = ({
     setIsOpen(false);
   };
 
-  const trigger = React.cloneElement(children as React.ReactElement<any>, {
-    onClick: (e: React.MouseEvent) => {
-      (children as any).props.onClick?.(e);
+  const trigger = React.cloneElement(children, {
+    onClick: (e: React.MouseEvent<HTMLElement>) => {
+      children.props.onClick?.(e);
       openDrawer();
     },
   });
