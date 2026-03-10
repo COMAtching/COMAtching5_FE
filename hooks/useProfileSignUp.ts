@@ -25,17 +25,33 @@ interface SignUpResponse {
  * 1단계: Presigned URL을 받아오고 S3에 업로드하는 함수
  */
 const uploadImage = async (file: File): Promise<string> => {
-  // 백엔드 명세: GET /api/members/files/presigned/profiles
-  const { data: response } = await api.get<PresignedUrlResponse>("/api/members/files/presigned/profiles");
+  let presignedUrl: string;
+  let imageKey: string;
 
-  const { presignedUrl, imageKey } = response.data;
+  // 1단계: Presigned URL 발급
+  try {
+    const { data: response } = await api.get<PresignedUrlResponse>(
+      "/api/members/files/presigned/profiles",
+      { params: { filename: file.name } },
+    );
+    presignedUrl = response.data.presignedUrl;
+    imageKey = response.data.imageKey;
+  } catch (error) {
+    console.error("❌ Presigned URL을 받아오지 못했습니다.", error);
+    throw error;
+  }
 
-  // S3에 직접 업로드 (Axios 인스턴스 대신 표준 axios 사용 - baseURL 무시를 위해)
-  await axios.put(presignedUrl, file, {
-    headers: {
-      "Content-Type": file.type,
-    },
-  });
+  // 2단계: S3에 직접 업로드 (Axios 인스턴스 대신 표준 axios 사용 - baseURL 무시를 위해)
+  try {
+    await axios.put(presignedUrl, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+  } catch (error) {
+    console.error("❌ 이미지 업로드에 실패했습니다.", error);
+    throw error;
+  }
 
   return imageKey;
 };
@@ -43,8 +59,13 @@ const uploadImage = async (file: File): Promise<string> => {
 /**
  * 2단계: 최종 프로필 데이터를 전송하는 함수
  */
-const signUpProfile = async (payload: ProfileSubmitData): Promise<SignUpResponse> => {
-  const { data } = await api.post<SignUpResponse>("/api/auth/signup/profile", payload);
+const signUpProfile = async (
+  payload: ProfileSubmitData,
+): Promise<SignUpResponse> => {
+  const { data } = await api.post<SignUpResponse>(
+    "/api/auth/signup/profile",
+    payload,
+  );
   return data;
 };
 
