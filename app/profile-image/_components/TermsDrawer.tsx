@@ -19,6 +19,27 @@ interface TermsDrawerProps {
 
 type ViewMode = "list" | "terms" | "privacy";
 
+const DEFAULT_PROFILE_IDS = new Set([
+  "dog",
+  "cat",
+  "dinosaur",
+  "otter",
+  "bear",
+  "fox",
+  "penguin",
+  "wolf",
+  "rabbit",
+  "snake",
+  "horse",
+  "frog",
+]);
+
+const toDefaultProfileImageKey = (profileId?: string) => {
+  const rawId = profileId || "bear";
+  if (rawId.startsWith("default_")) return rawId;
+  return DEFAULT_PROFILE_IDS.has(rawId) ? `default_${rawId}` : rawId;
+};
+
 const TermsDrawer = ({ children }: TermsDrawerProps) => {
   const router = useRouter();
   const { profile, clearProfile } = useProfile();
@@ -95,7 +116,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
     if (!allAgreed || isSubmitting) return;
 
     try {
-      let finalImageUrl = profile.profileImageUrl || "bear";
+      let finalImageUrl = toDefaultProfileImageKey(profile.profileImageUrl);
 
       // 1. 커스텀 이미지가 있으면 먼저 업로드 (Key 획득)
       if (profile.profileImageFile) {

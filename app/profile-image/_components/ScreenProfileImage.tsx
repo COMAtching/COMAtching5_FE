@@ -11,20 +11,33 @@ import { generateRandomNickname } from "@/lib/utils/nickname";
 
 const ScreenProfileImage = () => {
   const { profile, updateProfile } = useProfile();
-  
-  // local preview states (not as critical to persist, but good for UX)
-  const [selectedType, setSelectedType] = useState<"default" | "custom">("default");
-  const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
 
-  const handleNicknameChange = (val: string) => updateProfile({ nickname: val });
+  // local preview states (not as critical to persist, but good for UX)
+  const [selectedType, setSelectedType] = useState<"default" | "custom">(
+    "default",
+  );
+  const [customImagePreview, setCustomImagePreview] = useState<string | null>(
+    null,
+  );
+
+  const handleNicknameChange = (val: string) =>
+    updateProfile({ nickname: val });
   const handleRandomNickname = () => {
     const randomName = generateRandomNickname();
     updateProfile({ nickname: randomName });
   };
   const handleIntroChange = (val: string) => updateProfile({ intro: val });
-  
-  const isReadyToStart = 
-    (profile.nickname?.trim().length ?? 0) > 0 && 
+
+  const handleSelectProfileType = (type: "default" | "custom") => {
+    setSelectedType(type);
+    if (type === "default") {
+      updateProfile({ profileImageFile: undefined });
+      setCustomImagePreview(null);
+    }
+  };
+
+  const isReadyToStart =
+    (profile.nickname?.trim().length ?? 0) > 0 &&
     (profile.intro?.trim().length ?? 0) > 0;
 
   return (
@@ -35,7 +48,7 @@ const ScreenProfileImage = () => {
 
       <ProfileImageSelection
         selected={selectedType}
-        onSelect={setSelectedType}
+        onSelect={handleSelectProfileType}
         selectedProfile={profile.profileImageUrl || "bear"}
         onProfileSelect={(id) => updateProfile({ profileImageUrl: id })}
         customImage={customImagePreview}
@@ -43,14 +56,14 @@ const ScreenProfileImage = () => {
         onFileChange={(file) => updateProfile({ profileImageFile: file })}
       />
 
-      <NicknameSection 
-        nickname={profile.nickname || ""} 
-        onNicknameChange={handleNicknameChange} 
+      <NicknameSection
+        nickname={profile.nickname || ""}
+        onNicknameChange={handleNicknameChange}
         onRandomClick={handleRandomNickname}
       />
-      <IntroSection 
-        intro={profile.intro || ""} 
-        onIntroChange={handleIntroChange} 
+      <IntroSection
+        intro={profile.intro || ""}
+        onIntroChange={handleIntroChange}
       />
       <footer className="mt-auto flex flex-col items-center justify-center">
         <Image
