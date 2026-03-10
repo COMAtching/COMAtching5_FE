@@ -53,12 +53,12 @@ export default function Button({
         !className?.includes("typo-") && "typo-20-600",
         fixed && "fixed z-50 mx-auto",
         disabled ? "cursor-not-allowed" : "cursor-pointer",
-        // 1. 사용자 className 적용
-        className,
-        // 2. 기본 테마 또는 disabled 테마 적용
+        // 1. 기본 테마 또는 disabled 테마 적용
         disabled
           ? "bg-button-background-disabled text-button-primary-text-disabled"
           : "bg-button-primary text-button-primary-text-default",
+        // 2. 사용자 className 적용 (이게 마지막이어야 덮어씀)
+        className,
       )}
       style={{
         ...(fixed && {

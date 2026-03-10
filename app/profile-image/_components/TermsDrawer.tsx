@@ -12,7 +12,9 @@ import { useRouter } from "next/navigation";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 
 interface TermsDrawerProps {
-  children?: React.ReactElement;
+  children?: React.ReactElement<{
+    onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+  }>;
 }
 
 type ViewMode = "list" | "terms" | "privacy";
@@ -63,7 +65,9 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
     return hobbies.map((h) => {
       const isObject = typeof h === "object" && h !== null;
       const hobbyName = isObject ? h.name : h;
-      let hobbyCategoryKr = isObject ? h.category : null;
+      let hobbyCategoryKr: string | undefined = isObject
+        ? h.category
+        : undefined;
 
       if (!hobbyCategoryKr) {
         // 카테고리가 없으면 ALL_HOBBIES에서 찾음
@@ -113,7 +117,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         contactFrequency: profile.contactFrequency || "NORMAL",
         hobbies: mapHobbies(profile.hobbies || []),
         intros: profile.intros || [],
-        advantages: profile.advantages && profile.advantages.length > 0 ? profile.advantages : null,
+        advantages:
+          profile.advantages && profile.advantages.length > 0
+            ? profile.advantages
+            : null,
         favoriteSong: profile.favoriteSong || null,
       };
 
@@ -122,7 +129,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         onSuccess: () => {
           setIsOpen(false);
           clearProfile();
-          router.push("/register/success"); // 가입 완료 페이지로 이동
+          router.push("/main"); // 가입 완료 페이지로 이동
         },
         onError: (error) => {
           console.error("Signup failed:", error);
@@ -136,9 +143,9 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   };
 
   const trigger = children
-    ? React.cloneElement(children as React.ReactElement<any>, {
-        onClick: (e: React.MouseEvent) => {
-          (children as any).props.onClick?.(e);
+    ? React.cloneElement(children, {
+        onClick: (e: React.MouseEvent<HTMLElement>) => {
+          children.props.onClick?.(e);
           setIsOpen(true);
         },
       })
@@ -152,14 +159,14 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   const renderContent = () => {
     if (viewMode === "terms") {
       return (
-        <div className="typo-14-500 whitespace-pre-wrap leading-[1.6] text-black">
+        <div className="typo-14-500 leading-[1.6] whitespace-pre-wrap text-black">
           {TERMS_TEXT}
         </div>
       );
     }
     if (viewMode === "privacy") {
       return (
-        <div className="typo-14-500 whitespace-pre-wrap leading-[1.6] text-black">
+        <div className="typo-14-500 leading-[1.6] whitespace-pre-wrap text-black">
           {PRIVACY_TEXT}
         </div>
       );
@@ -181,7 +188,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
               <span className="typo-12-700 text-gray-400">필수</span>
             </span>
             <button type="button" onClick={() => setViewMode(key)}>
-              <ChevronRight size={20} className="cursor-pointer text-gray-400" />
+              <ChevronRight
+                size={20}
+                className="cursor-pointer text-gray-400"
+              />
             </button>
           </div>
         ))}
