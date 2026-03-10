@@ -26,14 +26,16 @@ const ProfileBottomSheet = ({
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isOpen) {
-      setIsRendered(true);
-      // 부드러운 애니메이션을 위해 다음 프레임에서 실행
-      timer = setTimeout(() => setIsAnimating(true), 10);
+      // 부드러운 애니메이션을 위해 렌더링/애니메이션 상태를 다음 틱에서 설정
+      timer = setTimeout(() => {
+        setIsRendered(true);
+        setTimeout(() => setIsAnimating(true), 10);
+      }, 0);
       document.body.style.overflow = "hidden";
     } else {
-      setIsAnimating(false);
+      timer = setTimeout(() => setIsAnimating(false), 0);
       // transition duration(300ms) 후 언마운트
-      timer = setTimeout(() => setIsRendered(false), 300);
+      setTimeout(() => setIsRendered(false), 300);
       document.body.style.overflow = "unset";
     }
     return () => clearTimeout(timer);
@@ -47,7 +49,7 @@ const ProfileBottomSheet = ({
       <div
         className={cn(
           "absolute inset-0 bg-black/50 transition-opacity duration-300 ease-in-out",
-          isAnimating ? "opacity-100" : "opacity-0"
+          isAnimating ? "opacity-100" : "opacity-0",
         )}
         onClick={onClose}
       />
@@ -57,10 +59,10 @@ const ProfileBottomSheet = ({
         className={cn(
           "relative z-10 w-full rounded-t-[24px] bg-white px-4 pt-6 pb-8 md:max-w-[430px]",
           "transition-transform duration-300 ease-out",
-          isAnimating ? "translate-y-0" : "translate-y-full"
+          isAnimating ? "translate-y-0" : "translate-y-full",
         )}
       >
-        <div className="flex flex-row items-start justify-between mb-6">
+        <div className="mb-6 flex flex-row items-start justify-between">
           <div className="flex flex-col gap-1 text-left">
             <div className="typo-20-700 text-black">{title}</div>
             {description && (
