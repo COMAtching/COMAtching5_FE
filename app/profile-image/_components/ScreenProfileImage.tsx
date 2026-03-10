@@ -3,18 +3,29 @@ import React, { useState } from "react";
 import ProfileImageSelection from "./ProfileImageSelection";
 import NicknameSection from "./NicknameSection";
 import IntroSection from "./IntroSection";
-import BubbleDiv from "@/app/_components/BubbleDiv";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import TermsDrawer from "./TermsDrawer";
+import { useProfile } from "@/providers/profile-provider";
+import { generateRandomNickname } from "@/lib/utils/nickname";
 
 const ScreenProfileImage = () => {
-  const [selected, setSelected] = useState<"default" | "custom">("default");
-  const [selectedProfile, setSelectedProfile] = useState("bear");
-  const [customImage, setCustomImage] = useState<string | null>(null);
-  const [nickname, setNickname] = useState("");
-  const [intro, setIntro] = useState("");
-  const [termsOpen, setTermsOpen] = useState(false);
-  const isReadyToStart = nickname.trim().length > 0 && intro.trim().length > 0;
+  const { profile, updateProfile } = useProfile();
+  
+  // local preview states (not as critical to persist, but good for UX)
+  const [selectedType, setSelectedType] = useState<"default" | "custom">("default");
+  const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
+
+  const handleNicknameChange = (val: string) => updateProfile({ nickname: val });
+  const handleRandomNickname = () => {
+    const randomName = generateRandomNickname();
+    updateProfile({ nickname: randomName });
+  };
+  const handleIntroChange = (val: string) => updateProfile({ intro: val });
+  
+  const isReadyToStart = 
+    (profile.nickname?.trim().length ?? 0) > 0 && 
+    (profile.intro?.trim().length ?? 0) > 0;
 
   return (
     <main className="relative flex h-screen flex-col px-4 pb-15">
@@ -23,31 +34,38 @@ const ScreenProfileImage = () => {
       </h1>
 
       <ProfileImageSelection
-        selected={selected}
-        onSelect={setSelected}
-        selectedProfile={selectedProfile}
-        onProfileSelect={setSelectedProfile}
-        customImage={customImage}
-        onCustomImageChange={setCustomImage}
+        selected={selectedType}
+        onSelect={setSelectedType}
+        selectedProfile={profile.profileImageUrl || "bear"}
+        onProfileSelect={(id) => updateProfile({ profileImageUrl: id })}
+        customImage={customImagePreview}
+        onCustomImageChange={setCustomImagePreview}
+        onFileChange={(file) => updateProfile({ profileImageFile: file })}
       />
 
-      <NicknameSection nickname={nickname} onNicknameChange={setNickname} />
-      <IntroSection intro={intro} onIntroChange={setIntro} />
-      <footer className="mt-auto flex flex-col items-center justify-center gap-5">
-        <BubbleDiv w={270} h={38} shadow={true} typo="typo-16-500">
-          모든 정보가 <span className="text-bubble-text-highight">맞나요?</span>{" "}
-          이제 시작해요!
-        </BubbleDiv>
-        <Button
-          shadow={true}
-          disabled={!isReadyToStart}
-          onClick={() => setTermsOpen(true)}
-        >
-          코매칭 시작하기
-        </Button>
+      <NicknameSection 
+        nickname={profile.nickname || ""} 
+        onNicknameChange={handleNicknameChange} 
+        onRandomClick={handleRandomNickname}
+      />
+      <IntroSection 
+        intro={profile.intro || ""} 
+        onIntroChange={handleIntroChange} 
+      />
+      <footer className="mt-auto flex flex-col items-center justify-center">
+        <Image
+          src="/profile/bubble-.svg"
+          alt="모든 정보가 맞나요? 이제 시작해요!"
+          width={270}
+          height={50}
+          priority
+        />
+        <TermsDrawer>
+          <Button shadow={true} disabled={!isReadyToStart}>
+            코매칭 시작하기
+          </Button>
+        </TermsDrawer>
       </footer>
-
-      <TermsDrawer isOpen={termsOpen} onOpenChange={setTermsOpen} />
     </main>
   );
 };

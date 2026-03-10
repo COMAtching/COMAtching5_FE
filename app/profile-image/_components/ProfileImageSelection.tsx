@@ -43,6 +43,7 @@ interface ProfileImageSelectionProps {
   onProfileSelect: (profileId: string) => void;
   customImage: string | null;
   onCustomImageChange: (image: string | null) => void;
+  onFileChange?: (file: File) => void;
 }
 
 const ProfileImageSelection = ({
@@ -52,6 +53,7 @@ const ProfileImageSelection = ({
   onProfileSelect,
   customImage,
   onCustomImageChange,
+  onFileChange,
 }: ProfileImageSelectionProps) => {
   const checkGradient =
     "linear-gradient(220.53deg, #FF775E -18.87%, #FF4D61 62.05%, #E83ABC 125.76%)";
@@ -64,6 +66,7 @@ const ProfileImageSelection = ({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
+      onFileChange?.(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         onCustomImageChange(reader.result as string);

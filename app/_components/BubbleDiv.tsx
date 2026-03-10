@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 const BubbleDiv = ({
   children,
   w = 226,
-  h = 41.77,
+  h = 42,
   typo = "typo-16-600",
-  top = 1,
+  top = -4,
   shadow = false,
   className = "",
 }: {
@@ -19,37 +19,38 @@ const BubbleDiv = ({
   shadow?: boolean;
   className?: string;
 }) => {
-  const shadowClass = shadow ? "shadow-md" : "";
+  const shadowClass = shadow ? "drop-shadow-md" : "";
 
   return (
     <div
       className={cn(
-        "relative flex items-center justify-center rounded-2xl bg-white",
+        "relative flex items-center justify-center",
         shadowClass,
         className,
       )}
       style={{ width: `${w}px`, height: `${h}px` }}
     >
-      <span
+      <div
         className={cn(
           typo,
           "absolute inset-0 z-20 flex items-center justify-center text-center text-black",
         )}
         style={{ transform: `translateY(${top}px)` }}
       >
-        {children || (
-          <>
-            현재 <span className="text-bubble-text-highight">775명 </span>
-            참여중이에요!
-          </>
-        )}
-      </span>
+        <div>
+          {children || (
+            <>
+              현재 <span className="text-bubble-text-highight">775명</span> 참여중이에요!
+            </>
+          )}
+        </div>
+      </div>
       <Image
         src="/bubble/bubble.svg"
         alt="말풍선"
         fill
         sizes={`${w}px`}
-        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+        className="pointer-events-none absolute inset-0 z-10 h-full w-full object-fill"
       />
     </div>
   );

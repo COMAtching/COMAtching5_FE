@@ -14,7 +14,7 @@ import FormInput from "@/components/ui/FormInput";
 
 interface AddHobbyDrawerProps {
   children: React.ReactNode;
-  onAdd?: (hobby: string) => void;
+  onAdd?: (hobby: string, category: HobbyCategory) => void;
 }
 
 import { HOBBIES, type HobbyCategory } from "@/lib/constants/hobbies";
@@ -32,7 +32,7 @@ export default function AddHobbyDrawer({
 
   const handleAdd = () => {
     if (!hobbyName.trim() || !selectedCategory || !onAdd) return;
-    onAdd(hobbyName.trim());
+    onAdd(hobbyName.trim(), selectedCategory);
     setOpen(false);
     setHobbyName("");
     setSelectedCategory(null);

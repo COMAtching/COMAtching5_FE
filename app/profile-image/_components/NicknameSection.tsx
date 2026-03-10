@@ -6,11 +6,13 @@ import { Shuffle } from "lucide-react";
 interface NicknameSectionProps {
   nickname: string;
   onNicknameChange: (value: string) => void;
+  onRandomClick: () => void;
 }
 
 const NicknameSection = ({
   nickname,
   onNicknameChange,
+  onRandomClick,
 }: NicknameSectionProps) => {
   return (
     <div className="mt-4 flex flex-col gap-2">
@@ -35,8 +37,8 @@ const NicknameSection = ({
         </div>
         <button
           type="button"
-          /* Placeholder onClick, or remove if not needed */
-          className="flex h-[48px] w-[120px] items-center justify-center gap-[8px] rounded-[16px] border border-[#0E1013]/10 bg-white"
+          onClick={onRandomClick}
+          className="flex h-[48px] w-[120px] items-center justify-center gap-[8px] rounded-[16px] border border-[#0E1013]/10 bg-white active:bg-gray-50"
         >
           <Shuffle size={16} color="#5F6368" />
           <span className="text-[18px] leading-none font-semibold text-[#5F6368]">
