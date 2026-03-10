@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
@@ -8,20 +7,28 @@ import FormInput from "@/components/ui/FormInput";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/providers/profile-provider";
+import { SocialType } from "@/lib/types/profile";
+import { useRouter } from "next/navigation";
 
 const ScreenExtraInfoDetail = () => {
-  const [contactType, setContactType] = useState<"instagram" | "kakao">(
-    "instagram",
+  const router = useRouter();
+  const { profile, updateProfile } = useProfile();
+
+  const [contactType, setContactType] = useState<"instagram" | "kakao" | null>(
+    (profile.socialType?.toLowerCase() as "instagram" | "kakao") || null,
   );
-  const [contactId, setContactId] = useState("");
-  const [favoriteSong, setFavoriteSong] = useState("");
-  const [advantages, setAdvantages] = useState<string[]>([]);
+  const [contactId, setContactId] = useState(profile.socialAccountId || "");
+  const [favoriteSong, setFavoriteSong] = useState(profile.favoriteSong || ""); 
+  const [advantages, setAdvantages] = useState<string[]>(profile.advantages || []);
+
   const contactOptions = [
     {
       key: "instagram",
       label: "인스타",
       img: "/sns/insta-sns.svg",
-      placeholder: "인스타 아이디 (예: @winterizcoming_)",
+      unactiveImg: "/sns/unactive-insta.svg",
+      placeholder: "인스타 아이디 (예: @coma_comatching)",
       inputId: "contact-instagram",
       inputName: "contactInstagram",
     },
@@ -29,24 +36,35 @@ const ScreenExtraInfoDetail = () => {
       key: "kakao",
       label: "카카오",
       img: "/sns/kakao-sns.svg",
+      unactiveImg: "/sns/unactive-kakao.svg",
       placeholder: "카카오톡 아이디",
       inputId: "contact-kakao",
       inputName: "contactKakao",
     },
   ];
 
-  const selectedOption = contactOptions.find((opt) => opt.key === contactType)!;
+  const selectedOption = contactOptions.find((opt) => opt.key === contactType);
 
   const isContactValid =
-    contactType === "instagram"
-      ? contactId.startsWith("@") && contactId.length > 1
-      : contactId.trim().length > 0;
+    contactType === null
+      ? true
+      : contactType === "instagram"
+        ? contactId.startsWith("@") && contactId.length > 1
+        : contactId.trim().length > 0;
 
-  const isValid =
-    advantages.length >= 1 &&
-    advantages.length <= 5 &&
-    isContactValid &&
-    favoriteSong.trim().length > 0;
+  const isValid = isContactValid;
+
+  const handleNext = () => {
+    updateProfile({
+      socialType: contactType
+        ? (contactType.toUpperCase() as SocialType)
+        : undefined,
+      socialAccountId: contactType ? contactId : undefined,
+      advantages: advantages.length > 0 ? advantages : undefined,
+      favoriteSong: favoriteSong.trim() || undefined,
+    });
+    router.push("/profile-image");
+  };
 
   return (
     <main className="relative flex min-h-svh flex-col overflow-x-hidden px-4 pb-[120px]">
@@ -116,31 +134,40 @@ const ScreenExtraInfoDetail = () => {
                     : undefined
                 }
                 onClick={() => {
-                  setContactType(opt.key as typeof contactType);
-                  setContactId(""); // 타입 변경 시 입력값 초기화
+                  if (contactType === opt.key) {
+                    setContactType(null);
+                    setContactId("");
+                  } else {
+                    setContactType(opt.key as "instagram" | "kakao");
+                    setContactId("");
+                  }
                 }}
               >
                 <span className="flex flex-row items-center justify-center gap-2">
-                  <Image
-                    src={opt.img}
-                    alt={opt.label + " 아이콘"}
-                    width={24}
-                    height={24}
-                  />
-                  <span className="typo-14-600">{opt.label}</span>
+                  <div className="flex h-6 w-6 items-center justify-center">
+                    <Image
+                      src={contactType === opt.key ? opt.img : opt.unactiveImg}
+                      alt={opt.label + " 아이콘"}
+                      width={contactType === opt.key ? 24 : 12}
+                      height={contactType === opt.key ? 24 : 12}
+                    />
+                  </div>
+                  <span className="typo-16-600">{opt.label}</span>
                 </span>
               </button>
             ))}
           </div>
-          <FormInput
-            id={selectedOption.inputId}
-            name={selectedOption.inputName}
-            type="text"
-            placeholder={selectedOption.placeholder}
-            className="typo-18-600 text-black"
-            value={contactId}
-            onChange={(e) => setContactId(e.target.value)}
-          />
+          {contactType && selectedOption && (
+            <FormInput
+              id={selectedOption.inputId}
+              name={selectedOption.inputName}
+              type="text"
+              placeholder={selectedOption.placeholder}
+              className="typo-18-600 text-black"
+              value={contactId}
+              onChange={(e) => setContactId(e.target.value)}
+            />
+          )}
         </div>
 
         {/* 좋아하는 노래 */}
@@ -168,21 +195,26 @@ const ScreenExtraInfoDetail = () => {
         sideGap={16}
         safeArea
         disabled={!isValid}
+        onClick={handleNext}
       >
         다음으로
       </Button>
-      <Link href="/profile-image">
-        <Button
-          type="button"
-          fixed
-          bottom={40}
-          shadow={false}
-          safeArea
-          className="typo-14-500 border-none bg-transparent text-gray-500"
-        >
-          다음에 할게요
-        </Button>
-      </Link>
+      <button
+        type="button"
+        onClick={() => {
+          updateProfile({
+            socialType: undefined,
+            socialAccountId: undefined,
+            advantages: undefined,
+            favoriteSong: undefined,
+          });
+          router.push("/profile-image");
+        }}
+        className="typo-14-500 fixed left-1/2 z-50 -translate-x-1/2 whitespace-nowrap text-gray-500 transition-colors duration-300 hover:text-gray-800"
+        style={{ bottom: "calc(40px + env(safe-area-inset-bottom))" }}
+      >
+        다음에 할게요
+      </button>
     </main>
   );
 };

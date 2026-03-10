@@ -48,16 +48,17 @@ export default function Button({
       disabled={disabled}
       className={cn(
         // 기본 스타일
-        "text-button-primary-text-default bg-button-primary flex h-12 w-full shrink-0 items-center justify-center rounded-[16px] transition-colors duration-100",
+        "flex h-12 w-full shrink-0 items-center justify-center rounded-[16px] transition-colors duration-100",
         // typo- 클래스가 명시되지 않은 경우에만 기본 typo-20-600 적용
         !className?.includes("typo-") && "typo-20-600",
         fixed && "fixed z-50 mx-auto",
         disabled ? "cursor-not-allowed" : "cursor-pointer",
-        // 1. 사용자 className 적용
+        // 1. 기본 테마 또는 disabled 테마 적용
+        disabled
+          ? "bg-button-background-disabled text-button-primary-text-disabled"
+          : "bg-button-primary text-button-primary-text-default",
+        // 2. 사용자 className 적용 (이게 마지막이어야 덮어씀)
         className,
-        // 2. disabled 스타일이 덮어쓰도록(맨 뒤에 배치)
-        disabled &&
-          "bg-button-background-disabled text-button-primary-text-disabled",
       )}
       style={{
         ...(fixed && {

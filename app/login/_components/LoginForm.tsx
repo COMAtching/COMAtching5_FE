@@ -68,7 +68,7 @@ export const LoginForm = () => {
       </div>
 
       <div className="mt-auto flex w-full flex-col items-center gap-4">
-        <BubbleDiv w={162} h={26} typo="typo-12-600" top={3}>
+        <BubbleDiv top={-4}>
           아직 계정이 없으신가요?!
         </BubbleDiv>
         <Link

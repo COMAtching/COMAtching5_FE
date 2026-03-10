@@ -34,16 +34,19 @@ const AdvantageDrawer = ({
   };
 
   const toggleAdvantage = (advantage: string) => {
-    setSelected((prev) => {
-      if (prev.includes(advantage)) {
-        return prev.filter((a) => a !== advantage);
-      }
-      if (prev.length >= 5) {
-        alert("최대 5개까지 선택할 수 있어요.");
-        return prev;
-      }
-      return [...prev, advantage];
-    });
+    const isAlreadySelected = selected.includes(advantage);
+
+    if (isAlreadySelected) {
+      setSelected((prev) => prev.filter((a) => a !== advantage));
+      return;
+    }
+
+    if (selected.length >= 5) {
+      alert("최대 5개까지 선택할 수 있어요.");
+      return;
+    }
+
+    setSelected((prev) => [...prev, advantage]);
   };
 
   const handleComplete = () => {
