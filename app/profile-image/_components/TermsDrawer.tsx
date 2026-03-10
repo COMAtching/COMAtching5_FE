@@ -8,6 +8,7 @@ import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
 import { useProfile } from "@/providers/profile-provider";
 import { useImageUpload, useProfileSignUp } from "@/hooks/useProfileSignUp";
+import { useNicknameAvailability } from "@/hooks/useNicknameAvailability";
 import { useRouter } from "next/navigation";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 
@@ -31,6 +32,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
 
   const { mutateAsync: uploadImage } = useImageUpload();
   const { mutate: signUp, isPending: isSubmitting } = useProfileSignUp();
+  const { mutateAsync: checkNicknameAvailability } = useNicknameAvailability();
 
   const checkGradient =
     "linear-gradient(220.53deg, #FF775E -18.87%, #FF4D61 62.05%, #E83ABC 125.76%)";
@@ -146,9 +148,26 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
 
   const trigger = children
     ? React.cloneElement(children, {
-        onClick: (e: React.MouseEvent<HTMLElement>) => {
+        onClick: async (e: React.MouseEvent<HTMLElement>) => {
           children.props.onClick?.(e);
-          setIsOpen(true);
+
+          const nickname = (profile.nickname || "").trim();
+
+          try {
+            const isAvailable = await checkNicknameAvailability(nickname);
+
+            if (!isAvailable) {
+              alert("중복된 닉네임입니다. 다른 닉네임을 입력해 주세요.");
+              return;
+            }
+
+            setIsOpen(true);
+          } catch (error) {
+            console.error("Failed to check nickname availability:", error);
+            alert(
+              "닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+            );
+          }
         },
       })
     : null;
