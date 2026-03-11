@@ -23,8 +23,18 @@ export const ScreenRegister = () => {
 
   const handleEmailSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setVerificationCode("");
+    setStep(2);
+
     sendEmail(email, {
-      onSuccess: () => setStep(2),
+      onError: (error) => {
+        const message =
+          axios.isAxiosError(error) && error.response?.data?.message
+            ? error.response.data.message
+            : "이메일 전송에 실패했습니다. 다시 시도해주세요.";
+        alert(message);
+        setStep(1);
+      },
     });
   };
 
@@ -86,6 +96,7 @@ export const ScreenRegister = () => {
           onVerificationCodeChange={setVerificationCode}
           onVerify={handleVerify}
           onResend={handleResendCode}
+          isSending={isSendingEmail}
           isVerifying={isVerifyingEmail}
         />
       )}
