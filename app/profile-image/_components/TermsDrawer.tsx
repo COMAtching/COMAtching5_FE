@@ -114,7 +114,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
       const submitData: ProfileSubmitData = {
         nickname: profile.nickname || "",
         gender: profile.gender || "MALE",
-        birthDate: profile.birthDate || "",
+        birthDate: profile.birthDate ? profile.birthDate.split("-")[0] : "",
         mbti: profile.mbti || "ISTJ",
         intro: profile.intro || "",
         profileImageUrl: finalImageUrl || profile.profileImageUrl || "",

@@ -48,7 +48,7 @@ export default function AddHobbyDrawer({
         <DrawerHeader className="flex flex-row items-start justify-between p-0">
           <div className="flex flex-col gap-1 text-left">
             <DrawerTitle>내 관심사 추가하기</DrawerTitle>
-            <p className="typo-12-400 text-[#858585]">
+            <p className="typo-12-400 mb-8 text-[#858585]">
               밑에 중분류를 설정하면 나만의 관심사를 추가할 수 있어요. 나만의
               관심사를 추가해 보세요.
             </p>

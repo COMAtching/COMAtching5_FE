@@ -130,7 +130,7 @@ export const ScreenProfileBuilder = () => {
   const handleComplete = () => {
     // Context 업데이트용 데이터 변환
     const profileData: Partial<ProfileData> = {
-      birthDate: selectedBirthYear ? `${selectedBirthYear}-01-01` : undefined,
+      birthDate: selectedBirthYear || undefined,
       university: selectedUniversity,
       department: selectedDepartment,
       major: selectedMajor,
