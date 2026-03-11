@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ChevronRight, ArrowLeft } from "lucide-react";
+import axios from "axios";
 import Button from "@/components/ui/Button";
 import { SelectCheckButton } from "./ProfileImageSelection";
 import ProfileBottomSheet from "./ProfileBottomSheet";
@@ -8,7 +9,10 @@ import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
 import { useProfile } from "@/providers/profile-provider";
 import { useImageUpload, useProfileSignUp } from "@/hooks/useProfileSignUp";
-import { useNicknameAvailability } from "@/hooks/useNicknameAvailability";
+import {
+  useNicknameAvailability,
+  NicknameAvailabilityResponse,
+} from "@/hooks/useNicknameAvailability";
 import { useRouter } from "next/navigation";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 
@@ -159,15 +163,30 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
           }
 
           try {
-            const isAvailable = await checkNicknameAvailability(nickname);
+            const res = await checkNicknameAvailability(nickname);
 
-            if (!isAvailable) {
-              alert("중복된 닉네임입니다. 다른 닉네임을 입력해 주세요.");
-              return;
+            // 200 OK 응답 처리
+            if (res.code === "GEN-000") {
+              const isAvailable =
+                typeof res.data === "object" ? res.data?.available : res.data;
+              if (isAvailable) {
+                setIsOpen(true);
+              } else {
+                alert("중복된 닉네임입니다. 다른 닉네임을 입력해 주세요.");
+              }
+            }
+          } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+              const res = error.response?.data as NicknameAvailabilityResponse;
+
+              // 백엔드에서 400 등 에러 코드를 보낼 때 (MEM-009 등)
+              if (res?.code === "MEM-009") {
+                alert("공백은 닉네임으로 사용할 수 없습니다.");
+                return;
+              }
             }
 
-            setIsOpen(true);
-          } catch (error) {
+            // 그 외 진짜 예상치 못한 에러 (네트워크, 500 등)
             console.error("Failed to check nickname availability:", error);
             alert(
               "닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",

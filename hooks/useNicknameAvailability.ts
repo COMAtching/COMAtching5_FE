@@ -1,7 +1,7 @@
 import { api } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 
-interface NicknameAvailabilityResponse {
+export interface NicknameAvailabilityResponse {
   code: string;
   status: number;
   message: string;
@@ -14,35 +14,9 @@ interface NicknameAvailabilityResponse {
       };
 }
 
-const parseNicknameAvailability = (
-  response: NicknameAvailabilityResponse,
-): boolean => {
-  const payload = response.data;
-
-  if (typeof payload === "boolean") {
-    return payload;
-  }
-
-  if (payload && typeof payload === "object") {
-    if (typeof payload.available === "boolean") {
-      return payload.available;
-    }
-
-    if (typeof payload.isAvailable === "boolean") {
-      return payload.isAvailable;
-    }
-
-    if (typeof payload.duplicate === "boolean") {
-      return !payload.duplicate;
-    }
-  }
-
-  throw new Error("닉네임 중복 검사 응답 형식을 확인할 수 없습니다.");
-};
-
 const checkNicknameAvailability = async (
   nickname: string,
-): Promise<boolean> => {
+): Promise<NicknameAvailabilityResponse> => {
   const { data: response } = await api.get<NicknameAvailabilityResponse>(
     "/api/auth/signup/nickname/availability",
     {
@@ -50,7 +24,7 @@ const checkNicknameAvailability = async (
     },
   );
 
-  return parseNicknameAvailability(response);
+  return response;
 };
 
 export const useNicknameAvailability = () => {
