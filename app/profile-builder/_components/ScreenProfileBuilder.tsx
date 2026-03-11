@@ -146,6 +146,27 @@ export const ScreenProfileBuilder = () => {
     router.push("/hobby-select");
   };
 
+  // 단계별 유효성 검사
+  const isStepValid = (() => {
+    switch (currentStep) {
+      case 1:
+        return !!(
+          selectedBirthYear &&
+          selectedUniversity &&
+          selectedDepartment &&
+          selectedMajor
+        );
+      case 2:
+        return !!selectedGender;
+      case 3:
+        return !!selectedMBTI;
+      case 4:
+        return !!selectedFrequency;
+      default:
+        return false;
+    }
+  })();
+
   return (
     <div className="relative flex min-h-screen flex-col px-4 pb-32">
       {/* 헤더 영역 */}
@@ -214,6 +235,7 @@ export const ScreenProfileBuilder = () => {
         bottom={24}
         sideGap={16}
         safeArea
+        disabled={!isStepValid}
         onClick={currentStep === 4 ? handleComplete : handleNext}
         className="bg-button-primary text-button-primary-text-default"
       >

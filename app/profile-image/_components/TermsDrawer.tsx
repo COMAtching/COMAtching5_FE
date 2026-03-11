@@ -106,8 +106,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
       // 1. 커스텀 이미지가 있으면 먼저 업로드 (Key 획득)
       if (profile.profileImageFile) {
         finalImageUrl = await uploadImage(profile.profileImageFile);
+      } else if (profile.profileImageUrl) {
+        finalImageUrl = `default_${profile.profileImageUrl}`;
       } else {
-        finalImageUrl = `default_${profile.profileImageUrl || "bear"}`;
+        finalImageUrl = "default";
       }
 
       // 2. 최종 데이터 객체 생성 (백엔드 양식 준수)
