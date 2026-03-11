@@ -12,9 +12,9 @@ type MajorCategory = {
 };
 
 export const getYearOptions = (): Option[] =>
-  Array.from({ length: 24 }, (_, index) => ({
-    value: String(1997 + index),
-    label: `${1997 + index}년`,
+  Array.from({ length: 11 }, (_, index) => ({
+    value: String(2000 + index),
+    label: `${2000 + index}년`,
   }));
 
 export const getUniversityOptions = (universities: string[]): Option[] =>

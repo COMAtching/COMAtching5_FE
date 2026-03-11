@@ -35,7 +35,7 @@ export interface ProfileData {
   // 기본 정보
   nickname?: string;
   gender?: Gender;
-  birthDate?: string; // 출생 년도 (YYYY)
+  birthDate?: string; // YYYY-MM-DD 형식
   mbti?: MBTI;
   intro?: string;
   profileImageUrl?: string;

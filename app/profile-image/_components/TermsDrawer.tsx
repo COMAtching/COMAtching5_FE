@@ -106,15 +106,17 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
       // 1. 커스텀 이미지가 있으면 먼저 업로드 (Key 획득)
       if (profile.profileImageFile) {
         finalImageUrl = await uploadImage(profile.profileImageFile);
+      } else if (profile.profileImageUrl) {
+        finalImageUrl = `default_${profile.profileImageUrl}`;
       } else {
-        finalImageUrl = `default_${profile.profileImageUrl || "bear"}`;
+        finalImageUrl = "default";
       }
 
       // 2. 최종 데이터 객체 생성 (백엔드 양식 준수)
       const submitData: ProfileSubmitData = {
         nickname: profile.nickname || "",
         gender: profile.gender || "MALE",
-        birthDate: profile.birthDate ? profile.birthDate.split("-")[0] : "",
+        birthDate: profile.birthDate || "",
         mbti: profile.mbti || "ISTJ",
         intro: profile.intro || "",
         profileImageUrl: finalImageUrl || profile.profileImageUrl || "",
