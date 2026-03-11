@@ -153,6 +153,11 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
 
           const nickname = (profile.nickname || "").trim();
 
+          if (!nickname) {
+            alert("닉네임을 입력해 주세요.");
+            return;
+          }
+
           try {
             const isAvailable = await checkNicknameAvailability(nickname);
 
