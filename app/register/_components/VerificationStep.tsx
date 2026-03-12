@@ -119,7 +119,6 @@ export const VerificationStep = ({
               onChange={(e) => handleVerificationCodeChange(e.target.value)}
               error={!!errorMessage}
               maxLength={6}
-              inputMode="numeric"
               className="flex-1"
             />
             <Button
