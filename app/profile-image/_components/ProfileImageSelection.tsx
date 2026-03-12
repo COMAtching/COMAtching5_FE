@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { convertHeicToJpg } from "@/lib/utils/image";
 import DefaultProfileDrawer, { DEFAULT_PROFILES } from "./DefaultProfileDrawer";
 
 type SelectCheckButtonProps = {
@@ -63,15 +64,26 @@ const ProfileImageSelection = ({
 
   const currentProfile = DEFAULT_PROFILES.find((p) => p.id === selectedProfile);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      onFileChange?.(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onCustomImageChange(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      const targetFile = await convertHeicToJpg(file);
+
+      if (targetFile.type.startsWith("image/")) {
+        onFileChange?.(targetFile);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          onCustomImageChange(reader.result as string);
+        };
+        reader.readAsDataURL(targetFile);
+      }
+    } catch (error) {
+      console.error("Image processing failed:", error);
+      alert(
+        "이미지 처리 중 오류가 발생했습니다. 다른 이미지 형식을 사용해 주세요.",
+      );
     }
   };
 
