@@ -131,16 +131,15 @@
 
 @layer utilities {
   .bg-pink-conic {
+    background: linear-gradient(90deg, #F76BA3 0%, #FA78A0 49.85%, #FC849F 99.69%);
+  }
+
+  .bg-pink-gradient {
     background:
-      conic-gradient(
-        from -36.07deg at 108.5px -49.1px,
-        #e83abc -66.6deg,
-        rgba(255, 119, 94, 0.1) 0.04deg,
-        rgba(255, 77, 97, 0.6) 169.2deg,
-        #e83abc 192.6deg,
-        rgba(255, 98, 95, 0.344627) 208.31deg,
-        #e83abc 293.4deg,
-        rgba(255, 119, 94, 0.1) 360.04deg
+      linear-gradient(
+        288.98deg,
+        rgba(255, 98, 95, 0.051694) 19.94%,
+        rgba(232, 58, 188, 0.15) 105.37%
       ),
       rgba(255, 255, 255, 0.2);
   }
