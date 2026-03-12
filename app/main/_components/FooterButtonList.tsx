@@ -3,6 +3,7 @@ import React from "react";
 const MatchingButton = () => {
   return (
     <button
+      type="button"
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
@@ -12,13 +13,8 @@ const MatchingButton = () => {
       <div className="flex items-center gap-2">
         <span className="typo-24-600 text-gray-900">AI 매칭하기</span>
         <div
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "11px solid #1A1A1A",
-            borderTop: "7px solid transparent",
-            borderBottom: "7px solid transparent",
-          }}
+          className="h-0 w-0 border-y-[7px] border-l-[11px] border-y-transparent border-l-[#1A1A1A]"
+          aria-hidden="true"
         />
       </div>
       <span className="typo-16-500 text-gray-400">
@@ -29,11 +25,11 @@ const MatchingButton = () => {
 };
 
 const SearchMyListButton = () => {
-  return <button>Search My List</button>;
+  return <button type="button">Search My List</button>;
 };
 
 const GuideBookButton = () => {
-  return <button>Guide Book</button>;
+  return <button type="button">Guide Book</button>;
 };
 
 export { MatchingButton, SearchMyListButton, GuideBookButton };
