@@ -27,6 +27,7 @@ const ScreenMainPage = () => {
   // 실제 서비스 시에는 서버에서 받아온 데이터(profiles)를 넘겨줍니다.
   const mockProfileData: ProfileData[] = [
     {
+      memberId: 1,
       nickname: "겨울이오길",
       birthDate: "2004-01-01",
       major: "정보통신전자공학부",
@@ -37,6 +38,7 @@ const ScreenMainPage = () => {
       socialAccountId: "winterizcoming_",
     },
     {
+      memberId: 2,
       nickname: "코매칭짱",
       birthDate: "2002-05-15",
       major: "컴퓨터정보공학부",
