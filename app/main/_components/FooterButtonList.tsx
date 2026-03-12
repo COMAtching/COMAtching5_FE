@@ -25,11 +25,39 @@ const MatchingButton = () => {
 };
 
 const SearchMyListButton = () => {
-  return <button type="button">Search My List</button>;
+  return (
+    <button
+      type="button"
+      style={{
+        background:
+          "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
+      }}
+      className="flex h-[56px] flex-1 items-center justify-center rounded-[16px] border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
+    >
+      <div className="flex items-center gap-3">
+        <span className="typo-18-600 text-color-gray-700">🔍</span>
+        <span className="typo-18-600 text-color-gray-900">조회하기</span>
+      </div>
+    </button>
+  );
 };
 
 const GuideBookButton = () => {
-  return <button type="button">Guide Book</button>;
+  return (
+    <button
+      type="button"
+      style={{
+        background:
+          "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
+      }}
+      className="flex h-[56px] flex-1 items-center justify-center rounded-[16px] border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
+    >
+      <div className="flex items-center gap-3">
+        <span className="typo-18-600 text-color-gray-700">📖</span>
+        <span className="typo-18-600 text-color-gray-900">QA</span>
+      </div>
+    </button>
+  );
 };
 
 export { MatchingButton, SearchMyListButton, GuideBookButton };

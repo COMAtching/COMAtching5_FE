@@ -24,7 +24,7 @@ const MyCoinSection = () => {
         />
         <span className="typo-14-600 text-color-text-caption1">1개</span>
       </div>
-      <button className="bg-pink-conic typo-11-700 h-[26px] w-[58px] rounded-full text-white">
+      <button className="bg-milky-pink typo-11-700 h-[26px] w-[58px] rounded-full text-white">
         구매하기
       </button>
     </section>

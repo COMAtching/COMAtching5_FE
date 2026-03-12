@@ -125,22 +125,14 @@
   }
 }
 
-/* ============================
-   Shared bg-pink-conic utility
-   ============================ */
-
 @layer utilities {
-  .bg-pink-conic {
-    background: linear-gradient(90deg, #F76BA3 0%, #FA78A0 49.85%, #FC849F 99.69%);
-  }
-
-  .bg-pink-gradient {
-    background:
-      linear-gradient(
-        288.98deg,
-        rgba(255, 98, 95, 0.051694) 19.94%,
-        rgba(232, 58, 188, 0.15) 105.37%
-      ),
-      rgba(255, 255, 255, 0.2);
+  .bg-milky-pink {
+    background: conic-gradient(
+      from -36.07deg at 64.06% -102.34%,
+      #e83abc 0deg,
+      rgba(255, 119, 94, 0.1) 0.04deg,
+      rgba(255, 77, 97, 0.6) 169.2deg,
+      #e83abc 360deg
+    );
   }
 }
