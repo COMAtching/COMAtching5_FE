@@ -61,7 +61,7 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
         >
           {profiles.map((profile, index) => (
             <div
-              key={index}
+              key={profile.memberId}
               className="flex w-full shrink-0 snap-center flex-col items-center justify-center gap-[12px] p-4 pb-1"
             >
               {/* Upper Section: Profile and Name */}
@@ -203,9 +203,9 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
       {/* Indicator dots separated below the entire card */}
       {profiles.length > 1 && (
         <div className="mt-4 flex justify-center gap-1.5">
-          {profiles.map((_, i) => (
+          {profiles.map((profile, i) => (
             <div
-              key={i}
+              key={`dot-${profile.memberId}`}
               className={`h-1.5 w-1.5 rounded-full transition-colors duration-200 ${
                 i === activeIndex ? "bg-color-gray-800" : "bg-color-gray-100"
               }`}
