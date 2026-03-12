@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from "@/lib/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -40,7 +41,9 @@ export type AdminRegisterResponse = {
   message: string;
 };
 
-const adminLogin = async (payload: AdminLoginRequest): Promise<AdminLoginResponse> => {
+const adminLogin = async (
+  payload: AdminLoginRequest,
+): Promise<AdminLoginResponse> => {
   const { data } = await api.post<AdminLoginResponse>("/admin/login", payload);
   return data;
 };
@@ -50,8 +53,13 @@ const getAdminInfo = async (): Promise<AdminInfoResponse> => {
   return data;
 };
 
-const adminRegister = async (payload: AdminRegisterRequest): Promise<AdminRegisterResponse> => {
-  const { data } = await api.post<AdminRegisterResponse>("/admin/register", payload);
+const adminRegister = async (
+  payload: AdminRegisterRequest,
+): Promise<AdminRegisterResponse> => {
+  const { data } = await api.post<AdminRegisterResponse>(
+    "/admin/register",
+    payload,
+  );
   return data;
 };
 

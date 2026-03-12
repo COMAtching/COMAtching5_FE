@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { Coins } from "lucide-react";
 import { useApproveCharge, useRejectCharge } from "@/hooks/useAdminManagement";
 
 interface RequestUserProps {
@@ -16,14 +16,14 @@ interface RequestUserProps {
   realName: string;
 }
 
-export const RequestUserComponent = ({ 
-  orderId, 
-  username, 
-  price, 
-  requestAt, 
-  productName, 
-  onUpdate, 
-  realName 
+export const RequestUserComponent = ({
+  orderId,
+  username,
+  price,
+  requestAt,
+  productName,
+  onUpdate,
+  realName,
 }: RequestUserProps) => {
   const approveMutation = useApproveCharge();
   const rejectMutation = useRejectCharge();
@@ -38,10 +38,10 @@ export const RequestUserComponent = ({
       const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
 
       const year = kstDate.getUTCFullYear();
-      const month = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(kstDate.getUTCDate()).padStart(2, '0');
-      const hours = String(kstDate.getUTCHours()).padStart(2, '0');
-      const minutes = String(kstDate.getUTCMinutes()).padStart(2, '0');
+      const month = String(kstDate.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(kstDate.getUTCDate()).padStart(2, "0");
+      const hours = String(kstDate.getUTCHours()).padStart(2, "0");
+      const minutes = String(kstDate.getUTCMinutes()).padStart(2, "0");
 
       return `${year}-${month}-${day} ${hours}시 ${minutes}분`;
     } catch (error) {
@@ -71,36 +71,44 @@ export const RequestUserComponent = ({
 
   return (
     <div className="flex flex-col border-b border-gray-200 py-4 font-sans">
-      <div className="flex flex-wrap items-center gap-5 mb-4">
-        <div className="text-xl font-bold">닉네임 : <span className="font-semibold">{username}</span></div>
-        <div className="text-xl font-bold">입금자명 : <span className="font-semibold">{realName}</span></div>
-        <div className="text-gray-500 text-lg">요청시각 : {formatDateTime(requestAt)}</div>
-        <div className="text-gray-500 text-lg">주문번호 : {orderId}</div>
+      <div className="mb-4 flex flex-wrap items-center gap-5">
+        <div className="text-xl font-bold">
+          닉네임 : <span className="font-semibold">{username}</span>
+        </div>
+        <div className="text-xl font-bold">
+          입금자명 : <span className="font-semibold">{realName}</span>
+        </div>
+        <div className="text-lg text-gray-500">
+          요청시각 : {formatDateTime(requestAt)}
+        </div>
+        <div className="text-lg text-gray-500">주문번호 : {orderId}</div>
       </div>
-      
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-10">
           <div className="flex items-center">
-            <Image src="/logo/coin.svg" alt="Coin" width={32} height={32} className="mr-1" />
+            <Coins size={32} className="mr-2 fill-yellow-500 text-yellow-500" />
             <span className="text-xl font-semibold">{productName}</span>
           </div>
           <div className="flex items-center text-xl">
-            <span className="text-gray-600 font-medium">가격 : </span>
-            <span className="font-bold ml-2 w-[120px] text-center">{price}원</span>
+            <span className="font-medium text-gray-600">가격 : </span>
+            <span className="ml-2 w-[120px] text-center font-bold">
+              {price}원
+            </span>
           </div>
         </div>
-        
-        <div className="flex items-center gap-2 pr-8 h-12">
+
+        <div className="flex h-12 items-center gap-2 pr-8">
           <button
             onClick={handleApprove}
-            className="w-[100px] h-full bg-[#ff775e] text-white text-xl font-bold rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all"
+            className="h-full w-[100px] rounded-lg bg-[#ff775e] text-xl font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-95"
             disabled={approveMutation.isPending}
           >
             {approveMutation.isPending ? "..." : "수락"}
           </button>
           <button
             onClick={handleReject}
-            className="w-[100px] h-full bg-[#ff775e] text-white text-xl font-bold rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all"
+            className="h-full w-[100px] rounded-lg bg-[#ff775e] text-xl font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-95"
             disabled={rejectMutation.isPending}
           >
             {rejectMutation.isPending ? "..." : "거절"}

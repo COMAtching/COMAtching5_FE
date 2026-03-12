@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const formatDateTime = (input: any) => {
   if (!input) return { date: "N/A", time: "N/A" };
-  
+
   if (Array.isArray(input) && input.length >= 5) {
     const [year, month, day, hour, minute] = input;
     return {
@@ -8,7 +9,7 @@ export const formatDateTime = (input: any) => {
       time: `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
     };
   }
-  
+
   if (typeof input === "string") {
     try {
       const date = new Date(input);

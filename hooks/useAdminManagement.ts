@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from "@/lib/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -28,14 +29,20 @@ export type AdminActionResponse = {
   data: any;
 };
 
-const getUserList = async (page: number, size: number): Promise<UserListResponse> => {
+const getUserList = async (
+  page: number,
+  size: number,
+): Promise<UserListResponse> => {
   const { data } = await api.get<UserListResponse>(`/auth/operator/user-list`, {
     params: { page, size },
   });
   return data;
 };
 
-const searchUsers = async (searchType: "email" | "username", keyword: string): Promise<UserListResponse> => {
+const searchUsers = async (
+  searchType: "email" | "username",
+  keyword: string,
+): Promise<UserListResponse> => {
   const { data } = await api.get<UserListResponse>(`/auth/operator/user-list`, {
     params: { searchType, keyword },
   });
@@ -54,73 +61,135 @@ const getUserDetail = async (uuid: string): Promise<AdminActionResponse> => {
   return data;
 };
 
-const getPaymentHistory = async (uuid: string): Promise<AdminActionResponse> => {
-  const { data } = await api.get<AdminActionResponse>(`/auth/operator/api/history/payment/${uuid}`);
+const getPaymentHistory = async (
+  uuid: string,
+): Promise<AdminActionResponse> => {
+  const { data } = await api.get<AdminActionResponse>(
+    `/auth/operator/api/history/payment/${uuid}`,
+  );
   return data;
 };
 
-const adjustPoint = async (payload: { uuid: string; point: number; reason: string }): Promise<AdminActionResponse> => {
-  const { data } = await api.patch<AdminActionResponse>(`/auth/operator/api/point`, payload);
+const adjustPoint = async (payload: {
+  uuid: string;
+  point: number;
+  reason: string;
+}): Promise<AdminActionResponse> => {
+  const { data } = await api.patch<AdminActionResponse>(
+    `/auth/operator/api/point`,
+    payload,
+  );
   return data;
 };
 
-const registerNotice = async (payload: { title: string; content: string; postedAt: string; closedAt: string }): Promise<AdminActionResponse> => {
-  const { data } = await api.post<AdminActionResponse>("/auth/admin/notice", payload);
+const registerNotice = async (payload: {
+  title: string;
+  content: string;
+  postedAt: string;
+  closedAt: string;
+}): Promise<AdminActionResponse> => {
+  const { data } = await api.post<AdminActionResponse>(
+    "/auth/admin/notice",
+    payload,
+  );
   return data;
 };
 
-const getNoticeList = async (type: "RESERVATION" | "HISTORY"): Promise<AdminActionResponse> => {
-  const { data } = await api.get<AdminActionResponse>(`/auth/admin/notice/list?type=${type}`);
+const getNoticeList = async (
+  type: "RESERVATION" | "HISTORY",
+): Promise<AdminActionResponse> => {
+  const { data } = await api.get<AdminActionResponse>(
+    `/auth/admin/notice/list?type=${type}`,
+  );
   return data;
 };
 
 const deleteNotice = async (noticeId: number): Promise<AdminActionResponse> => {
-  const { data } = await api.delete<AdminActionResponse>(`/auth/admin/notice/${noticeId}`);
+  const { data } = await api.delete<AdminActionResponse>(
+    `/auth/admin/notice/${noticeId}`,
+  );
   return data;
 };
 
-const registerDiscountEvent = async (payload: { eventType: "DISCOUNT"; start: string; end: string; discountRate: string }): Promise<AdminActionResponse> => {
-  const { data } = await api.post<AdminActionResponse>("/auth/admin/event/discount", payload);
+const registerDiscountEvent = async (payload: {
+  eventType: "DISCOUNT";
+  start: string;
+  end: string;
+  discountRate: string;
+}): Promise<AdminActionResponse> => {
+  const { data } = await api.post<AdminActionResponse>(
+    "/auth/admin/event/discount",
+    payload,
+  );
   return data;
 };
 
-const registerFreeMatchEvent = async (payload: { eventType: "FREE_MATCH"; start: string; end: string }): Promise<AdminActionResponse> => {
-  const { data } = await api.post<AdminActionResponse>("/auth/admin/event/free-match", payload);
+const registerFreeMatchEvent = async (payload: {
+  eventType: "FREE_MATCH";
+  start: string;
+  end: string;
+}): Promise<AdminActionResponse> => {
+  const { data } = await api.post<AdminActionResponse>(
+    "/auth/admin/event/free-match",
+    payload,
+  );
   return data;
 };
 
-const getEventList = async (type: "RESERVATION" | "HISTORY"): Promise<AdminActionResponse> => {
-  const { data } = await api.get<AdminActionResponse>(`/auth/admin/event/list?type=${type}`);
+const getEventList = async (
+  type: "RESERVATION" | "HISTORY",
+): Promise<AdminActionResponse> => {
+  const { data } = await api.get<AdminActionResponse>(
+    `/auth/admin/event/list?type=${type}`,
+  );
   return data;
 };
 
 const deleteEvent = async (eventId: number): Promise<AdminActionResponse> => {
-  const { data } = await api.delete<AdminActionResponse>(`/auth/admin/event/${eventId}`);
+  const { data } = await api.delete<AdminActionResponse>(
+    `/auth/admin/event/${eventId}`,
+  );
   return data;
 };
 
 const getWarnHistory = async (uuid: string): Promise<AdminActionResponse> => {
-  const { data } = await api.get<AdminActionResponse>(`/auth/operator/user/warnhistory?uuid=${uuid}`);
+  const { data } = await api.get<AdminActionResponse>(
+    `/auth/operator/user/warnhistory?uuid=${uuid}`,
+  );
   return data;
 };
 
-const sendWarnMessage = async (payload: { uuid: string; message: string }): Promise<AdminActionResponse> => {
-  const { data } = await api.post<AdminActionResponse>(`/auth/operator/user/warn`, payload);
+const sendWarnMessage = async (payload: {
+  uuid: string;
+  message: string;
+}): Promise<AdminActionResponse> => {
+  const { data } = await api.post<AdminActionResponse>(
+    `/auth/operator/user/warn`,
+    payload,
+  );
   return data;
 };
 
 const getChargeList = async (): Promise<AdminActionResponse> => {
-  const { data } = await api.get<AdminActionResponse>("/auth/operator/tempay/charge-list");
+  const { data } = await api.get<AdminActionResponse>(
+    "/auth/operator/tempay/charge-list",
+  );
   return data;
 };
 
 const approveCharge = async (orderId: string): Promise<AdminActionResponse> => {
-  const { data } = await api.post<AdminActionResponse>("/auth/operator/tempay/approval", { orderId });
+  const { data } = await api.post<AdminActionResponse>(
+    "/auth/operator/tempay/approval",
+    { orderId },
+  );
   return data;
 };
 
 const rejectCharge = async (orderId: string): Promise<AdminActionResponse> => {
-  const { data } = await api.delete<AdminActionResponse>("/auth/operator/tempay/refund", { data: { orderId } });
+  const { data } = await api.delete<AdminActionResponse>(
+    "/auth/operator/tempay/refund",
+    { data: { orderId } },
+  );
   return data;
 };
 
@@ -160,8 +229,13 @@ export const useUserDetail = (uuid: string) => {
 
 export const useSearchUsers = () => {
   return useMutation({
-    mutationFn: ({ searchType, keyword }: { searchType: "email" | "username"; keyword: string }) =>
-      searchUsers(searchType, keyword),
+    mutationFn: ({
+      searchType,
+      keyword,
+    }: {
+      searchType: "email" | "username";
+      keyword: string;
+    }) => searchUsers(searchType, keyword),
   });
 };
 
