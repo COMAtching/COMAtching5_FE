@@ -33,6 +33,7 @@ export interface IntroItem {
 
 export interface ProfileData {
   // 기본 정보
+  memberId: number;
   nickname?: string;
   gender?: Gender;
   birthDate?: string; // YYYY-MM-DD 형식

@@ -188,7 +188,6 @@ fontTokens.forEach((t) => {
       fontUtilitiesSet.add(`  .typo-${size}-${weight} {
     font-size: ${size}px;
     font-weight: ${weight};
-    line-height: 1.5;
   }`);
     });
   }
@@ -204,7 +203,6 @@ additionalSizes.forEach((size) => {
     fontUtilitiesSet.add(`  .typo-${size}-${weight} {
     font-size: ${size}px;
     font-weight: ${weight};
-    line-height: 1.5;
   }`);
   });
 });

@@ -16,7 +16,7 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const [profile, setProfile] = useState<ProfileData>({});
+  const [profile, setProfile] = useState<ProfileData>({} as ProfileData);
   const [isReady, setIsReady] = useState(false);
 
   // 초기 로드: localStorage에서 데이터 읽기
@@ -48,7 +48,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
   // 프로필 초기화 (온보딩 완료 후 사용)
   const clearProfile = () => {
-    setProfile({});
+    setProfile({} as ProfileData);
     try {
       localStorage.removeItem(STORAGE_KEY);
       LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
