@@ -1,6 +1,6 @@
 import { Hobby, ProfileData } from "@/lib/types/profile";
 import Image from "next/image";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Send } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 /* ── 유틸 함수 ── */
@@ -28,23 +28,19 @@ const getAge = (birthDate?: string) => {
   return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
 };
 
-/* ── 밑줄 값 텍스트 (반복 패턴) ── */
-const UnderlinedValue = ({ children }: { children: React.ReactNode }) => (
-  <span className="typo-14-600 border-color-gray-400 text-color-text-black border-b">
-    {children}
-  </span>
-);
-
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <span className="typo-14-500 text-color-gray-500">{children}</span>
+/* ── 태그 컴포넌트 ── */
+const Tag = ({ text }: { text: string }) => (
+  <div className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]">
+    <span className="typo-14-500 whitespace-nowrap text-black">{text}</span>
+  </div>
 );
 
 /* ── 프로필 헤더 (이미지 + 닉네임 + 액션 아이콘) ── */
 const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
   <div className="flex w-full items-center gap-4">
-    {/* 프로필 이미지 */}
+    {/* 프로필 이미지 (48x48 container, 44x44 image) */}
     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
-      <div className="bg-color-gray-100 relative h-11 w-11 overflow-hidden rounded-full">
+      <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
           src={profile.profileImageUrl || "/default-profile.png"}
           alt="Profile"
@@ -56,27 +52,28 @@ const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
 
     {/* 닉네임 */}
     <div className="flex flex-1 flex-col items-start gap-1">
-      <span className="typo-12-600 text-color-gray-500">내가 뽑은 사람</span>
-      <span className="typo-16-600 text-color-text-black">
+      <span className="typo-12-600 text-[#777777]">내가 뽑은 사람</span>
+      <span className="typo-16-600 text-black">
         {profile.nickname || "익명"}
       </span>
     </div>
 
-    {/* 액션 아이콘 */}
     <div className="flex items-center gap-4">
       <button
         type="button"
         className="flex h-4 w-4 items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
       >
-        <Image src="/icons/send-message.svg" alt="dm" width={16} height={16} />
+        <Send size={16} className="text-[#333333]" />
       </button>
       <button
         type="button"
-        className="flex h-4 w-4 flex-col items-center justify-center gap-1"
+        className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
+        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
+        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
+        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
       </button>
     </div>
   </div>
@@ -84,71 +81,29 @@ const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
 
 /* ── 나이 + 전공 ── */
 const ProfileStats = ({ profile }: { profile: ProfileData }) => (
-  <div className="flex w-full items-start gap-2 pt-1">
-    <div className="flex flex-col gap-1">
-      <span className="typo-12-600 text-color-gray-500">나이</span>
-      <span className="typo-14-600 text-color-text-black">
+  <div className="flex w-full items-start gap-2">
+    <div className="flex flex-1 flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">나이</span>
+      <span className="typo-16-700 text-black">
         {getAge(profile.birthDate)}
       </span>
     </div>
-    <div className="ml-8 flex flex-col gap-1">
-      <span className="typo-12-600 text-color-gray-500">전공</span>
-      <span className="typo-14-600 text-color-text-black">
-        {profile.major || "미지정"}
+    <div className="flex flex-1 flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">MBTI</span>
+      <span className="typo-16-700 text-black">{profile.mbti}</span>
+    </div>
+    <div className="flex flex-1 flex-col gap-1">
+      <span className="typo-12-600 whitespace-nowrap text-[#777777]">
+        연락빈도
+      </span>
+      <span className="typo-16-700 text-black">
+        {getContactFrequencyLabel(profile.contactFrequency)}
       </span>
     </div>
   </div>
 );
 
-/* ── 소개 텍스트 (MBTI, 연락빈도, 취미) ── */
-const ProfileIntro = ({ profile }: { profile: ProfileData }) => (
-  <>
-    <div className="typo-14-400 mb-2 flex items-center gap-1">
-      <Label>MBTI는</Label>
-      <UnderlinedValue>{profile.mbti}</UnderlinedValue>
-      <Label>, 연락빈도는</Label>
-      <UnderlinedValue>
-        {getContactFrequencyLabel(profile.contactFrequency)} ➡️
-      </UnderlinedValue>
-      <Label>이에요.</Label>
-    </div>
-    <div className="typo-14-400 flex items-center gap-2">
-      <Label>저는 요즘</Label>
-      <UnderlinedValue>{getHobbyLabel(profile.hobbies)}</UnderlinedValue>
-      <Label>을 좋아해요.</Label>
-    </div>
-  </>
-);
-
-/* ── 라벨 + 밑줄 값 행 (반복 패턴 제거) ── */
-const IntroRow = ({
-  label,
-  value,
-  suffix,
-}: {
-  label: string;
-  value: React.ReactNode;
-  suffix?: string;
-}) => (
-  <div className="flex w-full flex-col gap-2">
-    <Label>{label}</Label>
-    <div className="flex w-full items-center gap-1">
-      <div className="border-color-gray-400 flex flex-1 items-center justify-center border-b pb-1 text-center">
-        <span className="typo-14-600 text-color-text-black truncate">
-          {value}
-        </span>
-      </div>
-      {suffix && (
-        <span className="typo-14-500 text-color-gray-500 whitespace-nowrap">
-          {suffix}
-        </span>
-      )}
-    </div>
-  </div>
-);
-
-/* ── 펼치기 영역 (장점, 노래, 한마디) ── */
-const ExpandableDetails = ({
+const ProfileDetails = ({
   profile,
   isExpanded,
 }: {
@@ -156,26 +111,66 @@ const ExpandableDetails = ({
   isExpanded: boolean;
 }) => (
   <div
-    className={`grid transition-all duration-500 ease-in-out ${
-      isExpanded
-        ? "mt-4 grid-rows-[1fr] opacity-100"
-        : "mt-0 grid-rows-[0fr] opacity-0"
-    }`}
+    className="flex flex-col gap-3 overflow-hidden transition-[max-height] duration-500 ease-in-out"
+    style={{
+      maxHeight: isExpanded ? "1000px" : "114px",
+      // WebkitMaskImage와 maskImage에 트랜지션 효과를 주어
+      // 줄어들 때 블러가 서서히 나타나거나 늦게 나타나도록 설정
+      maskImage: isExpanded
+        ? "linear-gradient(to bottom, black 0%, black 100%, transparent 100%)"
+        : "linear-gradient(to bottom, black 0%, black 50%, transparent 100%)",
+      WebkitMaskImage: isExpanded
+        ? "linear-gradient(to bottom, black 0%, black 100%, transparent 100%)"
+        : "linear-gradient(to bottom, black 0%, black 50%, transparent 100%)",
+      // 줄어들 때(Expanded -> Click) 블러가 나중에 생기도록 delay 부여
+      transition: isExpanded
+        ? "max-height 500ms ease-in-out, mask-image 300ms ease-out, -webkit-mask-image 300ms ease-out"
+        : "max-height 500ms ease-in-out, mask-image 400ms ease-in 100ms, -webkit-mask-image 400ms ease-in 100ms",
+    }}
   >
-    <div className="flex flex-col gap-4 overflow-hidden">
-      <IntroRow
-        label="제 장점은요,"
-        value={profile.advantages?.[0] || "웃음이 많아요 �"}
-      />
-      <IntroRow
-        label="요즘 좋아하는 노래는,"
-        value={profile.favoriteSong || "아직 없어요!"}
-        suffix="입니다!"
-      />
-      <IntroRow
-        label="마지막 한마디는,"
-        value={profile.intro || "잘 부탁드립니다!! 😆"}
-      />
+    {/* 관심사 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">관심사</span>
+      <div className="flex flex-wrap gap-1">
+        {profile.hobbies && profile.hobbies.length > 0 ? (
+          profile.hobbies.map((hobby, idx) => (
+            <Tag
+              key={idx}
+              text={typeof hobby === "string" ? hobby : hobby.name}
+            />
+          ))
+        ) : (
+          <Tag text="없음" />
+        )}
+      </div>
+    </div>
+
+    {/* 장점 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">장점</span>
+      <div className="flex flex-wrap gap-1">
+        {profile.advantages && profile.advantages.length > 0 ? (
+          profile.advantages.map((adv, idx) => <Tag key={idx} text={adv} />)
+        ) : (
+          <Tag text="없음" />
+        )}
+      </div>
+    </div>
+
+    {/* 좋아하는 노래 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">좋아하는 노래</span>
+      <span className="typo-16-600 text-black">
+        {profile.favoriteSong || "아직 없어요!"}
+      </span>
+    </div>
+
+    {/* 나를 소개하는 한마디 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">나를 소개하는 한마디</span>
+      <span className="typo-16-600 text-black">
+        {profile.intro || "잘 부탁드립니다!! 😆"}
+      </span>
     </div>
   </div>
 );
@@ -208,6 +203,7 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartTime = useRef<number>(0);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -222,6 +218,14 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
     return () => el.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleCardClick = () => {
+    const touchDuration = Date.now() - touchStartTime.current;
+    // 200ms 미만의 짧은 터치(클릭)일 때만 확장 상태 토글
+    if (touchDuration < 200) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   if (!profiles || profiles.length === 0) return null;
 
   return (
@@ -235,14 +239,15 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
           {profiles.map((profile) => (
             <div
               key={profile.memberId}
-              className="flex w-full shrink-0 snap-center flex-col items-center justify-center gap-3 p-4"
+              onTouchStart={() => (touchStartTime.current = Date.now())}
+              onMouseDown={() => (touchStartTime.current = Date.now())}
+              onClick={handleCardClick}
+              className="flex w-full shrink-0 cursor-pointer snap-center flex-col items-center justify-start gap-3 p-4"
             >
               <ProfileHeader profile={profile} />
               <ProfileStats profile={profile} />
-              <div className="bg-color-gray-100 h-px w-full" />
               <div className="flex w-full flex-col">
-                <ProfileIntro profile={profile} />
-                <ExpandableDetails profile={profile} isExpanded={isExpanded} />
+                <ProfileDetails profile={profile} isExpanded={isExpanded} />
               </div>
             </div>
           ))}
@@ -257,21 +262,6 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
           className="flex h-[42px] w-full items-center justify-between rounded-b-[24px] border border-t-0 border-white/30 px-4 backdrop-blur-[50px]"
         >
           <SocialIdDisplay profile={profiles[activeIndex]} />
-
-          <button
-            type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="ml-auto flex items-center justify-center gap-1 rounded-full border border-white/30 bg-white/30 px-2 py-1 transition-all"
-          >
-            <span className="typo-10-600 text-white">
-              {isExpanded ? "접기" : "펼치기"}
-            </span>
-            {isExpanded ? (
-              <ChevronUp size={10} className="text-white" />
-            ) : (
-              <ChevronDown size={10} className="text-white" />
-            )}
-          </button>
         </footer>
       </section>
 
