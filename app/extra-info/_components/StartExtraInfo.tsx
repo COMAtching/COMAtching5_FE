@@ -25,7 +25,7 @@ const StartExtraInfo = () => {
 
   return (
     <section className="flex w-full flex-col items-center px-[15px]">
-      <div className="typo-18-600 mt-[18.1vh] mb-[44.2vh] flex flex-col items-center gap-2 leading-2 text-gray-800">
+      <div className="typo-18-600 mt-[18.1vh] mb-[44.2vh] flex flex-col items-center gap-2 leading-[160%] text-gray-800">
         <span
           className={cn(
             "transition-opacity duration-700 ease-in-out",
