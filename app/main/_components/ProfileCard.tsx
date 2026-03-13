@@ -200,16 +200,21 @@ const SocialIdDisplay = ({ profile }: { profile: ProfileData }) => {
 /* ── 메인 프로필 카드 컴포넌트 ── */
 interface ProfileCardProps {
   profile: ProfileData;
+  isExpanded: boolean;
+  onToggleExpanded: () => void;
 }
 
-const ProfileCard = ({ profile }: ProfileCardProps) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+const ProfileCard = ({
+  profile,
+  isExpanded,
+  onToggleExpanded,
+}: ProfileCardProps) => {
   const touchStartTime = useRef<number>(0);
 
   const handleCardClick = () => {
     const touchDuration = Date.now() - touchStartTime.current;
     if (touchDuration < 200) {
-      setIsExpanded(!isExpanded);
+      onToggleExpanded();
     }
   };
 
@@ -227,7 +232,7 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setIsExpanded(!isExpanded);
+            onToggleExpanded();
           }
         }}
         className="flex w-full cursor-pointer flex-col items-center justify-start gap-3 p-4"

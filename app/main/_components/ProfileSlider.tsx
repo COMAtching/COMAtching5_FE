@@ -1,7 +1,7 @@
 "use client";
 
 import { ProfileData } from "@/lib/types/profile";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ProfileCard from "./ProfileCard";
 
 /* ── 프로필 슬라이더 (스와이프 + 인디케이터) ── */
@@ -9,22 +9,34 @@ interface ProfileSliderProps {
   profiles: ProfileData[];
 }
 
+const PEEK_WIDTH = 16; // 다음 카드가 살짝 보이는 너비 (px)
+const CARD_GAP = 8; // 카드 사이 간격 (px)
+
 const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const toggleExpanded = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const handleScroll = () => {
-      const index = Math.round(el.scrollLeft / el.clientWidth);
+      const cardWidth =
+        profiles.length > 1
+          ? el.clientWidth - PEEK_WIDTH + CARD_GAP
+          : el.clientWidth;
+      const index = Math.round(el.scrollLeft / cardWidth);
       setActiveIndex(index);
     };
 
     el.addEventListener("scroll", handleScroll);
     return () => el.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [profiles.length]);
 
   if (!profiles || profiles.length === 0) return null;
 
@@ -34,10 +46,23 @@ const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
       <div
         ref={scrollRef}
         className="scrollbar-hide flex w-full snap-x snap-mandatory overflow-x-auto"
+        style={{ gap: `${CARD_GAP}px` }}
       >
-        {profiles.map((profile) => (
-          <div key={profile.memberId} className="w-full shrink-0 snap-center">
-            <ProfileCard profile={profile} />
+        {profiles.map((profile, i) => (
+          <div
+            key={profile.memberId}
+            className="shrink-0 snap-start"
+            style={{
+              width: `calc(100% - ${profiles.length > 1 ? PEEK_WIDTH + CARD_GAP : 0}px)`,
+              marginRight:
+                i === profiles.length - 1 ? `${PEEK_WIDTH}px` : undefined,
+            }}
+          >
+            <ProfileCard
+              profile={profile}
+              isExpanded={isExpanded}
+              onToggleExpanded={toggleExpanded}
+            />
           </div>
         ))}
       </div>
