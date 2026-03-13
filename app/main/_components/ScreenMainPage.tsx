@@ -12,6 +12,7 @@ import BusinessInfo from "@/components/common/BusinessInfo";
 import NoticeSection from "./NoticeSection";
 import ContactUserProfile from "./ContactUserProfile";
 import { ProfileData } from "@/lib/types/profile";
+import ChargeRequestWaiting from "./ChargeRequestWaiting";
 
 const ScreenMainPage = () => {
   // 실제 서비스 시에는 서버에서 받아온 데이터(notice)가 있는지 여부에 따라 렌더링을 결정할 수 있습니다.
@@ -129,6 +130,7 @@ const ScreenMainPage = () => {
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
       <MainHeader />
       <MyCoinSection />
+      <ChargeRequestWaiting />
       {isNoticeVisible && noticeData && (
         <NoticeSection
           title={noticeData.title}
