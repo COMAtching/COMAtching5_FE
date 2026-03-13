@@ -62,7 +62,20 @@ const ScreenMainPage = () => {
       contactFrequency: "FREQUENT",
       hobbies: [{ name: "🎬 영화감상", category: "문화" }],
       profileImageUrl: "/main/dog.png",
+      socialType: "INSTAGRAM",
       socialAccountId: "comatching_king",
+    },
+    {
+      memberId: 3,
+      nickname: "카카오톡유저",
+      birthDate: "2001-10-20",
+      major: "경영학과",
+      mbti: "ENFP",
+      contactFrequency: "NORMAL",
+      hobbies: [{ name: "☕ 카페투어", category: "일상" }],
+      profileImageUrl: "/main/cat.png",
+      socialType: "KAKAO",
+      socialAccountId: "kakao_kim",
     },
   ];
 

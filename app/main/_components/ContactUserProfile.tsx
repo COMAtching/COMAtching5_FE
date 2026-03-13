@@ -1,5 +1,6 @@
 import { Hobby, ProfileData } from "@/lib/types/profile";
 import Image from "next/image";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 interface ContactUserProfileProps {
@@ -8,6 +9,7 @@ interface ContactUserProfileProps {
 
 const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
   return (
     <div className="flex w-full flex-col items-center">
       {/* Profile Card Section */}
-      <section className="flex w-full flex-col rounded-t-[24px] border border-b-0 border-white/30 bg-white/50 backdrop-blur-[50px]">
+      <section className="flex w-full flex-col overflow-hidden rounded-[24px] border border-b-0 border-white/30 bg-white/50 backdrop-blur-[50px]">
         <div
           ref={scrollRef}
           className="scrollbar-hide flex w-full snap-x snap-mandatory overflow-x-auto"
@@ -62,7 +64,7 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
           {profiles.map((profile, index) => (
             <div
               key={profile.memberId}
-              className="flex w-full shrink-0 snap-center flex-col items-center justify-center gap-[12px] p-4 pb-1"
+              className="flex w-full shrink-0 snap-center flex-col items-center justify-center gap-[12px] p-4"
             >
               {/* Upper Section: Profile and Name */}
               <div className="flex w-full items-center gap-4">
@@ -135,9 +137,8 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
               {/* Divider */}
               <div className="bg-color-gray-100 h-px w-full" />
 
-              {/* Intro Text Section */}
-              <div className="flex w-full flex-col gap-2">
-                <div className="flex items-center gap-1 text-[14px]">
+              <div className="flex w-full flex-col">
+                <div className="mb-2 flex items-center gap-1 text-[14px]">
                   <span className="typo-14-500 text-color-gray-500">
                     MBTI는
                   </span>
@@ -165,6 +166,57 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
                     을 좋아해요.
                   </span>
                 </div>
+
+                <div
+                  className={`grid transition-all duration-500 ease-in-out ${
+                    isExpanded
+                      ? "mt-4 grid-rows-[1fr] opacity-100"
+                      : "mt-0 grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="flex flex-col gap-4 overflow-hidden">
+                    {/* Advantages Section */}
+                    <div className="flex w-full flex-col gap-2">
+                      <span className="typo-14-500 text-color-gray-500">
+                        제 장점은요,
+                      </span>
+                      <div className="border-color-gray-400 flex w-full items-center justify-center border-b pb-1 text-center">
+                        <span className="typo-14-600 text-color-text-black">
+                          {profile.advantages?.[0] || "웃음이 많아요 😊"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Favorite Song Section */}
+                    <div className="flex w-full flex-col gap-2">
+                      <span className="typo-14-500 text-color-gray-500">
+                        요즘 좋아하는 노래는,
+                      </span>
+                      <div className="flex w-full items-center justify-center gap-1">
+                        <div className="border-color-gray-400 flex flex-1 items-center justify-center border-b pb-1 text-center">
+                          <span className="typo-14-600 text-color-text-black truncate">
+                            {profile.favoriteSong || "아직 없어요!"}
+                          </span>
+                        </div>
+                        <span className="typo-14-500 text-color-gray-500 whitespace-nowrap">
+                          입니다!
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Last Word Section */}
+                    <div className="flex w-full flex-col gap-2">
+                      <span className="typo-14-500 text-color-gray-500">
+                        마지막 한마디는,
+                      </span>
+                      <div className="border-color-gray-400 flex w-full items-center justify-center border-b pb-1 text-center">
+                        <span className="typo-14-600 text-color-text-black">
+                          {profile.intro || "잘 부탁드립니다!! 😆"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
@@ -178,25 +230,40 @@ const ContactUserProfile = ({ profiles }: ContactUserProfileProps) => {
           }}
           className="flex h-[42px] w-full items-center justify-between rounded-b-[24px] border border-t-0 border-white/30 px-4 backdrop-blur-[50px]"
         >
-          <div className="flex flex-1 items-center justify-center gap-4">
-            <span className="typo-15-600 text-white">
-              @{profiles[activeIndex]?.socialAccountId || "id_hidden"}
-            </span>
-
-            <button
-              type="button"
-              className="flex items-center gap-1 rounded-full border border-white/30 bg-white/30 px-2 py-1"
-            >
-              <span className="typo-10-600 text-white">펼치기</span>
-              <Image
-                src="/icons/caret-up.svg"
-                alt="expand"
-                width={10}
-                height={10}
-                className="rotate-180 brightness-0 invert"
-              />
-            </button>
+          <div className="flex items-center">
+            {profiles[activeIndex]?.socialType === "KAKAO" ? (
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/sns/kakao-sns.svg"
+                  alt="kakao"
+                  width={16}
+                  height={16}
+                />
+                <span className="typo-15-600 text-white">
+                  {profiles[activeIndex]?.socialAccountId || "id_hidden"}
+                </span>
+              </div>
+            ) : (
+              <span className="typo-15-600 text-white">
+                @{profiles[activeIndex]?.socialAccountId || "id_hidden"}
+              </span>
+            )}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex h-[18px] items-center justify-center gap-1 rounded-full border border-white/30 bg-white/30 px-2 py-1 transition-all"
+          >
+            <span className="typo-10-600 text-white">
+              {isExpanded ? "접기" : "펼치기"}
+            </span>
+            {isExpanded ? (
+              <ChevronUp size={10} className="text-white" />
+            ) : (
+              <ChevronDown size={10} className="text-white" />
+            )}
+          </button>
         </footer>
       </section>
 
