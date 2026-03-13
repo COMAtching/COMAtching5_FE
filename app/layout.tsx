@@ -15,6 +15,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://comatching.site"),
   title: {
     default: "코매칭",
     template: "%s | 코매칭",
