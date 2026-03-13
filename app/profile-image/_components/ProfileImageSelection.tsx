@@ -25,7 +25,7 @@ export const SelectCheckButton = ({
       aria-label={label}
       aria-pressed={isSelected}
       onClick={onClick}
-      className={`${marginClassName} flex h-[20px] w-[20px] items-center justify-center rounded-full border text-[14px] leading-none ${
+      className={`${marginClassName} typo-14-400 flex h-[20px] w-[20px] items-center justify-center rounded-full border leading-none ${
         isSelected
           ? "border-[#FF4D61] text-white"
           : "border-gray-300 bg-white text-transparent"
@@ -161,7 +161,7 @@ const ProfileImageSelection = ({
           >
             <button
               type="button"
-              className="flex h-[33px] items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 text-[14px] leading-[17px] font-semibold tracking-[-0.03em] text-[#4D4D4D]"
+              className="typo-14-600 flex h-[33px] items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 leading-[17px] tracking-[-0.03em] text-[#4D4D4D]"
             >
               {actionLabel}
             </button>
@@ -169,7 +169,7 @@ const ProfileImageSelection = ({
         ) : (
           <label
             htmlFor="profile-image-upload"
-            className="flex h-[33px] cursor-pointer items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 text-[14px] leading-[17px] font-semibold tracking-[-0.03em] text-[#4D4D4D]"
+            className="typo-14-600 flex h-[33px] cursor-pointer items-center justify-center gap-[10px] rounded-[99px] bg-[#E5E5E5] px-4 py-2 leading-[17px] tracking-[-0.03em] text-[#4D4D4D]"
           >
             {actionLabel}
             <input

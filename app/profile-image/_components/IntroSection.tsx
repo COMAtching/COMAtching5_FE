@@ -31,7 +31,7 @@ const IntroSection = ({ intro, onIntroChange }: IntroSectionProps) => {
           className="typo-16-500 h-full w-full resize-none border-0 bg-transparent leading-[160%] text-[#0E1013] placeholder:text-[#BDC1C6] focus:outline-none"
         />
 
-        <span className="pointer-events-none absolute right-4 bottom-4 text-[16px] leading-[160%] font-medium text-[#DADCE0]">
+        <span className="typo-16-500 pointer-events-none absolute right-4 bottom-4 leading-[160%] text-[#DADCE0]">
           {intro.length}/{INTRO_MAX_LENGTH}
         </span>
       </div>

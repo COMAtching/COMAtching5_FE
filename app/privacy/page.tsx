@@ -11,12 +11,12 @@ export default function PrivacyPage() {
         <div className="mb-5 flex justify-end">
           <button
             onClick={() => router.back()}
-            className="rounded-[5px] bg-white px-5 py-2.5 text-center text-[14px] font-bold text-[#333] shadow-[0_4px_6px_rgba(0,0,0,0.1)]"
+            className="typo-14-700 rounded-[5px] bg-white px-5 py-2.5 text-center text-[#333] shadow-[0_4px_6px_rgba(0,0,0,0.1)]"
           >
             닫기
           </button>
         </div>
-        <p className="mb-5 text-left text-[14px] leading-[1.6] text-[#333]">
+        <p className="typo-14-400 mb-5 text-left leading-[1.6] text-[#333]">
           개인정보 수집 안내
           <br />
           <br /> 1. 개인정보 수집 목적

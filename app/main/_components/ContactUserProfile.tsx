@@ -103,7 +103,7 @@ const ProfileStats = ({ profile }: { profile: ProfileData }) => (
 /* ── 소개 텍스트 (MBTI, 연락빈도, 취미) ── */
 const ProfileIntro = ({ profile }: { profile: ProfileData }) => (
   <>
-    <div className="mb-2 flex items-center gap-1 text-[14px]">
+    <div className="typo-14-400 mb-2 flex items-center gap-1">
       <Label>MBTI는</Label>
       <UnderlinedValue>{profile.mbti}</UnderlinedValue>
       <Label>, 연락빈도는</Label>
@@ -112,7 +112,7 @@ const ProfileIntro = ({ profile }: { profile: ProfileData }) => (
       </UnderlinedValue>
       <Label>이에요.</Label>
     </div>
-    <div className="flex items-center gap-2 text-[14px]">
+    <div className="typo-14-400 flex items-center gap-2">
       <Label>저는 요즘</Label>
       <UnderlinedValue>{getHobbyLabel(profile.hobbies)}</UnderlinedValue>
       <Label>을 좋아해요.</Label>
