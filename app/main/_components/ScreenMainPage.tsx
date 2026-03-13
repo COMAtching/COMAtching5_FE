@@ -10,7 +10,7 @@ import {
 
 import BusinessInfo from "@/components/common/BusinessInfo";
 import NoticeSection from "./NoticeSection";
-import ContactUserProfile from "./ContactUserProfile";
+import ProfileSlider from "./ProfileSlider";
 import { ProfileData } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
 
@@ -139,7 +139,7 @@ const ScreenMainPage = () => {
         />
       )}
       {/* <NoContactSection /> */}
-      <ContactUserProfile profiles={mockProfileData} />
+      <ProfileSlider profiles={mockProfileData} />
       <MatchingButton />
       <div className="flex w-full gap-2">
         <SearchMyListButton />
