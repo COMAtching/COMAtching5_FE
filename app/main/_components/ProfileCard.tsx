@@ -27,7 +27,9 @@ const getAge = (birthDate?: string) => {
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
   <div className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]">
-    <span className="typo-14-500 whitespace-nowrap text-black">{text}</span>
+    <span className="typo-14-500 text-color-text-black whitespace-nowrap">
+      {text}
+    </span>
   </div>
 );
 
@@ -35,11 +37,11 @@ const Tag = ({ text }: { text: string }) => (
 const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
-    <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
+    <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
           src={profile.profileImageUrl || "/default-profile.png"}
-          alt="Profile"
+          alt={`${profile.nickname || "익명"}님의 프로필 사진`}
           fill
           className="object-cover"
         />
@@ -49,7 +51,7 @@ const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
     {/* 닉네임 */}
     <div className="flex flex-1 flex-col items-start gap-1">
       <span className="typo-12-600 text-[#777777]">내가 뽑은 사람</span>
-      <span className="typo-16-600 text-black">
+      <span className="typo-16-600 text-color-text-black">
         {profile.nickname || "익명"}
       </span>
     </div>
@@ -57,19 +59,21 @@ const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
     <div className="flex items-center gap-4">
       <button
         type="button"
+        aria-label="메시지 보내기"
         className="flex h-4 w-4 items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <Send size={16} className="text-[#333333]" />
+        <Send size={16} className="text-color-gray-800" />
       </button>
       <button
         type="button"
+        aria-label="더 보기"
         className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
-        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
-        <div className="h-[2.57px] w-[2.57px] rounded-full bg-[#333333]" />
+        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
+        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
+        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
       </button>
     </div>
   </div>
@@ -80,19 +84,19 @@ const ProfileStats = ({ profile }: { profile: ProfileData }) => (
   <div className="flex w-full items-start gap-2">
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나이</span>
-      <span className="typo-16-700 text-black">
+      <span className="typo-16-700 text-color-text-black">
         {getAge(profile.birthDate)}
       </span>
     </div>
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">MBTI</span>
-      <span className="typo-16-700 text-black">{profile.mbti}</span>
+      <span className="typo-16-700 text-color-text-black">{profile.mbti}</span>
     </div>
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 whitespace-nowrap text-[#777777]">
         연락빈도
       </span>
-      <span className="typo-16-700 text-black">
+      <span className="typo-16-700 text-color-text-black">
         {getContactFrequencyLabel(profile.contactFrequency)}
       </span>
     </div>
@@ -130,9 +134,9 @@ const ProfileDetails = ({
       <span className="typo-12-600 text-[#777777]">관심사</span>
       <div className="flex flex-wrap gap-1">
         {profile.hobbies && profile.hobbies.length > 0 ? (
-          profile.hobbies.map((hobby, idx) => (
+          profile.hobbies.map((hobby) => (
             <Tag
-              key={idx}
+              key={typeof hobby === "string" ? hobby : hobby.name}
               text={typeof hobby === "string" ? hobby : hobby.name}
             />
           ))
@@ -147,7 +151,7 @@ const ProfileDetails = ({
       <span className="typo-12-600 text-[#777777]">장점</span>
       <div className="flex flex-wrap gap-1">
         {profile.advantages && profile.advantages.length > 0 ? (
-          profile.advantages.map((adv, idx) => <Tag key={idx} text={adv} />)
+          profile.advantages.map((adv) => <Tag key={adv} text={adv} />)
         ) : (
           <Tag text="없음" />
         )}
@@ -157,7 +161,7 @@ const ProfileDetails = ({
     {/* 좋아하는 노래 */}
     <div className="flex flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">좋아하는 노래</span>
-      <span className="typo-16-600 text-black">
+      <span className="typo-16-600 text-color-text-black">
         {profile.favoriteSong || "아직 없어요!"}
       </span>
     </div>
@@ -165,7 +169,7 @@ const ProfileDetails = ({
     {/* 나를 소개하는 한마디 */}
     <div className="flex flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나를 소개하는 한마디</span>
-      <span className="typo-16-600 text-black">
+      <span className="typo-16-600 text-color-text-black">
         {profile.intro || "잘 부탁드립니다!! 😆"}
       </span>
     </div>
@@ -180,14 +184,16 @@ const SocialIdDisplay = ({ profile }: { profile: ProfileData }) => {
     return (
       <div className="flex items-center gap-2">
         <Image src="/sns/kakao-sns.svg" alt="kakao" width={16} height={16} />
-        <span className="typo-15-600 text-white">
+        <span className="typo-15-600 text-color-text-white">
           {profile.socialAccountId}
         </span>
       </div>
     );
   }
   return (
-    <span className="typo-15-600 text-white">@{profile.socialAccountId}</span>
+    <span className="typo-15-600 text-color-text-white">
+      @{profile.socialAccountId}
+    </span>
   );
 };
 
@@ -211,9 +217,19 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
     <div className="flex w-full flex-col overflow-hidden rounded-[24px] border border-b-0 border-white/30 bg-white/50 backdrop-blur-[50px]">
       {/* 카드 본체 */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        aria-label={`${profile.nickname || "익명"} 프로필 상세 ${isExpanded ? "접기" : "펼치기"}`}
         onTouchStart={() => (touchStartTime.current = Date.now())}
         onMouseDown={() => (touchStartTime.current = Date.now())}
         onClick={handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
         className="flex w-full cursor-pointer flex-col items-center justify-start gap-3 p-4"
       >
         <ProfileHeader profile={profile} />
