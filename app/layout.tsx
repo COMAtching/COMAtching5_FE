@@ -15,6 +15,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://comatching.com"), // 실제 도메인 주소로 변경 필요
   title: {
     default: "코매칭",
     template: "%s | 코매칭",
