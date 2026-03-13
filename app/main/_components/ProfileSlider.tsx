@@ -9,7 +9,8 @@ interface ProfileSliderProps {
   profiles: ProfileData[];
 }
 
-const PEEK_WIDTH = 28; // 다음 카드가 살짝 보이는 너비 (px)
+const PEEK_WIDTH = 16; // 다음 카드가 살짝 보이는 너비 (px)
+const CARD_GAP = 8; // 카드 사이 간격 (px)
 
 const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -26,7 +27,9 @@ const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
 
     const handleScroll = () => {
       const cardWidth =
-        profiles.length > 1 ? el.clientWidth - PEEK_WIDTH : el.clientWidth;
+        profiles.length > 1
+          ? el.clientWidth - PEEK_WIDTH + CARD_GAP
+          : el.clientWidth;
       const index = Math.round(el.scrollLeft / cardWidth);
       setActiveIndex(index);
     };
@@ -43,16 +46,16 @@ const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
       <div
         ref={scrollRef}
         className="scrollbar-hide flex w-full snap-x snap-mandatory overflow-x-auto"
-        style={{ scrollPaddingLeft: 0, scrollPaddingRight: 0 }}
+        style={{ gap: `${CARD_GAP}px` }}
       >
         {profiles.map((profile, i) => (
           <div
             key={profile.memberId}
             className="shrink-0 snap-start"
             style={{
-              width: `calc(100% - ${profiles.length > 1 ? PEEK_WIDTH : 0}px)`,
-              paddingLeft: i === 0 ? 0 : undefined,
-              marginRight: i < profiles.length - 1 ? 0 : `${PEEK_WIDTH}px`,
+              width: `calc(100% - ${profiles.length > 1 ? PEEK_WIDTH + CARD_GAP : 0}px)`,
+              marginRight:
+                i === profiles.length - 1 ? `${PEEK_WIDTH}px` : undefined,
             }}
           >
             <ProfileCard
