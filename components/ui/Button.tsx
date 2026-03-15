@@ -52,12 +52,10 @@ export default function Button({
         // typo- 클래스가 명시되지 않은 경우에만 기본 typo-20-600 적용
         !className?.includes("typo-") && "typo-20-600",
         fixed && "fixed z-50 mx-auto",
-        disabled ? "cursor-not-allowed" : "cursor-pointer",
-        !disabled && "bg-button-primary text-button-primary-text-default",
-        !disabled && className,
-        disabled && className,
-        disabled &&
-          "bg-button-background-disabled text-button-primary-text-disabled",
+        !disabled
+          ? "bg-button-primary text-button-primary-text-default cursor-pointer"
+          : "bg-button-background-disabled text-button-primary-text-disabled cursor-not-allowed",
+        className,
       )}
       style={{
         ...(fixed && {

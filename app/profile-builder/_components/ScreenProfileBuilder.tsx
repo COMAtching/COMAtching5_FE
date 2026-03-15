@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useProfile } from "@/providers/profile-provider";
@@ -57,13 +57,43 @@ const mbtiSet = new Set<MBTI>([
 const isValidMBTI = (mbti?: string): mbti is MBTI =>
   mbtiSet.has((mbti || "").toUpperCase() as MBTI);
 
+const PROFILE_STORAGE_KEY = "onboarding-profile-data";
+const LEGACY_PROFILE_STORAGE_KEY = "profileBuilder";
+
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
-  const { profile, updateProfile, isReady } = useProfile();
+  const { profile, updateProfile } = useProfile();
 
   // Derive initial values from profile or localStorage synchronously
   const getInitialValues = () => {
-    if (profile) {
+    try {
+      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile) as Partial<ProfileData>;
+        return {
+          birthYear: parsed.birthDate ? parsed.birthDate.split("-")[0] : "",
+          university: parsed.university || "",
+          department: parsed.department || "",
+          major: parsed.major || "",
+          gender:
+            Object.keys(genderMap).find(
+              (key) => genderMap[key] === parsed.gender,
+            ) || "",
+          mbti: parsed.mbti || "",
+          frequency:
+            Object.keys(contactFrequencyMap).find(
+              (key) => contactFrequencyMap[key] === parsed.contactFrequency,
+            ) || "",
+        };
+      }
+
+      const legacySaved = localStorage.getItem(LEGACY_PROFILE_STORAGE_KEY);
+      if (legacySaved) return JSON.parse(legacySaved);
+    } catch {
+      // ignore
+    }
+
+    if (profile && Object.keys(profile).length > 0) {
       return {
         birthYear: profile.birthDate ? profile.birthDate.split("-")[0] : "",
         university: profile.university || "",
@@ -80,12 +110,7 @@ export const ScreenProfileBuilder = () => {
           ) || "",
       };
     }
-    try {
-      const saved = localStorage.getItem("profileBuilder");
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
+
     return {};
   };
 
@@ -117,22 +142,20 @@ export const ScreenProfileBuilder = () => {
     initialValues.gender || "",
   );
   const [selectedMBTI, setSelectedMBTI] = useState<string>(
-    initialValues.mbti || "",
+    (initialValues.mbti || "").toUpperCase(),
   );
   const [selectedFrequency, setSelectedFrequency] = useState<string>(
     initialValues.frequency || "",
   );
-  const [hasSelectedGender, setHasSelectedGender] = useState(false);
-  const [hasSelectedMBTI, setHasSelectedMBTI] = useState(false);
-  const [hasSelectedFrequency, setHasSelectedFrequency] = useState(false);
-
-  // isReady ref — kept to avoid re-running on profile change during session
-  const initializedRef = useRef(false);
-  useEffect(() => {
-    if (!isReady || initializedRef.current) return;
-    initializedRef.current = true;
-    // Values are already set via lazy init above; nothing extra needed here
-  }, [isReady]);
+  const [hasSelectedGender, setHasSelectedGender] = useState(
+    Boolean(initialValues.gender),
+  );
+  const [hasSelectedMBTI, setHasSelectedMBTI] = useState(
+    isValidMBTI(initialValues.mbti),
+  );
+  const [hasSelectedFrequency, setHasSelectedFrequency] = useState(
+    Boolean(initialValues.frequency),
+  );
 
   const yearOptions = getYearOptions();
   const universityOptions = getUniversityOptions(universities);
