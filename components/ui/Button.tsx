@@ -28,7 +28,7 @@ export default function Button({
   const isPrimaryButton = className?.includes("bg-button-primary");
 
   // 그림자 적용 여부 결정 (prop이 있으면 우선, 없으면 primary일 때 적용)
-  const hasShadow = shadow ?? isPrimaryButton;
+  const hasShadow = !disabled && (shadow ?? isPrimaryButton);
 
   // fixed일 때 bottom 계산 (safeArea 적용)
   const getBottomValue = () => {
@@ -53,12 +53,11 @@ export default function Button({
         !className?.includes("typo-") && "typo-20-600",
         fixed && "fixed z-50 mx-auto",
         disabled ? "cursor-not-allowed" : "cursor-pointer",
-        // 1. 기본 테마 또는 disabled 테마 적용
-        disabled
-          ? "bg-button-background-disabled text-button-primary-text-disabled"
-          : "bg-button-primary text-button-primary-text-default",
-        // 2. 사용자 className 적용 (이게 마지막이어야 덮어씀)
-        className,
+        !disabled && "bg-button-primary text-button-primary-text-default",
+        !disabled && className,
+        disabled && className,
+        disabled &&
+          "bg-button-background-disabled text-button-primary-text-disabled",
       )}
       style={{
         ...(fixed && {

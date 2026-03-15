@@ -35,6 +35,28 @@ const contactFrequencyMap: Record<string, ContactFrequency> = {
   적음: "RARE",
 };
 
+const mbtiSet = new Set<MBTI>([
+  "ISTJ",
+  "ISFJ",
+  "INFJ",
+  "INTJ",
+  "ISTP",
+  "ISFP",
+  "INFP",
+  "INTP",
+  "ESTP",
+  "ESFP",
+  "ENFP",
+  "ENTP",
+  "ESTJ",
+  "ESFJ",
+  "ENFJ",
+  "ENTJ",
+]);
+
+const isValidMBTI = (mbti?: string): mbti is MBTI =>
+  mbtiSet.has((mbti || "").toUpperCase() as MBTI);
+
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
   const { profile, updateProfile, isReady } = useProfile();
@@ -74,7 +96,7 @@ export const ScreenProfileBuilder = () => {
     initialValues.department &&
     initialValues.major &&
     initialValues.gender &&
-    initialValues.mbti &&
+    isValidMBTI(initialValues.mbti) &&
     initialValues.frequency,
   );
 
@@ -100,6 +122,9 @@ export const ScreenProfileBuilder = () => {
   const [selectedFrequency, setSelectedFrequency] = useState<string>(
     initialValues.frequency || "",
   );
+  const [hasSelectedGender, setHasSelectedGender] = useState(false);
+  const [hasSelectedMBTI, setHasSelectedMBTI] = useState(false);
+  const [hasSelectedFrequency, setHasSelectedFrequency] = useState(false);
 
   // isReady ref — kept to avoid re-running on profile change during session
   const initializedRef = useRef(false);
@@ -128,6 +153,8 @@ export const ScreenProfileBuilder = () => {
   };
 
   const handleComplete = () => {
+    const normalizedMBTI = selectedMBTI.toUpperCase();
+
     // Context 업데이트용 데이터 변환
     const profileData: Partial<ProfileData> = {
       birthDate: selectedBirthYear ? `${selectedBirthYear}-01-01` : undefined,
@@ -135,7 +162,7 @@ export const ScreenProfileBuilder = () => {
       department: selectedDepartment,
       major: selectedMajor,
       gender: genderMap[selectedGender],
-      mbti: selectedMBTI as MBTI,
+      mbti: isValidMBTI(normalizedMBTI) ? normalizedMBTI : undefined,
       contactFrequency: contactFrequencyMap[selectedFrequency],
     };
 
@@ -144,6 +171,21 @@ export const ScreenProfileBuilder = () => {
 
     // 다음 페이지로 이동
     router.push("/hobby-select");
+  };
+
+  const handleGenderSelect = (value: string) => {
+    setSelectedGender(value);
+    setHasSelectedGender(true);
+  };
+
+  const handleMBTISelect = (value: string) => {
+    setSelectedMBTI(value);
+    setHasSelectedMBTI(true);
+  };
+
+  const handleFrequencySelect = (value: string) => {
+    setSelectedFrequency(value);
+    setHasSelectedFrequency(true);
   };
 
   // 단계별 유효성 검사
@@ -157,11 +199,11 @@ export const ScreenProfileBuilder = () => {
           selectedMajor
         );
       case 2:
-        return !!selectedGender;
+        return !!selectedGender && hasSelectedGender;
       case 3:
-        return !!selectedMBTI;
+        return isValidMBTI(selectedMBTI) && hasSelectedMBTI;
       case 4:
-        return !!selectedFrequency;
+        return !!selectedFrequency && hasSelectedFrequency;
       default:
         return false;
     }
@@ -187,7 +229,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 4: Contact Frequency */}
         {currentStep >= 4 && (
           <Step4ContactFrequency
-            onFrequencySelect={setSelectedFrequency}
+            onFrequencySelect={handleFrequencySelect}
             defaultValue={selectedFrequency}
           />
         )}
@@ -195,7 +237,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 3: MBTI */}
         {currentStep >= 3 && (
           <Step3MBTI
-            onMBTISelect={setSelectedMBTI}
+            onMBTISelect={handleMBTISelect}
             defaultValue={selectedMBTI}
           />
         )}
@@ -203,7 +245,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 2: Gender */}
         {currentStep >= 2 && (
           <Step2Gender
-            onGenderSelect={setSelectedGender}
+            onGenderSelect={handleGenderSelect}
             defaultValue={selectedGender}
           />
         )}
