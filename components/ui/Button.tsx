@@ -25,10 +25,11 @@ export default function Button({
   ...props
 }: ButtonProps) {
   // className에서 bg-button-primary 사용 여부 확인
-  const isPrimaryButton = className?.includes("bg-button-primary");
+  const isPrimaryButton =
+    className?.includes("bg-button-primary") || !className?.includes("bg-");
 
-  // 그림자 적용 여부 결정 (prop이 있으면 우선, 없으면 primary일 때 적용)
-  const hasShadow = !disabled && (shadow ?? isPrimaryButton);
+  // 그림자 적용 여부 결정 (disabled이면 무조건 포함, 아니면 prop이나 primary 여부에 따라 결정)
+  const hasShadow = disabled || (shadow ?? isPrimaryButton);
 
   // fixed일 때 bottom 계산 (safeArea 적용)
   const getBottomValue = () => {
