@@ -11,8 +11,10 @@ import {
 import BusinessInfo from "@/components/common/BusinessInfo";
 import NoticeSection from "./NoticeSection";
 import ProfileSlider from "./ProfileSlider";
-import { ProfileData } from "@/lib/types/profile";
+import { ProfileData, ContactFrequency } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
+
+import { useMatchingHistory } from "@/hooks/useMatchingHistory";
 
 const ScreenMainPage = () => {
   // 실제 서비스 시에는 서버에서 받아온 데이터(notice)가 있는지 여부에 따라 렌더링을 결정할 수 있습니다.
@@ -24,6 +26,7 @@ const ScreenMainPage = () => {
   };
 
   const [isNoticeVisible, setIsNoticeVisible] = useState(false);
+  const { data: historyData, isLoading } = useMatchingHistory();
 
   useEffect(() => {
     // 로컬스토리지에 해당 공지 ID가 저장되어 있는지 확인
@@ -42,6 +45,7 @@ const ScreenMainPage = () => {
   };
 
   // 실제 서비스 시에는 서버에서 받아온 데이터(profiles)를 넘겨줍니다.
+  /*
   const mockProfileData: ProfileData[] = [
     {
       memberId: 1,
@@ -58,104 +62,27 @@ const ScreenMainPage = () => {
       profileImageUrl: "/main/cat.png",
       socialAccountId: "winterizcoming_",
     },
-    {
-      memberId: 2,
-      nickname: "코매칭짱",
-      birthDate: "2002-05-15",
-      major: "컴퓨터정보공학부",
-      mbti: "INFJ",
-      contactFrequency: "FREQUENT",
-      hobbies: [
-        { name: "🎬 영화감상", category: "문화" },
-        { name: "📖 독서", category: "문화" },
-        { name: "🏊 수영", category: "스포츠" },
-      ],
-      advantages: ["긍정적인 에너지", "솔직함", "유머러스함"],
-      profileImageUrl: "/main/dog.png",
-      socialType: "INSTAGRAM",
-      socialAccountId: "comatching_king",
-    },
-    {
-      memberId: 3,
-      nickname: "카카오톡유저",
-      birthDate: "2001-10-20",
-      major: "경영학과",
-      mbti: "ENFP",
-      contactFrequency: "NORMAL",
-      hobbies: [
-        { name: "☕ 카페투어", category: "일상" },
-        { name: "🍳 요리", category: "문화" },
-        { name: "🍰 베이킹", category: "문화" },
-      ],
-      advantages: ["공감 능력이 좋음"],
-      profileImageUrl: "/main/cat.png",
-      socialType: "KAKAO",
-      socialAccountId: "kakao_kim",
-    },
-    {
-      memberId: 4,
-      nickname: "봄날의햇살",
-      birthDate: "2003-03-21",
-      major: "산업디자인학과",
-      mbti: "ISFP",
-      contactFrequency: "RARE",
-      hobbies: [
-        { name: "🎨 그림그리기", category: "예술" },
-        { name: "🧶 뜨개질", category: "예술" },
-      ],
-      advantages: ["꼼꼼함", "배려심", "예술적 감각", "성실함"],
-      profileImageUrl: "/main/cat.png",
-      socialAccountId: "",
-    },
-    {
-      memberId: 5,
-      nickname: "밤하늘별",
-      birthDate: "2000-08-12",
-      major: "천문학과",
-      mbti: "INTP",
-      contactFrequency: "NORMAL",
-      hobbies: [
-        { name: "🔭 별보기", category: "자연" },
-        { name: "🧩 퍼즐", category: "문화" },
-        { name: "♟️ 보드게임", category: "놀이" },
-      ],
-      advantages: ["지적인 대화", "차분함"],
-      profileImageUrl: "/main/dog.png",
-      socialType: "INSTAGRAM",
-      socialAccountId: "nightsky_star",
-    },
-    {
-      memberId: 6,
-      nickname: "운동좋아",
-      birthDate: "2001-06-05",
-      major: "체육교육과",
-      mbti: "ESTP",
-      contactFrequency: "FREQUENT",
-      hobbies: [
-        { name: "⚽ 축구", category: "스포츠" },
-        { name: "🧗 클라이밍", category: "스포츠" },
-      ],
-      advantages: ["건강한 정신", "추진력", "밝은 웃음"],
-      profileImageUrl: "/main/cat.png",
-      socialAccountId: "",
-    },
-    {
-      memberId: 7,
-      nickname: "책벌레",
-      birthDate: "2002-11-30",
-      major: "국어국문학과",
-      mbti: "ISTJ",
-      contactFrequency: "RARE",
-      hobbies: [
-        { name: "📚 독서", category: "문화" },
-        { name: "✍️ 글쓰기", category: "문화" },
-      ],
-      advantages: ["진중함", "학구열"],
-      profileImageUrl: "/main/dog.png",
-      socialType: "INSTAGRAM",
-      socialAccountId: "bookworm_kr",
-    },
+    ... (중략)
   ];
+  */
+
+  // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
+  const profileList: ProfileData[] =
+    historyData?.data.content.map((item) => ({
+      ...item.partner,
+      // API 응답의 partner 정보를 ProfileData 형식에 맞춤
+      nickname: item.partner.nickname,
+      birthDate: item.partner.birthDate ?? undefined,
+      intro: item.partner.intro ?? undefined,
+      profileImageUrl: item.partner.profileImageUrl ?? undefined,
+      socialType: item.partner.socialType ?? undefined,
+      socialAccountId: item.partner.socialAccountId ?? "",
+      contactFrequency: (item.partner.contactFrequency === "자주"
+        ? "FREQUENT"
+        : item.partner.contactFrequency === "보통"
+          ? "NORMAL"
+          : "RARE") as ContactFrequency,
+    })) || [];
 
   return (
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
@@ -170,7 +97,7 @@ const ScreenMainPage = () => {
         />
       )}
       {/* <NoContactSection /> */}
-      <ProfileSlider profiles={mockProfileData} />
+      {!isLoading && <ProfileSlider profiles={profileList} />}
       <MatchingButton />
       <div className="flex w-full gap-2">
         <SearchMyListButton />
