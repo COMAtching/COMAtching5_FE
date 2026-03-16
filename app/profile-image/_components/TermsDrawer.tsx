@@ -131,21 +131,9 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         university: profile.university || "",
         major: profile.major || "",
         contactFrequency: profile.contactFrequency || "NORMAL",
+        song: profile.song || null,
         hobbies: mapHobbies(profile.hobbies || []),
-        intros: profile.intros || [],
-        tags:
-          profile.advantages && profile.advantages.length > 0
-            ? profile.advantages.map((tag) => ({
-                // 이모지 제거 (정규식 사용) 및 공백 제거
-                tag: tag
-                  .replace(
-                    /[\uD800-\uDBFF][\uDC00-\uDFFF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF]|\uD83D[\uDE00-\uDE4F]|\uD83E[\uDD00-\uDDFF]/g,
-                    "",
-                  )
-                  .trim(),
-              }))
-            : null,
-        song: profile.favoriteSong || null,
+        tags: profile.tags && profile.tags.length > 0 ? profile.tags : null,
       };
 
       // 3. 백엔드로 전송
