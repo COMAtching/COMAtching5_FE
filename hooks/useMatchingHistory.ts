@@ -5,6 +5,7 @@ import {
   SocialType,
   Hobby,
   IntroItem,
+  ContactFrequency,
 } from "@/lib/types/profile";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,17 +14,19 @@ export interface MatchingPartner {
   email: string;
   nickname: string;
   gender: Gender;
-  birthDate: string | null;
+  birthDate: string;
   mbti: MBTI;
   intro: string | null;
-  profileImageUrl: string | null;
+  profileImageUrl: string;
   socialType: SocialType | null;
   socialAccountId: string | null;
   university: string;
   major: string;
-  contactFrequency: string; // "적음", "보통", "자주" 등 한글이 올 수 있음
+  contactFrequency: ContactFrequency;
   hobbies: Hobby[];
   intros: IntroItem[];
+  advantages: string[] | null;
+  favoriteSong: string | null;
 }
 
 export interface MatchingHistoryItem {

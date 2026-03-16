@@ -44,44 +44,16 @@ const ScreenMainPage = () => {
     setIsNoticeVisible(false);
   };
 
-  // 실제 서비스 시에는 서버에서 받아온 데이터(profiles)를 넘겨줍니다.
-  /*
-  const mockProfileData: ProfileData[] = [
-    {
-      memberId: 1,
-      nickname: "겨울이오길",
-      birthDate: "2004-01-01",
-      major: "정보통신전자공학부",
-      mbti: "ENTP",
-      contactFrequency: "NORMAL",
-      hobbies: [
-        { name: "🎸 인디음악", category: "음악" },
-        { name: "📸 사진찍기", category: "문화" },
-      ],
-      advantages: ["친절함", "경청하는 태도"],
-      profileImageUrl: "/main/cat.png",
-      socialAccountId: "winterizcoming_",
-    },
-    ... (중략)
-  ];
-  */
-
   // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
   const profileList: ProfileData[] =
-    historyData?.data.content.map((item) => ({
-      ...item.partner,
-      // API 응답의 partner 정보를 ProfileData 형식에 맞춤
-      nickname: item.partner.nickname,
-      birthDate: item.partner.birthDate ?? undefined,
-      intro: item.partner.intro ?? undefined,
-      profileImageUrl: item.partner.profileImageUrl ?? undefined,
-      socialType: item.partner.socialType ?? undefined,
-      socialAccountId: item.partner.socialAccountId ?? "",
-      contactFrequency: (item.partner.contactFrequency === "자주"
-        ? "FREQUENT"
-        : item.partner.contactFrequency === "보통"
-          ? "NORMAL"
-          : "RARE") as ContactFrequency,
+    historyData?.data.content.map(({ partner }) => ({
+      ...partner,
+      // API에서 null로 올 수 있는 필드들만 안전하게 변환
+      intro: partner.intro ?? undefined,
+      socialType: partner.socialType ?? undefined,
+      socialAccountId: partner.socialAccountId ?? "",
+      advantages: partner.advantages ?? undefined,
+      favoriteSong: partner.favoriteSong ?? undefined,
     })) || [];
 
   return (
