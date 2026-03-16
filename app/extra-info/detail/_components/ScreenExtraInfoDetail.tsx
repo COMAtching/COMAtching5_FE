@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
-import { cn } from "@/lib/utils";
+import { cn, removeEmoji } from "@/lib/utils";
 import { useProfile } from "@/providers/profile-provider";
 import { SocialType } from "@/lib/types/profile";
 import { useRouter } from "next/navigation";
@@ -65,13 +65,7 @@ const ScreenExtraInfoDetail = () => {
       tags:
         advantages.length > 0
           ? advantages.map((tag) => ({
-              // 이모지 제거 (정규식 사용) 및 공백 제거
-              tag: tag
-                .replace(
-                  /[\uD800-\uDBFF][\uDC00-\uDFFF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF]|\uD83D[\uDE00-\uDE4F]|\uD83E[\uDD00-\uDDFF]/g,
-                  "",
-                )
-                .trim(),
+              tag: removeEmoji(tag),
             }))
           : undefined,
       song: favoriteSong.trim() || undefined,

@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useNicknameAvailability";
 import { useRouter } from "next/navigation";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
+import { removeEmoji } from "@/lib/utils";
 
 interface TermsDrawerProps {
   children?: React.ReactElement<{
@@ -82,13 +83,8 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         );
       }
 
-      // 이모지 제거 (정규식 사용)
-      const nameWithoutEmoji = hobbyName
-        .replace(
-          /[\uD800-\uDBFF][\uDC00-\uDFFF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF]|\uD83D[\uDE00-\uDE4F]|\uD83E[\uDD00-\uDDFF]/g,
-          "",
-        )
-        .trim();
+      // 이모지 제거
+      const nameWithoutEmoji = removeEmoji(hobbyName);
 
       return {
         category: categoryMap[hobbyCategoryKr || ""] || "DAILY",
