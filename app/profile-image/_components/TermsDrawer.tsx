@@ -63,7 +63,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
       스포츠: "SPORTS",
       문화예술: "CULTURE",
       음악: "MUSIC",
-      여행: "TRAVEL",
+      여행: "LEISURE",
       "일상/공부": "DAILY",
       게임: "GAME",
     };
