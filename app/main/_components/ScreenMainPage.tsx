@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import MainHeader from "./MainHeader";
 import MyCoinSection from "./MyCoinSection";
 import {
-  GuideBookButton,
+  QAButton,
   MatchingButton,
   SearchMyListButton,
 } from "./FooterButtonList";
@@ -174,7 +174,7 @@ const ScreenMainPage = () => {
       <MatchingButton />
       <div className="flex w-full gap-2">
         <SearchMyListButton />
-        <GuideBookButton />
+        <QAButton />
       </div>
       <BusinessInfo />
     </section>

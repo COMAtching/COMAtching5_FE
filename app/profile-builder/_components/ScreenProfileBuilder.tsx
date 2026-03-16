@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useProfile } from "@/providers/profile-provider";
@@ -35,48 +35,98 @@ const contactFrequencyMap: Record<string, ContactFrequency> = {
   적음: "RARE",
 };
 
+const mbtiSet = new Set<MBTI>([
+  "ISTJ",
+  "ISFJ",
+  "INFJ",
+  "INTJ",
+  "ISTP",
+  "ISFP",
+  "INFP",
+  "INTP",
+  "ESTP",
+  "ESFP",
+  "ENFP",
+  "ENTP",
+  "ESTJ",
+  "ESFJ",
+  "ENFJ",
+  "ENTJ",
+]);
+
+const isValidMBTI = (mbti?: string): mbti is MBTI =>
+  mbtiSet.has((mbti || "").toUpperCase() as MBTI);
+
+const PROFILE_STORAGE_KEY = "onboarding-profile-data";
+const LEGACY_PROFILE_STORAGE_KEY = "profileBuilder";
+
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
-  const { profile, updateProfile, isReady } = useProfile();
+  const { profile, updateProfile } = useProfile();
 
   // Derive initial values from profile or localStorage synchronously
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedBirthYear, setSelectedBirthYear] = useState("");
+  const [selectedUniversity, setSelectedUniversity] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedMajor, setSelectedMajor] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedMBTI, setSelectedMBTI] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const [hasSelectedGender, setHasSelectedGender] = useState(false);
+  const [hasSelectedMBTI, setHasSelectedMBTI] = useState(false);
+  const [hasSelectedFrequency, setHasSelectedFrequency] = useState(false);
+
   const getInitialValues = () => {
-    if (profile) {
+    try {
+      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile) as Partial<ProfileData>;
+        return {
+          birthYear: parsed.birthDate ? parsed.birthDate.split("-")[0] : "",
+          university: parsed.university || "",
+          department: parsed.department || "",
+          major: parsed.major || "",
+          gender:
+            Object.keys(genderMap).find(
+              (k) => genderMap[k] === parsed.gender,
+            ) || "",
+          mbti: parsed.mbti || "",
+          frequency:
+            Object.keys(contactFrequencyMap).find(
+              (k) => contactFrequencyMap[k] === parsed.contactFrequency,
+            ) || "",
+        };
+      }
+
+      const legacySaved = localStorage.getItem(LEGACY_PROFILE_STORAGE_KEY);
+      if (legacySaved) return JSON.parse(legacySaved);
+    } catch {
+      // ignore
+    }
+
+    if (profile && Object.keys(profile).length > 0) {
       return {
         birthYear: profile.birthDate ? profile.birthDate.split("-")[0] : "",
         university: profile.university || "",
         department: profile.department || "",
         major: profile.major || "",
         gender:
-          Object.keys(genderMap).find(
-            (key) => genderMap[key] === profile.gender,
-          ) || "",
+          Object.keys(genderMap).find((k) => genderMap[k] === profile.gender) ||
+          "",
         mbti: profile.mbti || "",
         frequency:
           Object.keys(contactFrequencyMap).find(
-            (key) => contactFrequencyMap[key] === profile.contactFrequency,
+            (k) => contactFrequencyMap[k] === profile.contactFrequency,
           ) || "",
       };
     }
-    try {
-      const saved = localStorage.getItem("profileBuilder");
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
+
     return {};
   };
 
-  const initialValues = getInitialValues();
-  const allFilled = Boolean(
-    initialValues.birthYear &&
-    initialValues.university &&
-    initialValues.department &&
-    initialValues.major &&
-    initialValues.gender &&
-    initialValues.mbti &&
-    initialValues.frequency,
-  );
+  useEffect(() => {
+    const initialValues = getInitialValues();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedBirthYear, setSelectedBirthYear] = useState<string>("");
@@ -140,6 +190,8 @@ export const ScreenProfileBuilder = () => {
   };
 
   const handleComplete = () => {
+    const normalizedMBTI = selectedMBTI.toUpperCase();
+
     // Context 업데이트용 데이터 변환
     const profileData: Partial<ProfileData> = {
       birthDate: selectedBirthYear ? `${selectedBirthYear}-01-01` : undefined,
@@ -147,7 +199,7 @@ export const ScreenProfileBuilder = () => {
       department: selectedDepartment,
       major: selectedMajor,
       gender: genderMap[selectedGender],
-      mbti: selectedMBTI as MBTI,
+      mbti: isValidMBTI(normalizedMBTI) ? normalizedMBTI : undefined,
       contactFrequency: contactFrequencyMap[selectedFrequency],
     };
 
@@ -156,6 +208,21 @@ export const ScreenProfileBuilder = () => {
 
     // 다음 페이지로 이동
     router.push("/hobby-select");
+  };
+
+  const handleGenderSelect = (value: string) => {
+    setSelectedGender(value);
+    setHasSelectedGender(true);
+  };
+
+  const handleMBTISelect = (value: string) => {
+    setSelectedMBTI(value);
+    setHasSelectedMBTI(true);
+  };
+
+  const handleFrequencySelect = (value: string) => {
+    setSelectedFrequency(value);
+    setHasSelectedFrequency(true);
   };
 
   // 단계별 유효성 검사
@@ -169,11 +236,11 @@ export const ScreenProfileBuilder = () => {
           selectedMajor
         );
       case 2:
-        return !!selectedGender;
+        return !!selectedGender && hasSelectedGender;
       case 3:
-        return !!selectedMBTI;
+        return isValidMBTI(selectedMBTI) && hasSelectedMBTI;
       case 4:
-        return !!selectedFrequency;
+        return !!selectedFrequency && hasSelectedFrequency;
       default:
         return false;
     }
@@ -199,7 +266,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 4: Contact Frequency */}
         {currentStep >= 4 && (
           <Step4ContactFrequency
-            onFrequencySelect={setSelectedFrequency}
+            onFrequencySelect={handleFrequencySelect}
             defaultValue={selectedFrequency}
           />
         )}
@@ -207,7 +274,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 3: MBTI */}
         {currentStep >= 3 && (
           <Step3MBTI
-            onMBTISelect={setSelectedMBTI}
+            onMBTISelect={handleMBTISelect}
             defaultValue={selectedMBTI}
           />
         )}
@@ -215,7 +282,7 @@ export const ScreenProfileBuilder = () => {
         {/* Step 2: Gender */}
         {currentStep >= 2 && (
           <Step2Gender
-            onGenderSelect={setSelectedGender}
+            onGenderSelect={handleGenderSelect}
             defaultValue={selectedGender}
           />
         )}

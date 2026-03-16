@@ -154,7 +154,7 @@ export const VerificationStep = ({
           <Button
             shadow={true}
             type="submit"
-            disabled={!verificationCode.trim() || isVerifying || isSending}
+            disabled={verificationCode.length < 6 || isVerifying || isSending}
           >
             {isVerifying ? "확인 중.." : "인증확인"}
           </Button>
