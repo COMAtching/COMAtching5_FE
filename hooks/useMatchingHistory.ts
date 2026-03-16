@@ -4,7 +4,6 @@ import {
   MBTI,
   SocialType,
   Hobby,
-  IntroItem,
   ContactFrequency,
 } from "@/lib/types/profile";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +23,6 @@ export interface MatchingPartner {
   major: string;
   contactFrequency: ContactFrequency;
   hobbies: Hobby[];
-  intros: IntroItem[];
   tags: { tag: string }[] | null;
   song: string | null;
 }

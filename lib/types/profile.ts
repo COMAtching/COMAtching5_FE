@@ -26,11 +26,6 @@ export interface Hobby {
   name: string;
 }
 
-export interface IntroItem {
-  question: string;
-  answer: string;
-}
-
 export interface ProfileData {
   // 기본 정보
   memberId: number;
@@ -54,7 +49,6 @@ export interface ProfileData {
   // 기타
   contactFrequency?: ContactFrequency;
   hobbies?: Hobby[] | string[]; // UI에서는 string[], 제출 시 Hobby[]
-  intros?: IntroItem[];
   tags?: { tag: string }[];
   song?: string;
 }
@@ -73,7 +67,6 @@ export interface ProfileSubmitData {
   major: string;
   contactFrequency: ContactFrequency;
   hobbies: Hobby[];
-  intros: IntroItem[];
   tags: { tag: string }[] | null;
   song: string | null;
 }
