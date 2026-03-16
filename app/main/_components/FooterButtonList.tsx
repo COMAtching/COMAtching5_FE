@@ -1,4 +1,6 @@
 import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const MatchingButton = () => {
   return (
@@ -42,10 +44,10 @@ const SearchMyListButton = () => {
   );
 };
 
-const GuideBookButton = () => {
+const QAButton = () => {
   return (
-    <button
-      type="button"
+    <Link
+      href="/qa"
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
@@ -56,8 +58,8 @@ const GuideBookButton = () => {
         <span className="typo-18-600 text-color-gray-700">📖</span>
         <span className="typo-18-600 text-color-gray-900">QA</span>
       </div>
-    </button>
+    </Link>
   );
 };
 
-export { MatchingButton, SearchMyListButton, GuideBookButton };
+export { MatchingButton, SearchMyListButton, QAButton };
