@@ -256,3 +256,5 @@ export const ScreenProfileBuilder = () => {
     </div>
   );
 };
+
+export default ScreenProfileBuilder;
