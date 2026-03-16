@@ -119,19 +119,22 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         birthDate: profile.birthDate || "",
         mbti: profile.mbti || "ISTJ",
         intro: profile.intro || "",
-        profileImageUrl: finalImageUrl || profile.profileImageUrl || "",
-        socialType: profile.socialType || null,
-        socialAccountId: profile.socialAccountId || null,
-        university: profile.university || "가톨릭대학교",
+        profileImageKey: finalImageUrl || "default",
+        socialType:
+          profile.socialType && profile.socialAccountId
+            ? profile.socialType
+            : null,
+        socialAccountId:
+          profile.socialType && profile.socialAccountId
+            ? profile.socialAccountId
+            : null,
+        university: profile.university || "",
         major: profile.major || "",
         contactFrequency: profile.contactFrequency || "NORMAL",
         hobbies: mapHobbies(profile.hobbies || []),
         intros: profile.intros || [],
-        advantages:
-          profile.advantages && profile.advantages.length > 0
-            ? profile.advantages
-            : null,
-        favoriteSong: profile.favoriteSong || null,
+        tags: profile.tags && profile.tags.length > 0 ? profile.tags : null,
+        song: profile.song || null,
       };
 
       // 3. 백엔드로 전송
@@ -139,7 +142,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         onSuccess: () => {
           setIsOpen(false);
           clearProfile();
-          router.push("/main"); // 가입 완료 페이지로 이동
+          router.push("/main"); // 가입 완료 주소로 이동
         },
         onError: (error) => {
           console.error("Signup failed:", error);
