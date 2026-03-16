@@ -62,9 +62,8 @@ const LEGACY_PROFILE_STORAGE_KEY = "profileBuilder";
 
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, isReady } = useProfile();
 
-  // Derive initial values from profile or localStorage synchronously
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedBirthYear, setSelectedBirthYear] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
@@ -126,18 +125,6 @@ export const ScreenProfileBuilder = () => {
   };
 
   useEffect(() => {
-    const initialValues = getInitialValues();
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedBirthYear, setSelectedBirthYear] = useState<string>("");
-  const [selectedUniversity, setSelectedUniversity] = useState<string>("");
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-  const [selectedMajor, setSelectedMajor] = useState<string>("");
-  const [selectedGender, setSelectedGender] = useState<string>("");
-  const [selectedMBTI, setSelectedMBTI] = useState<string>("");
-  const [selectedFrequency, setSelectedFrequency] = useState<string>("");
-
-  useEffect(() => {
     if (!isReady) return;
 
     const initialValues = getInitialValues();
@@ -151,7 +138,6 @@ export const ScreenProfileBuilder = () => {
       initialValues.frequency,
     );
 
-    // 컴포넌트 마운트 후 및 isReady 시점에 비동기로 상태 업데이트 (Hydration mismatch 및 cascading render 방지)
     const timeoutId = setTimeout(() => {
       if (initialValues.birthYear)
         setSelectedBirthYear(initialValues.birthYear);
@@ -160,10 +146,18 @@ export const ScreenProfileBuilder = () => {
       if (initialValues.department)
         setSelectedDepartment(initialValues.department);
       if (initialValues.major) setSelectedMajor(initialValues.major);
-      if (initialValues.gender) setSelectedGender(initialValues.gender);
-      if (initialValues.mbti) setSelectedMBTI(initialValues.mbti);
-      if (initialValues.frequency)
+      if (initialValues.gender) {
+        setSelectedGender(initialValues.gender);
+        setHasSelectedGender(true);
+      }
+      if (initialValues.mbti) {
+        setSelectedMBTI(initialValues.mbti);
+        setHasSelectedMBTI(true);
+      }
+      if (initialValues.frequency) {
         setSelectedFrequency(initialValues.frequency);
+        setHasSelectedFrequency(true);
+      }
 
       if (allFilled) setCurrentStep(4);
     }, 0);
@@ -192,7 +186,6 @@ export const ScreenProfileBuilder = () => {
   const handleComplete = () => {
     const normalizedMBTI = selectedMBTI.toUpperCase();
 
-    // Context 업데이트용 데이터 변환
     const profileData: Partial<ProfileData> = {
       birthDate: selectedBirthYear ? `${selectedBirthYear}-01-01` : undefined,
       university: selectedUniversity,
@@ -203,10 +196,7 @@ export const ScreenProfileBuilder = () => {
       contactFrequency: contactFrequencyMap[selectedFrequency],
     };
 
-    // Context 업데이트
     updateProfile(profileData);
-
-    // 다음 페이지로 이동
     router.push("/hobby-select");
   };
 
@@ -225,7 +215,6 @@ export const ScreenProfileBuilder = () => {
     setHasSelectedFrequency(true);
   };
 
-  // 단계별 유효성 검사
   const isStepValid = (() => {
     switch (currentStep) {
       case 1:
@@ -248,7 +237,6 @@ export const ScreenProfileBuilder = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col px-4 pb-32">
-      {/* 헤더 영역 */}
       <ProgressStepBar currentStep={1} totalSteps={3} />
       <div className="mt-8 mb-10 text-center">
         <h1 className="typo-24-700 text-color-gray-900 mb-2">
@@ -261,9 +249,7 @@ export const ScreenProfileBuilder = () => {
         </p>
       </div>
 
-      {/* 폼 영역 */}
       <div className="flex flex-col gap-6">
-        {/* Step 4: Contact Frequency */}
         {currentStep >= 4 && (
           <Step4ContactFrequency
             onFrequencySelect={handleFrequencySelect}
@@ -271,7 +257,6 @@ export const ScreenProfileBuilder = () => {
           />
         )}
 
-        {/* Step 3: MBTI */}
         {currentStep >= 3 && (
           <Step3MBTI
             onMBTISelect={handleMBTISelect}
@@ -279,7 +264,6 @@ export const ScreenProfileBuilder = () => {
           />
         )}
 
-        {/* Step 2: Gender */}
         {currentStep >= 2 && (
           <Step2Gender
             onGenderSelect={handleGenderSelect}
@@ -287,7 +271,6 @@ export const ScreenProfileBuilder = () => {
           />
         )}
 
-        {/* Step 1: Basic */}
         <Step1Basic
           yearOptions={yearOptions}
           universityOptions={universityOptions}
@@ -307,7 +290,6 @@ export const ScreenProfileBuilder = () => {
         />
       </div>
 
-      {/* 하단 고정 버튼 */}
       <Button
         type="button"
         fixed
