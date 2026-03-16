@@ -135,7 +135,7 @@ const FormSelect = ({
           SELECT_CLASSNAME,
           error && "border-color-flame-700",
           isPlaceholder && "text-color-text-caption2",
-          disabled && "cursor-not-allowed opacity-50",
+          disabled && "cursor-not-allowed",
           className,
         )}
         style={{ ...SELECT_CONTAINER_STYLE, ...style }}
