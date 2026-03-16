@@ -13,6 +13,7 @@ import NoticeSection from "./NoticeSection";
 import ProfileSlider from "./ProfileSlider";
 import { ProfileData, ContactFrequency } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
+import NoContactSection from "./NoContactSection";
 
 import { useMatchingHistory } from "@/hooks/useMatchingHistory";
 
@@ -69,8 +70,12 @@ const ScreenMainPage = () => {
           onClose={handleNoticeClose}
         />
       )}
-      {/* <NoContactSection /> */}
-      {!isLoading && <ProfileSlider profiles={profileList} />}
+      {!isLoading &&
+        (profileList.length > 0 ? (
+          <ProfileSlider profiles={profileList} />
+        ) : (
+          <NoContactSection />
+        ))}
       <MatchingButton />
       <div className="flex w-full gap-2">
         <SearchMyListButton />
