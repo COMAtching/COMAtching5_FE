@@ -17,7 +17,7 @@ export interface MatchingPartner {
   birthDate: string;
   mbti: MBTI;
   intro: string | null;
-  profileImageUrl: string;
+  profileImageKey: string;
   socialType: SocialType | null;
   socialAccountId: string | null;
   university: string;
@@ -25,8 +25,8 @@ export interface MatchingPartner {
   contactFrequency: ContactFrequency;
   hobbies: Hobby[];
   intros: IntroItem[];
-  advantages: string[] | null;
-  favoriteSong: string | null;
+  tags: { tag: string }[] | null;
+  song: string | null;
 }
 
 export interface MatchingHistoryItem {

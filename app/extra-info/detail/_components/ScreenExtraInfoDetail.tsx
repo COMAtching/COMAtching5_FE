@@ -19,8 +19,10 @@ const ScreenExtraInfoDetail = () => {
     (profile.socialType?.toLowerCase() as "instagram" | "kakao") || null,
   );
   const [contactId, setContactId] = useState(profile.socialAccountId || "");
-  const [favoriteSong, setFavoriteSong] = useState(profile.favoriteSong || ""); 
-  const [advantages, setAdvantages] = useState<string[]>(profile.advantages || []);
+  const [favoriteSong, setFavoriteSong] = useState(profile.song || "");
+  const [advantages, setAdvantages] = useState<string[]>(
+    profile.tags?.map((t) => t.tag) || [],
+  );
 
   const contactOptions = [
     {
@@ -60,8 +62,19 @@ const ScreenExtraInfoDetail = () => {
         ? (contactType.toUpperCase() as SocialType)
         : undefined,
       socialAccountId: contactType ? contactId : undefined,
-      advantages: advantages.length > 0 ? advantages : undefined,
-      favoriteSong: favoriteSong.trim() || undefined,
+      tags:
+        advantages.length > 0
+          ? advantages.map((tag) => ({
+              // 이모지 제거 (정규식 사용) 및 공백 제거
+              tag: tag
+                .replace(
+                  /[\uD800-\uDBFF][\uDC00-\uDFFF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF]|\uD83D[\uDE00-\uDE4F]|\uD83E[\uDD00-\uDDFF]/g,
+                  "",
+                )
+                .trim(),
+            }))
+          : undefined,
+      song: favoriteSong.trim() || undefined,
     });
     router.push("/profile-image");
   };
@@ -205,8 +218,8 @@ const ScreenExtraInfoDetail = () => {
           updateProfile({
             socialType: undefined,
             socialAccountId: undefined,
-            advantages: undefined,
-            favoriteSong: undefined,
+            tags: undefined,
+            song: undefined,
           });
           router.push("/profile-image");
         }}

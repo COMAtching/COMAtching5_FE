@@ -48,12 +48,13 @@ const ScreenMainPage = () => {
   const profileList: ProfileData[] =
     historyData?.data.content.map(({ partner }) => ({
       ...partner,
-      // API에서 null로 올 수 있는 필드들만 안전하게 변환
+      // API에서 필드명이 변경되었거나 null로 올 수 있는 필드들만 안전하게 변환
+      profileImageUrl: partner.profileImageKey,
       intro: partner.intro ?? undefined,
       socialType: partner.socialType ?? undefined,
       socialAccountId: partner.socialAccountId ?? "",
-      advantages: partner.advantages ?? undefined,
-      favoriteSong: partner.favoriteSong ?? undefined,
+      tags: partner.tags ?? undefined,
+      song: partner.song ?? undefined,
     })) || [];
 
   return (

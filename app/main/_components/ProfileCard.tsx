@@ -150,8 +150,8 @@ const ProfileDetails = ({
     <div className="flex flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">장점</span>
       <div className="flex flex-wrap gap-1">
-        {profile.advantages && profile.advantages.length > 0 ? (
-          profile.advantages.map((adv) => <Tag key={adv} text={adv} />)
+        {profile.tags && profile.tags.length > 0 ? (
+          profile.tags.map((t) => <Tag key={t.tag} text={t.tag} />)
         ) : (
           <Tag text="없음" />
         )}
@@ -162,7 +162,7 @@ const ProfileDetails = ({
     <div className="flex flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">좋아하는 노래</span>
       <span className="typo-16-600 text-color-text-black">
-        {profile.favoriteSong || "아직 없어요!"}
+        {profile.song || "아직 없어요!"}
       </span>
     </div>
 

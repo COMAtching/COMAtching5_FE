@@ -5,15 +5,18 @@ import Button from "@/components/ui/Button";
 import ProfileBottomSheet from "./ProfileBottomSheet";
 
 export const DEFAULT_PROFILES = [
-  { id: "bear", name: "곰", image: "/profile/bear.svg" },
-  { id: "cat", name: "고양이", image: "/profile/cat.svg" },
   { id: "dog", name: "강아지", image: "/profile/dog.svg" },
+  { id: "cat", name: "고양이", image: "/profile/cat.svg" },
+  { id: "bear", name: "곰", image: "/profile/bear.svg" },
   { id: "rabbit", name: "토끼", image: "/profile/rabbit.svg" },
   { id: "fox", name: "여우", image: "/profile/fox.svg" },
-  { id: "panda", name: "판다", image: "/profile/panda.svg" },
-  { id: "hamster", name: "햄스터", image: "/profile/hamster.svg" },
-  { id: "deer", name: "사슴", image: "/profile/deer.svg" },
   { id: "penguin", name: "펭귄", image: "/profile/penguin.svg" },
+  { id: "dinosaur", name: "공룡", image: "/profile/dinosaur.svg" },
+  { id: "otter", name: "수달", image: "/profile/otter.svg" },
+  { id: "wolf", name: "늑대", image: "/profile/wolf.svg" },
+  { id: "snake", name: "뱀", image: "/profile/snake.svg" },
+  { id: "horse", name: "말", image: "/profile/horse.svg" },
+  { id: "frog", name: "개구리", image: "/profile/frog.svg" },
 ];
 
 interface DefaultProfileDrawerProps {

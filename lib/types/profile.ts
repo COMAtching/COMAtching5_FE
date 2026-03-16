@@ -55,18 +55,18 @@ export interface ProfileData {
   contactFrequency?: ContactFrequency;
   hobbies?: Hobby[] | string[]; // UI에서는 string[], 제출 시 Hobby[]
   intros?: IntroItem[];
-  advantages?: string[];
-  favoriteSong?: string;
+  tags?: { tag: string }[];
+  song?: string;
 }
 
-// 백엔드 전송용 타입 (필수 필드)
+// 백엔드 전송용 타입 (필수 필드 및 변경된 스펙 반영)
 export interface ProfileSubmitData {
   nickname: string;
   gender: Gender;
   birthDate: string;
   mbti: MBTI;
   intro: string;
-  profileImageUrl: string;
+  profileImageKey: string;
   socialType: SocialType | null;
   socialAccountId: string | null;
   university: string;
@@ -74,6 +74,6 @@ export interface ProfileSubmitData {
   contactFrequency: ContactFrequency;
   hobbies: Hobby[];
   intros: IntroItem[];
-  advantages: string[] | null;
-  favoriteSong: string | null;
+  tags: { tag: string }[] | null;
+  song: string | null;
 }
