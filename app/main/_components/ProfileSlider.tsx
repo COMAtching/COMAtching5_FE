@@ -14,11 +14,11 @@ const CARD_GAP = 8; // 카드 사이 간격 (px)
 
 const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const toggleExpanded = useCallback(() => {
-    setIsExpanded((prev) => !prev);
+  const toggleExpanded = useCallback((id: number) => {
+    setExpandedCardId((prev) => (prev === id ? null : id));
   }, []);
 
   useEffect(() => {
@@ -60,8 +60,8 @@ const ProfileSlider = ({ profiles }: ProfileSliderProps) => {
           >
             <ProfileCard
               profile={profile}
-              isExpanded={isExpanded}
-              onToggleExpanded={toggleExpanded}
+              isExpanded={expandedCardId === profile.memberId}
+              onToggleExpanded={() => toggleExpanded(profile.memberId)}
             />
           </div>
         ))}

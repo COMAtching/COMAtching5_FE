@@ -78,35 +78,47 @@ export const ScreenProfileBuilder = () => {
     initialValues.frequency,
   );
 
-  const [currentStep, setCurrentStep] = useState(allFilled ? 4 : 1);
-  const [selectedBirthYear, setSelectedBirthYear] = useState<string>(
-    initialValues.birthYear || "",
-  );
-  const [selectedUniversity, setSelectedUniversity] = useState<string>(
-    initialValues.university || "",
-  );
-  const [selectedDepartment, setSelectedDepartment] = useState<string>(
-    initialValues.department || "",
-  );
-  const [selectedMajor, setSelectedMajor] = useState<string>(
-    initialValues.major || "",
-  );
-  const [selectedGender, setSelectedGender] = useState<string>(
-    initialValues.gender || "",
-  );
-  const [selectedMBTI, setSelectedMBTI] = useState<string>(
-    initialValues.mbti || "",
-  );
-  const [selectedFrequency, setSelectedFrequency] = useState<string>(
-    initialValues.frequency || "",
-  );
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedBirthYear, setSelectedBirthYear] = useState<string>("");
+  const [selectedUniversity, setSelectedUniversity] = useState<string>("");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const [selectedMajor, setSelectedMajor] = useState<string>("");
+  const [selectedGender, setSelectedGender] = useState<string>("");
+  const [selectedMBTI, setSelectedMBTI] = useState<string>("");
+  const [selectedFrequency, setSelectedFrequency] = useState<string>("");
 
-  // isReady ref — kept to avoid re-running on profile change during session
-  const initializedRef = useRef(false);
   useEffect(() => {
-    if (!isReady || initializedRef.current) return;
-    initializedRef.current = true;
-    // Values are already set via lazy init above; nothing extra needed here
+    if (!isReady) return;
+
+    const initialValues = getInitialValues();
+    const allFilled = Boolean(
+      initialValues.birthYear &&
+      initialValues.university &&
+      initialValues.department &&
+      initialValues.major &&
+      initialValues.gender &&
+      initialValues.mbti &&
+      initialValues.frequency,
+    );
+
+    // 컴포넌트 마운트 후 및 isReady 시점에 비동기로 상태 업데이트 (Hydration mismatch 및 cascading render 방지)
+    const timeoutId = setTimeout(() => {
+      if (initialValues.birthYear)
+        setSelectedBirthYear(initialValues.birthYear);
+      if (initialValues.university)
+        setSelectedUniversity(initialValues.university);
+      if (initialValues.department)
+        setSelectedDepartment(initialValues.department);
+      if (initialValues.major) setSelectedMajor(initialValues.major);
+      if (initialValues.gender) setSelectedGender(initialValues.gender);
+      if (initialValues.mbti) setSelectedMBTI(initialValues.mbti);
+      if (initialValues.frequency)
+        setSelectedFrequency(initialValues.frequency);
+
+      if (allFilled) setCurrentStep(4);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [isReady]);
 
   const yearOptions = getYearOptions();
