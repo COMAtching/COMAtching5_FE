@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";

@@ -9,13 +9,11 @@ import { validateEmail } from "@/lib/validators";
 const ScreenPasswordResetPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState({ text: "" });
 
   const handlePasswordReset = (e: React.FormEvent) => {
     e.preventDefault();
     setMessage({ text: "" });
-    setIsSent(false);
 
     if (!email) {
       setMessage({ text: "이메일을 입력해 주세요." });
@@ -32,7 +30,6 @@ const ScreenPasswordResetPage = () => {
 
     // TODO: 비밀번호 재설정 이메일 발송 API 연동
     console.log("Password reset requested for:", email);
-    setIsSent(true);
 
     // 이메일 전송 단계 정보 저장
     sessionStorage.setItem("reset_email_to_verify", email);

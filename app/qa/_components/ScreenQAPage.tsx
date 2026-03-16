@@ -11,9 +11,9 @@ const ScreenQAPage = () => {
       </header>
 
       <main className="mt-4 flex flex-col gap-4">
-        {QA_LIST.map((item, index) => (
+        {QA_LIST.map((item) => (
           <div
-            key={index}
+            key={item.question}
             className="flex flex-col gap-3 rounded-[24px] border border-white/30 bg-white/40 p-5 shadow-[0_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[20px]"
           >
             <div className="flex gap-2">
