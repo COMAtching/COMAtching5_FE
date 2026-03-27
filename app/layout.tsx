@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
-import { QueryProvider } from "@/providers/query-provider";
-import { ServiceStatusProvider } from "@/providers/service-status-provider";
-import { getInitialMaintenanceStatus } from "@/lib/status";
+// import { QueryProvider } from "@/providers/query-provider";
+// import { ServiceStatusProvider } from "@/providers/service-status-provider";
+// import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
 
 const pretendard = localFont({
@@ -15,6 +15,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://comatching.site"),
   title: {
     default: "코매칭",
     template: "%s | 코매칭",
@@ -26,13 +27,28 @@ export const metadata: Metadata = {
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
     type: "website",
     locale: "ko_KR",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "코매칭 - 대학축제 커플매칭",
+      },
+    ],
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+  twitter: {
+    card: "summary_large_image",
+    title: "코매칭 - 대학축제 커플매칭",
+    description: "대학교 축제에서 운명의 인연을 만나보세요!",
+    images: ["/og-image.png"],
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({
@@ -40,7 +56,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialMaintenanceMode = await getInitialMaintenanceStatus();
+  // const initialMaintenanceMode = await getInitialMaintenanceStatus();
 
   return (
     <html lang="ko" className={pretendard.variable}>

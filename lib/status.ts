@@ -1,7 +1,7 @@
 export async function getInitialMaintenanceStatus() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/status`, {
-      cache: "no-store",
+      next: { revalidate: 60 }, // 60초마다 재검증 (정적 생성 가능)
     });
     if (!res.ok) return false;
 

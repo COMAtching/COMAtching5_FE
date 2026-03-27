@@ -11,6 +11,8 @@ if (!API_URL) {
 const serverClient = axios.create({
   baseURL: API_URL,
   timeout: 10000,
+  maxRedirects: 0, // 🚨 자동으로 리다이렉트를 따라가지 않도록 설정
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 302, // 302도 성공으로 간주
   headers: {
     "Content-Type": "application/json",
   },
@@ -62,7 +64,7 @@ serverClient.interceptors.response.use(
 
         // 원래 요청 재시도
         return serverClient(originalRequest);
-      } catch (reissueError) {
+      } catch {
         // 재발급 실패 → 로그인 페이지로
         alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
         redirect("/login");
@@ -81,23 +83,43 @@ type RequestOptions = {
   body?: unknown; // POST, PUT 등에서 보낼 데이터
 };
 
+// 요청 결과 타입 정의
+type ApiResponse<T> = {
+  data: T;
+  finalUrl?: string;
+  setCookie?: string[]; // ✅ 백엔드에서 온 쿠키 헤더
+};
+
 // 3. 통합 요청 함수
 async function request<T>(
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   { path, params, headers, body }: RequestOptions,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   // Axios 설정 객체
   const config: AxiosRequestConfig = {
     url: path,
     method,
     headers,
-    params, // Axios가 객체를 쿼리스트링(?key=value)으로 자동 변환해줍니다. (buildQuery 불필요)
+    params,
     data: body,
   };
 
   try {
     const response = await serverClient.request<T>(config);
-    return response.data;
+
+    // 💡 성공 시 로그를 출력합니다.
+    console.log(`[Server API Success] ${method} ${path}`, {
+      status: response.status,
+      location: response.headers["location"], // 리다이렉트 지점
+      hasCookie: !!response.headers["set-cookie"],
+    });
+
+    return {
+      data: response.data,
+      finalUrl:
+        response.headers["location"] || response.request?.res?.responseUrl,
+      setCookie: response.headers["set-cookie"] as string[],
+    };
   } catch (error) {
     if (isAxiosError(error)) {
       const status = error.response?.status;

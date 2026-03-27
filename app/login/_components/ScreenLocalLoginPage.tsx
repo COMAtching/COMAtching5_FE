@@ -5,7 +5,7 @@ import { LoginForm } from "./LoginForm";
 
 const ScreenLocalLoginPage = () => {
   return (
-    <main className="flex h-dvh flex-col items-start px-4 pt-2 pb-[6.2vh]">
+    <main className="flex min-h-dvh flex-col items-start px-4 pt-2 pb-[6.2vh]">
       <BackButton />
       <LocalLoginIntro />
       <LoginForm />

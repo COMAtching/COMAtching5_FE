@@ -1,4 +1,3 @@
-import React from "react";
 import { Metadata } from "next";
 import ScreenLocalLoginPage from "./_components/ScreenLocalLoginPage";
 
@@ -7,8 +6,6 @@ export const metadata: Metadata = {
   description: "COMAtching 로그인 페이지",
 };
 
-const LoginPage = () => {
+export default function LoginPage() {
   return <ScreenLocalLoginPage />;
-};
-
-export default LoginPage;
+}
