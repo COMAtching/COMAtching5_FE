@@ -40,7 +40,8 @@ const BubbleDiv = ({
         <div>
           {children || (
             <>
-              현재 <span className="text-bubble-text-highight">775명</span> 참여중이에요!
+              현재 <span className="text-bubble-text-highight">775명</span>{" "}
+              참여중이에요!
             </>
           )}
         </div>
