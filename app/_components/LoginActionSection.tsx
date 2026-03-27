@@ -11,13 +11,15 @@ import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
-    // window.location.href = "https://backend.comatching.site/oauth2/authorization/kakao";
-    alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
+    window.location.href =
+      "https://backend.comatching.site/oauth2/authorization/kakao";
+    // alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
   };
 
   const handleGoogleLogin = () => {
-    // window.location.href = "https://backend.comatching.site/oauth2/authorization/google";
-    alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
+    window.location.href =
+      "https://backend.comatching.site/oauth2/authorization/google";
+    // alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
   };
 
   return (
