@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
-// import { QueryProvider } from "@/providers/query-provider";
-// import { ServiceStatusProvider } from "@/providers/service-status-provider";
-// import { getInitialMaintenanceStatus } from "@/lib/status";
+import { QueryProvider } from "@/providers/query-provider";
+import { ServiceStatusProvider } from "@/providers/service-status-provider";
+import { ProfileProvider } from "@/providers/profile-provider";
+import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
 
 const pretendard = localFont({
@@ -56,24 +57,26 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const initialMaintenanceMode = await getInitialMaintenanceStatus();
+  const initialMaintenanceMode = await getInitialMaintenanceStatus();
 
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
-        {/* <QueryProvider> */}
-        {/* <ServiceStatusProvider */}
-        {/* initialMaintenanceMode={initialMaintenanceMode} */}
-        {/* > */}
-        <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
-          <Blur />
-          <FcmInitializer />
-          {children}
-        </div>
-        {/* </ServiceStatusProvider> */}
-        {/* </QueryProvider> */}
+        <QueryProvider>
+          <ServiceStatusProvider
+            initialMaintenanceMode={initialMaintenanceMode}
+          >
+            <ProfileProvider>
+              <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+                <Blur />
+                <FcmInitializer />
+                {children}
+              </div>
+            </ProfileProvider>
+          </ServiceStatusProvider>
+        </QueryProvider>
       </body>
     </html>
   );
