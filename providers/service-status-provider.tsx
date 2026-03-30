@@ -15,7 +15,7 @@ export function ServiceStatusProvider({
   const { data: isMaintenance } = useQuery({
     queryKey: ["maintenance-status"],
     queryFn: async () => {
-      const res = await fetch("https://api.your-backend.com/status", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/status`, {
         cache: "no-store",
       });
       const data = await res.json();
