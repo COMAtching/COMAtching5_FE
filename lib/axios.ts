@@ -20,13 +20,13 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      originalRequest.url !== "/api/auth/login"
+      !originalRequest.url?.includes("/api/auth/reissue")
     ) {
       originalRequest._retry = true;
 
       try {
         // refreshToken으로 새 accessToken 발급 (withCredentials로 쿠키 자동 전송)
-        await api.post("/api/auth/login");
+        await api.post("/api/auth/reissue");
 
         // 원래 요청 재시도
         return api(originalRequest);
