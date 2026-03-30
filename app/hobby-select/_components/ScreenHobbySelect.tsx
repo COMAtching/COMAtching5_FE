@@ -18,7 +18,7 @@ const ALL_HOBBIES = Object.values(HOBBIES).flat() as string[];
 const ScreenHobbySelect = () => {
   const router = useRouter();
   const { profile, updateProfile } = useProfile();
-  
+
   // 취미 이름으로 카테고리를 찾는 헬퍼 함수
   const findCategoryByHobbyName = (name: string): HobbyCategory => {
     const found = (Object.keys(HOBBIES) as HobbyCategory[]).find((cat) =>
@@ -88,10 +88,12 @@ const ScreenHobbySelect = () => {
   const getHobbiesByCategory = (category: HobbyCategory) => {
     const predefined = HOBBIES[category];
     // 사용자가 이 카테고리에 추가했던 모든 커스텀 취미 추출
-    const customInCategory = addedCustomHobbies.filter(h => h.category === category);
+    const customInCategory = addedCustomHobbies.filter(
+      (h) => h.category === category,
+    );
     return {
       predefined,
-      customInCategory
+      customInCategory,
     };
   };
 
@@ -115,7 +117,7 @@ const ScreenHobbySelect = () => {
             <div className="flex flex-wrap gap-3">
               {filteredHobbies.length > 0 ? (
                 filteredHobbies.map((hobby) => {
-                  const isSelected = selected.some(h => h.name === hobby);
+                  const isSelected = selected.some((h) => h.name === hobby);
                   return (
                     <HobbyButton
                       key={hobby}
@@ -135,7 +137,8 @@ const ScreenHobbySelect = () => {
           </div>
         ) : (
           (Object.keys(HOBBIES) as HobbyCategory[]).map((category) => {
-            const { predefined, customInCategory } = getHobbiesByCategory(category);
+            const { predefined, customInCategory } =
+              getHobbiesByCategory(category);
             return (
               <div key={category} className="flex flex-col">
                 <h2 className="typo-16-600 mb-3 text-black">{category}</h2>
@@ -145,7 +148,7 @@ const ScreenHobbySelect = () => {
                     <HobbyButton
                       key={hobby}
                       onClick={() => toggleHobby(hobby)}
-                      selected={selected.some(h => h.name === hobby)}
+                      selected={selected.some((h) => h.name === hobby)}
                     >
                       {hobby}
                     </HobbyButton>
@@ -155,7 +158,7 @@ const ScreenHobbySelect = () => {
                     <HobbyButton
                       key={hobby.name}
                       onClick={() => toggleHobby(hobby.name, category)}
-                      selected={selected.some(h => h.name === hobby.name)}
+                      selected={selected.some((h) => h.name === hobby.name)}
                     >
                       {hobby.name}
                     </HobbyButton>

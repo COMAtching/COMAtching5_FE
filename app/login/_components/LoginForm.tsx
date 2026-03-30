@@ -68,9 +68,7 @@ export const LoginForm = () => {
       </div>
 
       <div className="mt-auto flex w-full flex-col items-center gap-4">
-        <BubbleDiv top={-4}>
-          아직 계정이 없으신가요?!
-        </BubbleDiv>
+        <BubbleDiv top={-4}>아직 계정이 없으신가요?!</BubbleDiv>
         <Link
           href="/register"
           className="typo-14-500 flex items-center gap-1 border-b-2 border-gray-500 text-gray-500"
