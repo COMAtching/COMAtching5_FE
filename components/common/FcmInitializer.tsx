@@ -1,13 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { registerServiceWorkerAndGetToken } from "@/lib/firebase";
 import { api } from "@/lib/axios";
 
 const FCM_REGISTERED_KEY = "fcm_registered";
+const PUBLIC_PATHS = ["/login", "/register", "/terms", "/privacy", "/reset"];
 
 export default function FcmInitializer() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    // 공개 페이지에서는 실행 안 함
+    if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) return;
+
     // 세션 당 1회만 실행 (페이지 이동마다 중복 등록 방지)
     if (sessionStorage.getItem(FCM_REGISTERED_KEY)) return;
 
@@ -39,7 +46,7 @@ export default function FcmInitializer() {
     };
 
     registerFcmToken();
-  }, []);
+  }, [pathname]);
 
   return null;
 }
