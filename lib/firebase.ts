@@ -24,6 +24,30 @@ if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 
+// 서비스 워커가 active 상태가 될 때까지 기다리는 헬퍼
+function waitForServiceWorkerActive(
+  registration: ServiceWorkerRegistration,
+): Promise<ServiceWorker> {
+  return new Promise((resolve) => {
+    if (registration.active) {
+      resolve(registration.active);
+      return;
+    }
+    const sw = registration.installing ?? registration.waiting;
+    if (!sw) {
+      // fallback: navigator.serviceWorker.ready 사용
+      navigator.serviceWorker.ready.then((r) => resolve(r.active!));
+      return;
+    }
+    sw.addEventListener("statechange", function handler() {
+      if (sw.state === "activated") {
+        sw.removeEventListener("statechange", handler);
+        resolve(sw);
+      }
+    });
+  });
+}
+
 // 서비스 워커 등록 및 FCM 토큰 가져오기
 export async function registerServiceWorkerAndGetToken() {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
@@ -36,8 +60,11 @@ export async function registerServiceWorkerAndGetToken() {
       "/firebase-messaging-sw.js",
     );
 
-    // 서비스 워커에 Firebase Config 전달
-    registration.active?.postMessage({
+    // 서비스 워커가 완전히 active 상태가 될 때까지 대기
+    const activeSW = await waitForServiceWorkerActive(registration);
+
+    // 서비스 워커에 Firebase Config 전달 (active 보장 후)
+    activeSW.postMessage({
       type: "INIT_FIREBASE",
       config: firebaseConfig,
     });
