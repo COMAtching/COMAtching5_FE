@@ -72,6 +72,10 @@ export const ScreenProfileBuilder = () => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
+  const [hasSelectedBirthYear, setHasSelectedBirthYear] = useState(false);
+  const [hasSelectedUniversity, setHasSelectedUniversity] = useState(false);
+  const [hasSelectedDepartment, setHasSelectedDepartment] = useState(false);
+  const [hasSelectedMajor, setHasSelectedMajor] = useState(false);
   const [hasSelectedGender, setHasSelectedGender] = useState(false);
   const [hasSelectedMBTI, setHasSelectedMBTI] = useState(false);
   const [hasSelectedFrequency, setHasSelectedFrequency] = useState(false);
@@ -128,15 +132,6 @@ export const ScreenProfileBuilder = () => {
     if (!isReady) return;
 
     const initialValues = getInitialValues();
-    const allFilled = Boolean(
-      initialValues.birthYear &&
-      initialValues.university &&
-      initialValues.department &&
-      initialValues.major &&
-      initialValues.gender &&
-      initialValues.mbti &&
-      initialValues.frequency,
-    );
 
     const timeoutId = setTimeout(() => {
       if (initialValues.birthYear)
@@ -148,18 +143,13 @@ export const ScreenProfileBuilder = () => {
       if (initialValues.major) setSelectedMajor(initialValues.major);
       if (initialValues.gender) {
         setSelectedGender(initialValues.gender);
-        setHasSelectedGender(true);
       }
       if (initialValues.mbti) {
         setSelectedMBTI(initialValues.mbti);
-        setHasSelectedMBTI(true);
       }
       if (initialValues.frequency) {
         setSelectedFrequency(initialValues.frequency);
-        setHasSelectedFrequency(true);
       }
-
-      if (allFilled) setCurrentStep(4);
     }, 0);
 
     return () => clearTimeout(timeoutId);
@@ -222,7 +212,11 @@ export const ScreenProfileBuilder = () => {
           selectedBirthYear &&
           selectedUniversity &&
           selectedDepartment &&
-          selectedMajor
+          selectedMajor &&
+          hasSelectedBirthYear &&
+          hasSelectedUniversity &&
+          hasSelectedDepartment &&
+          hasSelectedMajor
         );
       case 2:
         return !!selectedGender && hasSelectedGender;
@@ -280,13 +274,24 @@ export const ScreenProfileBuilder = () => {
           selectedUniversity={selectedUniversity}
           selectedDepartment={selectedDepartment}
           selectedMajor={selectedMajor}
-          onBirthYearChange={setSelectedBirthYear}
-          onUniversityChange={setSelectedUniversity}
+          onBirthYearChange={(value) => {
+            setSelectedBirthYear(value);
+            setHasSelectedBirthYear(true);
+          }}
+          onUniversityChange={(value) => {
+            setSelectedUniversity(value);
+            setHasSelectedUniversity(true);
+          }}
           onDepartmentChange={(value) => {
             setSelectedDepartment(value);
+            setHasSelectedDepartment(true);
             setSelectedMajor("");
+            setHasSelectedMajor(false);
           }}
-          onMajorChange={setSelectedMajor}
+          onMajorChange={(value) => {
+            setSelectedMajor(value);
+            setHasSelectedMajor(true);
+          }}
         />
       </div>
 
@@ -298,7 +303,6 @@ export const ScreenProfileBuilder = () => {
         safeArea
         disabled={!isStepValid}
         onClick={currentStep === 4 ? handleComplete : handleNext}
-        className="bg-button-primary text-button-primary-text-default"
       >
         {currentStep === 4 ? "완료" : "다음으로"}
       </Button>

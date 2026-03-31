@@ -57,12 +57,12 @@ const ProfileBottomSheet = ({
       {/* Sheet Content */}
       <div
         className={cn(
-          "relative z-10 w-full rounded-t-[24px] bg-white px-4 pt-6 pb-8 md:max-w-[430px]",
+          "relative z-10 w-full rounded-t-[24px] bg-white px-[15px] pt-6 pb-16 md:max-w-[430px]",
           "transition-transform duration-300 ease-out",
           isAnimating ? "translate-y-0" : "translate-y-full",
         )}
       >
-        <div className="mb-6 flex flex-row items-start justify-between">
+        <div className="flex flex-row items-start justify-between">
           <div className="flex flex-col gap-1 text-left">
             <div className="typo-20-700 text-black">{title}</div>
             {description && (
@@ -80,9 +80,7 @@ const ProfileBottomSheet = ({
           </button>
         </div>
 
-        <div className="scrollbar-hide max-h-[60vh] overflow-y-auto">
-          {children}
-        </div>
+        <div className="scrollbar-hide max-h-[60vh]">{children}</div>
 
         {footer && <div className="mt-6 w-full">{footer}</div>}
       </div>

@@ -1,6 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { ProfileData } from "@/lib/types/profile";
 
 const STORAGE_KEY = "onboarding-profile-data";
@@ -13,64 +15,54 @@ interface ProfileContextType {
   isReady: boolean;
 }
 
-const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
-
-export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const [profile, setProfile] = useState<ProfileData>({} as ProfileData);
-  const [isReady, setIsReady] = useState(false);
-
-  // 초기 로드: localStorage에서 데이터 읽기
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setProfile(JSON.parse(stored));
-      }
-    } catch (error) {
-      console.error("Failed to load profile from localStorage:", error);
-    } finally {
-      setIsReady(true);
-    }
-  }, []);
-
-  // 프로필 업데이트 (localStorage에도 자동 저장)
-  const updateProfile = (data: Partial<ProfileData>) => {
-    setProfile((prev) => {
-      const updated = { ...prev, ...data };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (error) {
-        console.error("Failed to save profile to localStorage:", error);
-      }
-      return updated;
-    });
-  };
-
-  // 프로필 초기화 (온보딩 완료 후 사용)
-  const clearProfile = () => {
-    setProfile({} as ProfileData);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
-    } catch (error) {
-      console.error("Failed to clear profile from localStorage:", error);
-    }
-  };
-
-  return (
-    <ProfileContext.Provider
-      value={{ profile, updateProfile, clearProfile, isReady }}
-    >
-      {children}
-    </ProfileContext.Provider>
-  );
+interface ProfileStoreState extends ProfileContextType {
+  setReady: (ready: boolean) => void;
 }
 
-// useProfile 훅
+export const useProfileStore = create<ProfileStoreState>()(
+  persist(
+    (set, get) => ({
+      profile: {} as ProfileData,
+      isReady: false,
+      setReady: (ready) => set({ isReady: ready }),
+      updateProfile: (data) => {
+        const updated = { ...get().profile, ...data };
+        set({ profile: updated });
+      },
+      clearProfile: () => {
+        set({ profile: {} as ProfileData });
+        try {
+          LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+        } catch (error) {
+          console.error("Failed to clear legacy profile storage:", error);
+        }
+      },
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ profile: state.profile }),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("Failed to hydrate profile store:", error);
+        }
+        state?.setReady(true);
+      },
+    },
+  ),
+);
+
+// Backward-compatible alias for existing call sites.
 export function useProfile() {
-  const context = useContext(ProfileContext);
-  if (context === undefined) {
-    throw new Error("useProfile must be used within ProfileProvider");
-  }
-  return context;
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
+  const isReady = useProfileStore((state) => state.isReady);
+
+  return { profile, updateProfile, clearProfile, isReady };
+}
+
+// Backward-compatible noop wrapper. Zustand store does not require a Provider.
+export function ProfileProvider({ children }: { children: ReactNode }) {
+  return <>{children}</>;
 }
