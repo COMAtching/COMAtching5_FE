@@ -49,6 +49,8 @@ export async function registerServiceWorkerAndGetToken() {
       !!rawVapidKey,
       "길이:",
       rawVapidKey?.length,
+      "값: ",
+      rawVapidKey,
     );
 
     if (!rawVapidKey) {
