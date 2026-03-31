@@ -58,9 +58,12 @@ export async function registerServiceWorkerAndGetToken() {
       return null;
     }
 
+    // 87자(미패딩)인 경우 88자(패딩)로 보정하거나 Uint8Array로 변환하여 브라우저 호환성 확보
+    const vapidKey = urlBase64ToUint8Array(rawVapidKey);
+
     console.log("[FCM] getToken 시도 중...");
     const token = await getToken(messaging, {
-      vapidKey: rawVapidKey,
+      vapidKey: vapidKey as unknown as string, // Firebase types might expect string, but Uint8Array is often accepted or necessary for PushManager
       serviceWorkerRegistration: registration,
     });
 
@@ -77,6 +80,20 @@ export async function registerServiceWorkerAndGetToken() {
     console.error("서비스 워커 등록 실패:", error);
     return null;
   }
+}
+
+// VAPID 키를 Uint8Array로 변환하는 헬퍼 함수 (브라우저 PushManager 호환성용)
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
 
 export { app, analytics };
