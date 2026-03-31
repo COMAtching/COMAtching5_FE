@@ -6,7 +6,14 @@ import { registerServiceWorkerAndGetToken } from "@/lib/firebase";
 import { api } from "@/lib/axios";
 
 const FCM_REGISTERED_KEY = "fcm_registered";
-const PUBLIC_PATHS = ["/login", "/register", "/terms", "/privacy", "/reset"];
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/register",
+  "/terms",
+  "/privacy",
+  "/reset",
+];
 
 export default function FcmInitializer() {
   const pathname = usePathname();
