@@ -31,10 +31,13 @@ export async function registerServiceWorkerAndGetToken() {
   }
 
   try {
-    // 서비스 워커 등록 (SW 자체에서 Firebase 초기화하므로 postMessage 불필요)
+    // 서비스 워커 등록
     const registration = await navigator.serviceWorker.register(
       "/firebase-messaging-sw.js",
     );
+
+    // 서비스 워커가 준비될 때까지 대기 (no active Service Worker 에러 방지)
+    await navigator.serviceWorker.ready;
 
     // Messaging 인스턴스 가져오기
     const messaging = getMessaging(app);
