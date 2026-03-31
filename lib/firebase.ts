@@ -41,6 +41,12 @@ export async function registerServiceWorkerAndGetToken() {
 
     // FCM 토큰 요청
     const rawVapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.trim();
+    console.log(
+      "[FCM] VAPID Key 존재 여부:",
+      !!rawVapidKey,
+      "길이:",
+      rawVapidKey?.length,
+    );
 
     if (!rawVapidKey) {
       console.warn(
@@ -49,6 +55,7 @@ export async function registerServiceWorkerAndGetToken() {
       return null;
     }
 
+    console.log("[FCM] getToken 시도 중...");
     const token = await getToken(messaging, {
       vapidKey: rawVapidKey,
       serviceWorkerRegistration: registration,

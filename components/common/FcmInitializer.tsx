@@ -31,9 +31,16 @@ export default function FcmInitializer() {
     const registerFcmToken = async () => {
       try {
         // 알림 권한 요청
+        console.log(
+          "[FCM] 권한 요청 중... (현재 상태:",
+          Notification.permission,
+          ")",
+        );
         const permission = await Notification.requestPermission();
+        console.log("[FCM] 권한 요청 결과:", permission);
+
         if (permission !== "granted") {
-          console.log("[FCM] 알림 권한 거부됨. 토큰 등록 skip.");
+          console.warn("[FCM] 알림 권한 거부됨. 상태:", permission);
           return;
         }
 
