@@ -20,7 +20,10 @@ export default function FcmInitializer() {
 
   useEffect(() => {
     // 공개 페이지에서는 실행 안 함
-    if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) return;
+    const isPublicPath = PUBLIC_PATHS.some((path) =>
+      path === "/" ? pathname === "/" : pathname.startsWith(path),
+    );
+    if (isPublicPath) return;
 
     // 세션 당 1회만 실행 (페이지 이동마다 중복 등록 방지)
     if (sessionStorage.getItem(FCM_REGISTERED_KEY)) return;
