@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { ProfileData } from "@/lib/types/profile";
@@ -60,9 +59,4 @@ export function useProfile() {
   const isReady = useProfileStore((state) => state.isReady);
 
   return { profile, updateProfile, clearProfile, isReady };
-}
-
-// Backward-compatible noop wrapper. Zustand store does not require a Provider.
-export function ProfileProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
 }

@@ -38,23 +38,16 @@ export const DEFAULT_PROFILE_ASSETS: DefaultProfileAsset[] = [
     femaleImage: "/animal/bear_female%201.png",
   },
   {
-    id: "rabbit",
-    name: "토끼",
-    maleImage: "/animal/rabbit_male%201.png",
-    femaleImage: "/animal/rabbit_female%201.png",
-  },
-  {
     id: "fox",
     name: "여우",
     maleImage: "/animal/fox_male%201.png",
     femaleImage: "/animal/fox_female%201.png",
   },
   {
-    id: "dinosaur",
-    name: "공룡",
-    maleImage: "/animal/dinosaur%201.png",
-    femaleImage: "/animal/dinosaur%201.png",
-    fallbackImage: "/animal/dinosaur%201.png",
+    id: "rabbit",
+    name: "토끼",
+    maleImage: "/animal/rabbit_male%201.png",
+    femaleImage: "/animal/rabbit_female%201.png",
   },
   {
     id: "otter",
@@ -69,14 +62,21 @@ export const DEFAULT_PROFILE_ASSETS: DefaultProfileAsset[] = [
     femaleImage: "/animal/Wolf_female%201.png",
   },
   {
+    id: "horse",
+    name: "말",
+    maleImage: "/animal/horse_male.png",
+  },
+  {
     id: "snake",
     name: "뱀",
     femaleImage: "/animal/snake_female.png",
   },
   {
-    id: "horse",
-    name: "말",
-    maleImage: "/animal/horse_male.png",
+    id: "dinosaur",
+    name: "공룡",
+    maleImage: "/animal/dinosaur%201.png",
+    femaleImage: "/animal/dinosaur%201.png",
+    fallbackImage: "/animal/dinosaur%201.png",
   },
 ];
 

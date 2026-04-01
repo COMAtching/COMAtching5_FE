@@ -7,7 +7,7 @@ import FormInput from "@/components/ui/FormInput";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
 import { cn, removeEmoji } from "@/lib/utils";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfile } from "@/stores/profile-store";
 import { SocialType } from "@/lib/types/profile";
 import { useRouter } from "next/navigation";
 

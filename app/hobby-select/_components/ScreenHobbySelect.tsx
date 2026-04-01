@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import HobbyButton from "./HobbyButton";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfile } from "@/stores/profile-store";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 
 import { HOBBIES, type HobbyCategory } from "@/lib/constants/hobbies";

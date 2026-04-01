@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import TermsDrawer from "./TermsDrawer";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfile } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
 import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
 

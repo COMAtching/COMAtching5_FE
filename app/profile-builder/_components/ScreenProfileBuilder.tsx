@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfile } from "@/stores/profile-store";
 import { majorCategories, universities } from "@/lib/constants/majors";
 import {
   getDepartmentOptions,
@@ -72,19 +72,16 @@ export const ScreenProfileBuilder = () => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
-  const [hasSelectedBirthYear, setHasSelectedBirthYear] = useState(false);
-  const [hasSelectedUniversity, setHasSelectedUniversity] = useState(false);
-  const [hasSelectedDepartment, setHasSelectedDepartment] = useState(false);
-  const [hasSelectedMajor, setHasSelectedMajor] = useState(false);
-  const [hasSelectedGender, setHasSelectedGender] = useState(false);
-  const [hasSelectedMBTI, setHasSelectedMBTI] = useState(false);
-  const [hasSelectedFrequency, setHasSelectedFrequency] = useState(false);
 
   const getInitialValues = () => {
     try {
       const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
       if (savedProfile) {
-        const parsed = JSON.parse(savedProfile) as Partial<ProfileData>;
+        const parsedRaw = JSON.parse(savedProfile);
+        // Zustand persist format matches: { state: { profile: ProfileData }, version: number }
+        const parsed = (parsedRaw.state?.profile ||
+          parsedRaw) as Partial<ProfileData>;
+
         return {
           birthYear: parsed.birthDate ? parsed.birthDate.split("-")[0] : "",
           university: parsed.university || "",
@@ -150,6 +147,19 @@ export const ScreenProfileBuilder = () => {
       if (initialValues.frequency) {
         setSelectedFrequency(initialValues.frequency);
       }
+
+      // 모든 정보가 이미 있다면 Step 4까지 모두 펼쳐줌
+      if (
+        initialValues.birthYear &&
+        initialValues.university &&
+        initialValues.department &&
+        initialValues.major &&
+        initialValues.gender &&
+        initialValues.mbti &&
+        initialValues.frequency
+      ) {
+        setCurrentStep(4);
+      }
     }, 0);
 
     return () => clearTimeout(timeoutId);
@@ -192,17 +202,14 @@ export const ScreenProfileBuilder = () => {
 
   const handleGenderSelect = (value: string) => {
     setSelectedGender(value);
-    setHasSelectedGender(true);
   };
 
   const handleMBTISelect = (value: string) => {
     setSelectedMBTI(value);
-    setHasSelectedMBTI(true);
   };
 
   const handleFrequencySelect = (value: string) => {
     setSelectedFrequency(value);
-    setHasSelectedFrequency(true);
   };
 
   const isStepValid = (() => {
@@ -212,18 +219,14 @@ export const ScreenProfileBuilder = () => {
           selectedBirthYear &&
           selectedUniversity &&
           selectedDepartment &&
-          selectedMajor &&
-          hasSelectedBirthYear &&
-          hasSelectedUniversity &&
-          hasSelectedDepartment &&
-          hasSelectedMajor
+          selectedMajor
         );
       case 2:
-        return !!selectedGender && hasSelectedGender;
+        return !!selectedGender;
       case 3:
-        return isValidMBTI(selectedMBTI) && hasSelectedMBTI;
+        return isValidMBTI(selectedMBTI);
       case 4:
-        return !!selectedFrequency && hasSelectedFrequency;
+        return !!selectedFrequency;
       default:
         return false;
     }
@@ -276,21 +279,16 @@ export const ScreenProfileBuilder = () => {
           selectedMajor={selectedMajor}
           onBirthYearChange={(value) => {
             setSelectedBirthYear(value);
-            setHasSelectedBirthYear(true);
           }}
           onUniversityChange={(value) => {
             setSelectedUniversity(value);
-            setHasSelectedUniversity(true);
           }}
           onDepartmentChange={(value) => {
             setSelectedDepartment(value);
-            setHasSelectedDepartment(true);
             setSelectedMajor("");
-            setHasSelectedMajor(false);
           }}
           onMajorChange={(value) => {
             setSelectedMajor(value);
-            setHasSelectedMajor(true);
           }}
         />
       </div>
