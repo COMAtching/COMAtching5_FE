@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useProfile } from "@/stores/profile-store";
@@ -57,8 +57,19 @@ const mbtiSet = new Set<MBTI>([
 const isValidMBTI = (mbti?: string): mbti is MBTI =>
   mbtiSet.has((mbti || "").toUpperCase() as MBTI);
 
-const PROFILE_STORAGE_KEY = "onboarding-profile-data";
-const LEGACY_PROFILE_STORAGE_KEY = "profileBuilder";
+const mapProfileToInitialValues = (profile: Partial<ProfileData>) => ({
+  birthYear: profile.birthDate ? profile.birthDate.split("-")[0] : "",
+  university: profile.university || "",
+  department: profile.department || "",
+  major: profile.major || "",
+  gender:
+    Object.keys(genderMap).find((k) => genderMap[k] === profile.gender) || "",
+  mbti: profile.mbti || "",
+  frequency:
+    Object.keys(contactFrequencyMap).find(
+      (k) => contactFrequencyMap[k] === profile.contactFrequency,
+    ) || "",
+});
 
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
@@ -72,64 +83,12 @@ export const ScreenProfileBuilder = () => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
-
-  const getInitialValues = () => {
-    try {
-      const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
-      if (savedProfile) {
-        const parsedRaw = JSON.parse(savedProfile);
-        // Zustand persist format matches: { state: { profile: ProfileData }, version: number }
-        const parsed = (parsedRaw.state?.profile ||
-          parsedRaw) as Partial<ProfileData>;
-
-        return {
-          birthYear: parsed.birthDate ? parsed.birthDate.split("-")[0] : "",
-          university: parsed.university || "",
-          department: parsed.department || "",
-          major: parsed.major || "",
-          gender:
-            Object.keys(genderMap).find(
-              (k) => genderMap[k] === parsed.gender,
-            ) || "",
-          mbti: parsed.mbti || "",
-          frequency:
-            Object.keys(contactFrequencyMap).find(
-              (k) => contactFrequencyMap[k] === parsed.contactFrequency,
-            ) || "",
-        };
-      }
-
-      const legacySaved = localStorage.getItem(LEGACY_PROFILE_STORAGE_KEY);
-      if (legacySaved) return JSON.parse(legacySaved);
-    } catch {
-      // ignore
-    }
-
-    if (profile && Object.keys(profile).length > 0) {
-      return {
-        birthYear: profile.birthDate ? profile.birthDate.split("-")[0] : "",
-        university: profile.university || "",
-        department: profile.department || "",
-        major: profile.major || "",
-        gender:
-          Object.keys(genderMap).find((k) => genderMap[k] === profile.gender) ||
-          "",
-        mbti: profile.mbti || "",
-        frequency:
-          Object.keys(contactFrequencyMap).find(
-            (k) => contactFrequencyMap[k] === profile.contactFrequency,
-          ) || "",
-      };
-    }
-
-    return {};
-  };
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || hasInitialized.current) return;
 
-    const initialValues = getInitialValues();
-
+    const initialValues = mapProfileToInitialValues(profile);
     const timeoutId = setTimeout(() => {
       if (initialValues.birthYear)
         setSelectedBirthYear(initialValues.birthYear);
@@ -160,10 +119,12 @@ export const ScreenProfileBuilder = () => {
       ) {
         setCurrentStep(4);
       }
+
+      hasInitialized.current = true;
     }, 0);
 
     return () => clearTimeout(timeoutId);
-  }, [isReady]);
+  }, [isReady, profile]);
 
   const yearOptions = getYearOptions();
   const universityOptions = getUniversityOptions(universities);

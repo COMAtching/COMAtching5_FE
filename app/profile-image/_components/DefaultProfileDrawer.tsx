@@ -75,7 +75,7 @@ const DefaultProfileDrawer = ({
           </Button>
         }
       >
-        <div className="flex flex-wrap justify-between gap-y-8 px-1 py-8">
+        <div className="flex flex-wrap justify-between gap-y-8 px-1 py-1">
           {profiles.map((profile) => (
             <button
               key={profile.id}
