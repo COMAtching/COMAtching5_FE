@@ -7,7 +7,7 @@ import { SelectCheckButton } from "./ProfileImageSelection";
 import AgreeBottomSheet from "./AgreeBottomSheet";
 import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
-import { useProfile } from "@/stores/profile-store";
+import { useProfileStore } from "@/stores/profile-store";
 import { useImageUpload, useProfileSignUp } from "@/hooks/useProfileSignUp";
 import {
   useNicknameAvailability,
@@ -27,7 +27,8 @@ type ViewMode = "list" | "terms" | "privacy";
 
 const TermsDrawer = ({ children }: TermsDrawerProps) => {
   const router = useRouter();
-  const { profile, clearProfile } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [agreements, setAgreements] = useState({

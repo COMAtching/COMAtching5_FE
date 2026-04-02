@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { useProfile } from "@/stores/profile-store";
+import { useProfileStore } from "@/stores/profile-store";
 import { majorCategories, universities } from "@/lib/constants/majors";
 import {
   getDepartmentOptions,
@@ -73,7 +73,9 @@ const mapProfileToInitialValues = (profile: Partial<ProfileData>) => ({
 
 export const ScreenProfileBuilder = () => {
   const router = useRouter();
-  const { profile, updateProfile, isReady } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const isReady = useProfileStore((state) => state.isReady);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedBirthYear, setSelectedBirthYear] = useState("");

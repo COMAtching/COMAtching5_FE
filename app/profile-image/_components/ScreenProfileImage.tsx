@@ -7,13 +7,15 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import TermsDrawer from "./TermsDrawer";
-import { useProfile } from "@/stores/profile-store";
+import { useProfileStore } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
 import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
 
 const ScreenProfileImage = () => {
   const router = useRouter();
-  const { profile, updateProfile, isReady } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const isReady = useProfileStore((state) => state.isReady);
 
   // local preview states (not as critical to persist, but good for UX)
   const [selectedType, setSelectedType] = useState<"default" | "custom">(
