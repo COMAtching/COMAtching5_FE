@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/drawer";
 import { X } from "lucide-react";
 
-interface ProfileBottomSheetProps {
+interface AgreeBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   title: React.ReactNode;
@@ -17,21 +17,21 @@ interface ProfileBottomSheetProps {
   footer?: React.ReactNode;
 }
 
-const ProfileBottomSheet = ({
+const AgreeBottomSheet = ({
   isOpen,
   onClose,
   title,
   description,
   children,
   footer,
-}: ProfileBottomSheetProps) => {
+}: AgreeBottomSheetProps) => {
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent
         showHandle={false}
-        className="z-[100] mx-auto flex h-[90dvh] w-full flex-col rounded-t-[24px] border-0 bg-white px-[15px] py-6 md:h-auto md:max-w-[430px]"
+        className="z-[100] mx-auto max-h-none w-full rounded-t-[24px] border-0 bg-white px-4 pt-6 pb-8 md:max-w-[430px]"
       >
-        <div className="flex flex-row items-start justify-between">
+        <div className="mb-6 flex flex-row items-start justify-between">
           <div className="flex flex-col gap-1 text-left">
             <DrawerTitle className="typo-20-700 text-black">
               {title}
@@ -51,12 +51,14 @@ const ProfileBottomSheet = ({
           </button>
         </div>
 
-        <div className="mt-6 min-h-0 flex-1 overflow-y-auto">{children}</div>
+        <div className="scrollbar-hide max-h-[60vh] overflow-y-auto">
+          {children}
+        </div>
 
-        {footer && <div className="mt-auto w-full pt-4">{footer}</div>}
+        {footer && <div className="mt-6 w-full">{footer}</div>}
       </DrawerContent>
     </Drawer>
   );
 };
 
-export default ProfileBottomSheet;
+export default AgreeBottomSheet;

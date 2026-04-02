@@ -7,13 +7,14 @@ import FormInput from "@/components/ui/FormInput";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 import AdvantageDrawer from "./AdvantageDrawer";
 import { cn, removeEmoji } from "@/lib/utils";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfileStore } from "@/stores/profile-store";
 import { SocialType } from "@/lib/types/profile";
 import { useRouter } from "next/navigation";
 
 const ScreenExtraInfoDetail = () => {
   const router = useRouter();
-  const { profile, updateProfile } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
 
   const [contactType, setContactType] = useState<"instagram" | "kakao" | null>(
     (profile.socialType?.toLowerCase() as "instagram" | "kakao") || null,

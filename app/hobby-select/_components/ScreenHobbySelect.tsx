@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import HobbyButton from "./HobbyButton";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfileStore } from "@/stores/profile-store";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 
 import { HOBBIES, type HobbyCategory } from "@/lib/constants/hobbies";
@@ -17,7 +17,8 @@ const ALL_HOBBIES = Object.values(HOBBIES).flat() as string[];
 
 const ScreenHobbySelect = () => {
   const router = useRouter();
-  const { profile, updateProfile } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
 
   // 취미 이름으로 카테고리를 찾는 헬퍼 함수
   const findCategoryByHobbyName = (name: string): HobbyCategory => {

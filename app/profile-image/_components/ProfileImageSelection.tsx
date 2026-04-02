@@ -2,7 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import { convertHeicToJpg } from "@/lib/utils/image";
-import DefaultProfileDrawer, { DEFAULT_PROFILES } from "./DefaultProfileDrawer";
+import type { Gender } from "@/lib/types/profile";
+import DefaultProfileDrawer from "./DefaultProfileDrawer";
+import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
 
 type SelectCheckButtonProps = {
   label: string;
@@ -40,6 +42,7 @@ export const SelectCheckButton = ({
 interface ProfileImageSelectionProps {
   selected: "default" | "custom";
   onSelect: (type: "default" | "custom") => void;
+  gender?: Gender;
   selectedProfile: string;
   onProfileSelect: (profileId: string) => void;
   customImage: string | null;
@@ -50,6 +53,7 @@ interface ProfileImageSelectionProps {
 const ProfileImageSelection = ({
   selected,
   onSelect,
+  gender,
   selectedProfile,
   onProfileSelect,
   customImage,
@@ -62,7 +66,11 @@ const ProfileImageSelection = ({
   const actionLabel =
     selected === "default" ? "기본 이미지 변경" : "프로필 사진 변경";
 
-  const currentProfile = DEFAULT_PROFILES.find((p) => p.id === selectedProfile);
+  const availableDefaultProfiles = getDefaultProfilesByGender(gender);
+  const currentProfile = availableDefaultProfiles.find(
+    (p) => p.id === selectedProfile,
+  );
+  const resolvedProfile = currentProfile || availableDefaultProfiles[0];
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,13 +105,14 @@ const ProfileImageSelection = ({
             className="flex h-[100px] w-[100px] items-center justify-center rounded-full"
             onClick={() => onSelect("default")}
           >
-            {currentProfile ? (
-              <span className="relative block h-[90px] w-[90px] overflow-hidden rounded-full">
+            {resolvedProfile ? (
+              <span className="flex h-[90px] w-[90px] items-center justify-center rounded-full bg-white">
                 <Image
-                  src={currentProfile.image}
-                  alt={currentProfile.name}
-                  fill
-                  className="object-cover"
+                  src={resolvedProfile.image}
+                  alt={resolvedProfile.name}
+                  width={84}
+                  height={84}
+                  className="rounded-full object-cover"
                 />
               </span>
             ) : (
@@ -156,6 +165,7 @@ const ProfileImageSelection = ({
       <div className="flex justify-center">
         {selected === "default" ? (
           <DefaultProfileDrawer
+            gender={gender}
             selectedProfile={selectedProfile}
             onSelect={onProfileSelect}
           >

@@ -1,9 +1,18 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { create } from "zustand";
 
-const ServiceStatusContext = createContext<boolean | undefined>(undefined);
+interface ServiceStatusStore {
+  isMaintenance: boolean;
+  setMaintenance: (value: boolean) => void;
+}
+
+export const useServiceStatusStore = create<ServiceStatusStore>((set) => ({
+  isMaintenance: false,
+  setMaintenance: (value) => set({ isMaintenance: value }),
+}));
 
 export function ServiceStatusProvider({
   children,
@@ -12,6 +21,8 @@ export function ServiceStatusProvider({
   children: React.ReactNode;
   initialMaintenanceMode: boolean;
 }) {
+  const setMaintenance = useServiceStatusStore((state) => state.setMaintenance);
+
   const { data: isMaintenance } = useQuery({
     queryKey: ["maintenance-status"],
     queryFn: async () => {
@@ -27,19 +38,14 @@ export function ServiceStatusProvider({
     staleTime: 1000 * 20,
   });
 
-  return (
-    <ServiceStatusContext.Provider value={isMaintenance ?? false}>
-      {children}
-    </ServiceStatusContext.Provider>
-  );
+  useEffect(() => {
+    setMaintenance(isMaintenance ?? false);
+  }, [isMaintenance, setMaintenance]);
+
+  return <>{children}</>;
 }
 
 export function useServiceStatus() {
-  const context = useContext(ServiceStatusContext);
-  if (context === undefined) {
-    throw new Error(
-      "useServiceStatus must be used within ServiceStatusProvider",
-    );
-  }
-  return context;
+  // Backward-compatible alias for existing call sites.
+  return useServiceStatusStore((state) => state.isMaintenance);
 }

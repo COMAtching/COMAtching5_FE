@@ -136,6 +136,16 @@
     );
   }
 
+  .bg-pink-gradient {
+    background:
+      linear-gradient(
+        288.98deg,
+        rgba(255, 98, 95, 0.051694) 19.94%,
+        rgba(232, 58, 188, 0.15) 105.37%
+      ),
+      rgba(255, 255, 255, 0.2);
+  }
+
   /* 스크롤바 숨기기 유틸리티 */
   .scrollbar-hide {
     -ms-overflow-style: none; /* IE and Edge */

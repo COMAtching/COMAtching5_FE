@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
 import { QueryProvider } from "@/providers/query-provider";
-import { ProfileProvider } from "@/providers/profile-provider";
 // import { ServiceStatusProvider } from "@/providers/service-status-provider";
 // import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
@@ -68,13 +67,11 @@ export default async function RootLayout({
           {/* <ServiceStatusProvider
             initialMaintenanceMode={initialMaintenanceMode}
           > */}
-          <ProfileProvider>
-            <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
-              <Blur />
-              <FcmInitializer />
-              {children}
-            </div>
-          </ProfileProvider>
+          <div className="bg-background-app-base relative min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+            <Blur />
+            <FcmInitializer />
+            {children}
+          </div>
           {/* </ServiceStatusProvider> */}
         </QueryProvider>
       </body>

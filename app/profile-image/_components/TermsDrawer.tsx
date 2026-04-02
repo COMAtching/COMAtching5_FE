@@ -4,10 +4,10 @@ import { ChevronRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import Button from "@/components/ui/Button";
 import { SelectCheckButton } from "./ProfileImageSelection";
-import ProfileBottomSheet from "./ProfileBottomSheet";
+import AgreeBottomSheet from "./AgreeBottomSheet";
 import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
-import { useProfile } from "@/providers/profile-provider";
+import { useProfileStore } from "@/stores/profile-store";
 import { useImageUpload, useProfileSignUp } from "@/hooks/useProfileSignUp";
 import {
   useNicknameAvailability,
@@ -27,7 +27,8 @@ type ViewMode = "list" | "terms" | "privacy";
 
 const TermsDrawer = ({ children }: TermsDrawerProps) => {
   const router = useRouter();
-  const { profile, clearProfile } = useProfile();
+  const profile = useProfileStore((state) => state.profile);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [agreements, setAgreements] = useState({
@@ -260,7 +261,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
     <>
       {trigger}
 
-      <ProfileBottomSheet
+      <AgreeBottomSheet
         isOpen={isOpen}
         onClose={handleClose}
         title={
@@ -306,7 +307,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         }
       >
         {renderContent()}
-      </ProfileBottomSheet>
+      </AgreeBottomSheet>
     </>
   );
 };

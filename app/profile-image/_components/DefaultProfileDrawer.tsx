@@ -3,40 +3,35 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import ProfileBottomSheet from "./ProfileBottomSheet";
-
-export const DEFAULT_PROFILES = [
-  { id: "dog", name: "강아지", image: "/profile/dog.svg" },
-  { id: "cat", name: "고양이", image: "/profile/cat.svg" },
-  { id: "bear", name: "곰", image: "/profile/bear.svg" },
-  { id: "rabbit", name: "토끼", image: "/profile/rabbit.svg" },
-  { id: "fox", name: "여우", image: "/profile/fox.svg" },
-  { id: "penguin", name: "펭귄", image: "/profile/penguin.svg" },
-  { id: "dinosaur", name: "공룡", image: "/profile/dinosaur.svg" },
-  { id: "otter", name: "수달", image: "/profile/otter.svg" },
-  { id: "wolf", name: "늑대", image: "/profile/wolf.svg" },
-  { id: "snake", name: "뱀", image: "/profile/snake.svg" },
-  { id: "horse", name: "말", image: "/profile/horse.svg" },
-  { id: "frog", name: "개구리", image: "/profile/frog.svg" },
-];
+import type { Gender } from "@/lib/types/profile";
+import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
 
 interface DefaultProfileDrawerProps {
   children: React.ReactElement<{
     onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   }>;
   selectedProfile: string;
+  gender?: Gender;
   onSelect: (profileId: string) => void;
 }
 
 const DefaultProfileDrawer = ({
   children,
   selectedProfile,
+  gender,
   onSelect,
 }: DefaultProfileDrawerProps) => {
+  const profiles = getDefaultProfilesByGender(gender);
+  const firstProfileId = profiles[0]?.id || "";
+
   const [selected, setSelected] = useState<string>(selectedProfile);
   const [isOpen, setIsOpen] = useState(false);
 
   const openDrawer = () => {
-    setSelected(selectedProfile);
+    const hasSelected = profiles.some(
+      (profile) => profile.id === selectedProfile,
+    );
+    setSelected(hasSelected ? selectedProfile : firstProfileId);
     setIsOpen(true);
   };
 
@@ -80,33 +75,33 @@ const DefaultProfileDrawer = ({
           </Button>
         }
       >
-        <div className="grid grid-cols-3 gap-4 pb-4">
-          {DEFAULT_PROFILES.map((profile) => (
+        <div className="flex flex-wrap justify-between gap-y-8 px-1 py-1">
+          {profiles.map((profile) => (
             <button
               key={profile.id}
               type="button"
               onClick={() => setSelected(profile.id)}
-              className="flex flex-col items-center gap-2"
+              className="flex w-[100px] flex-col items-center gap-2"
             >
               <div
-                className={`flex h-[80px] w-[80px] items-center justify-center rounded-full transition-all ${
+                className={`flex h-[100px] w-[100px] items-center justify-center rounded-full border-2 border-gray-200 transition-all duration-300 ease-out ${
                   selected === profile.id
-                    ? "ring-4 ring-[#FF4D61]"
-                    : "ring-2 ring-gray-200"
+                    ? "border-color-flame-700 scale-[1.03]"
+                    : "scale-100"
                 }`}
               >
                 <Image
                   src={profile.image}
                   alt={profile.name}
-                  width={70}
-                  height={70}
+                  width={90}
+                  height={90}
                   className="rounded-full"
                 />
               </div>
               <span
-                className={`typo-14-500 ${
+                className={`typo-14-500 transition-colors duration-300 ease-out ${
                   selected === profile.id
-                    ? "font-semibold text-[#FF4D61]"
+                    ? "text-color-flame-700 font-semibold"
                     : "text-gray-600"
                 }`}
               >

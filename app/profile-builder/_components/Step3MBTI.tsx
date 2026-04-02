@@ -29,9 +29,8 @@ export default function Step3MBTI({
       (category === "tf" ? value : tf) +
       (category === "jp" ? value : jp);
 
-    if (newMBTI.length === 4) {
-      onMBTISelect(newMBTI);
-    }
+    // Always sync partial/complete selection so parent step validity updates immediately.
+    onMBTISelect(newMBTI);
   };
 
   return (
