@@ -62,7 +62,7 @@ export const LoginForm = () => {
           이메일 찾기
         </Link>
         <span className="mx-4">|</span>
-        <Link href="/reset-password" className="cursor-pointer">
+        <Link href="/reset" className="cursor-pointer">
           비밀번호 변경
         </Link>
       </div>

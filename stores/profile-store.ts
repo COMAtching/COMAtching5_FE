@@ -75,7 +75,7 @@ export const useProfileStore = create<ProfileStoreState>()(
         set({ profile: updated });
       },
       clearProfile: () => {
-        set({ profile: {} as ProfileData });
+        set({ profile: {} as ProfileData, isReady: false });
         try {
           localStorage.removeItem(STORAGE_KEY);
           LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));

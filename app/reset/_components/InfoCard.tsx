@@ -1,11 +1,13 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface InfoCardProps {
   title: string;
   detail: string;
   email?: string;
   disabled?: boolean;
+  href?: string;
 }
 
 const InfoCard = ({
@@ -13,8 +15,9 @@ const InfoCard = ({
   detail,
   email,
   disabled = false,
+  href,
 }: InfoCardProps) => {
-  return (
+  const CardContent = (
     <div
       className={cn(
         "box-border flex w-full flex-col items-start gap-4 rounded-[16px] p-6 transition-all",
@@ -53,6 +56,16 @@ const InfoCard = ({
       </div>
     </div>
   );
+
+  if (href && !disabled) {
+    return (
+      <Link href={href} className="flex w-full justify-center">
+        {CardContent}
+      </Link>
+    );
+  }
+
+  return CardContent;
 };
 
 export default InfoCard;

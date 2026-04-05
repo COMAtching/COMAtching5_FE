@@ -1,10 +1,8 @@
 "use client";
 import React from "react";
 import { BackButton } from "@/components/ui/BackButton";
-import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import InfoCard from "./InfoCard";
-import Link from "next/link";
 
 const ScreenResetPage = () => {
   const router = useRouter();
@@ -25,14 +23,13 @@ const ScreenResetPage = () => {
             email="@cuk_coma"
             disabled
           />
-          <Link href="/reset/password" className="w-full max-w-[343px]">
-            <InfoCard
-              title="비밀번호 재설정"
-              detail={
-                "비밀번호를 분실하셨나요?\n가입하신 이메일을 통해 비밀번호를 재설정합니다."
-              }
-            />
-          </Link>
+          <InfoCard
+            href="/reset/password"
+            title="비밀번호 재설정"
+            detail={
+              "비밀번호를 분실하셨나요?\n가입하신 이메일을 통해 비밀번호를 재설정합니다."
+            }
+          />
         </div>
       </main>
     </div>
