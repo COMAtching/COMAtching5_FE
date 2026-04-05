@@ -11,14 +11,17 @@ import {
   validatePasswordPattern,
 } from "@/lib/validators";
 import { Check, Eye, EyeOff, X } from "lucide-react";
+import { useResetPassword } from "@/hooks/useResetPassword";
 
 const ScreenNewPasswordPage = () => {
   const router = useRouter();
+  const { reset, isPending } = useResetPassword();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // 인증 여부 확인 로직
   useEffect(() => {
@@ -38,16 +41,27 @@ const ScreenNewPasswordPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || isPending) return;
 
-    // TODO: 비밀번호 변경 API 연동
-    console.log("Password change requested");
+    const email = sessionStorage.getItem("reset_email_to_verify") ?? "";
+    const code = sessionStorage.getItem("reset_code") ?? "";
 
-    // 비밀번호 변경 성공 후 모든 중간 인증 세션 파기
-    sessionStorage.removeItem("reset_verified");
-    sessionStorage.removeItem("reset_email_to_verify");
-
-    router.replace("/reset/password/success");
+    reset(
+      { email, code, newPassword: password },
+      {
+        onSuccess: () => {
+          sessionStorage.removeItem("reset_verified");
+          sessionStorage.removeItem("reset_email_to_verify");
+          sessionStorage.removeItem("reset_code");
+          router.replace("/reset/password/success");
+        },
+        onError: (msg) => {
+          setErrorMessage(
+            msg ?? "비밀번호 변경에 실패했습니다. 다시 시도해 주세요.",
+          );
+        },
+      },
+    );
   };
 
   // 렌더링 조건을 변수로 추출하여 훅 호출 순서 관련 잠재적 이슈 방지
@@ -200,9 +214,19 @@ const ScreenNewPasswordPage = () => {
               )}
             </div>
 
-            <div className="mt-auto">
-              <Button type="submit" disabled={!canSubmit} fixed bottom={16}>
-                비밀번호 변경하기
+            <div className="mt-auto flex flex-col gap-2">
+              {errorMessage && (
+                <span className="typo-12-400 text-color-flame-700 block text-center">
+                  *{errorMessage}
+                </span>
+              )}
+              <Button
+                type="submit"
+                disabled={!canSubmit || isPending}
+                fixed
+                bottom={16}
+              >
+                {isPending ? "변경 중..." : "비밀번호 변경하기"}
               </Button>
             </div>
           </form>

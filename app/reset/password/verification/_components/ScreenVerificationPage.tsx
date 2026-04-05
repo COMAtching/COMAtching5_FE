@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
+import { useSendPasswordCode } from "@/hooks/useSendPasswordCode";
 
 const ScreenVerificationPage = () => {
   const router = useRouter();
+  const { sendCode, isPending: isSending } = useSendPasswordCode();
 
   const [verificationCode, setVerificationCode] = useState("");
   const [timeLeft, setTimeLeft] = useState(300);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   // 이메일 전송 여부 확인 로직
@@ -60,33 +61,27 @@ const ScreenVerificationPage = () => {
   };
 
   const handleResend = () => {
-    setIsSending(true);
-    // TODO: API 연동
-    setTimeout(() => {
-      setTimeLeft(300);
-      setResendCooldown(180);
-      setErrorMessage("");
-      setIsSending(false);
-    }, 1000);
+    const email = sessionStorage.getItem("reset_email_to_verify");
+    if (!email) return;
+    sendCode(email, {
+      onSuccess: () => {
+        setTimeLeft(300);
+        setResendCooldown(180);
+        setErrorMessage("");
+      },
+      onError: (msg) => {
+        setErrorMessage(msg ?? "재전송에 실패했습니다. 다시 시도해 주세요.");
+      },
+    });
   };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsVerifying(true);
-
-    // TODO: 인증번호 확인 API 연동
-    console.log("Verifying code:", verificationCode);
-
-    if (verificationCode === "123456") {
-      // 성공 시 세션 저장 후 비밀번호 재설정 입력 페이지로 이동
-      sessionStorage.setItem("reset_verified", "true");
-      // 인증 완료 시 이전 단계 정보는 유지(new 페이지 접근용)하되, success 도달 시 파기할 예정
-      alert("인증에 성공했습니다.");
-      router.replace("/reset/password/new");
-    } else {
-      setErrorMessage("인증번호를 다시 확인해 주세요.");
-      setIsVerifying(false);
-    }
+    // 인증코드와 이메일을 sessionStorage에 저장만 하고 새 비밀번호 페이지에서 PATCH API 호출
+    // (PATCH /api/auth/password/code 는 email+code+newPassword 를 한 번에 요청)
+    sessionStorage.setItem("reset_verified", "true");
+    sessionStorage.setItem("reset_code", verificationCode);
+    router.replace("/reset/password/new");
   };
 
   const handleBack = () => {
