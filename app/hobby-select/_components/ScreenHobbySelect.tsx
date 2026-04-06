@@ -104,7 +104,7 @@ const ScreenHobbySelect = () => {
       <div className="my-6 flex flex-col gap-2 text-center">
         <h1 className="typo-20-700 text-[#373737]">관심사를 알려주세요.</h1>
         <p className="typo-14-500 leading-[1.6] text-[#858585]">
-          요즘 관심있는 것들을 2개 이상 선택해주세요.
+          요즘 관심있는 것들을 3개 이상 선택해주세요.
           <br />
           최대 10개까지 선택할 수 있어요.
         </p>
@@ -208,9 +208,8 @@ const ScreenHobbySelect = () => {
         bottom={24}
         sideGap={16}
         safeArea
-        disabled={selected.length < 2}
+        disabled={selected.length < 3}
         onClick={handleComplete}
-        className="bg-button-primary text-button-primary-text-default"
       >
         다음으로
       </Button>
