@@ -1,8 +1,13 @@
 import axios from "axios";
 
 // 1. 공통 설정 (URL, 헤더 등)
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL is not defined in environments");
+}
+
 const axiosConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 };

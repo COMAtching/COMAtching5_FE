@@ -11,7 +11,8 @@ const ScreenPasswordResetPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState({ text: "" });
-  const { sendCode, isPending } = useSendPasswordCode();
+  const sendCodeMutation = useSendPasswordCode();
+  const { isPending } = sendCodeMutation;
 
   const handlePasswordReset = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,14 +31,15 @@ const ScreenPasswordResetPage = () => {
     // 새로운 프로세스 시작 시 이전 잔여 세션이 있다면 초기화
     sessionStorage.removeItem("reset_verified");
 
-    sendCode(email, {
+    sendCodeMutation.mutate(email, {
       onSuccess: () => {
         sessionStorage.setItem("reset_email_to_verify", email);
         router.replace("/reset/password/verification");
       },
-      onError: (msg) => {
+      onError: (error) => {
         setMessage({
-          text: msg ?? "이메일 전송에 실패했습니다. 다시 시도해 주세요.",
+          text:
+            error.message || "이메일 전송에 실패했습니다. 다시 시도해 주세요.",
         });
       },
     });

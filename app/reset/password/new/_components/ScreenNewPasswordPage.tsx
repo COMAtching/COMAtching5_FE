@@ -15,7 +15,7 @@ import { useResetPassword } from "@/hooks/useResetPassword";
 
 const ScreenNewPasswordPage = () => {
   const router = useRouter();
-  const { reset, isPending } = useResetPassword();
+  const { mutate, isPending } = useResetPassword();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,11 +23,16 @@ const ScreenNewPasswordPage = () => {
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 인증 여부 확인 로직
+  // 인증 여부 및 필수 정보 확인 로직
   useEffect(() => {
     const verified = sessionStorage.getItem("reset_verified");
-    if (verified !== "true") {
-      alert("잘못된 접근입니다.");
+    const email = sessionStorage.getItem("reset_email_to_verify");
+    const code = sessionStorage.getItem("reset_code");
+
+    if (verified !== "true" || !email || !code) {
+      alert(
+        "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+      );
       router.replace("/reset/password");
     } else {
       Promise.resolve().then(() => setIsVerified(true));
@@ -46,7 +51,7 @@ const ScreenNewPasswordPage = () => {
     const email = sessionStorage.getItem("reset_email_to_verify") ?? "";
     const code = sessionStorage.getItem("reset_code") ?? "";
 
-    reset(
+    mutate(
       { email, authCode: code, newPassword: password },
       {
         onSuccess: () => {
@@ -55,9 +60,10 @@ const ScreenNewPasswordPage = () => {
           sessionStorage.removeItem("reset_code");
           router.replace("/reset/password/success");
         },
-        onError: (msg) => {
+        onError: (error) => {
           setErrorMessage(
-            msg ?? "비밀번호 변경에 실패했습니다. 다시 시도해 주세요.",
+            error.message ||
+              "비밀번호 변경에 실패했습니다. 다시 시도해 주세요.",
           );
         },
       },

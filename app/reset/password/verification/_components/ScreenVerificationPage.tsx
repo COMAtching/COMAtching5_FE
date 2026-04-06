@@ -9,7 +9,8 @@ import { useSendPasswordCode } from "@/hooks/useSendPasswordCode";
 
 const ScreenVerificationPage = () => {
   const router = useRouter();
-  const { sendCode, isPending: isSending } = useSendPasswordCode();
+  const sendCodeMutation = useSendPasswordCode();
+  const { isPending: isSending } = sendCodeMutation;
 
   const [verificationCode, setVerificationCode] = useState("");
   const [timeLeft, setTimeLeft] = useState(300);
@@ -63,14 +64,16 @@ const ScreenVerificationPage = () => {
   const handleResend = () => {
     const email = sessionStorage.getItem("reset_email_to_verify");
     if (!email) return;
-    sendCode(email, {
+    sendCodeMutation.mutate(email, {
       onSuccess: () => {
         setTimeLeft(300);
         setResendCooldown(180);
         setErrorMessage("");
       },
-      onError: (msg) => {
-        setErrorMessage(msg ?? "재전송에 실패했습니다. 다시 시도해 주세요.");
+      onError: (error) => {
+        setErrorMessage(
+          error.message || "재전송에 실패했습니다. 다시 시도해 주세요.",
+        );
       },
     });
   };

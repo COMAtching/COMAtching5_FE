@@ -6,34 +6,18 @@ import {
 } from "@/lib/actions/authAction";
 
 export const useResetPassword = () => {
-  const mutation = useMutation<
-    ResetPasswordResponse,
-    Error,
-    ResetPasswordRequest
-  >({
-    mutationFn: resetPasswordAction,
+  return useMutation<ResetPasswordResponse, Error, ResetPasswordRequest>({
+    mutationFn: async (payload) => {
+      const data = await resetPasswordAction(payload);
+
+      // 서버 액션이 성공하더라도 비즈니스 로직상 에러(status !== 200)인 경우
+      // 명시적으로 에러를 던져서 mutate의 onError가 실행되도록 합니다.
+      if (data.status !== 200) {
+        throw new Error(data.message || "비밀번호 변경에 실패했습니다.");
+      }
+
+      return data;
+    },
     retry: false,
   });
-
-  const reset = (
-    payload: ResetPasswordRequest,
-    options: { onSuccess: () => void; onError: (msg?: string) => void },
-  ) => {
-    mutation.mutate(payload, {
-      onSuccess: (data) => {
-        if (data.status === 200) {
-          options.onSuccess();
-        } else {
-          options.onError(data.message);
-        }
-      },
-      onError: (error) => {
-        // Server Action에서 에러가 발생해도 data 형태로 반환되므로
-        // mutation.mutate의 onError는 네트워크 단절 등의 상황에서만 발생합니다.
-        options.onError(error.message || "알 수 없는 오류가 발생했습니다.");
-      },
-    });
-  };
-
-  return { ...mutation, reset };
 };
