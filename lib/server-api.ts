@@ -8,6 +8,11 @@ if (!API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
 
+// 0. 인증 및 재발급 처리가 필요 없는 Public API 목록
+const PUBLIC_PATHS = ["/api/auth/login", "/api/auth/password/code"];
+const isPublicPath = (url?: string) =>
+  url ? PUBLIC_PATHS.some((path) => url.includes(path)) : false;
+
 // 1. 서버 전용 Axios 인스턴스 생성
 const serverClient = axios.create({
   baseURL: API_URL,
@@ -19,9 +24,14 @@ const serverClient = axios.create({
   },
 });
 
-// 2. [핵심] 요청 인터셉터: 인증에 필요한 쿠키만 선별하여 전달
+// 2. [핵심] 요청 인터셉터: 인증에 필요한 쿠키만 선별하여 전달 (Public API는 제외)
 serverClient.interceptors.request.use(
   async (config) => {
+    // 🛡️ Public API라면 쿠키 조회 및 전송을 생략합니다.
+    if (isPublicPath(config.url)) {
+      return config;
+    }
+
     const cookieStore = await cookies();
 
     // 백엔드 API 인증에 필요한 쿠키만 선별
@@ -51,11 +61,12 @@ serverClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 401 에러 && 재발급 시도 전 && 재발급 API가 아닐 때
+    // 401 에러 && 재발급 시도 전 && 재발급 API가 아닐 때 && Public API가 아닐 때
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/reissue")
+      !originalRequest.url?.includes("/api/auth/reissue") &&
+      !isPublicPath(originalRequest.url)
     ) {
       originalRequest._retry = true;
 
