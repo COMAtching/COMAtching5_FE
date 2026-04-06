@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
+
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import {
@@ -11,23 +11,44 @@ import {
   validatePasswordPattern,
 } from "@/lib/validators";
 import { Check, Eye, EyeOff, X } from "lucide-react";
+import { useResetPassword } from "@/hooks/useResetPassword";
 
 const ScreenNewPasswordPage = () => {
   const router = useRouter();
+  const { mutate, isPending } = useResetPassword();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // 인증 여부 확인 로직
+  // 인증 여부 및 필수 정보 확인 로직
   useEffect(() => {
-    const verified = sessionStorage.getItem("reset_verified");
-    if (verified !== "true") {
-      alert("잘못된 접근입니다.");
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) {
+      alert(
+        "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+      );
       router.replace("/reset/password");
-    } else {
-      Promise.resolve().then(() => setIsVerified(true));
+      return;
+    }
+
+    try {
+      const { email, authCode, isVerified: verified } = JSON.parse(savedData);
+
+      if (verified !== true || !email || !authCode) {
+        alert(
+          "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+        );
+        router.replace("/reset/password");
+      } else {
+        startTransition(() => {
+          setIsVerified(true);
+        });
+      }
+    } catch {
+      router.replace("/reset/password");
     }
   }, [router]);
 
@@ -38,16 +59,28 @@ const ScreenNewPasswordPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || isPending) return;
 
-    // TODO: 비밀번호 변경 API 연동
-    console.log("Password change requested");
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) return;
+    const { email, authCode: code } = JSON.parse(savedData);
 
-    // 비밀번호 변경 성공 후 모든 중간 인증 세션 파기
-    sessionStorage.removeItem("reset_verified");
-    sessionStorage.removeItem("reset_email_to_verify");
+    mutate(
+      { email, authCode: code, newPassword: password },
+      {
+        onSuccess: () => {
+          sessionStorage.removeItem("COMATCHING_PW_RESET");
+          router.replace("/reset/password/success");
+        },
 
-    router.replace("/reset/password/success");
+        onError: (error) => {
+          setErrorMessage(
+            error.message ||
+              "비밀번호 변경에 실패했습니다. 다시 시도해 주세요.",
+          );
+        },
+      },
+    );
   };
 
   // 렌더링 조건을 변수로 추출하여 훅 호출 순서 관련 잠재적 이슈 방지
@@ -200,9 +233,19 @@ const ScreenNewPasswordPage = () => {
               )}
             </div>
 
-            <div className="mt-auto">
-              <Button type="submit" disabled={!canSubmit} fixed bottom={16}>
-                비밀번호 변경하기
+            <div className="mt-auto flex flex-col gap-2">
+              {errorMessage && (
+                <span className="typo-12-400 text-color-flame-700 block text-center">
+                  *{errorMessage}
+                </span>
+              )}
+              <Button
+                type="submit"
+                disabled={!canSubmit || isPending}
+                fixed
+                bottom={16}
+              >
+                {isPending ? "변경 중..." : "비밀번호 변경하기"}
               </Button>
             </div>
           </form>

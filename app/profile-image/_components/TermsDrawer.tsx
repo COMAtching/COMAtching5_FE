@@ -1,5 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, {
+  useState,
+  useTransition,
+  useEffect,
+  startTransition,
+} from "react";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import Button from "@/components/ui/Button";
@@ -8,7 +13,8 @@ import AgreeBottomSheet from "./AgreeBottomSheet";
 import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
 import { useProfileStore } from "@/stores/profile-store";
-import { useImageUpload, useProfileSignUp } from "@/hooks/useProfileSignUp";
+import { useImageUpload } from "@/hooks/useProfileSignUp";
+import { profileSignUpAction } from "@/lib/actions/profileAction";
 import {
   useNicknameAvailability,
   NicknameAvailabilityResponse,
@@ -37,8 +43,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   });
 
   const { mutateAsync: uploadImage } = useImageUpload();
-  const { mutate: signUp, isPending: isSubmitting } = useProfileSignUp();
   const { mutateAsync: checkNicknameAvailability } = useNicknameAvailability();
+
+  // React 18/19: useTransition으로 로딩 상태 관리
+  const [isSubmitting, startTransition] = useTransition();
 
   const checkGradient =
     "linear-gradient(220.53deg, #FF775E -18.87%, #FF4D61 62.05%, #E83ABC 125.76%)";
@@ -133,17 +141,18 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         tags: profile.tags && profile.tags.length > 0 ? profile.tags : null,
       };
 
-      // 3. 백엔드로 전송
-      signUp(submitData, {
-        onSuccess: () => {
+      // 3. Server Action 호출 및 결과 처리
+      startTransition(async () => {
+        // useTransition을 사용하므로 prevState 자리에 null을 전달합니다.
+        const result = await profileSignUpAction(null, submitData);
+
+        if (result.success) {
           setIsOpen(false);
           clearProfile();
-          router.push("/main"); // 가입 완료 주소로 이동
-        },
-        onError: (error) => {
-          console.error("Signup failed:", error);
-          alert("회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.");
-        },
+          router.push("/main");
+        } else {
+          alert(result.message);
+        }
       });
     } catch (error) {
       console.error("Image upload failed:", error);

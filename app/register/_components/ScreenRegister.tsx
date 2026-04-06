@@ -19,7 +19,7 @@ export const ScreenRegister = () => {
 
   const { mutate: sendEmail, isPending: isSendingEmail } = useSendEmail();
   const { verify, isPending: isVerifyingEmail } = useVerifyEmail();
-  const { mutate: signUp, isPending: isSigningUp } = useSignUp();
+  const { mutate: signUp } = useSignUp();
 
   const handleEmailSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();

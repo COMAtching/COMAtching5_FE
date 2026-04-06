@@ -5,11 +5,14 @@ import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import { useRouter } from "next/navigation";
 import { validateEmail } from "@/lib/validators";
+import { useSendPasswordCode } from "@/hooks/useSendPasswordCode";
 
 const ScreenPasswordResetPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState({ text: "" });
+  const sendCodeMutation = useSendPasswordCode();
+  const { isPending } = sendCodeMutation;
 
   const handlePasswordReset = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,17 +28,22 @@ const ScreenPasswordResetPage = () => {
       return;
     }
 
-    // 새로운 프로세스 시작 시 이전 잔여 세션이 있다면 초기화
-    sessionStorage.removeItem("reset_verified");
-
-    // TODO: 비밀번호 재설정 이메일 발송 API 연동
-    console.log("Password reset requested for:", email);
-
-    // 이메일 전송 단계 정보 저장
-    sessionStorage.setItem("reset_email_to_verify", email);
-
-    // 전송 완료 후 인증번호 입력 페이지로 이동 (이후 단계부터는 replace 사용)
-    router.replace("/reset/password/verification");
+    sendCodeMutation.mutate(email, {
+      onSuccess: () => {
+        // 인증 프로세스 시작: 이메일 저장 및 상태 초기화
+        sessionStorage.setItem(
+          "COMATCHING_PW_RESET",
+          JSON.stringify({ email, authCode: "", isVerified: false }),
+        );
+        router.replace("/reset/password/verification");
+      },
+      onError: (error) => {
+        setMessage({
+          text:
+            error.message || "이메일 전송에 실패했습니다. 다시 시도해 주세요.",
+        });
+      },
+    });
   };
 
   return (
@@ -75,8 +83,9 @@ const ScreenPasswordResetPage = () => {
           <Button
             type="submit"
             className="bg-button-primary text-button-primary-text-default mt-4"
+            disabled={isPending}
           >
-            이메일 전송하기
+            {isPending ? "전송 중..." : "이메일 전송하기"}
           </Button>
         </form>
       </main>

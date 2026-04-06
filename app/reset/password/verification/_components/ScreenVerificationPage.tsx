@@ -1,30 +1,46 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
+
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
+import { useSendPasswordCode } from "@/hooks/useSendPasswordCode";
 
 const ScreenVerificationPage = () => {
   const router = useRouter();
+  const sendCodeMutation = useSendPasswordCode();
+  const { isPending: isSending } = sendCodeMutation;
 
   const [verificationCode, setVerificationCode] = useState("");
   const [timeLeft, setTimeLeft] = useState(300);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   // 이메일 전송 여부 확인 로직
   useEffect(() => {
-    const emailToVerify = sessionStorage.getItem("reset_email_to_verify");
-    if (!emailToVerify) {
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) {
       alert("잘못된 접근입니다.");
       router.replace("/reset/password");
-    } else {
-      Promise.resolve().then(() => setIsAuthorized(true));
+      return;
+    }
+
+    try {
+      const { email: emailToVerify } = JSON.parse(savedData);
+      if (!emailToVerify) {
+        alert("잘못된 접근입니다.");
+        router.replace("/reset/password");
+      } else {
+        startTransition(() => {
+          setIsAuthorized(true);
+        });
+      }
+    } catch {
+      router.replace("/reset/password");
     }
   }, [router]);
 
@@ -60,38 +76,50 @@ const ScreenVerificationPage = () => {
   };
 
   const handleResend = () => {
-    setIsSending(true);
-    // TODO: API 연동
-    setTimeout(() => {
-      setTimeLeft(300);
-      setResendCooldown(180);
-      setErrorMessage("");
-      setIsSending(false);
-    }, 1000);
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) return;
+    const { email } = JSON.parse(savedData);
+    if (!email) return;
+
+    sendCodeMutation.mutate(email, {
+      onSuccess: () => {
+        setTimeLeft(300);
+        setResendCooldown(180);
+        setErrorMessage("");
+      },
+      onError: (error) => {
+        setErrorMessage(
+          error.message || "재전송에 실패했습니다. 다시 시도해 주세요.",
+        );
+      },
+    });
   };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isVerifying) return; // 중복 클릭 방지
+
     setIsVerifying(true);
 
-    // TODO: 인증번호 확인 API 연동
-    console.log("Verifying code:", verificationCode);
-
-    if (verificationCode === "123456") {
-      // 성공 시 세션 저장 후 비밀번호 재설정 입력 페이지로 이동
-      sessionStorage.setItem("reset_verified", "true");
-      // 인증 완료 시 이전 단계 정보는 유지(new 페이지 접근용)하되, success 도달 시 파기할 예정
-      alert("인증에 성공했습니다.");
-      router.replace("/reset/password/new");
-    } else {
-      setErrorMessage("인증번호를 다시 확인해 주세요.");
-      setIsVerifying(false);
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      sessionStorage.setItem(
+        "COMATCHING_PW_RESET",
+        JSON.stringify({
+          ...data,
+          authCode: verificationCode,
+          isVerified: true,
+        }),
+      );
     }
+
+    router.replace("/reset/password/new");
   };
 
   const handleBack = () => {
     if (confirm("비밀번호 재설정을 중단하고 처음으로 돌아가시겠습니까?")) {
-      sessionStorage.removeItem("reset_email_to_verify");
+      sessionStorage.removeItem("COMATCHING_PW_RESET");
       router.replace("/reset/password");
     }
   };
@@ -99,7 +127,7 @@ const ScreenVerificationPage = () => {
   useEffect(() => {
     const handlePopState = () => {
       if (confirm("비밀번호 재설정을 중단하고 처음으로 돌아가시겠습니까?")) {
-        sessionStorage.removeItem("reset_email_to_verify");
+        sessionStorage.removeItem("COMATCHING_PW_RESET");
         router.replace("/reset/password");
       } else {
         // 뒤로가기를 취소하고 현재 페이지 유지
