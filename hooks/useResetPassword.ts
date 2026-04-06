@@ -1,32 +1,17 @@
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
-
-type ResetPasswordRequest = {
-  email: string;
-  code: string;
-  newPassword: string;
-};
-
-type ResetPasswordResponse = {
-  code: string;
-  status: number;
-  message: string;
-};
-
-const resetPassword = async (
-  payload: ResetPasswordRequest,
-): Promise<ResetPasswordResponse> => {
-  const { data } = await axios.patch<ResetPasswordResponse>(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/auth/password/code`,
-    payload,
-  );
-  return data;
-};
+import {
+  resetPasswordAction,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+} from "@/lib/actions/authAction";
 
 export const useResetPassword = () => {
-  const mutation = useMutation({
-    mutationFn: resetPassword,
+  const mutation = useMutation<
+    ResetPasswordResponse,
+    Error,
+    ResetPasswordRequest
+  >({
+    mutationFn: resetPasswordAction,
     retry: false,
   });
 
@@ -43,11 +28,9 @@ export const useResetPassword = () => {
         }
       },
       onError: (error) => {
-        if (isAxiosError(error) && error.response?.data?.message) {
-          options.onError(error.response.data.message);
-        } else {
-          options.onError();
-        }
+        // Server Action에서 에러가 발생해도 data 형태로 반환되므로
+        // mutation.mutate의 onError는 네트워크 단절 등의 상황에서만 발생합니다.
+        options.onError(error.message || "알 수 없는 오류가 발생했습니다.");
       },
     });
   };
