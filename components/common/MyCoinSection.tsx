@@ -7,7 +7,7 @@ const MyCoinSection = () => {
 
   if (isLoading) {
     return (
-      <section className="flex h-[38px] w-full animate-pulse items-center justify-between rounded-full border border-white/30 bg-white/20 pr-2 pl-4 backdrop-blur-[50px]">
+      <section className="flex h-9.5 w-full animate-pulse items-center justify-between rounded-full border border-white/30 bg-white/20 pr-2 pl-4 backdrop-blur-[50px]">
         <div className="flex items-center">
           <div className="h-4 w-12 rounded bg-white/30" />
           <div className="mr-2 ml-4 h-5 w-5 rounded-full bg-white/30" />
@@ -16,7 +16,7 @@ const MyCoinSection = () => {
           <div className="mr-2 h-5 w-5 rounded-full bg-white/30" />
           <div className="h-4 w-8 rounded bg-white/30" />
         </div>
-        <div className="h-[26px] w-[58px] rounded-full bg-white/30" />
+        <div className="h-6.5 w-14.5 rounded-full bg-white/30" />
       </section>
     );
   }
@@ -28,7 +28,7 @@ const MyCoinSection = () => {
   const { matchingTicketCount, optionTicketCount } = data.data;
 
   return (
-    <section className="flex h-[38px] w-full items-center justify-between rounded-full border border-white/30 bg-white/50 pr-2 pl-4 backdrop-blur-[50px]">
+    <section className="flex h-9.5 w-full items-center justify-between rounded-full border border-white/30 bg-white/50 pr-2 pl-4 backdrop-blur-[50px]">
       <div className="flex items-center">
         <span className="typo-14-600 text-color-text-caption3">보유현황</span>
         <Image
@@ -53,7 +53,7 @@ const MyCoinSection = () => {
           {optionTicketCount}개
         </span>
       </div>
-      <button className="bg-milky-pink typo-11-700 h-[26px] w-[58px] rounded-full text-white">
+      <button className="bg-milky-pink typo-11-700 h-6.5 w-14.5 rounded-full text-white">
         구매하기
       </button>
     </section>

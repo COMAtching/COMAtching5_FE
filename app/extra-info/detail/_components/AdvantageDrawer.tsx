@@ -11,6 +11,7 @@ import {
 import HobbyButton from "@/app/hobby-select/_components/HobbyButton";
 import { ADVANTAGES, type AdvantageCategory } from "@/lib/constants/advantages";
 import Button from "@/components/ui/Button";
+import { removeEmoji } from "@/lib/utils";
 
 interface AdvantageDrawerProps {
   children: React.ReactNode;
@@ -26,10 +27,21 @@ const AdvantageDrawer = ({
   const [selected, setSelected] = useState<string[]>(selectedAdvantages);
   const [isOpen, setIsOpen] = useState(false);
 
+  const resolveDisplayAdvantages = (advantages: string[]) => {
+    const normalizedSelected = new Set(
+      advantages.map((adv) => removeEmoji(adv)),
+    );
+    const allDisplayAdvantages = Object.values(ADVANTAGES).flat();
+
+    return allDisplayAdvantages.filter((displayAdv) =>
+      normalizedSelected.has(removeEmoji(displayAdv)),
+    );
+  };
+
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
-      setSelected(selectedAdvantages);
+      setSelected(resolveDisplayAdvantages(selectedAdvantages));
     }
   };
 
