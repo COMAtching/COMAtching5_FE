@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig, isAxiosError } from "axios";
+export { isAxiosError };
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
