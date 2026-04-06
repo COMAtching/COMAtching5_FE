@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import InfoCard from "./InfoCard";
 
 const ScreenResetPage = () => {
-  const router = useRouter();
-
   return (
     <div className="flex min-h-screen flex-col px-4 pb-10">
       <header className="py-4">

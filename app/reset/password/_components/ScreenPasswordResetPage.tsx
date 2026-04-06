@@ -28,12 +28,13 @@ const ScreenPasswordResetPage = () => {
       return;
     }
 
-    // 새로운 프로세스 시작 시 이전 잔여 세션이 있다면 초기화
-    sessionStorage.removeItem("reset_verified");
-
     sendCodeMutation.mutate(email, {
       onSuccess: () => {
-        sessionStorage.setItem("reset_email_to_verify", email);
+        // 인증 프로세스 시작: 이메일 저장 및 상태 초기화
+        sessionStorage.setItem(
+          "COMATCHING_PW_RESET",
+          JSON.stringify({ email, authCode: "", isVerified: false }),
+        );
         router.replace("/reset/password/verification");
       },
       onError: (error) => {

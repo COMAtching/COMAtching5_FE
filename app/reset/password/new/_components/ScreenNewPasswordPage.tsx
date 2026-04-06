@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
+
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import {
@@ -25,17 +25,30 @@ const ScreenNewPasswordPage = () => {
 
   // 인증 여부 및 필수 정보 확인 로직
   useEffect(() => {
-    const verified = sessionStorage.getItem("reset_verified");
-    const email = sessionStorage.getItem("reset_email_to_verify");
-    const code = sessionStorage.getItem("reset_code");
-
-    if (verified !== "true" || !email || !code) {
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) {
       alert(
         "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
       );
       router.replace("/reset/password");
-    } else {
-      Promise.resolve().then(() => setIsVerified(true));
+      return;
+    }
+
+    try {
+      const { email, authCode, isVerified: verified } = JSON.parse(savedData);
+
+      if (verified !== true || !email || !authCode) {
+        alert(
+          "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+        );
+        router.replace("/reset/password");
+      } else {
+        startTransition(() => {
+          setIsVerified(true);
+        });
+      }
+    } catch {
+      router.replace("/reset/password");
     }
   }, [router]);
 
@@ -48,18 +61,18 @@ const ScreenNewPasswordPage = () => {
     e.preventDefault();
     if (!canSubmit || isPending) return;
 
-    const email = sessionStorage.getItem("reset_email_to_verify") ?? "";
-    const code = sessionStorage.getItem("reset_code") ?? "";
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) return;
+    const { email, authCode: code } = JSON.parse(savedData);
 
     mutate(
       { email, authCode: code, newPassword: password },
       {
         onSuccess: () => {
-          sessionStorage.removeItem("reset_verified");
-          sessionStorage.removeItem("reset_email_to_verify");
-          sessionStorage.removeItem("reset_code");
+          sessionStorage.removeItem("COMATCHING_PW_RESET");
           router.replace("/reset/password/success");
         },
+
         onError: (error) => {
           setErrorMessage(
             error.message ||

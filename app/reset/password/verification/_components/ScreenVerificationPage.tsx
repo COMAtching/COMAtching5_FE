@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
+
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
@@ -21,12 +22,25 @@ const ScreenVerificationPage = () => {
 
   // 이메일 전송 여부 확인 로직
   useEffect(() => {
-    const emailToVerify = sessionStorage.getItem("reset_email_to_verify");
-    if (!emailToVerify) {
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) {
       alert("잘못된 접근입니다.");
       router.replace("/reset/password");
-    } else {
-      Promise.resolve().then(() => setIsAuthorized(true));
+      return;
+    }
+
+    try {
+      const { email: emailToVerify } = JSON.parse(savedData);
+      if (!emailToVerify) {
+        alert("잘못된 접근입니다.");
+        router.replace("/reset/password");
+      } else {
+        startTransition(() => {
+          setIsAuthorized(true);
+        });
+      }
+    } catch {
+      router.replace("/reset/password");
     }
   }, [router]);
 
@@ -62,8 +76,11 @@ const ScreenVerificationPage = () => {
   };
 
   const handleResend = () => {
-    const email = sessionStorage.getItem("reset_email_to_verify");
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (!savedData) return;
+    const { email } = JSON.parse(savedData);
     if (!email) return;
+
     sendCodeMutation.mutate(email, {
       onSuccess: () => {
         setTimeLeft(300);
@@ -80,16 +97,29 @@ const ScreenVerificationPage = () => {
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    // 인증코드와 이메일을 sessionStorage에 저장만 하고 새 비밀번호 페이지에서 PATCH API 호출
-    // (PATCH /api/auth/password/code 는 email+code+newPassword 를 한 번에 요청)
-    sessionStorage.setItem("reset_verified", "true");
-    sessionStorage.setItem("reset_code", verificationCode);
+    if (isVerifying) return; // 중복 클릭 방지
+
+    setIsVerifying(true);
+
+    const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      sessionStorage.setItem(
+        "COMATCHING_PW_RESET",
+        JSON.stringify({
+          ...data,
+          authCode: verificationCode,
+          isVerified: true,
+        }),
+      );
+    }
+
     router.replace("/reset/password/new");
   };
 
   const handleBack = () => {
     if (confirm("비밀번호 재설정을 중단하고 처음으로 돌아가시겠습니까?")) {
-      sessionStorage.removeItem("reset_email_to_verify");
+      sessionStorage.removeItem("COMATCHING_PW_RESET");
       router.replace("/reset/password");
     }
   };
@@ -97,7 +127,7 @@ const ScreenVerificationPage = () => {
   useEffect(() => {
     const handlePopState = () => {
       if (confirm("비밀번호 재설정을 중단하고 처음으로 돌아가시겠습니까?")) {
-        sessionStorage.removeItem("reset_email_to_verify");
+        sessionStorage.removeItem("COMATCHING_PW_RESET");
         router.replace("/reset/password");
       } else {
         // 뒤로가기를 취소하고 현재 페이지 유지
