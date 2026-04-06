@@ -4,7 +4,7 @@ import { serverApi, isAxiosError } from "@/lib/server-api";
 
 export type ResetPasswordRequest = {
   email: string;
-  code: string;
+  authCode: string;
   newPassword: string;
 };
 

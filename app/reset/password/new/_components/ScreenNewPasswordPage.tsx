@@ -47,7 +47,7 @@ const ScreenNewPasswordPage = () => {
     const code = sessionStorage.getItem("reset_code") ?? "";
 
     reset(
-      { email, code, newPassword: password },
+      { email, authCode: code, newPassword: password },
       {
         onSuccess: () => {
           sessionStorage.removeItem("reset_verified");
