@@ -1,8 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { serverApi } from "@/lib/server-api";
-import { isAxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 
 type LoginState = {
   success: boolean;
@@ -25,17 +24,27 @@ export async function loginAction(
   let redirectUrl: string | null = null;
 
   try {
-    const { finalUrl, setCookie } = await serverApi.post<LoginResponse>({
-      path: "/api/auth/login",
-      body: { email, password },
-    });
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!API_URL) {
+      throw new Error("NEXT_PUBLIC_API_URL is not defined");
+    }
+
+    const response = await axios.post<LoginResponse>(
+      `${API_URL}/api/auth/login`,
+      { email, password },
+      { headers: { "Content-Type": "application/json" } },
+    );
+
+    const { data, headers, request } = response;
+    const finalUrl = headers["location"] || request?.res?.responseUrl;
+    const setCookie = headers["set-cookie"];
 
     // 🍪 백엔드로부터 받은 쿠키가 있다면 브라우저에 배달해줍니다.
-    if (setCookie) {
+    if (setCookie && Array.isArray(setCookie)) {
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
 
-      setCookie.forEach((cookieStr) => {
+      setCookie.forEach((cookieStr: string) => {
         // Axios가 준 쿠키 문자열을 파싱합니다 (name=value; Path=/ ...)
         const [nameValue, ...options] = cookieStr.split(";");
         const [name, ...nameParts] = nameValue.split("=");
@@ -50,8 +59,9 @@ export async function loginAction(
           sameSite?: "strict" | "lax" | "none" | boolean;
         } = {};
 
-        options.forEach((opt) => {
+        options.forEach((opt: string) => {
           const [key, ...valueParts] = opt.trim().split("=");
+
           const val = valueParts.join("=");
           const k = key.toLowerCase();
           if (k === "path") cookieOptions.path = val;
