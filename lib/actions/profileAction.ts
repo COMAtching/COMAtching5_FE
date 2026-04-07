@@ -14,8 +14,6 @@ export async function profileSignUpAction(
   data: ProfileSubmitData,
 ): Promise<ProfileSignUpState> {
   try {
-    console.info("[profileSignUpAction] Request Payload", data);
-
     await serverApi.post({
       path: "/api/auth/signup/profile",
       body: data,
