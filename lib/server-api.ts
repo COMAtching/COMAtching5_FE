@@ -80,6 +80,11 @@ serverClient.interceptors.request.use(
     }
 
     const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+    console.log(
+      `[Server API Request] Cookies found:`,
+      allCookies.map((c) => c.name),
+    );
 
     // 백엔드 API 인증에 필요한 쿠키만 선별
     const authCookieNames = ["accessToken", "refreshToken", "sessionId"];
