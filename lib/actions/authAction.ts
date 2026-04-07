@@ -27,6 +27,13 @@ export async function resetPasswordAction(
     });
     return data;
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as Error & { digest?: string }).digest?.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+
     if (isAxiosError(error)) {
       const status = error.response?.status || 500;
       const message =

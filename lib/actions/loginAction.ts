@@ -81,6 +81,13 @@ export async function loginAction(
       }
     }
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as Error & { digest?: string }).digest?.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+
     if (isAxiosError(error)) {
       const status = error.response?.status;
       if (status === 400 || status === 401) {

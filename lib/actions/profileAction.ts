@@ -21,6 +21,13 @@ export async function profileSignUpAction(
 
     return { success: true, message: "회원가입 성공" };
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as Error & { digest?: string }).digest?.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+
     if (isAxiosError(error)) {
       const status = error.response?.status;
       const message = error.response?.data?.message || "회원가입 실패";
