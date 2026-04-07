@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import MainHeader from "./MainHeader";
-import MyCoinSection from "./MyCoinSection";
 import {
   QAButton,
   MatchingButton,
@@ -9,6 +8,7 @@ import {
 } from "./FooterButtonList";
 
 import BusinessInfo from "@/components/common/BusinessInfo";
+import MyCoinSection from "@/components/common/MyCoinSection";
 import NoticeSection from "./NoticeSection";
 import ProfileSlider from "./ProfileSlider";
 import { ProfileData, ContactFrequency } from "@/lib/types/profile";

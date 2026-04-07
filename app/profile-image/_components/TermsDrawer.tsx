@@ -138,7 +138,12 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
         contactFrequency: profile.contactFrequency || "NORMAL",
         song: profile.song || null,
         hobbies: mapHobbies(profile.hobbies || []),
-        tags: profile.tags && profile.tags.length > 0 ? profile.tags : null,
+        tags:
+          profile.tags && profile.tags.length > 0
+            ? profile.tags
+                .map(({ tag }) => ({ tag: removeEmoji(tag) }))
+                .filter(({ tag }) => tag.length > 0)
+            : null,
       };
 
       // 3. Server Action 호출 및 결과 처리
