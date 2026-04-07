@@ -24,6 +24,53 @@ const serverClient = axios.create({
   },
 });
 
+/**
+ * 🍪 백엔드로부터 받은 set-cookie 헤더를 파싱하여 Next.js 쿠키 저장소에 업데이트합니다.
+ */
+async function saveCookies(setCookieHeaders: string[] | undefined) {
+  if (!setCookieHeaders || setCookieHeaders.length === 0) return;
+
+  try {
+    const cookieStore = await cookies();
+
+    setCookieHeaders.forEach((cookieStr) => {
+      const [nameValue, ...options] = cookieStr.split(";");
+      const [name, ...nameParts] = nameValue.split("=");
+      const value = nameParts.join("=");
+
+      const cookieOptions: {
+        path?: string;
+        httpOnly?: boolean;
+        secure?: boolean;
+        maxAge?: number;
+        expires?: Date;
+        sameSite?: "strict" | "lax" | "none";
+      } = {};
+
+      options.forEach((opt) => {
+        const [key, ...valueParts] = opt.trim().split("=");
+        const val = valueParts.join("=");
+        const k = key.toLowerCase();
+        if (k === "path") cookieOptions.path = val;
+        if (k === "httponly") cookieOptions.httpOnly = true;
+        if (k === "secure") cookieOptions.secure = true;
+        if (k === "max-age") cookieOptions.maxAge = parseInt(val);
+        if (k === "expires") cookieOptions.expires = new Date(val);
+        if (k === "samesite")
+          cookieOptions.sameSite = val.toLowerCase() as
+            | "strict"
+            | "lax"
+            | "none";
+      });
+
+      cookieStore.set(name, value, cookieOptions);
+    });
+  } catch (error) {
+    // 서버 컴포넌트 등에서 cookies().set()이 불가능한 경우 대비
+    console.error("[saveCookies] Failed to set cookies", error);
+  }
+}
+
 // 2. [핵심] 요청 인터셉터: 인증에 필요한 쿠키만 선별하여 전달 (Public API는 제외)
 serverClient.interceptors.request.use(
   async (config) => {
@@ -72,13 +119,16 @@ serverClient.interceptors.response.use(
 
       try {
         // refreshToken으로 새 accessToken 발급 (쿠키 자동 전송됨)
-        await serverClient.post("/api/auth/reissue");
+        const response = await serverClient.post("/api/auth/reissue");
+
+        // 🍪 새로 발급된 토큰(쿠키)을 브라우저 저장소에 동기화
+        await saveCookies(response.headers["set-cookie"] as string[]);
 
         // 원래 요청 재시도
         return serverClient(originalRequest);
       } catch {
         // 재발급 실패 → 로그인 페이지로
-        redirect("/login");
+        redirect("/");
       }
     }
 
@@ -125,11 +175,17 @@ async function request<T>(
       hasCookie: !!response.headers["set-cookie"],
     });
 
+    // 🍪 응답에서 온 쿠키가 있다면 자동으로 저장소에 반영
+    const setCookieHeaders = response.headers["set-cookie"] as string[];
+    if (setCookieHeaders) {
+      await saveCookies(setCookieHeaders);
+    }
+
     return {
       data: response.data,
       finalUrl:
         response.headers["location"] || response.request?.res?.responseUrl,
-      setCookie: response.headers["set-cookie"] as string[],
+      setCookie: setCookieHeaders,
     };
   } catch (error) {
     if (isAxiosError(error)) {
