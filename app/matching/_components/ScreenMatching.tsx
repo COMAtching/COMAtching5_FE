@@ -1,16 +1,47 @@
-import MyCoinSectionSSR from "@/components/common/MyCoinSectionSSR";
+"use client";
+
+import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
-import React from "react";
+import React, { useState } from "react";
+import MatchingAgeSection from "./MatchingAgeSection";
+import MatchingHobbySection from "./MatchingHobbySection";
+import MatchingMBTISection from "./MatchingMBTISection";
+import MatchingFrequencySection from "./MatchingFrequencySection";
+import MatchingImportantOptionSection from "./MatchingImportantOptionSection";
 
 const ScreenMatching = () => {
+  const [selectedMBTI, setSelectedMBTI] = useState("");
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const [isSameMajorExclude, setIsSameMajorExclude] = useState(false);
+
   return (
     <main className="flex flex-col items-center px-4 py-2">
       <BackButton text="매칭하기" />
-      <div className="typo-14-500 grid h-8.5 grid-rows-2 text-center leading-4.25 text-[#858585]">
-        <span>요즘 관심있는 것들을 3개 이상 선택해주세요.</span>
-        <span>최대 10개까지 선택할 수 있어요.</span>
+      <MyCoinSection className="my-6" />
+
+      <div className="flex w-full flex-col gap-4 pb-10">
+        <MatchingMBTISection
+          onMBTISelect={setSelectedMBTI}
+          defaultValue={selectedMBTI}
+        />
+
+        <MatchingHobbySection />
+        <MatchingAgeSection
+          onAgeGroupSelect={setSelectedAgeGroup}
+          defaultValue={selectedAgeGroup}
+        />
+
+        <MatchingFrequencySection
+          onFrequencySelect={setSelectedFrequency}
+          defaultValue={selectedFrequency}
+        />
+
+        <MatchingImportantOptionSection
+          onSameMajorToggle={setIsSameMajorExclude}
+          isExcluded={isSameMajorExclude}
+        />
       </div>
-      <MyCoinSectionSSR className="my-6" />
     </main>
   );
 };

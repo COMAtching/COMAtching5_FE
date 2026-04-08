@@ -14,8 +14,8 @@ const StartExtraInfo = () => {
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
-    const t2 = setTimeout(() => setShowSecond(true), 2100);
-    const t3 = setTimeout(() => setShowThird(true), 4100);
+    const t2 = setTimeout(() => setShowSecond(true), 1100);
+    const t3 = setTimeout(() => setShowThird(true), 2100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);

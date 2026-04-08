@@ -22,7 +22,7 @@ export default function Step4ContactFrequency({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <label className="typo-16-600 text-black">연락빈도</label>
+        <label className="typo-16-600 text-color-text-black">연락빈도</label>
         <div className="flex gap-1.5">
           <ProfileButton
             selected={selected === "자주"}
