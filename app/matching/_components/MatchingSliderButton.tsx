@@ -18,6 +18,7 @@ export default function MatchingSliderButton({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
+  const positionRef = useRef(0);
 
   const SLIDER_WIDTH = 300;
   const THUMB_SIZE = 40;
@@ -28,54 +29,45 @@ export default function MatchingSliderButton({
     setIsDragging(true);
   };
 
-  const handleMove = (clientX: number) => {
-    if (!isDragging || !containerRef.current || isLoading) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    // rect.left + 4 is where the content area starts.
-    // subtract THUMB_SIZE / 2 to center the thumb on cursor.
-    let newPos = clientX - rect.left - 4 - THUMB_SIZE / 2;
-
-    if (newPos < 0) newPos = 0;
-    if (newPos > MAX_POSITION) newPos = MAX_POSITION;
-
-    setPosition(newPos);
-  };
-
-  const handleEnd = () => {
-    if (!isDragging || isLoading) return;
-    setIsDragging(false);
-
-    if (position >= MAX_POSITION * 0.9) {
-      setPosition(MAX_POSITION);
-      onConfirm();
-      // Reset after a delay or let parent handle it
-      setTimeout(() => setPosition(0), 1000);
-    } else {
-      setPosition(0);
-    }
-  };
-
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
-    const onTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
-    const onMouseUp = handleEnd;
-    const onTouchEnd = handleEnd;
+    if (!isDragging) return;
 
-    if (isDragging) {
-      window.addEventListener("mousemove", onMouseMove);
-      window.addEventListener("touchmove", onTouchMove);
-      window.addEventListener("mouseup", onMouseUp);
-      window.addEventListener("touchend", onTouchEnd);
-    }
+    const calcPos = (clientX: number) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      let newPos = clientX - rect.left - 4 - THUMB_SIZE / 2;
+      if (newPos < 0) newPos = 0;
+      if (newPos > MAX_POSITION) newPos = MAX_POSITION;
+      positionRef.current = newPos;
+      setPosition(newPos);
+    };
+
+    const onMouseMove = (e: MouseEvent) => calcPos(e.clientX);
+    const onTouchMove = (e: TouchEvent) => calcPos(e.touches[0].clientX);
+
+    const onEnd = () => {
+      setIsDragging(false);
+      if (positionRef.current >= MAX_POSITION * 0.9) {
+        setPosition(MAX_POSITION);
+        onConfirm();
+        setTimeout(() => setPosition(0), 1000);
+      } else {
+        setPosition(0);
+      }
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchend", onEnd);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("mouseup", onEnd);
+      window.removeEventListener("touchend", onEnd);
     };
-  }, [isDragging, position]);
+  }, [isDragging]);
 
   return (
     <div className="fixed bottom-10 left-1/2 z-50 -translate-x-1/2">
@@ -125,9 +117,11 @@ export default function MatchingSliderButton({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: isActive ? "grab" : "not-allowed",
+            cursor: isDragging ? "grabbing" : isActive ? "grab" : "not-allowed",
             transform: `translateX(${position}px)`,
             transition: isDragging ? "none" : "transform 0.3s ease-out",
+            willChange: "transform",
+            touchAction: "none",
             zIndex: 10,
           }}
         >
