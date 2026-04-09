@@ -33,18 +33,31 @@ export default function MatchingMBTISection({
     const index = newSelection.indexOf(char);
 
     if (index > -1) {
+      // 이미 선택된 경우 해제
       newSelection.splice(index, 1);
     } else {
-      const oppositeChar = opposites[char];
-      const oppositeIndex = newSelection.indexOf(oppositeChar);
+      // 2개 미만인 경우에만 새로 선택 가능
+      if (newSelection.length < 2) {
+        const oppositeChar = opposites[char];
+        const oppositeIndex = newSelection.indexOf(oppositeChar);
 
-      if (oppositeIndex > -1) {
-        newSelection[oppositeIndex] = char;
-      } else {
-        if (newSelection.length >= 2) {
-          newSelection.shift();
+        if (oppositeIndex > -1) {
+          // 반대 성향(예: E인데 I가 선택된 경우)은 교체
+          newSelection[oppositeIndex] = char;
+        } else {
+          newSelection.push(char);
         }
-        newSelection.push(char);
+      } else {
+        // 이미 2개가 선택된 상태에서 새로운(교체 대상도 아닌) MBTI를 누른 경우
+        const oppositeChar = opposites[char];
+        const oppositeIndex = newSelection.indexOf(oppositeChar);
+
+        if (oppositeIndex > -1) {
+          // 이미 2개여도 반대 성향 교체는 허용
+          newSelection[oppositeIndex] = char;
+        } else {
+          alert("MBTI는 2개만 선택할 수 있어요!");
+        }
       }
     }
 
@@ -59,11 +72,13 @@ export default function MatchingMBTISection({
 
   return (
     <div className="border-color-gray-100 flex flex-col gap-4 border-b pb-5">
-      <div className="flex flex-col gap-1">
-        <h2 className="typo-20-700 text-color-text-black">MBTI</h2>
-        <p className="typo-14-500 text-color-text-caption3">
-          상대방의 MBTI를 2개 골라주세요.
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="typo-20-700 text-color-text-black">MBTI</h2>
+          <p className="typo-14-500 text-color-text-caption3">
+            상대방의 MBTI를 2개 골라주세요.
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">

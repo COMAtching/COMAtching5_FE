@@ -3,9 +3,18 @@
 import Image from "next/image";
 import React from "react";
 
-export default function MatchingImportantOptionSection() {
+interface MatchingImportantOptionSectionProps {
+  onClick?: () => void;
+}
+
+export default function MatchingImportantOptionSection({
+  onClick,
+}: MatchingImportantOptionSectionProps) {
   return (
-    <div className="border-color-gray-100 flex items-center justify-between border-b pb-5">
+    <button
+      className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5 text-left"
+      onClick={onClick}
+    >
       <div className="flex flex-col gap-1">
         <div className="flex items-end gap-1">
           <h2 className="typo-20-700 text-color-text-black">
@@ -32,6 +41,6 @@ export default function MatchingImportantOptionSection() {
           1
         </span>
       </div>
-    </div>
+    </button>
   );
 }
