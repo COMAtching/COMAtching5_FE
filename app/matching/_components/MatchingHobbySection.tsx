@@ -13,13 +13,13 @@ export default function MatchingHobbySection({
   selectedHobbies = [],
 }: MatchingHobbySectionProps) {
   return (
-    <div
-      className="border-color-gray-100 flex flex-col gap-4 border-b pb-5"
+    <button
+      className="border-color-gray-100 flex w-full flex-col gap-4 border-b pb-5 text-left"
       onClick={onHobbyClick}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex w-full items-center justify-between">
         <div className="flex flex-col gap-1">
-          <label className="typo-20-700 text-color-text-black">관심사</label>
+          <h2 className="typo-20-700 text-color-text-black">관심사</h2>
           <p className="typo-14-500 text-color-text-caption3">
             상대방이 가졌음 하는 관심사를 골라주세요.
           </p>
@@ -40,6 +40,6 @@ export default function MatchingHobbySection({
           ))}
         </div>
       )}
-    </div>
+    </button>
   );
 }

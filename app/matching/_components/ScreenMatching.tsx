@@ -8,6 +8,7 @@ import MatchingHobbySection from "./MatchingHobbySection";
 import MatchingMBTISection from "./MatchingMBTISection";
 import MatchingFrequencySection from "./MatchingFrequencySection";
 import MatchingImportantOptionSection from "./MatchingImportantOptionSection";
+import MatchingSameMajorSection from "./MatchingSameMajorSection";
 
 const ScreenMatching = () => {
   const [selectedMBTI, setSelectedMBTI] = useState("");
@@ -37,7 +38,8 @@ const ScreenMatching = () => {
           defaultValue={selectedFrequency}
         />
 
-        <MatchingImportantOptionSection
+        <MatchingImportantOptionSection />
+        <MatchingSameMajorSection
           onSameMajorToggle={setIsSameMajorExclude}
           isExcluded={isSameMajorExclude}
         />
