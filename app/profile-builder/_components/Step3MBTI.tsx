@@ -36,7 +36,7 @@ export default function Step3MBTI({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <label className="typo-16-600 text-black">MBTI</label>
+        <label className="typo-16-600 text-color-text-black">MBTI</label>
 
         <div className="flex flex-col gap-2">
           {/* 상단 행: E S F P */}
