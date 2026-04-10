@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 
 interface MatchingSliderButtonProps {
@@ -15,14 +15,26 @@ export default function MatchingSliderButton({
   isActive = false,
 }: MatchingSliderButtonProps) {
   const [position, setPosition] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const SLIDER_WIDTH = 300;
   const THUMB_SIZE = 40;
-  const MAX_POSITION = SLIDER_WIDTH - THUMB_SIZE - 8; // 8 is padding (4px each side)
+
+  useLayoutEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   const handleStart = () => {
     if (isLoading || !isActive) return;
@@ -35,9 +47,10 @@ export default function MatchingSliderButton({
     const calcPos = (clientX: number) => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
+      const maxPos = rect.width - THUMB_SIZE - 8;
       let newPos = clientX - rect.left - 4 - THUMB_SIZE / 2;
       if (newPos < 0) newPos = 0;
-      if (newPos > MAX_POSITION) newPos = MAX_POSITION;
+      if (newPos > maxPos) newPos = maxPos;
       positionRef.current = newPos;
       setPosition(newPos);
     };
@@ -46,11 +59,13 @@ export default function MatchingSliderButton({
     const onTouchMove = (e: TouchEvent) => calcPos(e.touches[0].clientX);
 
     const onEnd = () => {
+      if (!containerRef.current) return;
+      const maxPos = containerRef.current.clientWidth - THUMB_SIZE - 8;
       setIsDragging(false);
-      if (positionRef.current >= MAX_POSITION * 0.9) {
-        setPosition(MAX_POSITION);
+      if (positionRef.current >= maxPos * 0.9) {
+        setPosition(maxPos);
         onConfirm();
-        setTimeout(() => setPosition(0), 1000);
+        timerRef.current = setTimeout(() => setPosition(0), 1000);
       } else {
         setPosition(0);
       }
@@ -62,6 +77,7 @@ export default function MatchingSliderButton({
     window.addEventListener("touchend", onEnd);
 
     return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("mouseup", onEnd);
@@ -73,8 +89,18 @@ export default function MatchingSliderButton({
     <div className="fixed bottom-10 left-1/2 z-50 -translate-x-1/2">
       <div
         ref={containerRef}
+        role="slider"
+        aria-label="커플 매칭 시작 슬라이더"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={
+          containerWidth > 0
+            ? Math.round((position / (containerWidth - THUMB_SIZE - 8)) * 100)
+            : 0
+        }
+        aria-disabled={!isActive}
         style={{
-          width: `${SLIDER_WIDTH}px`,
+          width: "min(80vw, 344px)",
           height: "48px",
           background:
             "radial-gradient(100% 100.45% at 0% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)",
@@ -91,13 +117,14 @@ export default function MatchingSliderButton({
         {/* Text Layer */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span
-            className="typo-16-700 transition-colors select-none"
-            style={{ color: isActive ? "#8F8F8F" : "#B3B3B3" }}
+            className={`typo-16-700 transition-colors select-none ${
+              isActive ? "text-[#8F8F8F]" : "text-color-gray-300"
+            }`}
           >
             {isLoading
               ? "매칭 중..."
               : isActive
-                ? "슬라이드하여 매칭 시작"
+                ? "밀어서 커플되기"
                 : "조건을 선택해 주세요"}
           </span>
         </div>
@@ -107,20 +134,13 @@ export default function MatchingSliderButton({
           ref={thumbRef}
           onMouseDown={handleStart}
           onTouchStart={handleStart}
-          className={isActive ? "bg-milky-pink" : ""}
+          className={`flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-transform will-change-transform ${
+            isActive ? "bg-milky-pink" : "bg-color-gray-300"
+          }`}
           style={{
-            width: `${THUMB_SIZE}px`,
-            height: `${THUMB_SIZE}px`,
-            backgroundColor: isActive ? "transparent" : "#B3B3B3",
-            boxShadow: "1px 1px 3px rgba(0, 0, 0, 0.2)",
-            borderRadius: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             cursor: isDragging ? "grabbing" : isActive ? "grab" : "not-allowed",
             transform: `translateX(${position}px)`,
             transition: isDragging ? "none" : "transform 0.3s ease-out",
-            willChange: "transform",
             touchAction: "none",
             zIndex: 10,
           }}
@@ -128,10 +148,7 @@ export default function MatchingSliderButton({
           <ArrowRight
             size={18}
             strokeWidth={3}
-            style={{
-              color: "#FFFFFF",
-              opacity: isActive ? 1 : 0.5,
-            }}
+            className={`text-white transition-opacity ${isActive ? "opacity-100" : "opacity-50"}`}
           />
         </div>
       </div>

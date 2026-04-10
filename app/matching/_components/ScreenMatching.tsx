@@ -10,6 +10,8 @@ import MatchingFrequencySection from "./MatchingFrequencySection";
 import MatchingImportantOptionSection from "./MatchingImportantOptionSection";
 import MatchingSameMajorSection from "./MatchingSameMajorSection";
 import { ContactFrequency } from "@/lib/types/profile";
+import MatchingSliderButton from "./MatchingSliderButton";
+
 import {
   AgeOption,
   HobbyOption,
@@ -35,8 +37,6 @@ const frequencyMapping: Record<string, ContactFrequency> = {
   보통: "NORMAL",
   적음: "RARE",
 };
-
-import MatchingSliderButton from "./MatchingSliderButton";
 
 const ScreenMatching = () => {
   const [selectedMBTI, setSelectedMBTI] = useState("");
@@ -105,7 +105,7 @@ const ScreenMatching = () => {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-48">
+    <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-30">
       <BackButton text="매칭하기" />
       <MyCoinSection className="my-6" />
 
