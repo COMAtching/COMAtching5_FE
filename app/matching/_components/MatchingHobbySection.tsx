@@ -4,7 +4,10 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 
-import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
+import {
+  MATCHING_INTEREST_ITEMS,
+  type MatchingInterestCategory,
+} from "@/lib/constants/matchingInterests";
 import {
   Drawer,
   DrawerContent,
@@ -14,8 +17,8 @@ import {
 } from "@/components/ui/drawer";
 
 interface MatchingHobbySectionProps {
-  onSelect: (category: HobbyCategory) => void;
-  selectedCategory?: string;
+  onSelect: (category: MatchingInterestCategory) => void;
+  selectedCategory?: MatchingInterestCategory | "";
 }
 
 export default function MatchingHobbySection({
@@ -23,7 +26,6 @@ export default function MatchingHobbySection({
   selectedCategory,
 }: MatchingHobbySectionProps) {
   const [open, setOpen] = React.useState(false);
-  const categories = Object.keys(HOBBIES) as HobbyCategory[];
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -62,7 +64,7 @@ export default function MatchingHobbySection({
           </p>
         </DrawerHeader>
         <div className="mt-4 grid grid-cols-2 place-items-center gap-x-4 gap-y-6 px-4">
-          {categories.map((category) => (
+          {MATCHING_INTEREST_ITEMS.map(({ category, imageSrc }) => (
             <button
               key={category}
               onClick={() => {
@@ -77,7 +79,7 @@ export default function MatchingHobbySection({
             >
               <div className="relative h-16 w-16">
                 <Image
-                  src="/main/elec-bulb.png"
+                  src={imageSrc}
                   alt={category}
                   fill
                   className="object-contain"
