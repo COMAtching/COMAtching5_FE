@@ -19,16 +19,14 @@ import {
   MatchingRequest,
 } from "@/lib/types/matching";
 
-import MatchingHobbyBottomSheet from "./MatchingHobbyBottomSheet";
-import ImportantBottomSheet from "./ImportantBottomSheet";
-import { HobbyCategory } from "@/lib/constants/hobbies";
+import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
 
-const hobbyMapping: Record<string, HobbyOption> = {
+const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
-  문화예술: "CULTURE",
-  음악: "MUSIC",
+  문화: "CULTURE",
+  예술: "MUSIC",
   여행: "TRAVEL",
-  "일상/공부": "DAILY",
+  자기계발: "DAILY",
   게임: "GAME",
 };
 
@@ -43,13 +41,11 @@ const ScreenMatching = () => {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [isSameMajorExclude, setIsSameMajorExclude] = useState(false);
-  const [selectedHobbyCategory, setSelectedHobbyCategory] =
-    useState<string>("");
+  const [selectedHobbyCategory, setSelectedHobbyCategory] = useState<
+    MatchingInterestCategory | ""
+  >("");
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
-
-  const [isHobbyDrawerOpen, setIsHobbyDrawerOpen] = useState(false);
-  const [isImportantDrawerOpen, setIsImportantDrawerOpen] = useState(false);
 
   const canSubmit = !!(
     selectedMBTI.length === 2 &&
@@ -116,8 +112,8 @@ const ScreenMatching = () => {
         />
 
         <MatchingHobbySection
-          onHobbyClick={() => setIsHobbyDrawerOpen(true)}
-          selectedHobbies={selectedHobbyCategory ? [selectedHobbyCategory] : []}
+          onSelect={(category) => setSelectedHobbyCategory(category)}
+          selectedCategory={selectedHobbyCategory}
         />
 
         <MatchingAgeSection
@@ -131,7 +127,8 @@ const ScreenMatching = () => {
         />
 
         <MatchingImportantOptionSection
-          onClick={() => setIsImportantDrawerOpen(true)}
+          onSelect={(option) => setImportantOption(option)}
+          selectedOption={importantOption}
         />
         <MatchingSameMajorSection
           onSameMajorToggle={setIsSameMajorExclude}
@@ -142,20 +139,6 @@ const ScreenMatching = () => {
       <MatchingSliderButton
         onConfirm={handleMatchingSubmit}
         isActive={canSubmit}
-      />
-
-      <MatchingHobbyBottomSheet
-        isOpen={isHobbyDrawerOpen}
-        onClose={() => setIsHobbyDrawerOpen(false)}
-        selectedCategory={selectedHobbyCategory}
-        onSelect={(category) => setSelectedHobbyCategory(category)}
-      />
-
-      <ImportantBottomSheet
-        isOpen={isImportantDrawerOpen}
-        onClose={() => setIsImportantDrawerOpen(false)}
-        selectedOption={importantOption}
-        onSelect={(option) => setImportantOption(option)}
       />
     </main>
   );

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import ProfileBottomSheet from "./ProfileBottomSheet";
 import type { Gender } from "@/lib/types/profile";
-import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
+import { getDefaultProfilesByGender } from "../../../lib/constants/defaultProfiles";
 
 interface DefaultProfileDrawerProps {
   children: React.ReactElement<{

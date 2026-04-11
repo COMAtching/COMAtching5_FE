@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import {
   Drawer,
@@ -9,19 +7,19 @@ import {
 } from "@/components/ui/drawer";
 import { ImportantOption } from "@/lib/types/matching";
 
-interface ImportantBottomSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface ImportantOptionDrawerProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSelect: (option: ImportantOption) => void;
   selectedOption?: ImportantOption | null;
 }
 
-export default function ImportantBottomSheet({
-  isOpen,
-  onClose,
+export default function ImportantOptionDrawer({
+  open,
+  onOpenChange,
   onSelect,
   selectedOption,
-}: ImportantBottomSheetProps) {
+}: ImportantOptionDrawerProps) {
   const options: { label: string; value: ImportantOption }[] = [
     { label: "MBTI", value: "MBTI" },
     { label: "나이", value: "AGE" },
@@ -30,8 +28,8 @@ export default function ImportantBottomSheet({
   ];
 
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="pb-10">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-auto pb-10" showHandle={false}>
         <DrawerHeader className="text-left">
           <DrawerTitle className="typo-20-700 text-color-text-black">
             가장 중요한 옵션 선택
@@ -51,7 +49,7 @@ export default function ImportantBottomSheet({
               }`}
               onClick={() => {
                 onSelect(option.value);
-                onClose();
+                onOpenChange(false);
               }}
             >
               <span className="typo-16-600">{option.label}</span>

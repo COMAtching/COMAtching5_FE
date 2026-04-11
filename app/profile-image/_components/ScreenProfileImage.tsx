@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import TermsDrawer from "./TermsDrawer";
 import { useProfileStore } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
-import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
+import { getDefaultProfilesByGender } from "../../../lib/constants/defaultProfiles";
 
 const ScreenProfileImage = () => {
   const router = useRouter();
