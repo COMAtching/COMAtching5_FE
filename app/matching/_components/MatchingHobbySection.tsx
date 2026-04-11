@@ -9,6 +9,7 @@ import {
   type MatchingInterestCategory,
 } from "@/lib/constants/matchingInterests";
 import {
+  DrawerClose,
   Drawer,
   DrawerContent,
   DrawerHeader,
@@ -55,9 +56,19 @@ export default function MatchingHobbySection({
 
       <DrawerContent className="pb-10">
         <DrawerHeader className="px-5 text-left">
-          <DrawerTitle className="typo-20-700 text-color-text-black">
-            관심사 선택
-          </DrawerTitle>
+          <div className="flex items-center justify-between">
+            <DrawerTitle className="typo-20-700 text-color-text-black">
+              관심사 선택
+            </DrawerTitle>
+            <DrawerClose asChild>
+              <button
+                type="button"
+                className="typo-16-500 flex items-center text-center text-[#999999]"
+              >
+                닫기
+              </button>
+            </DrawerClose>
+          </div>
           <p className="typo-14-500 text-color-text-caption3 mt-1 leading-tight">
             상대방이 가졌음 하는 관심사를 골라주세요. <br />
             중분류만 선택할 수 있어요.
