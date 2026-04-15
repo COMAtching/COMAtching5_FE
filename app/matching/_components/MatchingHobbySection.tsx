@@ -4,20 +4,24 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 
-import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 import {
-  Drawer,
+  MATCHING_INTEREST_ITEMS,
+  type MatchingInterestCategory,
+} from "@/lib/constants/matchingInterests";
+import {
   DrawerClose,
+  Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
+import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 
 interface MatchingHobbySectionProps {
-  onSelect: (category: HobbyCategory) => void;
-  selectedCategory?: string;
+  onSelect: (category: MatchingInterestCategory) => void;
+  selectedCategory?: MatchingInterestCategory | "";
 }
 
 export default function MatchingHobbySection({
@@ -54,21 +58,29 @@ export default function MatchingHobbySection({
 
       <DrawerContent className="pb-10">
         <DrawerHeader className="px-5 text-left">
-          <DrawerTitle className="typo-20-700 text-color-text-black">
-            관심사 선택
-          </DrawerTitle>
+          <div className="flex items-center justify-between">
+            <DrawerTitle className="typo-20-700 text-color-text-black">
+              관심사 선택
+            </DrawerTitle>
+            <DrawerClose asChild>
+              <button
+                type="button"
+                className="typo-16-500 flex items-center text-center text-[#999999]"
+              >
+                닫기
+              </button>
+            </DrawerClose>
+          </div>
           <p className="typo-14-500 text-color-text-caption3 mt-1 leading-tight">
             상대방이 가졌음 하는 관심사를 골라주세요. <br />
             중분류만 선택할 수 있어요.
           </p>
         </DrawerHeader>
         <div className="mt-4 grid grid-cols-2 place-items-center gap-x-4 gap-y-6 px-4">
-          {categories.map((category) => (
+          {MATCHING_INTEREST_ITEMS.map(({ category, imageSrc }) => (
             <DrawerClose key={category} asChild>
               <button
-                onClick={() => {
-                  onSelect(category);
-                }}
+                onClick={() => onSelect(category)}
                 className={cn(
                   "flex h-[148px] w-[148px] flex-col items-center justify-center gap-2 rounded-full border transition-all",
                   selectedCategory === category
@@ -78,7 +90,7 @@ export default function MatchingHobbySection({
               >
                 <div className="relative h-16 w-16">
                   <Image
-                    src="/main/elec-bulb.png"
+                    src={imageSrc}
                     alt={category}
                     fill
                     className="object-contain"

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { convertHeicToJpg } from "@/lib/utils/image";
 import type { Gender } from "@/lib/types/profile";
 import DefaultProfileDrawer from "./DefaultProfileDrawer";
-import { getDefaultProfilesByGender } from "../_constants/defaultProfiles";
+import { getDefaultProfilesByGender } from "../../../lib/constants/defaultProfiles";
 
 type SelectCheckButtonProps = {
   label: string;

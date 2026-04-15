@@ -20,14 +20,14 @@ import {
   MatchingRequest,
 } from "@/lib/types/matching";
 
-import { HobbyCategory } from "@/lib/constants/hobbies";
+import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
 
-const hobbyMapping: Record<string, HobbyOption> = {
+const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
-  문화예술: "CULTURE",
-  음악: "MUSIC",
+  문화: "CULTURE",
+  예술: "MUSIC",
   여행: "TRAVEL",
-  "일상/공부": "DAILY",
+  자기계발: "DAILY",
   게임: "GAME",
 };
 
@@ -45,8 +45,9 @@ const ScreenMatching = () => {
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [isSameMajorExclude, setIsSameMajorExclude] = useState(false);
-  const [selectedHobbyCategory, setSelectedHobbyCategory] =
-    useState<string>("");
+  const [selectedHobbyCategory, setSelectedHobbyCategory] = useState<
+    MatchingInterestCategory | ""
+  >("");
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
 
