@@ -2,6 +2,7 @@
 
 import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
+import Image from "next/image";
 import React, { useState } from "react";
 import MatchingAgeSection from "./MatchingAgeSection";
 import MatchingHobbySection from "./MatchingHobbySection";
@@ -19,16 +20,14 @@ import {
   MatchingRequest,
 } from "@/lib/types/matching";
 
-import MatchingHobbyBottomSheet from "./MatchingHobbyBottomSheet";
-import ImportantBottomSheet from "./ImportantBottomSheet";
-import { HobbyCategory } from "@/lib/constants/hobbies";
+import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
 
-const hobbyMapping: Record<string, HobbyOption> = {
+const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
-  문화예술: "CULTURE",
-  음악: "MUSIC",
+  문화: "CULTURE",
+  예술: "MUSIC",
   여행: "TRAVEL",
-  "일상/공부": "DAILY",
+  자기계발: "DAILY",
   게임: "GAME",
 };
 
@@ -38,25 +37,56 @@ const frequencyMapping: Record<string, ContactFrequency> = {
   적음: "RARE",
 };
 
+import { useItems } from "@/hooks/useItems";
+
 const ScreenMatching = () => {
+  const { data: itemData } = useItems();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [isSameMajorExclude, setIsSameMajorExclude] = useState(false);
-  const [selectedHobbyCategory, setSelectedHobbyCategory] =
-    useState<string>("");
+  const [selectedHobbyCategory, setSelectedHobbyCategory] = useState<
+    MatchingInterestCategory | ""
+  >("");
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
 
-  const [isHobbyDrawerOpen, setIsHobbyDrawerOpen] = useState(false);
-  const [isImportantDrawerOpen, setIsImportantDrawerOpen] = useState(false);
+  const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
+  const hasExtraOption = !!(importantOption || isSameMajorExclude);
 
   const canSubmit = !!(
     selectedMBTI.length === 2 &&
     selectedAgeGroup &&
     selectedFrequency &&
-    selectedHobbyCategory
+    selectedHobbyCategory &&
+    matchingTicketCount > 0
   );
+
+  const bubbleText =
+    matchingTicketCount === 0 ? (
+      "사용할 수 있는 매칭권이 없어요."
+    ) : (
+      <div className="flex items-center gap-1">
+        <Image src="/main/coin.png" alt="coin" width={20} height={20} />
+        <span>매칭권 1</span>
+        {hasExtraOption && (
+          <>
+            <Image
+              src="/main/elec-bulb.png"
+              alt="bulb"
+              width={20}
+              height={20}
+              className="ml-1"
+            />
+            <span>아이템 1</span>
+          </>
+        )}
+        <span>소모</span>
+      </div>
+    );
+
+  const bubbleTextColor =
+    matchingTicketCount === 0 ? "text-color-gray-600" : "text-black";
 
   const calculateAgeOffsets = (
     group: string,
@@ -116,8 +146,8 @@ const ScreenMatching = () => {
         />
 
         <MatchingHobbySection
-          onHobbyClick={() => setIsHobbyDrawerOpen(true)}
-          selectedHobbies={selectedHobbyCategory ? [selectedHobbyCategory] : []}
+          onSelect={(category) => setSelectedHobbyCategory(category)}
+          selectedCategory={selectedHobbyCategory}
         />
 
         <MatchingAgeSection
@@ -131,7 +161,8 @@ const ScreenMatching = () => {
         />
 
         <MatchingImportantOptionSection
-          onClick={() => setIsImportantDrawerOpen(true)}
+          onSelect={(option) => setImportantOption(option)}
+          selectedOption={importantOption}
         />
         <MatchingSameMajorSection
           onSameMajorToggle={setIsSameMajorExclude}
@@ -142,20 +173,8 @@ const ScreenMatching = () => {
       <MatchingSliderButton
         onConfirm={handleMatchingSubmit}
         isActive={canSubmit}
-      />
-
-      <MatchingHobbyBottomSheet
-        isOpen={isHobbyDrawerOpen}
-        onClose={() => setIsHobbyDrawerOpen(false)}
-        selectedCategory={selectedHobbyCategory}
-        onSelect={(category) => setSelectedHobbyCategory(category)}
-      />
-
-      <ImportantBottomSheet
-        isOpen={isImportantDrawerOpen}
-        onClose={() => setIsImportantDrawerOpen(false)}
-        selectedOption={importantOption}
-        onSelect={(option) => setImportantOption(option)}
+        bubbleText={bubbleText}
+        bubbleTextColor={bubbleTextColor}
       />
     </main>
   );

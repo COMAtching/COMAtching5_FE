@@ -2,17 +2,23 @@
 
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import BubbleDiv from "../../_components/BubbleDiv";
 
 interface MatchingSliderButtonProps {
   onConfirm: () => void;
   isLoading?: boolean;
   isActive?: boolean;
+  bubbleText?: React.ReactNode;
+  bubbleTextColor?: string;
 }
 
 export default function MatchingSliderButton({
   onConfirm,
   isLoading = false,
   isActive = false,
+  bubbleText,
+  bubbleTextColor,
 }: MatchingSliderButtonProps) {
   const [position, setPosition] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -86,7 +92,12 @@ export default function MatchingSliderButton({
   }, [isDragging]);
 
   return (
-    <div className="fixed bottom-10 left-1/2 z-50 -translate-x-1/2">
+    <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-1">
+      {bubbleText && (
+        <BubbleDiv typo="typo-12-600" textColor={bubbleTextColor}>
+          {bubbleText}
+        </BubbleDiv>
+      )}
       <div
         ref={containerRef}
         role="slider"
@@ -104,22 +115,32 @@ export default function MatchingSliderButton({
           height: "48px",
           background:
             "radial-gradient(100% 100.45% at 0% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)",
-          boxShadow: "inset -2px 2px 6px rgba(0, 0, 0, 0.2)",
+          boxShadow: "-2px 2px 6px rgba(0, 0, 0, 0.2)",
           borderRadius: "100px",
           border: "1px solid rgba(255, 255, 255, 0.3)",
           display: "flex",
           alignItems: "center",
           padding: "4px",
           position: "relative",
-          overflow: "hidden",
         }}
       >
         {/* Text Layer */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span
-            className={`typo-16-700 transition-colors select-none ${
-              isActive ? "text-[#8F8F8F]" : "text-color-gray-300"
-            }`}
+            className={cn(
+              "typo-16-700 tracking-[0.01em] transition-all select-none",
+              isActive
+                ? "animate-shimmer bg-gradient-to-r from-[#666666] via-[#B3B3B3] to-[#666666] bg-clip-text text-transparent"
+                : "text-color-gray-300",
+            )}
+            style={
+              isActive
+                ? {
+                    backgroundImage:
+                      "linear-gradient(91.24deg, #666666 9.51%, #B3B3B3 35.68%, #666666 76.49%)",
+                  }
+                : {}
+            }
           >
             {isLoading
               ? "매칭 중..."
@@ -134,13 +155,15 @@ export default function MatchingSliderButton({
           ref={thumbRef}
           onMouseDown={handleStart}
           onTouchStart={handleStart}
-          className={`flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-transform will-change-transform ${
-            isActive ? "bg-milky-pink" : "bg-color-gray-300"
-          }`}
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform will-change-transform",
+            isActive ? "bg-milky-pink" : "bg-color-gray-300",
+          )}
           style={{
             cursor: isDragging ? "grabbing" : isActive ? "grab" : "not-allowed",
             transform: `translateX(${position}px)`,
             transition: isDragging ? "none" : "transform 0.3s ease-out",
+            boxShadow: isActive ? "1px 1px 3px rgba(0, 0, 0, 0.2)" : "none",
             touchAction: "none",
             zIndex: 10,
           }}
@@ -148,7 +171,10 @@ export default function MatchingSliderButton({
           <ArrowRight
             size={18}
             strokeWidth={3}
-            className={`text-white transition-opacity ${isActive ? "opacity-100" : "opacity-50"}`}
+            className={cn(
+              "text-white transition-opacity",
+              isActive ? "opacity-100" : "opacity-50",
+            )}
           />
         </div>
       </div>

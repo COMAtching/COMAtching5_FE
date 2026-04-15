@@ -1,16 +1,11 @@
 "use client";
-import React, {
-  useState,
-  useTransition,
-  useEffect,
-  startTransition,
-} from "react";
+import React, { useState, useTransition } from "react";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import Button from "@/components/ui/Button";
 import { SelectCheckButton } from "./ProfileImageSelection";
 import AgreeBottomSheet from "./AgreeBottomSheet";
-import { TERMS_TEXT, PRIVACY_TEXT } from "../_constants/terms";
+import { TERMS_TEXT, PRIVACY_TEXT } from "../../../lib/constants/terms";
 import { Hobby, ProfileSubmitData } from "@/lib/types/profile";
 import { useProfileStore } from "@/stores/profile-store";
 import { useImageUpload } from "@/hooks/useProfileSignUp";
@@ -71,10 +66,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   const mapHobbies = (hobbies: (string | Hobby)[]) => {
     const categoryMap: Record<string, string> = {
       스포츠: "SPORTS",
-      문화예술: "CULTURE",
-      음악: "MUSIC",
+      문화: "CULTURE",
+      예술: "MUSIC",
       여행: "LEISURE",
-      "일상/공부": "DAILY",
+      자기계발: "DAILY",
       게임: "GAME",
     };
 

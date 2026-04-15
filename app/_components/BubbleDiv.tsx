@@ -4,19 +4,21 @@ import { cn } from "@/lib/utils";
 
 const BubbleDiv = ({
   children,
-  w = 226,
+  w,
   h = 42,
   typo = "typo-16-600",
+  textColor = "text-black",
   top = -4,
   shadow = false,
   className = "",
 }: {
   children?: React.ReactNode;
-  w?: number;
+  w?: number | "fit";
   h?: number;
   typo?: string;
   top?: number;
   shadow?: boolean;
+  textColor?: string;
   className?: string;
 }) => {
   const shadowClass = shadow ? "drop-shadow-md" : "";
@@ -24,16 +26,21 @@ const BubbleDiv = ({
   return (
     <div
       className={cn(
-        "relative flex items-center justify-center",
+        "relative flex items-center justify-center px-6",
+        w === "fit" || !w ? "w-fit" : "",
         shadowClass,
         className,
       )}
-      style={{ width: `${w}px`, height: `${h}px` }}
+      style={{
+        width: w && w !== "fit" ? `${w}px` : undefined,
+        height: `${h}px`,
+      }}
     >
       <div
         className={cn(
           typo,
-          "absolute inset-0 z-20 flex items-center justify-center text-center text-black",
+          textColor,
+          "relative z-20 flex items-center justify-center text-center whitespace-nowrap",
         )}
         style={{ transform: `translateY(${top}px)` }}
       >

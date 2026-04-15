@@ -8,6 +8,7 @@ import { useProfileStore } from "@/stores/profile-store";
 import ProgressStepBar from "@/components/ui/ProgressStepBar";
 
 import { HOBBIES, type HobbyCategory } from "@/lib/constants/hobbies";
+import { MATCHING_INTEREST_CATEGORIES } from "@/lib/constants/matchingInterests";
 import HobbySearchInput from "./HobbySearchInput";
 import { createChoseongRegex } from "@/lib/utils/hangul";
 import AddHobbyDrawer from "./AddHobbyDrawer";
@@ -25,7 +26,7 @@ const ScreenHobbySelect = () => {
     const found = (Object.keys(HOBBIES) as HobbyCategory[]).find((cat) =>
       (HOBBIES[cat] as readonly string[]).includes(name),
     );
-    return found || "일상/공부";
+    return found || "자기계발";
   };
 
   // selected를 Hobby[] 형태로 관리하여 카테고리 정보 유지
@@ -47,7 +48,7 @@ const ScreenHobbySelect = () => {
 
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  const toggleHobby = (hobbyName: string, category?: string) => {
+  const toggleHobby = (hobbyName: string, category?: HobbyCategory) => {
     setSelected((prev) => {
       const isAlreadySelected = prev.some((h) => h.name === hobbyName);
 
@@ -65,7 +66,7 @@ const ScreenHobbySelect = () => {
         const foundCategory = (Object.keys(HOBBIES) as HobbyCategory[]).find(
           (cat) => (HOBBIES[cat] as readonly string[]).includes(hobbyName),
         );
-        finalCategory = foundCategory || "일상/공부";
+        finalCategory = foundCategory || "자기계발";
       }
 
       return [...prev, { category: finalCategory, name: hobbyName }];
@@ -137,12 +138,15 @@ const ScreenHobbySelect = () => {
             </div>
           </div>
         ) : (
-          (Object.keys(HOBBIES) as HobbyCategory[]).map((category) => {
+          MATCHING_INTEREST_CATEGORIES.map((displayCategory) => {
+            const hobbyCategory = displayCategory;
             const { predefined, customInCategory } =
-              getHobbiesByCategory(category);
+              getHobbiesByCategory(hobbyCategory);
             return (
-              <div key={category} className="flex flex-col">
-                <h2 className="typo-16-600 mb-3 text-black">{category}</h2>
+              <div key={displayCategory} className="flex flex-col">
+                <h2 className="typo-16-600 mb-3 text-black">
+                  {displayCategory}
+                </h2>
                 <div className="flex flex-wrap gap-3">
                   {/* 기존 취미 목록 */}
                   {predefined.map((hobby) => (
@@ -158,7 +162,7 @@ const ScreenHobbySelect = () => {
                   {customInCategory.map((hobby) => (
                     <HobbyButton
                       key={hobby.name}
-                      onClick={() => toggleHobby(hobby.name, category)}
+                      onClick={() => toggleHobby(hobby.name, hobbyCategory)}
                       selected={selected.some((h) => h.name === hobby.name)}
                     >
                       {hobby.name}
