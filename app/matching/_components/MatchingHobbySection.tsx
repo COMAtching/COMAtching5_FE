@@ -7,11 +7,13 @@ import Image from "next/image";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { cn } from "@/lib/utils";
 
 interface MatchingHobbySectionProps {
   onSelect: (category: HobbyCategory) => void;
@@ -22,11 +24,10 @@ export default function MatchingHobbySection({
   onSelect,
   selectedCategory,
 }: MatchingHobbySectionProps) {
-  const [open, setOpen] = React.useState(false);
   const categories = Object.keys(HOBBIES) as HobbyCategory[];
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer>
       <div className="border-color-gray-100 flex w-full flex-col gap-4 border-b pb-5">
         <div className="flex w-full items-center justify-between">
           <DrawerTrigger asChild>
@@ -63,28 +64,29 @@ export default function MatchingHobbySection({
         </DrawerHeader>
         <div className="mt-4 grid grid-cols-2 place-items-center gap-x-4 gap-y-6 px-4">
           {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => {
-                onSelect(category);
-                setOpen(false);
-              }}
-              className={`flex h-[148px] w-[148px] flex-col items-center justify-center gap-2 rounded-full border transition-all ${
-                selectedCategory === category
-                  ? "bg-pink-gradient border-[#F57DB2]"
-                  : "border-color-gray-100 bg-white"
-              }`}
-            >
-              <div className="relative h-16 w-16">
-                <Image
-                  src="/main/elec-bulb.png"
-                  alt={category}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="typo-16-600 text-black">{category}</span>
-            </button>
+            <DrawerClose key={category} asChild>
+              <button
+                onClick={() => {
+                  onSelect(category);
+                }}
+                className={cn(
+                  "flex h-[148px] w-[148px] flex-col items-center justify-center gap-2 rounded-full border transition-all",
+                  selectedCategory === category
+                    ? "bg-pink-gradient border-[#F57DB2]"
+                    : "border-color-gray-100 bg-white",
+                )}
+              >
+                <div className="relative h-16 w-16">
+                  <Image
+                    src="/main/elec-bulb.png"
+                    alt={category}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="typo-16-600 text-black">{category}</span>
+              </button>
+            </DrawerClose>
           ))}
         </div>
       </DrawerContent>

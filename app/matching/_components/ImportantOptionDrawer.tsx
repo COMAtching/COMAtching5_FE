@@ -1,22 +1,25 @@
+"use client";
+
 import React from "react";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ImportantOption } from "@/lib/types/matching";
+import { cn } from "@/lib/utils";
 
 interface ImportantOptionDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  trigger: React.ReactNode;
   onSelect: (option: ImportantOption) => void;
   selectedOption?: ImportantOption | null;
 }
 
 export default function ImportantOptionDrawer({
-  open,
-  onOpenChange,
+  trigger,
   onSelect,
   selectedOption,
 }: ImportantOptionDrawerProps) {
@@ -28,7 +31,8 @@ export default function ImportantOptionDrawer({
   ];
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer>
+      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent className="h-auto pb-10" showHandle={false}>
         <DrawerHeader className="text-left">
           <DrawerTitle className="typo-20-700 text-color-text-black">
@@ -40,23 +44,22 @@ export default function ImportantOptionDrawer({
         </DrawerHeader>
         <div className="mt-2 flex flex-col px-4">
           {options.map((option) => (
-            <button
-              key={option.value}
-              className={`border-color-gray-100 flex w-full items-center justify-between border-b py-4 transition-colors last:border-none ${
-                selectedOption === option.value
-                  ? "text-color-main-700 font-bold"
-                  : "text-color-text-black"
-              }`}
-              onClick={() => {
-                onSelect(option.value);
-                onOpenChange(false);
-              }}
-            >
-              <span className="typo-16-600">{option.label}</span>
-              {selectedOption === option.value && (
-                <div className="bg-color-main-700 h-2 w-2 rounded-full" />
-              )}
-            </button>
+            <DrawerClose asChild key={option.value}>
+              <button
+                className={cn(
+                  "border-color-gray-100 flex w-full items-center justify-between border-b py-4 transition-colors last:border-none",
+                  selectedOption === option.value
+                    ? "text-color-main-700 font-bold"
+                    : "text-black",
+                )}
+                onClick={() => onSelect(option.value)}
+              >
+                <span className="typo-16-600">{option.label}</span>
+                {selectedOption === option.value && (
+                  <div className="bg-color-main-700 h-2 w-2 rounded-full" />
+                )}
+              </button>
+            </DrawerClose>
           ))}
         </div>
       </DrawerContent>

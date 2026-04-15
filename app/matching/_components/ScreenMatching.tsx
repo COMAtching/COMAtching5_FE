@@ -2,6 +2,7 @@
 
 import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
+import Image from "next/image";
 import React, { useState } from "react";
 import MatchingAgeSection from "./MatchingAgeSection";
 import MatchingHobbySection from "./MatchingHobbySection";
@@ -36,7 +37,10 @@ const frequencyMapping: Record<string, ContactFrequency> = {
   적음: "RARE",
 };
 
+import { useItems } from "@/hooks/useItems";
+
 const ScreenMatching = () => {
+  const { data: itemData } = useItems();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
@@ -46,12 +50,42 @@ const ScreenMatching = () => {
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
 
+  const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
+  const hasExtraOption = !!(importantOption || isSameMajorExclude);
+
   const canSubmit = !!(
     selectedMBTI.length === 2 &&
     selectedAgeGroup &&
     selectedFrequency &&
-    selectedHobbyCategory
+    selectedHobbyCategory &&
+    matchingTicketCount > 0
   );
+
+  const bubbleText =
+    matchingTicketCount === 0 ? (
+      "사용할 수 있는 매칭권이 없어요."
+    ) : (
+      <div className="flex items-center gap-1">
+        <Image src="/main/coin.png" alt="coin" width={20} height={20} />
+        <span>매칭권 1</span>
+        {hasExtraOption && (
+          <>
+            <Image
+              src="/main/elec-bulb.png"
+              alt="bulb"
+              width={20}
+              height={20}
+              className="ml-1"
+            />
+            <span>아이템 1</span>
+          </>
+        )}
+        <span>소모</span>
+      </div>
+    );
+
+  const bubbleTextColor =
+    matchingTicketCount === 0 ? "text-color-gray-600" : "text-black";
 
   const calculateAgeOffsets = (
     group: string,
@@ -138,6 +172,8 @@ const ScreenMatching = () => {
       <MatchingSliderButton
         onConfirm={handleMatchingSubmit}
         isActive={canSubmit}
+        bubbleText={bubbleText}
+        bubbleTextColor={bubbleTextColor}
       />
     </main>
   );
