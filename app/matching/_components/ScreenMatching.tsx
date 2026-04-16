@@ -164,10 +164,10 @@ const ScreenMatching = () => {
           onSelect={(option) => setImportantOption(option)}
           selectedOption={importantOption}
           selections={{
-            MBTI: selectedMBTI || "미선택",
-            AGE: selectedAgeGroup || "미선택",
-            HOBBY: selectedHobbyCategory || "미선택",
-            CONTACT: selectedFrequency || "미선택",
+            MBTI: selectedMBTI || "",
+            AGE: selectedAgeGroup || "",
+            HOBBY: selectedHobbyCategory || "",
+            CONTACT: selectedFrequency || "",
           }}
         />
         <MatchingSameMajorSection

@@ -44,7 +44,7 @@ export default function MatchingImportantOptionSection({
 
   return (
     <ImportantOptionDrawer
-      onSelect={onSelect as (option: ImportantOption) => void}
+      onSelect={onSelect}
       selectedOption={selectedOption}
       selections={selections}
       trigger={
