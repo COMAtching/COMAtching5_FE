@@ -163,6 +163,12 @@ const ScreenMatching = () => {
         <MatchingImportantOptionSection
           onSelect={(option) => setImportantOption(option)}
           selectedOption={importantOption}
+          selections={{
+            MBTI: selectedMBTI || "미선택",
+            AGE: selectedAgeGroup || "미선택",
+            HOBBY: selectedHobbyCategory || "미선택",
+            CONTACT: selectedFrequency || "미선택",
+          }}
         />
         <MatchingSameMajorSection
           onSameMajorToggle={setIsSameMajorExclude}
