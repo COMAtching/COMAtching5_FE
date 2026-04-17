@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type BackButtonProps = {
   className?: string;
   onClick?: () => void;
-  text?: string;
+  text?: React.ReactNode;
 };
 
 export const BackButton = ({
@@ -33,7 +33,7 @@ export const BackButton = ({
         >
           <ChevronLeft className="text-[#282828]" size={20} />
         </button>
-        <span className="typo-20-700 text-center text-[#373737]">{text}</span>
+        <div className="flex flex-1 justify-center">{text}</div>
       </div>
     );
   }
