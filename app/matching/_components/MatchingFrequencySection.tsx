@@ -8,12 +8,13 @@ interface MatchingFrequencySectionProps {
   defaultValue?: string;
 }
 
+const OPTIONS = ["자주", "보통", "적음"];
+
 export default function MatchingFrequencySection({
   onFrequencySelect,
   defaultValue = "",
 }: MatchingFrequencySectionProps) {
   const [selected, setSelected] = React.useState(defaultValue);
-  const options = ["자주", "보통", "적음"];
 
   const handleSelect = (frequency: string) => {
     setSelected(frequency);
@@ -31,7 +32,7 @@ export default function MatchingFrequencySection({
         </div>
       </div>
       <div className="flex gap-1.5">
-        {options.map((option) => (
+        {OPTIONS.map((option) => (
           <ProfileButton
             key={option}
             selected={selected === option}

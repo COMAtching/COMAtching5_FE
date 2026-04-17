@@ -3,6 +3,7 @@
 import { Check, Delete } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 import { ImportantOption } from "@/lib/types/matching";
 import ImportantOptionDrawer from "./ImportantOptionDrawer";
@@ -48,7 +49,7 @@ export default function MatchingImportantOptionSection({
       selectedOption={selectedOption}
       selections={selections}
       trigger={
-        <div className="border-color-gray-100 flex w-full cursor-pointer items-center justify-between border-b pb-5 text-left">
+        <button className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5 text-left outline-none">
           <div className="flex flex-col gap-1">
             <div className="flex items-end gap-1">
               <h2 className="typo-20-700 text-color-text-black">
@@ -64,15 +65,18 @@ export default function MatchingImportantOptionSection({
           </div>
           {/* 가격 뱃지 / 선택 완료 */}
           {selectedOption ? (
-            <div
-              className="bg-pink-gradient relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border border-[#F57DB2]"
-              onClick={!showCheck ? handleDelete : undefined}
+            <button
+              className="bg-pink-gradient relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border border-[#F57DB2] transition-transform active:scale-95 disabled:opacity-50"
+              onClick={handleDelete}
+              disabled={showCheck}
+              aria-label="중요한 옵션 삭제"
             >
               {/* Check 아이콘 */}
               <div
-                className={`absolute flex items-center justify-center transition-opacity duration-300 ${
-                  showCheck ? "opacity-100" : "opacity-0"
-                }`}
+                className={cn(
+                  "absolute flex items-center justify-center transition-opacity duration-300",
+                  showCheck ? "opacity-100" : "opacity-0",
+                )}
               >
                 <Check
                   className="h-[14px] w-[14px] text-[#F57DB2]"
@@ -82,16 +86,17 @@ export default function MatchingImportantOptionSection({
 
               {/* Delete 아이콘 */}
               <div
-                className={`absolute flex items-center justify-center transition-opacity duration-300 ${
-                  !showCheck ? "opacity-100" : "opacity-0"
-                }`}
+                className={cn(
+                  "absolute flex items-center justify-center transition-opacity duration-300",
+                  !showCheck ? "opacity-100" : "opacity-0",
+                )}
               >
                 <Delete
                   className="h-[20px] w-[20px] text-[#F57DB2]"
                   strokeWidth={2}
                 />
               </div>
-            </div>
+            </button>
           ) : (
             <div className="border-color-gray-100 flex h-9 w-[86px] items-center justify-center gap-[5px] rounded-[36px] border bg-white px-2">
               <Image
@@ -106,7 +111,7 @@ export default function MatchingImportantOptionSection({
               </span>
             </div>
           )}
-        </div>
+        </button>
       }
     />
   );

@@ -1,3 +1,4 @@
+"use client";
 import { ArrowUpToLine } from "lucide-react";
 import React from "react";
 import { createPortal } from "react-dom";
@@ -19,6 +20,13 @@ interface ImportantOptionDrawerProps {
   selectedOption?: ImportantOption | null;
   selections?: Record<ImportantOption, string>;
 }
+
+const OPTIONS: { label: string; value: ImportantOption }[] = [
+  { label: "MBTI", value: "MBTI" },
+  { label: "관심사", value: "HOBBY" },
+  { label: "나이", value: "AGE" },
+  { label: "연락빈도", value: "CONTACT" },
+];
 
 function TypingText({
   text,
@@ -82,16 +90,10 @@ export default function ImportantOptionDrawer({
   const isMounted = React.useRef(false);
 
   const dropZoneRef = React.useRef<HTMLDivElement>(null);
+  const dropZoneRectRef = React.useRef<DOMRect | null>(null);
 
-  const options: { label: string; value: ImportantOption }[] = [
-    { label: "MBTI", value: "MBTI" },
-    { label: "관심사", value: "HOBBY" },
-    { label: "나이", value: "AGE" },
-    { label: "연락빈도", value: "CONTACT" },
-  ];
-
-  const selectedItem = options.find((opt) => opt.value === selectedOption);
-  const remainingOptions = options.filter(
+  const selectedItem = OPTIONS.find((opt) => opt.value === selectedOption);
+  const remainingOptions = OPTIONS.filter(
     (opt) => opt.value !== selectedOption,
   );
 
@@ -119,8 +121,8 @@ export default function ImportantOptionDrawer({
     const y = e.clientY;
 
     let isOverZone = false;
-    if (dropZoneRef.current) {
-      const rect = dropZoneRef.current.getBoundingClientRect();
+    const rect = dropZoneRectRef.current;
+    if (rect) {
       isOverZone =
         x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
@@ -152,7 +154,7 @@ export default function ImportantOptionDrawer({
     const selection = selections[value];
     if (!selection || selection === "" || selection === "선택 전") {
       alert(
-        `${options.find((o) => o.value === value)?.label} 옵션을 먼저 선택해 주세요!`,
+        `${OPTIONS.find((o) => o.value === value)?.label} 옵션을 먼저 선택해 주세요!`,
       );
       return;
     }
@@ -160,6 +162,11 @@ export default function ImportantOptionDrawer({
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;
+
+    // 드롭 존 위치 미리 계산 (Reflow 방지)
+    if (dropZoneRef.current) {
+      dropZoneRectRef.current = dropZoneRef.current.getBoundingClientRect();
+    }
 
     setDragState({
       option: value,
@@ -270,6 +277,7 @@ export default function ImportantOptionDrawer({
                   onPointerDown={handlePointerDown}
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
+                  onClick={onSelect}
                 />
               ))}
             </div>
@@ -304,7 +312,7 @@ export default function ImportantOptionDrawer({
                     <div className="flex items-end gap-2">
                       <span className="typo-20-600 text-color-text-black font-bold">
                         {
-                          options.find((o) => o.value === dragState.option)
+                          OPTIONS.find((o) => o.value === dragState.option)
                             ?.label
                         }
                       </span>

@@ -24,12 +24,12 @@ interface MatchingHobbySectionProps {
   selectedCategory?: MatchingInterestCategory | "";
 }
 
+const CATEGORIES = Object.keys(HOBBIES) as HobbyCategory[];
+
 export default function MatchingHobbySection({
   onSelect,
   selectedCategory,
 }: MatchingHobbySectionProps) {
-  const categories = Object.keys(HOBBIES) as HobbyCategory[];
-
   return (
     <Drawer>
       <div className="border-color-gray-100 flex w-full flex-col gap-4 border-b pb-5">

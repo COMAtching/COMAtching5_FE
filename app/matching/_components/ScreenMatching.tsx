@@ -38,9 +38,11 @@ const frequencyMapping: Record<string, ContactFrequency> = {
 };
 
 import { useItems } from "@/hooks/useItems";
+import { useMatching } from "@/hooks/useMatching";
 
 const ScreenMatching = () => {
   const { data: itemData } = useItems();
+  const { mutate: match, isPending } = useMatching();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [selectedFrequency, setSelectedFrequency] = useState("");
@@ -130,8 +132,7 @@ const ScreenMatching = () => {
       maxAgeOffset: ageInfo.max,
     };
 
-    console.log("Matching Payload:", payload);
-    alert("매칭을 시작합니다!");
+    match(payload);
   };
 
   return (
@@ -178,7 +179,8 @@ const ScreenMatching = () => {
 
       <MatchingSliderButton
         onConfirm={handleMatchingSubmit}
-        isActive={canSubmit}
+        isActive={canSubmit && !isPending}
+        isLoading={isPending}
         bubbleText={bubbleText}
         bubbleTextColor={bubbleTextColor}
       />

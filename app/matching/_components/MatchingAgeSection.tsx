@@ -7,12 +7,13 @@ interface MatchingAgeSectionProps {
   defaultValue?: string;
 }
 
+const AGE_GROUPS = ["연하", "동갑", "연상"];
+
 export default function MatchingAgeSection({
   onAgeGroupSelect,
   defaultValue = "",
 }: MatchingAgeSectionProps) {
   const [selected, setSelected] = React.useState(defaultValue);
-  const ageGroups = ["연하", "동갑", "연상"];
 
   const handleSelect = (group: string) => {
     setSelected(group);
@@ -30,7 +31,7 @@ export default function MatchingAgeSection({
         </div>
       </div>
       <div className="flex gap-1.5">
-        {ageGroups.map((group) => (
+        {AGE_GROUPS.map((group) => (
           <ProfileButton
             key={group}
             selected={selected === group}
