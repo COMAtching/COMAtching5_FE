@@ -4,8 +4,8 @@ import Link from "next/link";
 
 const MatchingButton = () => {
   return (
-    <button
-      type="button"
+    <Link
+      href="/matching"
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
@@ -22,7 +22,7 @@ const MatchingButton = () => {
       <span className="typo-16-500 text-gray-400">
         현재 <span className="text-color-flame-700">740명</span> 참여중이에요!
       </span>
-    </button>
+    </Link>
   );
 };
 

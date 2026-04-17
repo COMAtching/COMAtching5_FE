@@ -8,6 +8,22 @@ interface MatchingMBTISectionProps {
   defaultValue?: string;
 }
 
+const OPPOSITES: Record<string, string> = {
+  E: "I",
+  I: "E",
+  S: "N",
+  N: "S",
+  T: "F",
+  F: "T",
+  J: "P",
+  P: "J",
+};
+
+const ROWS = [
+  ["E", "S", "F", "P"],
+  ["I", "N", "T", "J"],
+];
+
 export default function MatchingMBTISection({
   onMBTISelect,
   defaultValue = "",
@@ -16,17 +32,6 @@ export default function MatchingMBTISection({
   const [selected, setSelected] = React.useState<string[]>(
     defaultValue.split("").filter(Boolean),
   );
-
-  const opposites: Record<string, string> = {
-    E: "I",
-    I: "E",
-    S: "N",
-    N: "S",
-    T: "F",
-    F: "T",
-    J: "P",
-    P: "J",
-  };
 
   const handleSelect = (char: string) => {
     const newSelection = [...selected];
@@ -38,7 +43,7 @@ export default function MatchingMBTISection({
     } else {
       // 2개 미만인 경우에만 새로 선택 가능
       if (newSelection.length < 2) {
-        const oppositeChar = opposites[char];
+        const oppositeChar = OPPOSITES[char];
         const oppositeIndex = newSelection.indexOf(oppositeChar);
 
         if (oppositeIndex > -1) {
@@ -49,7 +54,7 @@ export default function MatchingMBTISection({
         }
       } else {
         // 이미 2개가 선택된 상태에서 새로운(교체 대상도 아닌) MBTI를 누른 경우
-        const oppositeChar = opposites[char];
+        const oppositeChar = OPPOSITES[char];
         const oppositeIndex = newSelection.indexOf(oppositeChar);
 
         if (oppositeIndex > -1) {
@@ -65,11 +70,6 @@ export default function MatchingMBTISection({
     onMBTISelect(newSelection.join(""));
   };
 
-  const rows = [
-    ["E", "S", "F", "P"],
-    ["I", "N", "T", "J"],
-  ];
-
   return (
     <div className="border-color-gray-100 flex flex-col gap-4 border-b pb-5">
       <div className="flex items-center justify-between">
@@ -82,7 +82,7 @@ export default function MatchingMBTISection({
       </div>
 
       <div className="flex flex-col gap-2">
-        {rows.map((row, rowIndex) => (
+        {ROWS.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-1.5">
             {row.map((char) => (
               <ProfileButton

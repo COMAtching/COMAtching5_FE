@@ -20,8 +20,8 @@ export default function ProfileButton({
       className={cn(
         "typo-20-700 flex h-12 flex-1 items-center justify-center rounded-full transition-colors",
         selected
-          ? "bg-pink-gradient border border-pink-700 text-pink-700"
-          : "bg-[#FFFFFF4D] text-gray-300",
+          ? "bg-pink-gradient border-color-pink-700 text-color-pink-700 border"
+          : "bg-color-gray-0-a30 text-color-gray-300",
       )}
       onClick={onClick}
     >
