@@ -65,7 +65,7 @@ export default function MatchingHobbySection({
             <DrawerClose asChild>
               <button
                 type="button"
-                className="typo-16-500 flex items-center text-center text-[#999999]"
+                className="typo-16-500 text-color-text-caption3 flex items-center text-center"
               >
                 닫기
               </button>
@@ -84,7 +84,7 @@ export default function MatchingHobbySection({
                 className={cn(
                   "flex h-[148px] w-[148px] flex-col items-center justify-center gap-2 rounded-full border transition-all",
                   selectedCategory === category
-                    ? "bg-pink-gradient border-[#F57DB2]"
+                    ? "bg-pink-gradient border-color-pink-700"
                     : "border-color-gray-100 bg-white",
                 )}
               >
@@ -96,7 +96,9 @@ export default function MatchingHobbySection({
                     className="object-contain"
                   />
                 </div>
-                <span className="typo-16-600 text-black">{category}</span>
+                <span className="typo-16-600 text-color-text-black">
+                  {category}
+                </span>
               </button>
             </DrawerClose>
           ))}

@@ -192,14 +192,14 @@ export default function ImportantOptionDrawer({
           <DrawerHeader className="gap-4 px-0 pt-6 pb-0">
             <div className="relative flex items-center justify-between">
               <div className="w-[40px]" />
-              <DrawerTitle className="typo-16-700 flex-1 text-center font-bold text-[#1A1A1A]">
+              <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
                 중요한 옵션 선택
               </DrawerTitle>
-              <DrawerClose className="w-[40px] text-right text-[16px] leading-[19px] font-medium text-[#999999]">
+              <DrawerClose className="typo-16-500 text-color-text-caption3 w-[40px] text-right">
                 닫기
               </DrawerClose>
             </div>
-            <p className="text-center text-[14px] leading-[17px] font-medium text-[#999999]">
+            <p className="typo-14-500 text-color-text-caption3 text-center">
               가장 중요하게 생각하는 옵션을 하나 선택하세요.
               <br />
               선택한 조건을 반드시 만족하는 사람만 추천해 줄 거에요!
@@ -218,18 +218,18 @@ export default function ImportantOptionDrawer({
               {!selectedOption ? (
                 <div className="pointer-events-none flex flex-col items-center gap-[12px]">
                   <ArrowUpToLine
-                    className="h-6 w-6 text-[#B3B3B3]"
+                    className="text-color-text-disabled h-6 w-6"
                     strokeWidth={2}
                   />
-                  <span className="text-center text-[14px] leading-[17px] font-medium text-[#B3B3B3]">
-                    중요한 옵션을 위에 올려놓으세요!
+                  <span className="typo-14-500 text-color-text-disabled text-center">
+                    중요한 옵션인 버튼을 끌어올려 보세요!
                   </span>
                 </div>
               ) : (
                 <div className="relative flex w-full flex-col items-end gap-1 pt-3">
                   {typingStep >= 1 && (
-                    <div className="flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] bg-gradient-to-r from-[#FF4D61] to-[#FF775E] px-3 py-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-                      <span className="text-right text-[14px] leading-[130%] font-medium text-white">
+                    <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
+                      <span className="typo-14-500 text-right text-white">
                         <TypingText
                           key={selectedOption}
                           text="Comatching AI 야, 이 옵션은 꼭 지켜줘!"
@@ -239,14 +239,8 @@ export default function ImportantOptionDrawer({
                     </div>
                   )}
                   {typingStep >= 2 && (
-                    <div
-                      className="mt-1 flex w-full items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-4 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]"
-                      style={{
-                        background:
-                          "conic-gradient(from 158.66deg at 64.06% -102.34%, #000000 0deg, #FF775E 0.04deg, #FF4D61 170.63deg, #E83ABC 360deg)",
-                      }}
-                    >
-                      <span className="w-full text-right text-[18px] leading-[130%] font-semibold text-white">
+                    <div className="bg-button-primary mt-1 flex w-full items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-4 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]">
+                      <span className="typo-18-600 w-full text-right text-white">
                         <TypingText
                           key={selectedOption}
                           text={`${selectedItem?.label}는 ${selections[selectedOption]} 이면 좋겠어!`}
@@ -257,7 +251,7 @@ export default function ImportantOptionDrawer({
                   {typingStep >= 2 && (
                     <button
                       onClick={() => onSelect(null)}
-                      className="animate-in fade-in mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] bg-[#E5E5E5] px-3 py-[6px] text-[12px] font-bold text-[#808080] transition-colors duration-500 active:bg-gray-300"
+                      className="animate-in fade-in bg-color-gray-100 typo-12-700 text-color-text-caption2 mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] px-3 py-[6px] transition-colors duration-500 active:bg-gray-300"
                     >
                       선택 취소
                     </button>
@@ -285,7 +279,7 @@ export default function ImportantOptionDrawer({
 
           <div className="touch-pan-y">
             <DrawerClose asChild>
-              <button className="flex h-[48px] w-full items-center justify-center rounded-[16px] border-[0.8px] border-white/30 bg-[#1A1A1A] text-[20px] font-bold text-white transition-transform active:scale-[0.98]">
+              <button className="bg-color-main-900 typo-20-700 flex h-[48px] w-full items-center justify-center rounded-[16px] border-[0.8px] border-white/30 text-white transition-transform active:scale-[0.98]">
                 NEXT
               </button>
             </DrawerClose>
@@ -305,12 +299,12 @@ export default function ImportantOptionDrawer({
                 }}
               >
                 <div
-                  className="flex w-full flex-col items-start justify-center gap-1 rounded-lg border-2 border-[#FF4D61] bg-white px-[17px] opacity-95 shadow-[0px_10px_30px_rgba(0,0,0,0.25)]"
+                  className="border-color-brand-primary-flame flex w-full flex-col items-start justify-center gap-1 rounded-lg border-2 bg-white px-[17px] opacity-95 shadow-[0px_10px_30px_rgba(0,0,0,0.25)]"
                   style={{ height: `${dragState.height}px` }}
                 >
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-end gap-2">
-                      <span className="typo-20-600 text-color-text-black font-bold">
+                      <span className="typo-20-700 text-color-text-black">
                         {
                           OPTIONS.find((o) => o.value === dragState.option)
                             ?.label
@@ -318,9 +312,9 @@ export default function ImportantOptionDrawer({
                       </span>
                     </div>
                     <div className="flex flex-col gap-[2px]">
-                      <div className="h-[2px] w-4 rounded-[1px] bg-[#CCCCCC]" />
-                      <div className="h-[2px] w-4 rounded-[1px] bg-[#CCCCCC]" />
-                      <div className="h-[2px] w-4 rounded-[1px] bg-[#CCCCCC]" />
+                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
+                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
+                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
                     </div>
                   </div>
                 </div>

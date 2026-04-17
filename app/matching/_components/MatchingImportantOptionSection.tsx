@@ -66,7 +66,7 @@ export default function MatchingImportantOptionSection({
           {/* 가격 뱃지 / 선택 완료 */}
           {selectedOption ? (
             <button
-              className="bg-pink-gradient relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border border-[#F57DB2] transition-transform active:scale-95 disabled:opacity-50"
+              className="bg-pink-gradient border-color-pink-700 relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border transition-transform active:scale-95 disabled:opacity-50"
               onClick={handleDelete}
               disabled={showCheck}
               aria-label="중요한 옵션 삭제"
@@ -79,7 +79,7 @@ export default function MatchingImportantOptionSection({
                 )}
               >
                 <Check
-                  className="h-[14px] w-[14px] text-[#F57DB2]"
+                  className="text-color-pink-700 h-[14px] w-[14px]"
                   strokeWidth={3}
                 />
               </div>
@@ -92,7 +92,7 @@ export default function MatchingImportantOptionSection({
                 )}
               >
                 <Delete
-                  className="h-[20px] w-[20px] text-[#F57DB2]"
+                  className="text-color-pink-700 h-[20px] w-[20px]"
                   strokeWidth={2}
                 />
               </div>
