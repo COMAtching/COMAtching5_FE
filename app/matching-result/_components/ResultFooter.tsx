@@ -85,6 +85,7 @@ const ResultFooter = () => {
         onMouseLeave={handleHoldEnd}
         onTouchStart={handleHoldStart}
         onTouchEnd={handleHoldEnd}
+        aria-label="같은 조건으로 한 번 더 뽑기. 3초간 길게 누르면 실행됩니다."
         className="flex w-full flex-row items-center justify-center gap-2 rounded-[15px] bg-linear-to-r from-[#FF4D61] to-[#FF775E] px-[22px] py-4 text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px] transition-all select-none active:scale-[0.98]"
       >
         {!isHolding && !isTriggered && (

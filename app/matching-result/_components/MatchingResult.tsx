@@ -1,17 +1,12 @@
-import { ADVANTAGES } from "@/lib/constants/advantages";
-import { HOBBIES } from "@/lib/constants/hobbies";
+import {
+  ALL_ADVANTAGES,
+  ALL_HOBBIES,
+  findWithEmoji,
+} from "@/lib/utils/matching";
 import Image from "next/image";
 import React from "react";
 
 const MatchingResult = () => {
-  // 백엔드에서 내려오는 텍스트와 상수를 매칭하여 이모지를 포함한 전체 문자열을 반환하는 헬퍼 함수
-  const allHobbies = Object.values(HOBBIES).flat();
-  const allAdvantages = Object.values(ADVANTAGES).flat();
-
-  const findWithEmoji = (list: readonly string[] | string[], text: string) => {
-    return list.find((item) => item.includes(text)) || text;
-  };
-
   // 임시 데이터 (상수에 존재하는 값들로 구성)
   const data = {
     nickname: "겨울이오길",
@@ -101,13 +96,13 @@ const MatchingResult = () => {
           취미
         </span>
         <div className="flex w-full flex-row flex-wrap items-start gap-1 py-1">
-          {data.hobbies.map((hobby, index) => (
+          {data.hobbies.map((hobby) => (
             <div
-              key={index}
+              key={hobby}
               className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B3]/10 px-3 py-2 backdrop-blur-[50px]"
             >
               <span className="typo-14-500 text-black">
-                {findWithEmoji(allHobbies, hobby)}
+                {findWithEmoji(ALL_HOBBIES, hobby)}
               </span>
             </div>
           ))}
@@ -120,13 +115,13 @@ const MatchingResult = () => {
           장점
         </span>
         <div className="flex w-full flex-row flex-wrap items-start gap-1 py-1">
-          {data.strengths.map((strength, index) => (
+          {data.strengths.map((strength) => (
             <div
-              key={index}
+              key={strength}
               className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B3]/10 px-3 py-2 backdrop-blur-[50px]"
             >
               <span className="typo-14-500 text-black">
-                {findWithEmoji(allAdvantages, strength)}
+                {findWithEmoji(ALL_ADVANTAGES, strength)}
               </span>
             </div>
           ))}
