@@ -5,7 +5,7 @@ const ResultFooter = () => {
   const [timeLeft, setTimeLeft] = useState(3);
   const [isHolding, setIsHolding] = useState(false);
   const [isTriggered, setIsTriggered] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleHoldStart = (e: React.MouseEvent | React.TouchEvent) => {
     // 롱프레스 시 브라우저 기본 컨텍스트 메뉴 등이 뜨지 않도록 방지 (모바일 대응)
