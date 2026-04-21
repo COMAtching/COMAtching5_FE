@@ -2,6 +2,7 @@ import { useItems } from "@/hooks/useItems";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
+import ChargeDrawer from "./ChargeDrawer";
 
 interface MyCoinSectionProps {
   className?: string;
@@ -68,9 +69,13 @@ const MyCoinSection = ({ className }: MyCoinSectionProps) => {
           {optionTicketCount}개
         </span>
       </div>
-      <button className="bg-milky-pink typo-11-700 h-6.5 w-14.5 rounded-full text-white">
-        구매하기
-      </button>
+      <ChargeDrawer
+        trigger={
+          <button className="bg-milky-pink typo-11-700 h-6.5 w-14.5 rounded-full text-white">
+            충전하기
+          </button>
+        }
+      />
     </section>
   );
 };
