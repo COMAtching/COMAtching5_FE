@@ -127,3 +127,10 @@ export const CHARGE_HISTORY = [
     statusLabel: "이벤트 증정",
   },
 ] as const;
+
+/* ── 탭 정의 ── */
+export const TABS = [
+  { label: "상점", title: "상점" },
+  { label: "충전내역", title: "충전내역" },
+  { label: "입금자명 설정", title: "입금자명 설정" },
+] as const;

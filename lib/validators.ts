@@ -14,3 +14,8 @@ export const validatePasswordPattern = (password: string): boolean => {
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]+$/;
   return passwordRegex.test(password);
 };
+
+export const isValidDepositorName = (text: string): boolean => {
+  const regex = /^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]*$/;
+  return regex.test(text);
+};

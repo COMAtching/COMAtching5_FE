@@ -2,9 +2,17 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { isValidDepositorName } from "@/lib/validators";
 
 export default function DepositorNameContent() {
   const [name, setName] = React.useState("");
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (isValidDepositorName(value)) {
+      setName(value);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-[23px] pt-8">
@@ -21,7 +29,7 @@ export default function DepositorNameContent() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
             placeholder="이름을 입력해주세요"
             className="typo-16-500 w-full bg-transparent text-center text-[#1A1A1A] outline-none placeholder:text-[#B3B3B3]"
             maxLength={6}

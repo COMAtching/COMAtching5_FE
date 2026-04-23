@@ -13,17 +13,12 @@ import { cn } from "@/lib/utils";
 import ShopContent from "@/components/common/charge/ShopContent";
 import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryContent";
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
+import ChargeTabs from "@/components/common/charge/ChargeTabs";
+import { TABS } from "@/lib/constants/charge";
 
 interface ChargeDrawerProps {
   trigger: React.ReactNode;
 }
-
-/* ── 탭 정의 ── */
-const TABS = [
-  { label: "상점", title: "상점" },
-  { label: "충전내역", title: "충전내역" },
-  { label: "입금자명 설정", title: "입금자명 설정" },
-] as const;
 
 /* ── 탭별 콘텐츠 ── */
 const TAB_CONTENT = [ShopContent, ChargeHistoryContent, DepositorNameContent];
@@ -57,24 +52,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
           </DrawerHeader>
 
           {/* ── 탭 칩 ── */}
-          <ul className="flex shrink-0 items-start gap-2 px-6 pt-6">
-            {TABS.map((tab, i) => (
-              <li key={tab.label}>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab(i)}
-                  className={cn(
-                    "typo-14-500 flex h-[33px] items-center justify-center rounded-full px-4",
-                    activeTab === i
-                      ? "bg-[#1A1A1A] text-white"
-                      : "border border-[#E5E5E5] bg-[#F5F5F5] text-[#666666]",
-                  )}
-                >
-                  {tab.label}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <ChargeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {/* ── Scrollable Content ── */}
           <div className="flex-1 overflow-y-auto px-6 pb-8">
