@@ -34,6 +34,7 @@ export const QUICK_BUNDLES = [
     description: "뽑기권 5개+옵션권 2개",
     bonus: "옵션권 1개 무료 증정!",
     price: "5,000원",
+    priceValue: 5000,
   },
   {
     title: "슈퍼 번들",
@@ -41,48 +42,66 @@ export const QUICK_BUNDLES = [
     description: "뽑기권 10개+옵션권 10개",
     bonus: "옵션권 5개 무료 증정!",
     price: "10,000원",
+    priceValue: 10000,
   },
 ] as const;
 
-/* ── 가격 상수 ── */
-export const ITEM_PRICES = {
-  matching: 1000,
-  option: 200,
-} as const;
+/* ── API 응답 데이터 타입 ── */
+export interface Reward {
+  itemType: "MATCHING_TICKET" | "OPTION_TICKET";
+  itemName: string;
+  quantity: number;
+}
 
-/* ── 전체(개별) 아이템 ── */
-export const INDIVIDUAL_ITEMS = [
-  {
-    label: "뽑기권 1개",
-    price: `${ITEM_PRICES.matching.toLocaleString()}원`,
-  },
-  {
-    label: "옵션권 1개",
-    price: `${ITEM_PRICES.option.toLocaleString()}원`,
-  },
-] as const;
+export interface ShopItemAPI {
+  id: number;
+  name: string;
+  price: number;
+  rewards: Reward[];
+}
 
-/* ── 번들 아이템 ── */
-export const BUNDLE_ITEMS = [
+/* ── 전체 아이템 (API 더미 데이터) ── */
+export const SHOP_ITEMS_API: ShopItemAPI[] = [
   {
-    title: "미니 번들",
-    description: "옵션권 3개",
-    bonus: "옵션권 1개 무료 증정!",
-    price: "2,500원",
+    id: 1,
+    name: "뽑기권 1개",
+    price: 1000,
+    rewards: [{ itemType: "MATCHING_TICKET", itemName: "매칭권", quantity: 1 }],
   },
   {
-    title: "실속 번들",
-    description: "뽑기권 5개+옵션권 2개",
-    bonus: "옵션권 1개 무료 증정!",
-    price: "5,000원",
+    id: 2,
+    name: "옵션권 1개",
+    price: 200,
+    rewards: [{ itemType: "OPTION_TICKET", itemName: "옵션권", quantity: 1 }],
   },
   {
-    title: "슈퍼 번들",
-    description: "뽑기권 10개+옵션권 10개",
-    bonus: "옵션권 5개 무료 증정!",
-    price: "10,000원",
+    id: 10,
+    name: "미니 번들",
+    price: 2500,
+    rewards: [
+      { itemType: "OPTION_TICKET", itemName: "옵션권", quantity: 3 },
+      { itemType: "OPTION_TICKET", itemName: "보너스 옵션권", quantity: 1 },
+    ],
   },
-] as const;
+  {
+    id: 11,
+    name: "실속 번들",
+    price: 5000,
+    rewards: [
+      { itemType: "MATCHING_TICKET", itemName: "매칭권", quantity: 5 },
+      { itemType: "OPTION_TICKET", itemName: "옵션권", quantity: 2 },
+    ],
+  },
+  {
+    id: 12,
+    name: "슈퍼 번들",
+    price: 10000,
+    rewards: [
+      { itemType: "MATCHING_TICKET", itemName: "매칭권", quantity: 10 },
+      { itemType: "OPTION_TICKET", itemName: "옵션권", quantity: 10 },
+    ],
+  },
+];
 
 /* ── 이용안내 및 사업자 정보 ── */
 export const USAGE_INFO = `충전된 포인트의 소멸시효 기한은 충전 후 5년입니다.
@@ -134,3 +153,10 @@ export const TABS = [
   { label: "충전내역", title: "충전내역" },
   { label: "입금자명 설정", title: "입금자명 설정" },
 ] as const;
+
+/* ── 입금 계좌 정보 (상수) ── */
+export const BANK_INFO = {
+  bank: "토스뱅크",
+  account: "1002-4809-1716",
+  holder: "천승환",
+} as const;
