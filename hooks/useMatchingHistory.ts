@@ -13,18 +13,17 @@ export interface MatchingPartner {
   email: string;
   nickname: string;
   gender: Gender;
-  birthDate: string;
+  birthDate: string | null;
   mbti: MBTI;
   intro: string | null;
-  profileImageKey: string;
+  profileImageUrl: string | null;
   socialType: SocialType | null;
   socialAccountId: string | null;
   university: string;
   major: string;
-  contactFrequency: ContactFrequency;
-  hobbies: Hobby[];
-  tags: { tag: string }[] | null;
-  song: string | null;
+  contactFrequency: string; // User JSON shows "적음", "자주", "보통" in Korean, but the type was ContactFrequency. I'll check ContactFrequency type.
+  hobbies: { category: string; name: string }[];
+  intros: { question: string; answer: string }[];
 }
 
 export interface MatchingHistoryItem {
