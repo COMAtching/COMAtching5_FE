@@ -48,12 +48,20 @@ const ScreenMainPage = () => {
   // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
   const profileList: ProfileData[] =
     historyData?.data.content.map(({ partner }) => ({
-      ...partner,
-      // API에서 필드명이 변경되었거나 null로 올 수 있는 필드들만 안전하게 변환
-      profileImageUrl: partner.profileImageKey,
+      memberId: partner.memberId,
+      nickname: partner.nickname,
+      gender: partner.gender,
+      birthDate: partner.birthDate ?? undefined,
+      mbti: partner.mbti,
       intro: partner.intro ?? undefined,
+      profileImageUrl:
+        partner.profileImageUrl ?? partner.profileImageKey ?? undefined,
       socialType: partner.socialType ?? undefined,
       socialAccountId: partner.socialAccountId ?? "",
+      university: partner.university,
+      major: partner.major,
+      contactFrequency: partner.contactFrequency as ContactFrequency,
+      hobbies: partner.hobbies.map((h) => h.name),
       tags: partner.tags ?? undefined,
       song: partner.song ?? undefined,
     })) || [];

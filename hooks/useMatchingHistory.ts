@@ -17,12 +17,15 @@ export interface MatchingPartner {
   mbti: MBTI;
   intro: string | null;
   profileImageUrl: string | null;
+  profileImageKey: string | null;
   socialType: SocialType | null;
   socialAccountId: string | null;
   university: string;
   major: string;
-  contactFrequency: string; // User JSON shows "적음", "자주", "보통" in Korean, but the type was ContactFrequency. I'll check ContactFrequency type.
+  contactFrequency: string;
   hobbies: { category: string; name: string }[];
+  tags: { tag: string }[] | null;
+  song: string | null;
   intros: { question: string; answer: string }[];
 }
 
