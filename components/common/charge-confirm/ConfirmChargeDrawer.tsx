@@ -29,7 +29,7 @@ interface ConfirmChargeDrawerProps {
 export default function ConfirmChargeDrawer({
   trigger,
   amount,
-  depositorName = "박승원",
+  depositorName = "천승환",
 }: ConfirmChargeDrawerProps) {
   const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(depositorName);
@@ -126,7 +126,7 @@ export default function ConfirmChargeDrawer({
                         onKeyDown={(e) => {
                           if (e.key === "Enter") setIsEditingName(false);
                         }}
-                        className="typo-16-700 text-color-gray-900 h-[24px] w-[50px] bg-transparent text-center outline-none"
+                        className="typo-16-700 text-color-gray-900 h-[24px] w-[90px] bg-transparent text-center outline-none"
                         maxLength={6}
                       />
                     </div>
@@ -185,7 +185,7 @@ export default function ConfirmChargeDrawer({
             <div className="flex w-full flex-col items-center gap-4">
               {/* CTA 버튼 */}
               <Button disabled={!agreed} onClick={handleConfirm}>
-                충전 완료 확인
+                충전 요청 보내기
               </Button>
 
               {/* Toss 링크 */}

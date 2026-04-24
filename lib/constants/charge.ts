@@ -120,6 +120,15 @@ export const BUSINESS_INFO =
 export const CHARGE_HISTORY = [
   {
     id: 1,
+    date: "2024.04.12",
+    orderId: "20240412-0051",
+    points: "뽑기권 10개",
+    paymentAmount: "10,000원",
+    status: "success",
+    statusLabel: "결제완료",
+  },
+  {
+    id: 2,
     date: "2024.03.20",
     orderId: "20240320-0001",
     points: "뽑기권 5개",
@@ -128,7 +137,7 @@ export const CHARGE_HISTORY = [
     statusLabel: "결제완료",
   },
   {
-    id: 2,
+    id: 3,
     date: "2024.03.18",
     orderId: "20240318-0042",
     points: "옵션권 10개",
@@ -137,13 +146,40 @@ export const CHARGE_HISTORY = [
     statusLabel: "결제취소",
   },
   {
-    id: 3,
+    id: 4,
     date: "2024.03.15",
     orderId: "20240315-0012",
     points: "뽑기권 1개 (이벤트)",
     paymentAmount: "0원",
     status: "event",
     statusLabel: "이벤트 증정",
+  },
+  {
+    id: 5,
+    date: "2024.03.10",
+    orderId: "20240310-0089",
+    points: "옵션권 20개",
+    paymentAmount: "10,000원",
+    status: "success",
+    statusLabel: "결제완료",
+  },
+  {
+    id: 6,
+    date: "2024.03.05",
+    orderId: "20240305-0022",
+    points: "뽑기권 30개",
+    paymentAmount: "30,000원",
+    status: "success",
+    statusLabel: "결제완료",
+  },
+  {
+    id: 7,
+    date: "2024.02.28",
+    orderId: "20240228-0015",
+    points: "옵션권 5개",
+    paymentAmount: "2,500원",
+    status: "cancelled",
+    statusLabel: "결제취소",
   },
 ] as const;
 

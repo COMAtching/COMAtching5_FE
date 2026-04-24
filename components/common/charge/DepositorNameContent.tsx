@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { isValidDepositorName } from "@/lib/validators";
+import Button from "@/components/ui/Button";
 
 export default function DepositorNameContent() {
   const [name, setName] = React.useState("");
@@ -15,7 +16,7 @@ export default function DepositorNameContent() {
   };
 
   return (
-    <div className="flex flex-col gap-[23px] pt-8">
+    <div className="flex h-full flex-col gap-[23px] pt-8 pb-[100px]">
       {/* ── 입금자명 입력 ── */}
       <div className="flex flex-col gap-2">
         <span className="typo-14-500 text-[#666666]">입금자명</span>
@@ -31,7 +32,7 @@ export default function DepositorNameContent() {
             value={name}
             onChange={handleNameChange}
             placeholder="이름을 입력해주세요"
-            className="typo-16-500 w-full bg-transparent text-center text-[#1A1A1A] outline-none placeholder:text-[#B3B3B3]"
+            className="typo-16-500 w-full bg-transparent text-left text-[#1A1A1A] outline-none placeholder:text-[#B3B3B3]"
             maxLength={6}
           />
         </div>
@@ -72,6 +73,10 @@ export default function DepositorNameContent() {
           </p>
         </div>
       </div>
+
+      <Button fixed bottom={32} disabled={!name || name.length < 2}>
+        입금자명 설정하기
+      </Button>
     </div>
   );
 }
