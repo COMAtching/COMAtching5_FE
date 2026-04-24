@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { ICON_SIZE } from "@/lib/constants/charge";
+import ConfirmChargeDrawer from "@/components/common/charge-confirm/ConfirmChargeDrawer";
 
 interface QuickBundleCardProps {
   title: string;
@@ -10,6 +11,7 @@ interface QuickBundleCardProps {
   description: string;
   bonus: string;
   price: string;
+  priceValue: number;
 }
 
 export default function QuickBundleCard({
@@ -18,6 +20,7 @@ export default function QuickBundleCard({
   description,
   bonus,
   price,
+  priceValue,
 }: QuickBundleCardProps) {
   return (
     <div className="border-color-gray-64 bg-color-gray-50 flex flex-1 flex-col items-center justify-between rounded-[16px] border p-2 pt-4">
@@ -40,12 +43,17 @@ export default function QuickBundleCard({
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        className="typo-16-600 bg-color-flame-700 mt-4 flex h-10 w-full items-center justify-center rounded-[8px] text-white"
-      >
-        {price}
-      </button>
+      <ConfirmChargeDrawer
+        trigger={
+          <button
+            type="button"
+            className="typo-16-600 bg-color-flame-700 mt-4 flex h-10 w-full items-center justify-center rounded-[8px] text-white"
+          >
+            {price}
+          </button>
+        }
+        amount={priceValue}
+      />
     </div>
   );
 }
