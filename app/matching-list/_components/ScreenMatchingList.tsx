@@ -14,8 +14,9 @@ const ScreenMatchingList = () => {
   // 모든 페이지의 content를 하나의 배열로 평탄화
   const allHistory = useMemo(() => {
     const apiData = data?.pages.flatMap((page) => page.data.content) ?? [];
-    // API 데이터가 없으면 더미 데이터 반환 (UI 테스트용)
-    return apiData.length > 0 ? apiData : DUMMY_MATCHING_HISTORY;
+    const result = apiData.length > 0 ? apiData : DUMMY_MATCHING_HISTORY;
+    console.log("Processed allHistory data:", result);
+    return result;
   }, [data]);
 
   return (
