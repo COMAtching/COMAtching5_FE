@@ -7,12 +7,7 @@ import {
 import Image from "next/image";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
-
-/* ── 유틸 함수 ── */
-const getAge = (birthDate?: string | null) => {
-  if (!birthDate) return "??";
-  return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
-};
+import { getAge } from "@/lib/utils/date";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -120,18 +115,66 @@ const CardStats = ({ partner }: { partner: MatchingPartner }) => (
   </div>
 );
 
-/* ── 관심사 태그 ── */
-const CardHobbies = ({ partner }: { partner: MatchingPartner }) => (
-  <div className="flex w-full flex-col gap-1">
-    <span className="typo-12-600 text-[#777777]">관심사</span>
-    <div className="flex flex-wrap gap-1">
-      {partner.hobbies && partner.hobbies.length > 0 ? (
-        partner.hobbies.map((hobby) => (
-          <Tag key={hobby.name} text={hobby.name} />
-        ))
-      ) : (
-        <Tag text="없음" />
-      )}
+/* ── 확장 가능한 상세 정보 ── */
+const CardDetails = ({
+  partner,
+  isExpanded,
+}: {
+  partner: MatchingPartner;
+  isExpanded: boolean;
+}) => (
+  <div
+    className="flex w-full flex-col gap-3 overflow-hidden transition-all duration-500 ease-in-out"
+    style={{
+      maxHeight: isExpanded ? "1000px" : "60px",
+      maskImage: isExpanded
+        ? "linear-gradient(to bottom, black 0%, black 100%, transparent 100%)"
+        : "linear-gradient(to bottom, black 0%, black 50%, transparent 100%)",
+      WebkitMaskImage: isExpanded
+        ? "linear-gradient(to bottom, black 0%, black 100%, transparent 100%)"
+        : "linear-gradient(to bottom, black 0%, black 50%, transparent 100%)",
+    }}
+  >
+    {/* 관심사 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">관심사</span>
+      <div className="flex flex-wrap gap-1">
+        {partner.hobbies && partner.hobbies.length > 0 ? (
+          partner.hobbies.map((hobby) => (
+            <Tag key={hobby.name} text={hobby.name} />
+          ))
+        ) : (
+          <Tag text="없음" />
+        )}
+      </div>
+    </div>
+
+    {/* 장점 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">장점</span>
+      <div className="flex flex-wrap gap-1">
+        {partner.tags && partner.tags.length > 0 ? (
+          partner.tags.map((t) => <Tag key={t.tag} text={t.tag} />)
+        ) : (
+          <Tag text="없음" />
+        )}
+      </div>
+    </div>
+
+    {/* 좋아하는 노래 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">좋아하는 노래</span>
+      <span className="typo-16-600 text-color-text-black">
+        {partner.song || "아직 없어요!"}
+      </span>
+    </div>
+
+    {/* 나를 소개하는 한마디 */}
+    <div className="flex flex-col gap-1">
+      <span className="typo-12-600 text-[#777777]">나를 소개하는 한마디</span>
+      <span className="typo-16-600 text-color-text-black">
+        {partner.intro || "잘 부탁드립니다!! 😆"}
+      </span>
     </div>
   </div>
 );
@@ -194,7 +237,7 @@ const MatchingListCard = ({
             setIsExpanded((prev) => !prev);
           }
         }}
-        className="flex w-full cursor-pointer flex-col items-center justify-start rounded-t-[24px] border border-b-0 border-white/30 bg-white/50 px-4 pt-6 pb-4"
+        className="flex w-full cursor-pointer flex-col items-start justify-start rounded-t-[24px] border border-b-0 border-white/30 bg-white/50 px-4 pt-6 pb-4"
       >
         <CardHeader
           partner={item.partner}
@@ -204,7 +247,7 @@ const MatchingListCard = ({
         <div className="mt-4 mb-3 w-full">
           <CardStats partner={item.partner} />
         </div>
-        <CardHobbies partner={item.partner} />
+        <CardDetails partner={item.partner} isExpanded={isExpanded} />
       </div>
 
       {/* 그라디언트 푸터 */}
@@ -224,7 +267,7 @@ const MatchingListCard = ({
             e.stopPropagation();
             setIsExpanded((prev) => !prev);
           }}
-          className="flex items-center gap-1 rounded-full border border-white/20 bg-[linear-gradient(111.41deg,rgba(255,255,255,0.3)_5.28%,rgba(255,255,255,0.5)_101.41%)] px-[6px] py-[2px] backdrop-blur-[50px]"
+          className="ml-auto flex items-center gap-1 rounded-full border border-white/20 bg-[linear-gradient(111.41deg,rgba(255,255,255,0.3)_5.28%,rgba(255,255,255,0.5)_101.41%)] px-[6px] py-[2px] backdrop-blur-[50px]"
         >
           <span className="typo-10-500 text-white">
             {isExpanded ? "접기" : "펼치기"}

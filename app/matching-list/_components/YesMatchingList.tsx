@@ -1,18 +1,40 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { MatchingHistoryItem } from "@/hooks/useMatchingHistory";
-import { Search, ArrowUpNarrowWide } from "lucide-react";
+import { Search, ArrowUpNarrowWide, Loader2 } from "lucide-react";
 import MatchingListCard from "./MatchingListCard";
+import { getAge } from "@/lib/utils/date";
+import SortDrawer, { SortOrder } from "./SortDrawer";
+
+const SORT_LABELS: Record<SortOrder, string> = {
+  oldest: "오래된 순",
+  newest: "최신 순",
+  age: "나이 순",
+};
 
 interface YesMatchingListProps {
   history: MatchingHistoryItem[];
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
-const YesMatchingList = ({ history }: YesMatchingListProps) => {
+const YesMatchingList = ({
+  history,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+}: YesMatchingListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"oldest" | "newest">("oldest");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   const filteredHistory = useMemo(() => {
     let result = [...history];
@@ -38,6 +60,16 @@ const YesMatchingList = ({ history }: YesMatchingListProps) => {
 
     // 정렬
     result.sort((a, b) => {
+      if (sortOrder === "age") {
+        const ageA = a.partner.birthDate
+          ? new Date(a.partner.birthDate).getTime()
+          : 0;
+        const ageB = b.partner.birthDate
+          ? new Date(b.partner.birthDate).getTime()
+          : 0;
+        // birthDate가 작을수록(오래될수록) 나이가 많음 → 오름차순
+        return ageA - ageB;
+      }
       const dateA = new Date(a.matchedAt).getTime();
       const dateB = new Date(b.matchedAt).getTime();
       return sortOrder === "oldest" ? dateA - dateB : dateB - dateA;
@@ -46,9 +78,30 @@ const YesMatchingList = ({ history }: YesMatchingListProps) => {
     return result;
   }, [history, searchQuery, showFavoritesOnly, sortOrder]);
 
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "oldest" ? "newest" : "oldest"));
-  };
+  /* ── 무한 스크롤: IntersectionObserver ── */
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      rootMargin: "200px",
+    });
+    observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [handleIntersect]);
 
   return (
     <div className="flex w-full flex-col items-center gap-4 pb-10">
@@ -92,17 +145,19 @@ const YesMatchingList = ({ history }: YesMatchingListProps) => {
           <span className="typo-12-500 text-color-gray-600">즐겨찾기</span>
         </button>
 
-        {/* 정렬 */}
-        <button
-          type="button"
-          onClick={toggleSortOrder}
-          className="flex items-center gap-[5px]"
-        >
-          <ArrowUpNarrowWide size={16} className="text-color-gray-600" />
-          <span className="typo-12-500 text-color-gray-600">
-            {sortOrder === "oldest" ? "오래된 순" : "최신 순"}
-          </span>
-        </button>
+        {/* 정렬 - SortDrawer 트리거 */}
+        <SortDrawer
+          currentSort={sortOrder}
+          onSortChange={setSortOrder}
+          trigger={
+            <button type="button" className="flex items-center gap-[5px]">
+              <ArrowUpNarrowWide size={16} className="text-color-gray-600" />
+              <span className="typo-12-500 text-color-gray-600">
+                {SORT_LABELS[sortOrder]}
+              </span>
+            </button>
+          }
+        />
       </div>
 
       {/* 카드 리스트 */}
@@ -119,14 +174,20 @@ const YesMatchingList = ({ history }: YesMatchingListProps) => {
           </div>
         )}
       </div>
+
+      {/* 무한 스크롤 sentinel + 로딩 인디케이터 */}
+      <div ref={sentinelRef} className="flex w-full justify-center py-4">
+        {isFetchingNextPage && (
+          <Loader2 size={24} className="text-color-gray-400 animate-spin" />
+        )}
+        {!hasNextPage && filteredHistory.length > 0 && (
+          <span className="typo-12-500 text-color-gray-400">
+            모든 매칭 결과를 불러왔어요.
+          </span>
+        )}
+      </div>
     </div>
   );
-};
-
-/* ── 유틸 함수 ── */
-const getAge = (birthDate?: string | null) => {
-  if (!birthDate) return "??";
-  return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
 };
 
 export default YesMatchingList;

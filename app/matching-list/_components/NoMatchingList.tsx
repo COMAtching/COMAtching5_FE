@@ -3,12 +3,15 @@
 import React from "react";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface NoMatchingListProps {
   nickname?: string;
 }
 
 const NoMatchingList = ({ nickname = "회원" }: NoMatchingListProps) => {
+  const router = useRouter();
+
   return (
     <div className="flex w-[345px] flex-col items-center gap-4">
       {/* her image */}
@@ -34,7 +37,7 @@ const NoMatchingList = ({ nickname = "회원" }: NoMatchingListProps) => {
 
       {/* button */}
       <button
-        onClick={() => (window.location.href = "/matching")}
+        onClick={() => router.push("/matching")}
         className="bg-milky-pink flex h-[38px] w-[136px] items-center justify-center gap-2 rounded-full px-4 py-2 shadow-sm transition-transform active:scale-95"
       >
         <span className="typo-14-600 text-white">매칭하러 가기</span>

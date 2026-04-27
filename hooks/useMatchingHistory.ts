@@ -6,7 +6,7 @@ import {
   Hobby,
   ContactFrequency,
 } from "@/lib/types/profile";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 export interface MatchingPartner {
   memberId: number;
@@ -36,34 +36,50 @@ export interface MatchingHistoryItem {
   matchedAt: string;
 }
 
+export interface MatchingHistoryPageData {
+  content: MatchingHistoryItem[];
+  currentPage: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 export interface MatchingHistoryResponse {
   code: string;
   status: number;
   message: string;
-  data: {
-    content: MatchingHistoryItem[];
-    currentPage: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-  };
+  data: MatchingHistoryPageData;
 }
 
-export const fetchMatchingHistory =
-  async (): Promise<MatchingHistoryResponse> => {
-    const { data } = await api.get<MatchingHistoryResponse>(
-      "/api/matching/history",
-    );
-    return data;
-  };
+/** 매칭 히스토리 단일 페이지 조회 */
+export const fetchMatchingHistoryPage = async (
+  page: number = 0,
+  size: number = 30,
+): Promise<MatchingHistoryResponse> => {
+  const { data } = await api.get<MatchingHistoryResponse>(
+    "/api/matching/history",
+    {
+      params: {
+        page,
+        size,
+        sort: "matchedAt,desc",
+      },
+    },
+  );
+  return data;
+};
 
+/** React Query useInfiniteQuery 훅 */
 export const useMatchingHistory = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["matchingHistory"],
-    queryFn: fetchMatchingHistory,
-    staleTime: Infinity, // 새로운 매칭이나 즐겨찾기 변경 전까지는 캐시 유지
-    gcTime: 1000 * 60 * 60, // 메모리에서 1시간 동안 유지
+    queryFn: ({ pageParam }) => fetchMatchingHistoryPage(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.hasNext ? lastPage.data.currentPage + 1 : undefined,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
   });
 };

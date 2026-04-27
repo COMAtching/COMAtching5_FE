@@ -15,7 +15,10 @@ import { ProfileData, ContactFrequency } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
 import NoContactSection from "./NoContactSection";
 
-import { useMatchingHistory } from "@/hooks/useMatchingHistory";
+import {
+  useMatchingHistory,
+  MatchingPartner,
+} from "@/hooks/useMatchingHistory";
 
 const ScreenMainPage = () => {
   // 실제 서비스 시에는 서버에서 받아온 데이터(notice)가 있는지 여부에 따라 렌더링을 결정할 수 있습니다.
@@ -46,8 +49,11 @@ const ScreenMainPage = () => {
   };
 
   // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
-  const profileList: ProfileData[] =
-    historyData?.data.content.map(({ partner }) => ({
+  const allContent =
+    historyData?.pages.flatMap((page) => page.data.content) ?? [];
+
+  const profileList: ProfileData[] = allContent.map(
+    ({ partner }: { partner: MatchingPartner }) => ({
       memberId: partner.memberId,
       nickname: partner.nickname,
       gender: partner.gender,
@@ -61,10 +67,13 @@ const ScreenMainPage = () => {
       university: partner.university,
       major: partner.major,
       contactFrequency: partner.contactFrequency as ContactFrequency,
-      hobbies: partner.hobbies.map((h) => h.name),
+      hobbies: partner.hobbies.map(
+        (h: { category: string; name: string }) => h.name,
+      ),
       tags: partner.tags ?? undefined,
       song: partner.song ?? undefined,
-    })) || [];
+    }),
+  );
 
   return (
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
