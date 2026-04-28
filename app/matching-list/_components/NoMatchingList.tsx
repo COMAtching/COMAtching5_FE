@@ -5,12 +5,16 @@ import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useParticipantsCount } from "@/hooks/useParticipantsCount";
+
 interface NoMatchingListProps {
   nickname?: string;
 }
 
 const NoMatchingList = ({ nickname = "회원" }: NoMatchingListProps) => {
   const router = useRouter();
+  const { data: participantsData } = useParticipantsCount();
+  const count = participantsData?.data?.count ?? 732; // 기본값 732 유지
 
   return (
     <div className="flex w-[345px] flex-col items-center gap-4">
@@ -28,9 +32,11 @@ const NoMatchingList = ({ nickname = "회원" }: NoMatchingListProps) => {
       <p className="typo-14-500 text-color-gray-500 w-[345px] text-center leading-[160%]">
         아직 매칭된 상대가 없어요.
         <br />
-        아직 <span className="text-color-flame-700 typo-14-700">
-          732
-        </span>명이 {nickname}님을 기다리고 있어요.
+        아직{" "}
+        <span className="text-color-flame-700 typo-14-700">
+          {count.toLocaleString()}
+        </span>
+        명이 {nickname}님을 기다리고 있어요.
         <br />
         나와 딱 맞는 이성친구를 만들어봐요!
       </p>
