@@ -15,7 +15,7 @@ interface UpdateRealNameResponse {
 export const postRealName = async (
   realName: string,
 ): Promise<UpdateRealNameResponse> => {
-  const { data } = await api.post<UpdateRealNameResponse>(
+  const { data } = await api.patch<UpdateRealNameResponse>(
     "/api/members/real-name",
     { realName },
   );
