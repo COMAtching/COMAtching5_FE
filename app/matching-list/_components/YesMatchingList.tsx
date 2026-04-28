@@ -38,6 +38,7 @@ const YesMatchingList = ({
 
   const filteredHistory = useMemo(() => {
     let result = [...history];
+    const currentYear = new Date().getFullYear();
 
     // 검색 필터
     if (searchQuery.trim()) {
@@ -48,7 +49,8 @@ const YesMatchingList = ({
           p.nickname.toLowerCase().includes(query) ||
           p.mbti.toLowerCase().includes(query) ||
           p.major.toLowerCase().includes(query) ||
-          (p.birthDate && String(getAge(p.birthDate)).includes(query))
+          (p.birthDate &&
+            String(getAge(p.birthDate, currentYear)).includes(query))
         );
       });
     }
@@ -110,6 +112,7 @@ const YesMatchingList = ({
         <input
           type="text"
           placeholder="닉네임, 나이, 전공, MBTI 등을 입력하세요"
+          aria-label="검색"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="typo-12-500 text-color-text-black placeholder:text-color-gray-400 flex-1 bg-transparent outline-none"

@@ -1,4 +1,7 @@
-export const getAge = (birthDate?: string | null) => {
+export const getAge = (
+  birthDate?: string | null,
+  currentYear: number = new Date().getFullYear(),
+) => {
   if (!birthDate) return "??";
-  return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
+  return currentYear - new Date(birthDate).getFullYear() + 1;
 };
