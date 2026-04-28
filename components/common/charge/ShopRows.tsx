@@ -1,65 +1,63 @@
 import React from "react";
 import ConfirmChargeDrawer from "@/components/common/charge-confirm/ConfirmChargeDrawer";
-import { ShopProduct } from "@/hooks/useShopProducts";
+import { ShopItemAPI } from "@/lib/constants/charge";
 
-/* ── ShopItemRow (개별 아이템) ── */
+/* ── ShopItemRow ── */
 
 export interface ShopItemRowProps {
-  product: ShopProduct;
+  item: ShopItemAPI;
 }
 
-export function ShopItemRow({ product }: ShopItemRowProps) {
+export function ShopItemRow({ item }: ShopItemRowProps) {
   return (
     <div className="border-color-gray-100 flex items-center justify-between border-b py-4">
-      <span className="typo-16-600 text-color-text-black">{product.name}</span>
+      <span className="typo-16-600 text-color-text-black">{item.name}</span>
       <ConfirmChargeDrawer
         trigger={
           <button
             type="button"
             className="typo-16-600 bg-color-flame-700 flex h-10 w-24 items-center justify-center rounded-[8px] text-white"
           >
-            {product.price.toLocaleString()}원
+            {item.price.toLocaleString()}원
           </button>
         }
-        amount={product.price}
+        amount={item.price}
       />
     </div>
   );
 }
 
-/* ── ShopBundleRow (번들 아이템) ── */
+/* ── ShopBundleRow ── */
 
 export interface ShopBundleRowProps {
-  product: ShopProduct;
+  item: ShopItemAPI;
 }
 
-export function ShopBundleRow({ product }: ShopBundleRowProps) {
-  // 메인 리워드 텍스트
-  const description = product.rewards
+export function ShopBundleRow({ item }: ShopBundleRowProps) {
+  // 리워드 목록에서 보너스 항목 제외한 메인 리워드 텍스트 생성
+  const mainRewards = item.rewards.filter(
+    (r) => !r.itemName.includes("보너스"),
+  );
+  const description = mainRewards
     .map((r) => `${r.itemName} ${r.quantity}개`)
     .join("+");
 
-  // 보너스 리워드
-  const bonusText =
-    product.bonusRewards.length > 0
-      ? product.bonusRewards
-          .map((r) => `${r.itemName} ${r.quantity}개`)
-          .join(", ") + " 무료 증정!"
-      : null;
+  // 보너스 항목 찾기
+  const bonusReward = item.rewards.find((r) => r.itemName.includes("보너스"));
 
   return (
     <div className="border-color-gray-100 flex items-center justify-between border-b py-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1">
-          <span className="typo-16-600 text-color-text-black">
-            {product.name}
-          </span>
-          <span className="text-[10px] leading-[12px] font-semibold text-[#808080]">
+          <span className="typo-16-600 text-color-text-black">{item.name}</span>
+          <span className="typo-10-600 text-color-text-caption2">
             {description}
           </span>
         </div>
-        {bonusText && (
-          <span className="typo-10-600 text-color-flame-700">{bonusText}</span>
+        {bonusReward && (
+          <span className="typo-10-600 text-color-flame-700">
+            {bonusReward.itemName} {bonusReward.quantity}개 무료 증정!
+          </span>
         )}
       </div>
       <ConfirmChargeDrawer
@@ -68,10 +66,10 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
             type="button"
             className="typo-16-600 bg-color-flame-700 flex h-10 w-24 shrink-0 items-center justify-center rounded-[8px] text-white"
           >
-            {product.price.toLocaleString()}원
+            {item.price.toLocaleString()}원
           </button>
         }
-        amount={product.price}
+        amount={item.price}
       />
     </div>
   );

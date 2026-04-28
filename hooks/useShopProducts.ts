@@ -37,7 +37,7 @@ export const useShopProducts = () => {
   return useQuery({
     queryKey: ["shopProducts"],
     queryFn: fetchShopProducts,
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 30, // 30분: 이후 백그라운드 갱신
+    gcTime: Infinity, // 메모리에서 삭제하지 않음 → 로딩바 없음
   });
 };
