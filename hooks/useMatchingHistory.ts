@@ -23,7 +23,7 @@ export interface MatchingPartner {
   university: string;
   major: string;
   contactFrequency: string;
-  hobbies: { category: string; name: string }[];
+  hobbies: { category: string; name: string }[] | null;
   tags: { tag: string }[] | null;
   song: string | null;
   intros: { question: string; answer: string }[];
@@ -78,8 +78,11 @@ export const useMatchingHistory = () => {
     queryKey: ["matchingHistory"],
     queryFn: ({ pageParam }) => fetchMatchingHistoryPage(pageParam),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) =>
-      lastPage.data.hasNext ? lastPage.data.currentPage + 1 : undefined,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.data?.hasNext
+        ? lastPage.data.currentPage + 1
+        : undefined;
+    },
     staleTime: Infinity,
     gcTime: 1000 * 60 * 60,
   });

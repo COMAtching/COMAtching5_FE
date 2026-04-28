@@ -50,7 +50,7 @@ const ScreenMainPage = () => {
 
   // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
   const allContent =
-    historyData?.pages.flatMap((page) => page.data.content) ?? [];
+    historyData?.pages.flatMap((page) => page?.data?.content || []) ?? [];
 
   const profileList: ProfileData[] = allContent.map(
     ({ partner }: { partner: MatchingPartner }) => ({
@@ -67,7 +67,7 @@ const ScreenMainPage = () => {
       university: partner.university,
       major: partner.major,
       contactFrequency: partner.contactFrequency as ContactFrequency,
-      hobbies: partner.hobbies.map(
+      hobbies: (partner.hobbies ?? []).map(
         (h: { category: string; name: string }) => h.name,
       ),
       tags: partner.tags ?? undefined,
