@@ -1,18 +1,33 @@
 "use client";
 
 import React from "react";
+import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
 import { isValidDepositorName } from "@/lib/validators";
 import Button from "@/components/ui/Button";
+import { useUpdateRealName } from "@/hooks/useUpdateRealName";
 
 export default function DepositorNameContent() {
   const [name, setName] = React.useState("");
+  const { mutate: updateName, isPending } = useUpdateRealName();
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (isValidDepositorName(value)) {
       setName(value);
     }
+  };
+
+  const handleSave = () => {
+    updateName(name, {
+      onSuccess: () => {
+        alert("입금자명이 성공적으로 설정되었습니다.");
+      },
+      onError: (error: AxiosError<{ message: string }>) => {
+        const errorData = error.response?.data;
+        alert(errorData?.message || "입금자명 설정 중 오류가 발생했습니다.");
+      },
+    });
   };
 
   return (
@@ -74,8 +89,13 @@ export default function DepositorNameContent() {
         </div>
       </div>
 
-      <Button fixed bottom={32} disabled={!name || name.length < 2}>
-        입금자명 설정하기
+      <Button
+        fixed
+        bottom={32}
+        disabled={!name || name.length < 2 || isPending}
+        onClick={handleSave}
+      >
+        {isPending ? "설정 중..." : "입금자명 설정하기"}
       </Button>
     </div>
   );

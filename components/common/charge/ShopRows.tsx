@@ -22,6 +22,7 @@ export function ShopItemRow({ product }: ShopItemRowProps) {
           </button>
         }
         amount={product.price}
+        productId={product.id}
       />
     </div>
   );
@@ -72,6 +73,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
           </button>
         }
         amount={product.price}
+        productId={product.id}
       />
     </div>
   );

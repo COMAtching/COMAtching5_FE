@@ -59,6 +59,7 @@ export default function QuickBundleCard({ product }: QuickBundleCardProps) {
           </button>
         }
         amount={product.price}
+        productId={product.id}
       />
     </div>
   );

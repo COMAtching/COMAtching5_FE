@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
 import { X, PencilLine, Check } from "lucide-react";
 import {
@@ -19,6 +20,8 @@ import { BANK_INFO } from "@/lib/constants/charge";
 /* ── Props ── */
 interface ConfirmChargeDrawerProps {
   trigger: React.ReactNode;
+  /** 상품 ID */
+  productId: number;
   /** 입금액 (원 단위 숫자) */
   amount: number;
   /** 입금자명 (사전 설정된 값) */
@@ -27,12 +30,19 @@ interface ConfirmChargeDrawerProps {
 
 /* ────────────────────────────────────── */
 
+import { usePurchaseProduct } from "@/hooks/usePurchaseProduct";
+import { ChargeDrawerContext } from "@/components/common/ChargeDrawer";
+
 export default function ConfirmChargeDrawer({
   trigger,
+  productId,
   amount,
   depositorName = "천승환",
 }: ConfirmChargeDrawerProps) {
   const queryClient = useQueryClient();
+  const drawerContext = React.useContext(ChargeDrawerContext);
+  const { mutate: purchase, isPending } = usePurchaseProduct();
+  const [open, setOpen] = React.useState(false);
   const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(depositorName);
   const [isEditingName, setIsEditingName] = React.useState(false);
@@ -57,11 +67,39 @@ export default function ConfirmChargeDrawer({
 
   /* 충전 완료 알림 */
   const handleConfirm = () => {
-    alert("충전 요청이 완료되었습니다!");
+    purchase(productId, {
+      onSuccess: () => {
+        alert("충전 요청이 완료되었습니다!");
+        setOpen(false);
+      },
+      onError: (error: AxiosError<{ code?: string; message?: string }>) => {
+        const errorData = error.response?.data;
+        if (errorData?.code === "PAY-003") {
+          alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
+          setOpen(false);
+        } else if (errorData?.code === "PAY-004") {
+          alert("먼저 입금자명을 설정해 주세요.");
+          setOpen(false);
+          // 실명 설정 탭으로 이동 (TABS[2]가 입금자명 설정)
+          drawerContext?.setActiveTab(2);
+        } else {
+          alert(
+            errorData?.message ||
+              "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
+          );
+        }
+      },
+    });
   };
 
   return (
-    <Drawer onOpenChange={() => setAgreed(false)}>
+    <Drawer
+      open={open}
+      onOpenChange={(val) => {
+        setOpen(val);
+        if (!val) setAgreed(false);
+      }}
+    >
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
         className="rounded-t-[24px] bg-white outline-none"
@@ -186,8 +224,8 @@ export default function ConfirmChargeDrawer({
             {/* ── 하단 버튼 영역 ── */}
             <div className="flex w-full flex-col items-center gap-4">
               {/* CTA 버튼 */}
-              <Button disabled={!agreed} onClick={handleConfirm}>
-                충전 요청 보내기
+              <Button disabled={!agreed || isPending} onClick={handleConfirm}>
+                {isPending ? "요청 중..." : "충전 요청 보내기"}
               </Button>
 
               {/* Toss 링크 */}

@@ -15,6 +15,7 @@ export interface ShopProduct {
   price: number;
   displayOrder: number;
   isActive: boolean;
+  isBundle: boolean;
   rewards: ShopReward[];
   bonusRewards: ShopReward[];
 }
