@@ -12,6 +12,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
+import { useQueryClient } from "@tanstack/react-query";
 import Button from "@/components/ui/Button";
 import { BANK_INFO } from "@/lib/constants/charge";
 
@@ -31,6 +32,7 @@ export default function ConfirmChargeDrawer({
   amount,
   depositorName = "천승환",
 }: ConfirmChargeDrawerProps) {
+  const queryClient = useQueryClient();
   const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(depositorName);
   const [isEditingName, setIsEditingName] = React.useState(false);
