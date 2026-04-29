@@ -165,4 +165,11 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
+
+  /* 관리자 페이지: root layout의 max-width 제한 해제 */
+  div:has(> .admin-layout) {
+    max-width: none !important;
+    box-shadow: none !important;
+    background: #0f1117 !important;
+  }
 }
