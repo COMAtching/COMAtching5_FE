@@ -12,6 +12,7 @@ import { Search, ArrowUpNarrowWide, Loader2 } from "lucide-react";
 import MatchingListCard from "./MatchingListCard";
 import { getAge } from "@/lib/utils/date";
 import SortDrawer, { SortOrder } from "./SortDrawer";
+import { CURRENT_YEAR } from "@/lib/constants/date";
 
 const SORT_LABELS: Record<SortOrder, string> = {
   oldest: "오래된 순",
@@ -38,7 +39,6 @@ const YesMatchingList = ({
 
   const filteredHistory = useMemo(() => {
     let result = [...history];
-    const currentYear = new Date().getFullYear();
 
     // 검색 필터
     if (searchQuery.trim()) {
@@ -50,7 +50,7 @@ const YesMatchingList = ({
           p.mbti.toLowerCase().includes(query) ||
           p.major.toLowerCase().includes(query) ||
           (p.birthDate &&
-            String(getAge(p.birthDate, currentYear)).includes(query))
+            String(getAge(p.birthDate, CURRENT_YEAR)).includes(query))
         );
       });
     }
