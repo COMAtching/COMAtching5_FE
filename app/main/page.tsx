@@ -22,14 +22,20 @@ export default async function MainPage() {
         return res.data;
       },
     }),
-    queryClient.prefetchQuery({
+    queryClient.prefetchInfiniteQuery({
       queryKey: ["matchingHistory"],
-      queryFn: async () => {
+      queryFn: async ({ pageParam }) => {
         const res = await serverApi.get<MatchingHistoryResponse>({
           path: "/api/matching/history",
+          params: {
+            page: pageParam as number,
+            size: 30,
+            sort: "matchedAt,desc",
+          },
         });
         return res.data;
       },
+      initialPageParam: 0,
     }),
   ]);
 

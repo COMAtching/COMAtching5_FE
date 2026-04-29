@@ -8,16 +8,16 @@ import {
   PURCHASE_LIMITS,
 } from "@/lib/constants/charge";
 
-interface ChargeInventoryCardProps {
-  ticketCounts: {
-    matching: number;
-    option: number;
-  };
-}
+import { useItems } from "@/hooks/useItems";
 
-export default function ChargeInventoryCard({
-  ticketCounts,
-}: ChargeInventoryCardProps) {
+export default function ChargeInventoryCard() {
+  const { data, isLoading } = useItems();
+
+  const ticketCounts = {
+    matching: data?.data.matchingTicketCount ?? 0,
+    option: data?.data.optionTicketCount ?? 0,
+  };
+
   return (
     <div className="bg-color-gray-50 flex flex-col gap-2 rounded-[16px] p-4">
       {/* 보유 수량 */}

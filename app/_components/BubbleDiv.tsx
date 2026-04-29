@@ -2,6 +2,8 @@ import Image from "next/image";
 import React from "react";
 import { cn } from "@/lib/utils";
 
+import { useParticipantsCount } from "@/hooks/useParticipantsCount";
+
 const BubbleDiv = ({
   children,
   w,
@@ -21,6 +23,8 @@ const BubbleDiv = ({
   textColor?: string;
   className?: string;
 }) => {
+  const { data: participantsData } = useParticipantsCount();
+  const count = participantsData?.data?.count ?? 775;
   const shadowClass = shadow ? "drop-shadow-md" : "";
 
   return (
@@ -47,7 +51,10 @@ const BubbleDiv = ({
         <div>
           {children || (
             <>
-              현재 <span className="text-bubble-text-highight">775명</span>{" "}
+              현재{" "}
+              <span className="text-bubble-text-highight">
+                {count.toLocaleString()}명
+              </span>{" "}
               참여중이에요!
             </>
           )}

@@ -11,17 +11,10 @@ import {
 } from "@/lib/constants/charge";
 
 export default function ChargeHistoryContent() {
-  const { data } = useItems();
-
-  const ticketCounts = {
-    matching: data?.data.matchingTicketCount ?? 0,
-    option: data?.data.optionTicketCount ?? 0,
-  };
-
   return (
     <div className="flex flex-col gap-[23px] pt-8">
       {/* ── 보유현황 카드 ── */}
-      <ChargeInventoryCard ticketCounts={ticketCounts} />
+      <ChargeInventoryCard />
 
       {/* ── 충전 내역 리스트 ── */}
       <div className="flex flex-col">
