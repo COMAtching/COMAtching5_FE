@@ -5,7 +5,7 @@ import {
   type AdminOrder,
   useApproveOrder,
   useRejectOrder,
-} from "@/hooks/useAdminOrders";
+} from "@/hooks/admin/useAdminOrders";
 import ExpiryCountdown from "./ExpiryCountdown";
 import { Check, X, User, Ticket, Tag, Clock, Coins } from "lucide-react";
 

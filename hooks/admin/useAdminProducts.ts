@@ -1,7 +1,7 @@
 import { api } from "@/lib/axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import type { ShopProduct, ShopReward } from "./useShopProducts";
+import type { ShopProduct, ShopReward } from "@/hooks/useShopProducts";
 
 /* ── 타입 정의 ── */
 interface ApiResponse<T> {

@@ -58,11 +58,9 @@ export function useAdminOrderSocket() {
 
   const handleOrderCreated = useCallback(
     (payload: OrderCreatedPayload) => {
-      // 새 주문을 React Query 캐시에 직접 추가
       queryClient.setQueryData<AdminOrdersResponse>(["adminOrders"], (old) => {
         if (!old) return old;
 
-        // 이미 존재하는 주문이면 무시
         const exists = old.data.some(
           (order) => order.requestId === payload.orderId,
         );
@@ -94,7 +92,6 @@ export function useAdminOrderSocket() {
 
   const handleOrderStatusChanged = useCallback(
     (payload: OrderStatusChangedPayload) => {
-      // 기존 주문의 상태를 캐시에서 직접 업데이트
       queryClient.setQueryData<AdminOrdersResponse>(["adminOrders"], (old) => {
         if (!old) return old;
 
@@ -121,11 +118,9 @@ export function useAdminOrderSocket() {
       return;
     }
 
-    // SockJS URL 구성
     const wsUrl = `${API_URL}/ws/payment`;
 
     const client = new Client({
-      // SockJS를 웹소켓 팩토리로 사용
       webSocketFactory: () => new SockJS(wsUrl) as unknown as WebSocket,
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
@@ -135,7 +130,6 @@ export function useAdminOrderSocket() {
         console.log("✅ [STOMP] Connected");
         setStatus("connected");
 
-        // 관리자 주문 토픽 구독
         client.subscribe("/topic/admin/orders", (message) => {
           try {
             const event: StompEvent = JSON.parse(message.body);

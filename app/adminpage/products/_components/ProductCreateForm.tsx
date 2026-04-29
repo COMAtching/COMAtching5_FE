@@ -5,7 +5,7 @@ import {
   useCreateProduct,
   type CreateProductBody,
   type CreateProductReward,
-} from "@/hooks/useAdminProducts";
+} from "@/hooks/admin/useAdminProducts";
 import { Loader2, Plus, Minus } from "lucide-react";
 
 interface ProductCreateFormProps {

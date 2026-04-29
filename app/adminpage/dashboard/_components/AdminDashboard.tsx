@@ -2,8 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { useAdminOrders } from "@/hooks/useAdminOrders";
-import { useAdminOrderSocket } from "@/hooks/useAdminOrderSocket";
+import { useAdminOrders } from "@/hooks/admin/useAdminOrders";
+import { useAdminOrderSocket } from "@/hooks/admin/useAdminOrderSocket";
 import OrderCard from "./OrderCard";
 import {
   ArrowLeft,

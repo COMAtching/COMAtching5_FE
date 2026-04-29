@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useAdminProducts, useDeleteProduct } from "@/hooks/useAdminProducts";
+import {
+  useAdminProducts,
+  useDeleteProduct,
+} from "@/hooks/admin/useAdminProducts";
 import ProductCreateForm from "./ProductCreateForm";
 import {
   ArrowLeft,
