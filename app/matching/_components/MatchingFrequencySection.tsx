@@ -5,19 +5,16 @@ import ProfileButton from "../../profile-builder/_components/ProfileButton";
 
 interface MatchingFrequencySectionProps {
   onFrequencySelect: (frequency: string) => void;
-  defaultValue?: string;
+  selected: string;
 }
 
 const OPTIONS = ["자주", "보통", "적음"];
 
 export default function MatchingFrequencySection({
   onFrequencySelect,
-  defaultValue = "",
+  selected,
 }: MatchingFrequencySectionProps) {
-  const [selected, setSelected] = React.useState(defaultValue);
-
   const handleSelect = (frequency: string) => {
-    setSelected(frequency);
     onFrequencySelect(frequency);
   };
 

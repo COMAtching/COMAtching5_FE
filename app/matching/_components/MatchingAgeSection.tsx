@@ -2,31 +2,40 @@
 
 import React from "react";
 import ProfileButton from "../../profile-builder/_components/ProfileButton";
+import { cn } from "@/lib/utils";
+
 interface MatchingAgeSectionProps {
   onAgeGroupSelect: (ageGroup: string) => void;
-  defaultValue?: string;
+  selected: string;
+  disabled?: boolean;
 }
 
 const AGE_GROUPS = ["연하", "동갑", "연상"];
 
 export default function MatchingAgeSection({
   onAgeGroupSelect,
-  defaultValue = "",
+  selected,
+  disabled = false,
 }: MatchingAgeSectionProps) {
-  const [selected, setSelected] = React.useState(defaultValue);
-
   const handleSelect = (group: string) => {
-    setSelected(group);
+    if (disabled) return;
     onAgeGroupSelect(group);
   };
 
   return (
-    <div className="border-color-gray-100 flex flex-col gap-4 border-b pb-5">
+    <div
+      className={cn(
+        "border-color-gray-100 flex flex-col gap-4 border-b pb-5 transition-opacity duration-300",
+        disabled && "pointer-events-none opacity-40",
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h2 className="typo-20-700 text-color-text-black">나이</h2>
           <p className="typo-14-500 text-color-text-caption3">
-            상대의 나이를 골라주세요.
+            {disabled
+              ? "나이 구간 옵션이 선택되어 비활성화되었습니다."
+              : "상대의 나이를 골라주세요."}
           </p>
         </div>
       </div>

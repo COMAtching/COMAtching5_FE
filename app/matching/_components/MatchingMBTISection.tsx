@@ -5,7 +5,7 @@ import ProfileButton from "../../profile-builder/_components/ProfileButton";
 
 interface MatchingMBTISectionProps {
   onMBTISelect: (mbti: string) => void;
-  defaultValue?: string;
+  selected: string;
 }
 
 const OPPOSITES: Record<string, string> = {
@@ -26,15 +26,12 @@ const ROWS = [
 
 export default function MatchingMBTISection({
   onMBTISelect,
-  defaultValue = "",
+  selected,
 }: MatchingMBTISectionProps) {
-  // 온보딩 MBTI와 느낌을 맞추기 위해 내부 상태(useState) 사용
-  const [selected, setSelected] = React.useState<string[]>(
-    defaultValue.split("").filter(Boolean),
-  );
+  const selectedChars = selected.split("").filter(Boolean);
 
   const handleSelect = (char: string) => {
-    const newSelection = [...selected];
+    const newSelection = [...selectedChars];
     const index = newSelection.indexOf(char);
 
     if (index > -1) {
@@ -66,7 +63,6 @@ export default function MatchingMBTISection({
       }
     }
 
-    setSelected(newSelection);
     onMBTISelect(newSelection.join(""));
   };
 
@@ -87,7 +83,7 @@ export default function MatchingMBTISection({
             {row.map((char) => (
               <ProfileButton
                 key={char}
-                selected={selected.includes(char)}
+                selected={selectedChars.includes(char)}
                 onClick={() => handleSelect(char)}
               >
                 {char}
