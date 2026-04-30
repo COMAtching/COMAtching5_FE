@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 interface PurchaseResponse {
@@ -26,10 +26,13 @@ export const postPurchaseProduct = async (
  * 상품 구매(주문 생성) Mutation 훅
  */
 export const usePurchaseProduct = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (productId: number) => postPurchaseProduct(productId),
     onSuccess: (data) => {
       console.log("✅ 주문 생성 성공:", data);
+      queryClient.invalidateQueries({ queryKey: ["requestStatus"] });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       const errorData = error.response?.data;

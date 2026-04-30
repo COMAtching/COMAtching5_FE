@@ -9,6 +9,7 @@ import ScreenMainPage from "./_components/ScreenMainPage";
 
 import { ItemsResponse } from "@/hooks/useItems";
 import { MatchingHistoryResponse } from "@/hooks/useMatchingHistory";
+import { RequestStatusResponse } from "@/hooks/useRequestStatus";
 
 export default async function MainPage() {
   const queryClient = new QueryClient();
@@ -19,6 +20,15 @@ export default async function MainPage() {
       queryKey: ["items"],
       queryFn: async () => {
         const res = await serverApi.get<ItemsResponse>({ path: "/api/items" });
+        return res.data;
+      },
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["requestStatus"],
+      queryFn: async () => {
+        const res = await serverApi.get<RequestStatusResponse>({
+          path: "/api/v1/shop/purchase/status",
+        });
         return res.data;
       },
     }),
