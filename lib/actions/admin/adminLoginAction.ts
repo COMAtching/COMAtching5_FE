@@ -49,6 +49,7 @@ export async function adminLoginAction(
           maxAge?: number;
           expires?: Date;
           sameSite?: "strict" | "lax" | "none" | boolean;
+          domain?: string;
         } = {};
 
         options.forEach((opt) => {
