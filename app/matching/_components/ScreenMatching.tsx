@@ -4,6 +4,7 @@ import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
 import Image from "next/image";
 import React, { useState } from "react";
+import MatchingAgeOption from "./MatchingAgeOption";
 import MatchingAgeSection from "./MatchingAgeSection";
 import MatchingHobbySection from "./MatchingHobbySection";
 import MatchingMBTISection from "./MatchingMBTISection";
@@ -41,10 +42,12 @@ import { useItems } from "@/hooks/useItems";
 import { useMatching } from "@/hooks/useMatching";
 
 const ScreenMatching = () => {
-  const { data: itemData } = useItems();
+  const { data: itemData, isLoading: isItemsLoading } = useItems();
   const { mutate: match, isPending } = useMatching();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
+  const [minAge, setMinAge] = useState<number | undefined>(undefined);
+  const [maxAge, setMaxAge] = useState<number | undefined>(undefined);
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [isSameMajorExclude, setIsSameMajorExclude] = useState(false);
   const [selectedHobbyCategory, setSelectedHobbyCategory] = useState<
@@ -64,31 +67,35 @@ const ScreenMatching = () => {
     matchingTicketCount > 0
   );
 
-  const bubbleText =
-    matchingTicketCount === 0 ? (
-      "사용할 수 있는 매칭권이 없어요."
-    ) : (
-      <div className="flex items-center gap-1">
-        <Image src="/main/coin.png" alt="coin" width={20} height={20} />
-        <span>매칭권 1</span>
-        {hasExtraOption && (
-          <>
-            <Image
-              src="/main/elec-bulb.png"
-              alt="bulb"
-              width={20}
-              height={20}
-              className="ml-1"
-            />
-            <span>아이템 1</span>
-          </>
-        )}
-        <span>소모</span>
-      </div>
-    );
+  const bubbleText = isItemsLoading ? null : matchingTicketCount === 0 ? (
+    "사용할 수 있는 매칭권이 없어요."
+  ) : (
+    <div className="flex items-center gap-1">
+      <Image src="/main/coin.png" alt="coin" width={20} height={20} />
+      <span>매칭권 1</span>
+      {hasExtraOption && (
+        <>
+          <Image
+            src="/main/elec-bulb.png"
+            alt="bulb"
+            width={20}
+            height={20}
+            className="ml-1"
+          />
+          <span>아이템 1</span>
+        </>
+      )}
+      <span>소모</span>
+    </div>
+  );
 
   const bubbleTextColor =
     matchingTicketCount === 0 ? "text-color-gray-600" : "text-black";
+
+  const handleAgeRangeSelect = (min: number, max: number) => {
+    setMinAge(min);
+    setMaxAge(max);
+  };
 
   const calculateAgeOffsets = (
     group: string,
@@ -128,8 +135,8 @@ const ScreenMatching = () => {
         : undefined,
       sameMajorOption: isSameMajorExclude,
       importantOption: importantOption || undefined,
-      minAgeOffset: ageInfo.min,
-      maxAgeOffset: ageInfo.max,
+      minAgeOffset: minAge ?? ageInfo.min,
+      maxAgeOffset: maxAge ?? ageInfo.max,
     };
 
     match(payload);
@@ -170,6 +177,15 @@ const ScreenMatching = () => {
             HOBBY: selectedHobbyCategory || "",
             CONTACT: selectedFrequency || "",
           }}
+        />
+        <MatchingAgeOption
+          onAgeRangeSelect={handleAgeRangeSelect}
+          onReset={() => {
+            setMinAge(undefined);
+            setMaxAge(undefined);
+          }}
+          minAge={minAge}
+          maxAge={maxAge}
         />
         <MatchingSameMajorSection
           onSameMajorToggle={setIsSameMajorExclude}
