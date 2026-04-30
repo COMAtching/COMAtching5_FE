@@ -57,11 +57,16 @@ const ScreenMatching = () => {
     useState<ImportantOption | null>(null);
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
-  const hasExtraOption = !!(importantOption || isSameMajorExclude);
+  const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
+  const hasExtraOption = !!(
+    importantOption ||
+    isSameMajorExclude ||
+    isAgeRangeActive
+  );
 
   const canSubmit = !!(
     selectedMBTI.length === 2 &&
-    selectedAgeGroup &&
+    (selectedAgeGroup || isAgeRangeActive) &&
     selectedFrequency &&
     selectedHobbyCategory &&
     matchingTicketCount > 0
@@ -93,6 +98,12 @@ const ScreenMatching = () => {
     matchingTicketCount === 0 ? "text-color-gray-600" : "text-black";
 
   const handleAgeRangeSelect = (min: number, max: number) => {
+    if (selectedAgeGroup) {
+      alert(
+        "나이 구간 옵션을 사용하면 기존에 선택한 나이 옵션(연하/동갑/연상)이 해제됩니다.",
+      );
+      setSelectedAgeGroup("");
+    }
     setMinAge(min);
     setMaxAge(max);
   };
@@ -161,6 +172,7 @@ const ScreenMatching = () => {
         <MatchingAgeSection
           onAgeGroupSelect={setSelectedAgeGroup}
           defaultValue={selectedAgeGroup}
+          disabled={isAgeRangeActive}
         />
 
         <MatchingFrequencySection
