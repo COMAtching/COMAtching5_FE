@@ -136,7 +136,7 @@ const ScreenMatching = () => {
     const ageInfo = calculateAgeOffsets(selectedAgeGroup);
 
     const payload: MatchingRequest = {
-      ageOption: ageInfo.option,
+      ageOption: isAgeRangeActive ? undefined : ageInfo.option,
       mbtiOption: selectedMBTI || undefined,
       hobbyOption: selectedHobbyCategory
         ? hobbyMapping[selectedHobbyCategory]
