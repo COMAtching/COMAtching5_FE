@@ -72,8 +72,13 @@ export default function AgeRangeDrawer({
               <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
                 나이 구간 설정
               </DrawerTitle>
-              <DrawerClose className="typo-16-500 text-color-text-caption3 w-[40px] text-right">
-                닫기
+              <DrawerClose asChild>
+                <button
+                  type="button"
+                  className="typo-16-500 text-color-text-caption3 w-[40px] text-right"
+                >
+                  닫기
+                </button>
               </DrawerClose>
             </div>
             <p className="typo-14-500 text-color-text-caption3 text-center">
@@ -108,11 +113,19 @@ export default function AgeRangeDrawer({
                         isStart && !isFirst && "rounded-l-lg border-l",
                         // 선택 끝점 오른쪽 둥글게
                         isEnd && !isLast && "rounded-r-lg",
-                        // 색상
-                        isInRange
-                          ? "border-[#ff4d61]/30 bg-gradient-to-b from-[#ff4d61]/20 to-[#ff775e]/10"
-                          : "border-[#e8e8e8] bg-[#f8f8f8]",
                       )}
+                      style={
+                        isInRange
+                          ? {
+                              borderColor: "rgba(255, 77, 97, 0.3)",
+                              background:
+                                "linear-gradient(to bottom, rgba(255, 77, 97, 0.2), rgba(255, 119, 94, 0.1))",
+                            }
+                          : {
+                              borderColor: "#e8e8e8",
+                              backgroundColor: "#f8f8f8",
+                            }
+                      }
                     />
                     {/* 나이 레이블 */}
                     <span
@@ -140,9 +153,12 @@ export default function AgeRangeDrawer({
               </span>
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
+                  aria-label="최소 나이 감소"
                   onClick={decreaseMin}
                   disabled={localMin <= MIN_AGE}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white transition-all active:scale-95 disabled:opacity-30"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border bg-white transition-all active:scale-95 disabled:opacity-30"
+                  style={{ borderColor: "#e5e5e5" }}
                 >
                   <Minus size={16} className="text-color-text-black" />
                 </button>
@@ -150,9 +166,12 @@ export default function AgeRangeDrawer({
                   {localMin}
                 </span>
                 <button
+                  type="button"
+                  aria-label="최소 나이 증가"
                   onClick={increaseMin}
                   disabled={localMin >= localMax}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white transition-all active:scale-95 disabled:opacity-30"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border bg-white transition-all active:scale-95 disabled:opacity-30"
+                  style={{ borderColor: "#e5e5e5" }}
                 >
                   <Plus size={16} className="text-color-text-black" />
                 </button>
@@ -169,9 +188,12 @@ export default function AgeRangeDrawer({
               </span>
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
+                  aria-label="최대 나이 감소"
                   onClick={decreaseMax}
                   disabled={localMax <= localMin}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white transition-all active:scale-95 disabled:opacity-30"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border bg-white transition-all active:scale-95 disabled:opacity-30"
+                  style={{ borderColor: "#e5e5e5" }}
                 >
                   <Minus size={16} className="text-color-text-black" />
                 </button>
@@ -179,9 +201,12 @@ export default function AgeRangeDrawer({
                   {localMax}
                 </span>
                 <button
+                  type="button"
+                  aria-label="최대 나이 증가"
                   onClick={increaseMax}
                   disabled={localMax >= MAX_AGE}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white transition-all active:scale-95 disabled:opacity-30"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border bg-white transition-all active:scale-95 disabled:opacity-30"
+                  style={{ borderColor: "#e5e5e5" }}
                 >
                   <Plus size={16} className="text-color-text-black" />
                 </button>
