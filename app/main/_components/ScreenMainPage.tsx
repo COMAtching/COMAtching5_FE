@@ -32,13 +32,7 @@ const ScreenMainPage = () => {
 
   const [isNoticeVisible, setIsNoticeVisible] = useState(false);
   const { data: historyData, isLoading } = useMatchingHistory();
-  const { data: requestStatusData, error: requestStatusError } =
-    useRequestStatus();
-
-  const isPurchasePending =
-    requestStatusData?.data?.status === "PENDING" ||
-    requestStatusError?.response?.data?.code === "GATEWAY-001" ||
-    requestStatusError?.response?.data?.code === "GATEWAY-002";
+  const { isPurchasePending } = useRequestStatus();
 
   useEffect(() => {
     // 로컬스토리지에 해당 공지 ID가 저장되어 있는지 확인

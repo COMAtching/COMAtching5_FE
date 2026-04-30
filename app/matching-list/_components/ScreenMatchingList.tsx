@@ -12,7 +12,7 @@ const ScreenMatchingList = () => {
 
   // 모든 페이지의 content를 하나의 배열로 평탄화
   const allHistory = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data.content) ?? [];
+    return data?.pages.flatMap((page) => page?.data?.content || []) ?? [];
   }, [data]);
 
   return (
