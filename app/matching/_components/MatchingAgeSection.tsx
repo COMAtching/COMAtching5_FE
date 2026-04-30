@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface MatchingAgeSectionProps {
   onAgeGroupSelect: (ageGroup: string) => void;
-  defaultValue?: string;
+  selected: string;
   disabled?: boolean;
 }
 
@@ -14,21 +14,11 @@ const AGE_GROUPS = ["연하", "동갑", "연상"];
 
 export default function MatchingAgeSection({
   onAgeGroupSelect,
-  defaultValue = "",
+  selected,
   disabled = false,
 }: MatchingAgeSectionProps) {
-  const [selected, setSelected] = React.useState(defaultValue);
-
-  // disabled 상태가 되면 선택 초기화
-  React.useEffect(() => {
-    if (disabled && selected) {
-      setSelected("");
-    }
-  }, [disabled]);
-
   const handleSelect = (group: string) => {
     if (disabled) return;
-    setSelected(group);
     onAgeGroupSelect(group);
   };
 

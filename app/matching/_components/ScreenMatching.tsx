@@ -161,7 +161,7 @@ const ScreenMatching = () => {
       <div className="flex w-full flex-col gap-4">
         <MatchingMBTISection
           onMBTISelect={setSelectedMBTI}
-          defaultValue={selectedMBTI}
+          selected={selectedMBTI}
         />
 
         <MatchingHobbySection
@@ -171,13 +171,13 @@ const ScreenMatching = () => {
 
         <MatchingAgeSection
           onAgeGroupSelect={setSelectedAgeGroup}
-          defaultValue={selectedAgeGroup}
+          selected={isAgeRangeActive ? "" : selectedAgeGroup}
           disabled={isAgeRangeActive}
         />
 
         <MatchingFrequencySection
           onFrequencySelect={setSelectedFrequency}
-          defaultValue={selectedFrequency}
+          selected={selectedFrequency}
         />
 
         <MatchingImportantOptionSection
