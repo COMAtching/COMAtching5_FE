@@ -19,6 +19,7 @@ import {
   useMatchingHistory,
   MatchingPartner,
 } from "@/hooks/useMatchingHistory";
+import { useRequestStatus } from "@/hooks/useRequestStatus";
 
 const ScreenMainPage = () => {
   // 실제 서비스 시에는 서버에서 받아온 데이터(notice)가 있는지 여부에 따라 렌더링을 결정할 수 있습니다.
@@ -31,6 +32,7 @@ const ScreenMainPage = () => {
 
   const [isNoticeVisible, setIsNoticeVisible] = useState(false);
   const { data: historyData, isLoading } = useMatchingHistory();
+  const { isPurchasePending } = useRequestStatus();
 
   useEffect(() => {
     // 로컬스토리지에 해당 공지 ID가 저장되어 있는지 확인
@@ -79,7 +81,7 @@ const ScreenMainPage = () => {
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
       <MainHeader />
       <MyCoinSection />
-      <ChargeRequestWaiting />
+      {isPurchasePending && <ChargeRequestWaiting />}
       {isNoticeVisible && noticeData && (
         <NoticeSection
           title={noticeData.title}

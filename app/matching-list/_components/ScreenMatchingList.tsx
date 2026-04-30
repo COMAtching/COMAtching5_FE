@@ -5,7 +5,6 @@ import React, { useMemo } from "react";
 import { useMatchingHistory } from "@/hooks/useMatchingHistory";
 import NoMatchingList from "./NoMatchingList";
 import YesMatchingList from "./YesMatchingList";
-import { DUMMY_MATCHING_HISTORY } from "./dummyData";
 
 const ScreenMatchingList = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -13,10 +12,7 @@ const ScreenMatchingList = () => {
 
   // 모든 페이지의 content를 하나의 배열로 평탄화
   const allHistory = useMemo(() => {
-    const apiData = data?.pages.flatMap((page) => page.data.content) ?? [];
-    const result = apiData.length > 0 ? apiData : DUMMY_MATCHING_HISTORY;
-    console.log("Processed allHistory data:", result);
-    return result;
+    return data?.pages.flatMap((page) => page?.data?.content || []) ?? [];
   }, [data]);
 
   return (

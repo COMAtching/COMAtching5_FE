@@ -48,6 +48,7 @@ export async function loginAction(
           maxAge?: number;
           expires?: Date;
           sameSite?: "strict" | "lax" | "none" | boolean;
+          domain?: string;
         } = {};
 
         options.forEach((opt) => {
