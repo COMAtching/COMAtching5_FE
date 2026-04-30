@@ -60,12 +60,18 @@ export async function adminLoginAction(
           if (k === "secure") cookieOptions.secure = true;
           if (k === "max-age") cookieOptions.maxAge = parseInt(val);
           if (k === "expires") cookieOptions.expires = new Date(val);
+          if (k === "domain") cookieOptions.domain = val;
           if (k === "samesite")
             cookieOptions.sameSite = val.toLowerCase() as
               | "strict"
               | "lax"
               | "none";
         });
+
+        // 배포 환경에서는 백엔드와 직접 통신하므로, 서브도메인 간 공유를 위해 명시적으로 도메인 설정
+        if (process.env.NODE_ENV === "production") {
+          cookieOptions.domain = ".comatching.site";
+        }
 
         cookieStore.set(name, value, cookieOptions);
       });

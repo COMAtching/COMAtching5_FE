@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // localhost:3000/api/* → srv.comatching.site/api/* 로 중계
   // 브라우저 입장에선 Same-Origin 요청이 되어 쿠키가 정상 동작함
   async rewrites() {
-    // 프로덕션 배포 환경에서는 rewrites 불필요
+    // 프로덕션 배포 환경에서는 rewrites 불필요 (백엔드와 직접 통신)
     if (process.env.NODE_ENV === "production") return [];
 
     const backendUrl =
