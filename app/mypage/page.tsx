@@ -10,20 +10,19 @@ import { ProfileResponse } from "@/hooks/useProfile";
 export default async function MyPage() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
+  const data = await queryClient.fetchQuery<ProfileResponse>({
     queryKey: ["myProfile"],
     queryFn: async () => {
       const res = await serverApi.get<ProfileResponse>({
         path: "/api/members/profile",
       });
-      console.log("[Server SSR] My Profile Data:", res.data);
       return res.data;
     },
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ScreenMyPage />
+      <ScreenMyPage initialProfile={data.data} />
     </HydrationBoundary>
   );
 }

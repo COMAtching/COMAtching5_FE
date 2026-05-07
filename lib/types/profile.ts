@@ -51,6 +51,7 @@ export interface ProfileData {
   hobbies?: Hobby[] | string[]; // UI에서는 string[], 제출 시 Hobby[]
   tags?: { tag: string }[];
   song?: string;
+  isMatchable?: boolean;
 }
 
 // 백엔드 전송용 타입 (필수 필드 및 변경된 스펙 반영)
@@ -69,4 +70,6 @@ export interface ProfileSubmitData {
   hobbies: Hobby[];
   tags: { tag: string }[] | null;
   song: string | null;
+  profileImageUrl?: string;
+  isMatchable?: boolean;
 }

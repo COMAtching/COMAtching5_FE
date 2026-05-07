@@ -10,7 +10,10 @@ import { ChevronRight, Shuffle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
-import { getDefaultProfilesByGender } from "@/lib/constants/defaultProfiles";
+import {
+  getDefaultProfilesByGender,
+  DEFAULT_PROFILE_ASSETS,
+} from "@/lib/constants/defaultProfiles";
 import type {
   Gender,
   ContactFrequency,
@@ -18,7 +21,18 @@ import type {
   Hobby,
 } from "@/lib/types/profile";
 import { useMyProfile, useUpdateMyProfile } from "@/hooks/useProfile";
+import { useImageUpload } from "@/hooks/useProfileSignUp";
 import { Loader2 } from "lucide-react";
+import HobbyEditDrawer from "./HobbyEditDrawer";
+import AdvantageEditDrawer from "./AdvantageEditDrawer";
+import FormSelect from "@/components/ui/FormSelect";
+import { majorCategories, universities } from "@/lib/constants/majors";
+import {
+  getDepartmentOptions,
+  getMajorOptions,
+  getUniversityOptions,
+} from "@/app/profile-builder/_lib/options";
+import Image from "next/image";
 
 /* ───── 상수 맵핑 ───── */
 
@@ -70,7 +84,11 @@ const MenuRow = ({
 
 /* ───── 메인 화면 ───── */
 
-const ScreenMyPage = () => {
+interface ScreenMyPageProps {
+  initialProfile: ProfileData;
+}
+
+const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const router = useRouter();
 
   // 서버에서 프로필 데이터 가져오기
@@ -79,18 +97,85 @@ const ScreenMyPage = () => {
 
   const profile = profileResponse?.data;
 
-  /* --- 로컬 편집 상태 --- */
-  const [nickname, setNickname] = useState("");
-  const [gender, setGender] = useState("");
-  const [mbtiEI, setMbtiEI] = useState("");
-  const [mbtiSN, setMbtiSN] = useState("");
-  const [mbtiTF, setMbtiTF] = useState("");
-  const [mbtiJP, setMbtiJP] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [intro, setIntro] = useState("");
-  const [song, setSong] = useState("");
-  const [tags, setTags] = useState("");
-  const [socialAccountId, setSocialAccountId] = useState("");
+  /* --- 로컬 편집 상태 (initialProfile로 즉시 초기화) --- */
+  const [nickname, setNickname] = useState(initialProfile.nickname || "");
+  const [gender, setGender] = useState(
+    initialProfile.gender
+      ? (reverseGenderMap[initialProfile.gender] ?? "")
+      : "",
+  );
+  const [mbtiEI, setMbtiEI] = useState(initialProfile.mbti?.[0] || "");
+  const [mbtiSN, setMbtiSN] = useState(initialProfile.mbti?.[1] || "");
+  const [mbtiTF, setMbtiTF] = useState(initialProfile.mbti?.[2] || "");
+  const [mbtiJP, setMbtiJP] = useState(initialProfile.mbti?.[3] || "");
+  const [frequency, setFrequency] = useState(
+    initialProfile.contactFrequency || "",
+  );
+  const [intro, setIntro] = useState(initialProfile.intro || "");
+  const [song, setSong] = useState(initialProfile.song || "");
+  const [tags, setTags] = useState<string[]>(
+    initialProfile.tags?.map((t) => t.tag) || [],
+  );
+  const [socialAccountId, setSocialAccountId] = useState(
+    initialProfile.socialType === "INSTAGRAM"
+      ? initialProfile.socialAccountId || ""
+      : "",
+  );
+  const [kakaoId, setKakaoId] = useState(
+    initialProfile.socialType === "KAKAO"
+      ? initialProfile.socialAccountId || ""
+      : "",
+  );
+  const [socialType, setSocialType] = useState<"INSTAGRAM" | "KAKAO">(
+    initialProfile.socialType || "INSTAGRAM",
+  );
+  const [editableBirthYear, setEditableBirthYear] = useState(
+    initialProfile.birthDate ? initialProfile.birthDate.split("-")[0] : "",
+  );
+  const [university, setUniversity] = useState(initialProfile.university || "");
+  const [major, setMajor] = useState(initialProfile.major || "");
+
+  const initialDepartment = useMemo(() => {
+    if (initialProfile.department) return initialProfile.department;
+    if (!initialProfile.university || !initialProfile.major) return "";
+    const uniObj = majorCategories.find(
+      (c) => c.label === initialProfile.university,
+    );
+    if (!uniObj) return "";
+    const deptObj = uniObj.departments.find((d) =>
+      d.majors.includes(initialProfile.major as string),
+    );
+    return deptObj ? deptObj.label : "";
+  }, [
+    initialProfile.university,
+    initialProfile.department,
+    initialProfile.major,
+  ]);
+
+  const [department, setDepartment] = useState(initialDepartment);
+  const [hobbies, setHobbies] = useState<Hobby[]>(
+    (initialProfile.hobbies as Hobby[]) || [],
+  );
+
+  // 모달 상태
+  const [isHobbyDrawerOpen, setIsHobbyDrawerOpen] = useState(false);
+  const [isAdvantageDrawerOpen, setIsAdvantageDrawerOpen] = useState(false);
+
+  const availableDefaultProfiles = useMemo(
+    () => getDefaultProfilesByGender(initialProfile.gender),
+    [initialProfile.gender],
+  );
+  const fallbackProfileId = availableDefaultProfiles[0]?.id || "dog";
+
+  const getProfileIdFromUrl = (url: string | undefined): string => {
+    if (!url) return fallbackProfileId;
+    const cleanUrl = url.replace("default_", "");
+    // url이 이미 "rabbit" 이거나, "https://.../rabbit_male%201.png" 일 때 대응
+    const asset = DEFAULT_PROFILE_ASSETS.find(
+      (p) => cleanUrl.includes(p.id) || cleanUrl.includes(p.id.toLowerCase()),
+    );
+    return asset ? asset.id : fallbackProfileId;
+  };
 
   // 프로필 이미지
   const [selectedType, setSelectedType] = useState<"default" | "custom">(
@@ -99,61 +184,39 @@ const ScreenMyPage = () => {
   const [customImagePreview, setCustomImagePreview] = useState<string | null>(
     null,
   );
-
-  const availableDefaultProfiles = useMemo(
-    () => getDefaultProfilesByGender(profile?.gender),
-    [profile?.gender],
+  const [profileImageUrl, setProfileImageUrl] = useState<string>(() =>
+    getProfileIdFromUrl(initialProfile.profileImageUrl),
   );
-  const fallbackProfileId = availableDefaultProfiles[0]?.id || "dog";
-
-  const hasInitialized = useRef(false);
-
-  /* --- 서버 데이터 → 로컬 편집 상태 동기화 --- */
-  useEffect(() => {
-    if (!profile || hasInitialized.current) return;
-
-    const timeoutId = setTimeout(() => {
-      setNickname(profile.nickname || "");
-      setGender(profile.gender ? (reverseGenderMap[profile.gender] ?? "") : "");
-      if (profile.mbti) {
-        setMbtiEI(profile.mbti[0] || "");
-        setMbtiSN(profile.mbti[1] || "");
-        setMbtiTF(profile.mbti[2] || "");
-        setMbtiJP(profile.mbti[3] || "");
-      }
-      setFrequency(profile.contactFrequency || "");
-      setIntro(profile.intro || "");
-      setSong(profile.song || "");
-      setSocialAccountId(profile.socialAccountId || "");
-
-      if (profile.tags && profile.tags.length > 0) {
-        setTags(profile.tags.map((t) => t.tag).join(", "));
-      }
-
-      hasInitialized.current = true;
-    }, 0);
-
-    return () => clearTimeout(timeoutId);
-  }, [profile]);
+  const [profileImageFile, setProfileImageFile] = useState<File | undefined>(
+    undefined,
+  );
 
   /* --- 파생 표시값 --- */
   const mbtiStr = `${mbtiEI}${mbtiSN}${mbtiTF}${mbtiJP}`;
-  const birthYear = profile?.birthDate
-    ? profile.birthDate.split("-")[0]
-    : undefined;
-  const currentYear = new Date().getFullYear();
-  const age = birthYear ? currentYear - Number(birthYear) + 1 : undefined;
 
   const hobbyDisplay = (() => {
-    if (!profile.hobbies || profile.hobbies.length === 0) return "선택 전";
-    const hobbies = profile.hobbies as Array<string | { name: string }>;
+    if (!hobbies || hobbies.length === 0) return "선택 전";
     const names = hobbies.map((h) => (typeof h === "string" ? h : h.name));
     if (names.length <= 2) return names.join(", ");
     return `${names[0]}, ${names[1]} 외 ${names.length - 2}개`;
   })();
 
+  const tagDisplay = (() => {
+    if (!tags || tags.length === 0) return "선택 전";
+    if (tags.length <= 2) return tags.join(", ");
+    return `${tags[0]}, ${tags[1]} 외 ${tags.length - 2}개`;
+  })();
+
+  const birthYear = initialProfile.birthDate
+    ? initialProfile.birthDate.split("-")[0]
+    : undefined;
+  const currentYear = new Date().getFullYear();
+  const age = birthYear ? currentYear - Number(birthYear) + 1 : undefined;
+
+  const { mutateAsync: uploadImage } = useImageUpload();
+
   /* --- 수정하기 제출 --- */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const normalizedMBTI = mbtiStr.toUpperCase();
     const mbtiSet = new Set<MBTI>([
       "ISTJ",
@@ -174,41 +237,106 @@ const ScreenMyPage = () => {
       "ENTJ",
     ]);
 
-    const payload = {
-      nickname: nickname.trim() || undefined,
-      gender: (genderMap[gender] as Gender) || undefined,
-      mbti: mbtiSet.has(normalizedMBTI as MBTI)
-        ? (normalizedMBTI as MBTI)
-        : undefined,
-      contactFrequency: (frequency as ContactFrequency) || undefined,
-      intro: intro.trim() || undefined,
-      song: song.trim() || undefined,
-      socialAccountId: socialAccountId.trim() || undefined,
-      tags: tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean)
-        .map((t) => ({ tag: t })),
-    };
+    // 연락처 포맷팅 (인스타그램인 경우 @ 추가)
+    let formattedSocialId = (
+      socialType === "INSTAGRAM" ? socialAccountId : kakaoId
+    ).trim();
+    if (
+      socialType === "INSTAGRAM" &&
+      formattedSocialId &&
+      !formattedSocialId.startsWith("@")
+    ) {
+      formattedSocialId = `@${formattedSocialId}`;
+    }
 
-    updateMyProfileMutate(payload, {
-      onSuccess: () => {
-        alert("프로필이 성공적으로 수정되었습니다.");
-      },
-      onError: () => {
-        alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
-      },
-    });
+    try {
+      let finalImageUrl: string;
+
+      if (profileImageFile) {
+        finalImageUrl = await uploadImage(profileImageFile);
+      } else if (profileImageUrl && !profileImageUrl.startsWith("default_")) {
+        finalImageUrl = `default_${profileImageUrl}`;
+      } else {
+        finalImageUrl = profileImageUrl || "default";
+      }
+
+      const payload = {
+        nickname: nickname.trim() || undefined,
+        gender: (genderMap[gender] as Gender) || undefined,
+        mbti: mbtiSet.has(normalizedMBTI as MBTI)
+          ? (normalizedMBTI as MBTI)
+          : undefined,
+        contactFrequency: (frequency as ContactFrequency) || undefined,
+        intro: intro.trim() || undefined,
+        song: song.trim() || undefined,
+        socialType: socialType,
+        socialAccountId: formattedSocialId || undefined,
+        major: major.trim() || undefined,
+        birthDate: editableBirthYear ? `${editableBirthYear}-01-01` : undefined,
+        hobbies: hobbies,
+        tags: tags.filter(Boolean).map((t) => ({ tag: t })),
+        profileImageKey: finalImageUrl || "default",
+        isMatchable: true,
+      };
+
+      updateMyProfileMutate(payload, {
+        onSuccess: () => {
+          alert("프로필이 성공적으로 수정되었습니다.");
+        },
+        onError: () => {
+          alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
+        },
+      });
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   /* --- 프로필 이미지 핸들러 --- */
   const handleSelectProfileType = (type: "default" | "custom") => {
     setSelectedType(type);
     if (type === "default") {
-      updateProfile({ profileImageFile: undefined });
+      setProfileImageFile(undefined);
       setCustomImagePreview(null);
     }
   };
+
+  const hasChanged = (() => {
+    const normalizedMBTI = mbtiStr.toUpperCase();
+    const serverMBTI = initialProfile.mbti || "";
+    const serverGender = initialProfile.gender === "MALE" ? "남자" : "여자";
+    const serverTags = JSON.stringify(
+      (initialProfile.tags || []).map((t) => t.tag).sort(),
+    );
+    const currentTagsStr = JSON.stringify([...tags].sort());
+    const serverHobbies = JSON.stringify(initialProfile.hobbies || []);
+    const currentHobbies = JSON.stringify(hobbies);
+    const serverBirthYear = initialProfile.birthDate
+      ? initialProfile.birthDate.split("-")[0]
+      : "";
+    const currentSocialId =
+      socialType === "INSTAGRAM" ? socialAccountId : kakaoId;
+
+    return (
+      nickname !== (initialProfile.nickname || "") ||
+      gender !== serverGender ||
+      normalizedMBTI !== serverMBTI ||
+      frequency !== (initialProfile.contactFrequency || "") ||
+      intro !== (initialProfile.intro || "") ||
+      song !== (initialProfile.song || "") ||
+      currentSocialId !== (initialProfile.socialAccountId || "") ||
+      socialType !== (initialProfile.socialType || "INSTAGRAM") ||
+      university !== (initialProfile.university || "") ||
+      department !== (initialProfile.department || "") ||
+      major !== (initialProfile.major || "") ||
+      editableBirthYear !== serverBirthYear ||
+      serverTags !== currentTagsStr ||
+      serverHobbies !== currentHobbies ||
+      profileImageUrl !== getProfileIdFromUrl(initialProfile.profileImageUrl) ||
+      profileImageFile !== undefined
+    );
+  })();
 
   return (
     <main className="flex min-h-screen flex-col pb-32">
@@ -230,14 +358,14 @@ const ScreenMyPage = () => {
           selected={selectedType}
           onSelect={handleSelectProfileType}
           gender={profile?.gender}
-          selectedProfile={profile?.profileImageUrl || fallbackProfileId}
+          selectedProfile={profileImageUrl}
           onProfileSelect={(id) => {
-            /* TODO: 프로필 이미지 ID(또는 URL) 업데이트 로직 */
+            setProfileImageUrl(id);
           }}
           customImage={customImagePreview}
           onCustomImageChange={setCustomImagePreview}
           onFileChange={(file) => {
-            /* TODO: 파일 업로드 로직 */
+            setProfileImageFile(file);
           }}
         />
       </section>
@@ -267,44 +395,122 @@ const ScreenMyPage = () => {
           </div>
 
           {/* 나이 */}
-          <MenuRow
-            label="나이"
-            value={
-              age ? (
-                <span className="flex items-center gap-2">
-                  <span>{age}세</span>
-                  <span className="inline-block h-1 w-1 rounded-full bg-[#999999]" />
-                  <span className="underline">{birthYear}년생</span>
-                </span>
-              ) : (
-                "미설정"
-              )
-            }
-          />
+          <div className="box-border flex w-full items-center border-b border-[#E5E5E5] py-6">
+            <span className="typo-16-600 shrink-0 text-[#1A1A1A]">나이</span>
+            <div className="ml-auto flex items-center gap-1">
+              <input
+                type="text"
+                maxLength={4}
+                value={editableBirthYear}
+                onChange={(e) => setEditableBirthYear(e.target.value.trim())}
+                placeholder="출생연도"
+                className="typo-16-600 w-[64px] bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
+              />
+              {editableBirthYear && (
+                <span className="typo-16-600 text-[#999999]">년생</span>
+              )}
+            </div>
+          </div>
 
           {/* 학과 */}
-          <MenuRow
-            label="학과"
-            value={profile.major || "미설정"}
-            underline
-            hasChevron
-          />
-
-          {/* 연락처 */}
-          <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
-            <span className="typo-16-600 shrink-0 text-[#1A1A1A]">연락처</span>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <span className="typo-16-600 text-[#999999]">인스타그램 :</span>
-                <input
-                  type="text"
-                  value={socialAccountId}
-                  onChange={(e) => setSocialAccountId(e.target.value)}
-                  placeholder="@아이디"
-                  className="typo-16-600 w-28 bg-transparent text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
+          <div className="box-border border-b border-[#E5E5E5] py-4">
+            <label className="typo-16-600 mb-4 block text-[#1A1A1A]">
+              학과
+            </label>
+            <div className="flex flex-col gap-3">
+              <FormSelect
+                id="university"
+                name="university"
+                options={getUniversityOptions(universities)}
+                placeholder="학교 선택"
+                value={university}
+                onChange={(e) => {
+                  setUniversity(e.target.value);
+                  setDepartment("");
+                  setMajor("");
+                }}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <FormSelect
+                  id="department"
+                  name="department"
+                  options={getDepartmentOptions(university, majorCategories)}
+                  placeholder="계열"
+                  value={department}
+                  disabled={!university}
+                  onChange={(e) => {
+                    setDepartment(e.target.value);
+                    setMajor("");
+                  }}
+                />
+                <FormSelect
+                  id="major"
+                  name="major"
+                  options={getMajorOptions(
+                    university,
+                    department,
+                    majorCategories,
+                  )}
+                  placeholder="전공"
+                  value={major}
+                  disabled={!department}
+                  onChange={(e) => setMajor(e.target.value)}
                 />
               </div>
-              <ChevronRight className="h-3 w-3 shrink-0 text-[#999999]" />
+            </div>
+          </div>
+
+          {/* 연락처 */}
+          <div className="box-border flex w-full items-center border-b border-[#E5E5E5] py-6">
+            <span className="typo-16-600 shrink-0 text-[#1A1A1A]">연락처</span>
+            <div className="ml-auto flex items-center gap-2">
+              {/* SNS 타입 토글 아이콘 */}
+              <button
+                type="button"
+                onClick={() => setSocialType("INSTAGRAM")}
+                className="flex-shrink-0"
+              >
+                <Image
+                  src={
+                    socialType === "INSTAGRAM"
+                      ? "/sns/insta-sns.svg"
+                      : "/sns/unactive-insta.svg"
+                  }
+                  alt="인스타그램"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
+              </button>
+              <button
+                type="button"
+                onClick={() => setSocialType("KAKAO")}
+                className="flex-shrink-0"
+              >
+                <Image
+                  src={
+                    socialType === "KAKAO"
+                      ? "/sns/kakao-sns.svg"
+                      : "/sns/unactive-kakao.svg"
+                  }
+                  alt="카카오톡"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
+              </button>
+              {/* 아이디 입력 */}
+              <input
+                type="text"
+                value={socialType === "INSTAGRAM" ? socialAccountId : kakaoId}
+                onChange={(e) =>
+                  socialType === "INSTAGRAM"
+                    ? setSocialAccountId(e.target.value.trim())
+                    : setKakaoId(e.target.value.trim())
+                }
+                placeholder="아이디 입력"
+                className="typo-16-600 w-[140px] bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
+              />
             </div>
           </div>
 
@@ -313,7 +519,7 @@ const ScreenMyPage = () => {
             label="관심사"
             value={hobbyDisplay}
             hasChevron
-            onClick={() => router.push("/hobby-select")}
+            onClick={() => setIsHobbyDrawerOpen(true)}
           />
 
           {/* ── 성별 ── */}
@@ -440,19 +646,12 @@ const ScreenMyPage = () => {
           </div>
 
           {/* 내 장점 */}
-          <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
-            <span className="typo-16-600 shrink-0 text-[#1A1A1A]">내 장점</span>
-            <div className="ml-4 flex flex-1 items-center justify-end gap-2">
-              <input
-                type="text"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="쉼표로 구분 (예: 유머, 다정함)"
-                className="typo-16-600 w-full bg-transparent text-right text-[#999999] outline-none placeholder:text-[#B3B3B3]"
-              />
-              <ChevronRight className="h-3 w-3 shrink-0 text-[#999999]" />
-            </div>
-          </div>
+          <MenuRow
+            label="내 장점"
+            value={tagDisplay}
+            hasChevron
+            onClick={() => setIsAdvantageDrawerOpen(true)}
+          />
 
           {/* 자기소개 */}
           <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
@@ -490,9 +689,32 @@ const ScreenMyPage = () => {
       </section>
 
       {/* ===== 하단 수정하기 버튼 ===== */}
-      <Button fixed bottom={40} sideGap={16} safeArea onClick={handleSubmit}>
+      <Button
+        fixed
+        bottom={40}
+        sideGap={16}
+        safeArea
+        onClick={handleSubmit}
+        disabled={!hasChanged}
+      >
         수정하기
       </Button>
+
+      {/* 관심사 수정 드로어 */}
+      <HobbyEditDrawer
+        isOpen={isHobbyDrawerOpen}
+        onClose={() => setIsHobbyDrawerOpen(false)}
+        initialHobbies={hobbies}
+        onSave={(updatedHobbies) => setHobbies(updatedHobbies)}
+      />
+
+      {/* 장점 수정 드로어 */}
+      <AdvantageEditDrawer
+        isOpen={isAdvantageDrawerOpen}
+        onClose={() => setIsAdvantageDrawerOpen(false)}
+        initialTags={tags}
+        onSave={(updatedTags) => setTags(updatedTags)}
+      />
     </main>
   );
 };
