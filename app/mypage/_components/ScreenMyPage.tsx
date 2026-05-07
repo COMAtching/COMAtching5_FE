@@ -70,6 +70,91 @@ const getProfileIdFromUrl = (
   return asset ? asset.id : fallbackProfileId;
 };
 
+interface CheckProfileChangedParams {
+  baseProfile: ProfileData;
+  nickname: string;
+  gender: string;
+  mbtiStr: string;
+  frequency: string;
+  intro: string;
+  song: string;
+  currentSocialId: string;
+  socialType: string;
+  university: string;
+  department: string;
+  major: string;
+  editableBirthYear: string;
+  currentTagsStr: string;
+  currentHobbies: string;
+  selectedType: string;
+  profileImageUrl: string;
+  profileImageFile: File | undefined;
+  fallbackProfileId: string;
+}
+
+const checkProfileChanged = (params: CheckProfileChangedParams) => {
+  const {
+    baseProfile,
+    nickname,
+    gender,
+    mbtiStr,
+    frequency,
+    intro,
+    song,
+    currentSocialId,
+    socialType,
+    university,
+    department,
+    major,
+    editableBirthYear,
+    currentTagsStr,
+    currentHobbies,
+    selectedType,
+    profileImageUrl,
+    profileImageFile,
+    fallbackProfileId,
+  } = params;
+
+  const normalizedMBTI = mbtiStr.toUpperCase();
+  const serverMBTI = baseProfile.mbti || "";
+  const serverGender = baseProfile.gender === "MALE" ? "남자" : "여자";
+  const serverTags = JSON.stringify(
+    (baseProfile.tags || []).map((t) => t.tag).sort(),
+  );
+  const serverHobbies = JSON.stringify(baseProfile.hobbies || []);
+  const serverBirthYear = baseProfile.birthDate
+    ? baseProfile.birthDate.split("-")[0]
+    : "";
+
+  const serverType =
+    baseProfile.profileImageUrl?.startsWith("http") &&
+    !baseProfile.profileImageUrl.includes("default_")
+      ? "custom"
+      : "default";
+
+  return (
+    nickname !== (baseProfile.nickname || "") ||
+    gender !== serverGender ||
+    normalizedMBTI !== serverMBTI ||
+    frequency !==
+      (getContactFrequencyLabel(baseProfile.contactFrequency) || "") ||
+    intro !== (baseProfile.intro || "") ||
+    song !== (baseProfile.song || "") ||
+    currentSocialId !== (baseProfile.socialAccountId || "") ||
+    socialType !== (baseProfile.socialType || "INSTAGRAM") ||
+    university !== (baseProfile.university || "") ||
+    department !== (baseProfile.department || "") ||
+    major !== (baseProfile.major || "") ||
+    editableBirthYear !== serverBirthYear ||
+    serverTags !== currentTagsStr ||
+    serverHobbies !== currentHobbies ||
+    selectedType !== serverType ||
+    profileImageUrl !==
+      getProfileIdFromUrl(baseProfile.profileImageUrl, fallbackProfileId) ||
+    profileImageFile !== undefined
+  );
+};
+
 /* ───── 메인 화면 ───── */
 
 interface ScreenMyPageProps {
