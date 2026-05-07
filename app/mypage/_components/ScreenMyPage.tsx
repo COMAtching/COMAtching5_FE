@@ -34,6 +34,11 @@ import {
 } from "@/app/profile-builder/_lib/options";
 import Image from "next/image";
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
+import {
+  useNicknameAvailability,
+  NicknameAvailabilityResponse,
+} from "@/hooks/useNicknameAvailability";
+import axios from "axios";
 
 /* ───── 상수 맵핑 ───── */
 
@@ -101,6 +106,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   // 서버에서 프로필 데이터 가져오기
   const { data: profileResponse, isLoading, isError } = useMyProfile();
   const { mutate: updateMyProfileMutate } = useUpdateMyProfile();
+  const { mutateAsync: checkNicknameAvailability } = useNicknameAvailability();
 
   const profile = profileResponse?.data;
 
@@ -224,6 +230,39 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
 
   /* --- 수정하기 제출 --- */
   const handleSubmit = async () => {
+    const trimmedNickname = nickname.trim();
+    if (!trimmedNickname) {
+      alert("닉네임을 입력해 주세요.");
+      return;
+    }
+
+    // 닉네임이 변경된 경우에만 중복 검사
+    if (trimmedNickname !== (initialProfile.nickname || "")) {
+      try {
+        const res = await checkNicknameAvailability(trimmedNickname);
+        if (res.code === "GEN-000") {
+          const isAvailable =
+            typeof res.data === "object"
+              ? res.data?.available || res.data?.isAvailable
+              : res.data;
+          if (!isAvailable) {
+            alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 사용해주세요.");
+            return;
+          }
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const res = error.response?.data as NicknameAvailabilityResponse;
+          if (res?.code === "MEM-009") {
+            alert("공백은 닉네임으로 사용할 수 없습니다.");
+            return;
+          }
+        }
+        alert("닉네임 중복 확인 중 오류가 발생했습니다.");
+        return;
+      }
+    }
+
     const normalizedMBTI = mbtiStr.toUpperCase();
     const mbtiSet = new Set<MBTI>([
       "ISTJ",
@@ -385,10 +424,14 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           {/* 닉네임 */}
           <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
             <span className="typo-16-600 shrink-0 text-[#1A1A1A]">닉네임</span>
-            <div className="flex items-center gap-2">
-              <span className="typo-16-600 text-[#999999] underline">
-                {nickname || "미설정"}
-              </span>
+            <div className="ml-4 flex flex-1 items-center justify-end gap-2">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="닉네임 입력"
+                className="typo-16-600 w-full bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
+              />
               <button
                 type="button"
                 onClick={() => {
@@ -409,8 +452,12 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               <input
                 type="text"
                 maxLength={4}
+                inputMode="numeric"
                 value={editableBirthYear}
-                onChange={(e) => setEditableBirthYear(e.target.value.trim())}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, "");
+                  setEditableBirthYear(val);
+                }}
                 placeholder="출생연도"
                 className="typo-16-600 w-[64px] bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
               />
