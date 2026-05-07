@@ -11,7 +11,14 @@ import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
 import { getDefaultProfilesByGender } from "@/lib/constants/defaultProfiles";
-import type { Gender, ContactFrequency, MBTI } from "@/lib/types/profile";
+import type {
+  Gender,
+  ContactFrequency,
+  MBTI,
+  Hobby,
+} from "@/lib/types/profile";
+import { useMyProfile, useUpdateMyProfile } from "@/hooks/useProfile";
+import { Loader2 } from "lucide-react";
 
 /* ───── 상수 맵핑 ───── */
 
@@ -19,17 +26,6 @@ const genderMap: Record<string, Gender> = { 남자: "MALE", 여자: "FEMALE" };
 const reverseGenderMap: Record<string, string> = {
   MALE: "남자",
   FEMALE: "여자",
-};
-
-const contactFrequencyMap: Record<string, ContactFrequency> = {
-  자주: "FREQUENT",
-  보통: "NORMAL",
-  적음: "RARE",
-};
-const reverseContactFrequencyMap: Record<string, string> = {
-  FREQUENT: "자주",
-  NORMAL: "보통",
-  RARE: "적음",
 };
 
 const INTRO_MAX_LENGTH = 60;
@@ -76,9 +72,12 @@ const MenuRow = ({
 
 const ScreenMyPage = () => {
   const router = useRouter();
-  const profile = useProfileStore((s) => s.profile);
-  const updateProfile = useProfileStore((s) => s.updateProfile);
-  const isReady = useProfileStore((s) => s.isReady);
+
+  // 서버에서 프로필 데이터 가져오기
+  const { data: profileResponse, isLoading, isError } = useMyProfile();
+  const { mutate: updateMyProfileMutate } = useUpdateMyProfile();
+
+  const profile = profileResponse?.data;
 
   /* --- 로컬 편집 상태 --- */
   const [nickname, setNickname] = useState("");
@@ -102,16 +101,16 @@ const ScreenMyPage = () => {
   );
 
   const availableDefaultProfiles = useMemo(
-    () => getDefaultProfilesByGender(profile.gender),
-    [profile.gender],
+    () => getDefaultProfilesByGender(profile?.gender),
+    [profile?.gender],
   );
   const fallbackProfileId = availableDefaultProfiles[0]?.id || "dog";
 
   const hasInitialized = useRef(false);
 
-  /* --- 프로필 스토어 → 로컬 상태 동기화 --- */
+  /* --- 서버 데이터 → 로컬 편집 상태 동기화 --- */
   useEffect(() => {
-    if (!isReady || hasInitialized.current) return;
+    if (!profile || hasInitialized.current) return;
 
     const timeoutId = setTimeout(() => {
       setNickname(profile.nickname || "");
@@ -122,11 +121,7 @@ const ScreenMyPage = () => {
         setMbtiTF(profile.mbti[2] || "");
         setMbtiJP(profile.mbti[3] || "");
       }
-      setFrequency(
-        profile.contactFrequency
-          ? (reverseContactFrequencyMap[profile.contactFrequency] ?? "")
-          : "",
-      );
+      setFrequency(profile.contactFrequency || "");
       setIntro(profile.intro || "");
       setSong(profile.song || "");
       setSocialAccountId(profile.socialAccountId || "");
@@ -139,11 +134,11 @@ const ScreenMyPage = () => {
     }, 0);
 
     return () => clearTimeout(timeoutId);
-  }, [isReady, profile]);
+  }, [profile]);
 
   /* --- 파생 표시값 --- */
   const mbtiStr = `${mbtiEI}${mbtiSN}${mbtiTF}${mbtiJP}`;
-  const birthYear = profile.birthDate
+  const birthYear = profile?.birthDate
     ? profile.birthDate.split("-")[0]
     : undefined;
   const currentYear = new Date().getFullYear();
@@ -179,13 +174,13 @@ const ScreenMyPage = () => {
       "ENTJ",
     ]);
 
-    updateProfile({
+    const payload = {
       nickname: nickname.trim() || undefined,
-      gender: genderMap[gender] || undefined,
+      gender: (genderMap[gender] as Gender) || undefined,
       mbti: mbtiSet.has(normalizedMBTI as MBTI)
         ? (normalizedMBTI as MBTI)
         : undefined,
-      contactFrequency: contactFrequencyMap[frequency] || undefined,
+      contactFrequency: (frequency as ContactFrequency) || undefined,
       intro: intro.trim() || undefined,
       song: song.trim() || undefined,
       socialAccountId: socialAccountId.trim() || undefined,
@@ -194,10 +189,16 @@ const ScreenMyPage = () => {
         .map((t) => t.trim())
         .filter(Boolean)
         .map((t) => ({ tag: t })),
-    });
+    };
 
-    alert("프로필이 수정되었습니다.");
-    // TODO: 실제 PATCH API 호출로 교체
+    updateMyProfileMutate(payload, {
+      onSuccess: () => {
+        alert("프로필이 성공적으로 수정되었습니다.");
+      },
+      onError: () => {
+        alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
+      },
+    });
   };
 
   /* --- 프로필 이미지 핸들러 --- */
@@ -228,12 +229,16 @@ const ScreenMyPage = () => {
         <ProfileImageSelection
           selected={selectedType}
           onSelect={handleSelectProfileType}
-          gender={profile.gender}
-          selectedProfile={profile.profileImageUrl || fallbackProfileId}
-          onProfileSelect={(id) => updateProfile({ profileImageUrl: id })}
+          gender={profile?.gender}
+          selectedProfile={profile?.profileImageUrl || fallbackProfileId}
+          onProfileSelect={(id) => {
+            /* TODO: 프로필 이미지 ID(또는 URL) 업데이트 로직 */
+          }}
           customImage={customImagePreview}
           onCustomImageChange={setCustomImagePreview}
-          onFileChange={(file) => updateProfile({ profileImageFile: file })}
+          onFileChange={(file) => {
+            /* TODO: 파일 업로드 로직 */
+          }}
         />
       </section>
 

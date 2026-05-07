@@ -28,8 +28,8 @@ const MatchingButton = () => {
 
 const SearchMyListButton = () => {
   return (
-    <button
-      type="button"
+    <Link
+      href="/matching-list"
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
@@ -40,7 +40,7 @@ const SearchMyListButton = () => {
         <span className="typo-18-600 text-color-gray-700">🔍</span>
         <span className="typo-18-600 text-color-gray-900">조회하기</span>
       </div>
-    </button>
+    </Link>
   );
 };
 

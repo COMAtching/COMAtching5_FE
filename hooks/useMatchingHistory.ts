@@ -6,7 +6,12 @@ import {
   Hobby,
   ContactFrequency,
 } from "@/lib/types/profile";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  InfiniteData,
+} from "@tanstack/react-query";
 
 export interface MatchingPartner {
   memberId: number;
@@ -85,5 +90,70 @@ export const useMatchingHistory = () => {
     },
     staleTime: Infinity,
     gcTime: 1000 * 60 * 60,
+  });
+};
+
+/** 매칭 히스토리 즐겨찾기 변경 */
+export const updateFavorite = async (
+  historyId: number,
+  favorite: boolean,
+): Promise<void> => {
+  await api.post("/api/matching/history/favorite", {
+    historyId,
+    favorite,
+  });
+};
+
+/** 매칭 히스토리 즐겨찾기 변경 mutation */
+export const useUpdateFavorite = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      historyId,
+      favorite,
+    }: {
+      historyId: number;
+      favorite: boolean;
+    }) => updateFavorite(historyId, favorite),
+    onMutate: async ({ historyId, favorite }) => {
+      // 캔슬 쿼리
+      await queryClient.cancelQueries({ queryKey: ["matchingHistory"] });
+
+      // 이전 값 저장
+      const previousHistory = queryClient.getQueryData(["matchingHistory"]);
+
+      // 낙관적 업데이트
+      queryClient.setQueryData<InfiniteData<MatchingHistoryResponse>>(
+        ["matchingHistory"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                content: page.data.content.map((item) =>
+                  item.historyId === historyId ? { ...item, favorite } : item,
+                ),
+              },
+            })),
+          };
+        },
+      );
+
+      return { previousHistory };
+    },
+    onError: (err, variables, context) => {
+      // 에러 발생 시 롤백
+      if (context?.previousHistory) {
+        queryClient.setQueryData(["matchingHistory"], context.previousHistory);
+      }
+    },
+    onSettled: () => {
+      // 최종적으로 무효화
+      queryClient.invalidateQueries({ queryKey: ["matchingHistory"] });
+    },
   });
 };
