@@ -108,7 +108,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const [nickname, setNickname] = useState(initialProfile.nickname || "");
   const [gender, setGender] = useState(
     initialProfile.gender
-      ? (reverseGenderMap[initialProfile.gender] ?? "")
+      ? (reverseGenderMap[initialProfile.gender] ?? initialProfile.gender)
       : "",
   );
   const [mbtiEI, setMbtiEI] = useState(initialProfile.mbti?.[0] || "");
@@ -329,7 +329,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       nickname !== (initialProfile.nickname || "") ||
       gender !== serverGender ||
       normalizedMBTI !== serverMBTI ||
-      frequency !== (getContactFrequencyLabel(initialProfile.contactFrequency) || "") ||
+      frequency !==
+        (getContactFrequencyLabel(initialProfile.contactFrequency) || "") ||
       intro !== (initialProfile.intro || "") ||
       song !== (initialProfile.song || "") ||
       currentSocialId !== (initialProfile.socialAccountId || "") ||
