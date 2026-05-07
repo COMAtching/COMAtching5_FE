@@ -33,6 +33,7 @@ import {
   getUniversityOptions,
 } from "@/app/profile-builder/_lib/options";
 import Image from "next/image";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
 /* ───── 상수 맵핑 ───── */
 
@@ -46,12 +47,6 @@ const frequencyMap: Record<string, ContactFrequency> = {
   자주: "FREQUENT",
   보통: "NORMAL",
   적음: "RARE",
-};
-
-const reverseFrequencyMap: Record<string, string> = {
-  FREQUENT: "자주",
-  NORMAL: "보통",
-  RARE: "적음",
 };
 
 const INTRO_MAX_LENGTH = 60;
@@ -121,9 +116,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const [mbtiTF, setMbtiTF] = useState(initialProfile.mbti?.[2] || "");
   const [mbtiJP, setMbtiJP] = useState(initialProfile.mbti?.[3] || "");
   const [frequency, setFrequency] = useState(
-    initialProfile.contactFrequency
-      ? (reverseFrequencyMap[initialProfile.contactFrequency] ?? "")
-      : "",
+    getContactFrequencyLabel(initialProfile.contactFrequency) || "",
   );
   const [intro, setIntro] = useState(initialProfile.intro || "");
   const [song, setSong] = useState(initialProfile.song || "");
@@ -336,8 +329,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       nickname !== (initialProfile.nickname || "") ||
       gender !== serverGender ||
       normalizedMBTI !== serverMBTI ||
-      frequency !==
-        (reverseFrequencyMap[initialProfile.contactFrequency || ""] || "") ||
+      frequency !== (getContactFrequencyLabel(initialProfile.contactFrequency) || "") ||
       intro !== (initialProfile.intro || "") ||
       song !== (initialProfile.song || "") ||
       currentSocialId !== (initialProfile.socialAccountId || "") ||
