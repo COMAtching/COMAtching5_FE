@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import ProfileButton from "./ProfileButton";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
 interface Step4ContactFrequencyProps {
   onFrequencySelect: (frequency: string) => void;
@@ -12,7 +13,9 @@ export default function Step4ContactFrequency({
   onFrequencySelect,
   defaultValue,
 }: Step4ContactFrequencyProps) {
-  const [selected, setSelected] = useState(defaultValue || "");
+  const [selected, setSelected] = useState(
+    getContactFrequencyLabel(defaultValue) || "",
+  );
 
   const handleSelect = (frequency: string) => {
     setSelected(frequency);

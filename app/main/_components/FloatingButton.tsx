@@ -1,6 +1,7 @@
 import React from "react";
 import { Send, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type FloatingButtonProps = {
   fixed?: boolean;
@@ -21,13 +22,13 @@ const FloatingButton = ({ fixed = false }: FloatingButtonProps) => {
       >
         <Send size={20} />
       </button>
-      <button
-        type="button"
+      <Link
+        href="/mypage"
         aria-label="마이페이지 열기"
         className="flex items-center justify-center transition-opacity hover:opacity-70 focus:outline-none"
       >
         <UserRound size={20} />
-      </button>
+      </Link>
     </div>
   );
 };

@@ -17,7 +17,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "spring_sunshine_",
       university: "한국대학교",
       major: "경영학과",
-      contactFrequency: "자주",
+      contactFrequency: "FREQUENT",
       hobbies: [
         { category: "CULTURE", name: "카페투어" },
         { category: "TRAVEL", name: "여행" },
@@ -49,7 +49,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "winter_sea22",
       university: "서울대학교",
       major: "심리학과",
-      contactFrequency: "보통",
+      contactFrequency: "NORMAL",
       hobbies: [
         { category: "CULTURE", name: "독서" },
         { category: "MUSIC", name: "피아노" },
@@ -80,7 +80,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "moonlight_girl",
       university: "연세대학교",
       major: "컴퓨터공학과",
-      contactFrequency: "자주",
+      contactFrequency: "FREQUENT",
       hobbies: [
         { category: "GAME", name: "보드게임" },
         { category: "DAILY", name: "코딩" },
@@ -113,7 +113,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "summer_scent__",
       university: "고려대학교",
       major: "미술학과",
-      contactFrequency: "적음",
+      contactFrequency: "RARE",
       hobbies: [
         { category: "MUSIC", name: "그림" },
         { category: "TRAVEL", name: "사진촬영" },
@@ -144,7 +144,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "star_narae",
       university: "한양대학교",
       major: "체육학과",
-      contactFrequency: "자주",
+      contactFrequency: "FREQUENT",
       hobbies: [
         { category: "SPORTS", name: "헬스" },
         { category: "SPORTS", name: "러닝" },
@@ -176,7 +176,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "flower_between",
       university: "이화여자대학교",
       major: "국문학과",
-      contactFrequency: "보통",
+      contactFrequency: "NORMAL",
       hobbies: [
         { category: "CULTURE", name: "시 쓰기" },
         { category: "CULTURE", name: "전시회" },
@@ -207,7 +207,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: null,
       university: "성균관대학교",
       major: "의상학과",
-      contactFrequency: "자주",
+      contactFrequency: "FREQUENT",
       hobbies: [
         { category: "DAILY", name: "쇼핑" },
         { category: "CULTURE", name: "뮤지컬" },
@@ -235,7 +235,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "wave_sound25",
       university: "KAIST",
       major: "전산학부",
-      contactFrequency: "적음",
+      contactFrequency: "RARE",
       hobbies: [
         { category: "GAME", name: "체스" },
         { category: "DAILY", name: "독서" },
@@ -267,7 +267,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: null,
       university: "한국대학교",
       major: "(알 수 없음)",
-      contactFrequency: "보통",
+      contactFrequency: "NORMAL",
       hobbies: [{ category: "SPORTS", name: "헬스" }],
       tags: null,
       song: null,
@@ -292,7 +292,7 @@ export const DUMMY_MATCHING_HISTORY: MatchingHistoryItem[] = [
       socialAccountId: "dawn_dew_18",
       university: "중앙대학교",
       major: "기계공학과",
-      contactFrequency: "보통",
+      contactFrequency: "NORMAL",
       hobbies: [
         { category: "SPORTS", name: "자전거" },
         { category: "TRAVEL", name: "캠핑" },

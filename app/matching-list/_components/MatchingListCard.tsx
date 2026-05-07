@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { getAge } from "@/lib/utils/date";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -109,7 +110,7 @@ const CardStats = ({ partner }: { partner: MatchingPartner }) => (
         연락빈도
       </span>
       <span className="typo-16-700 text-color-text-black">
-        {partner.contactFrequency}
+        {getContactFrequencyLabel(partner.contactFrequency)}
       </span>
     </div>
   </div>
