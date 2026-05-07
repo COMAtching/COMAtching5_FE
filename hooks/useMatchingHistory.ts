@@ -27,7 +27,7 @@ export interface MatchingPartner {
   socialAccountId: string | null;
   university: string;
   major: string;
-  contactFrequency: string;
+  contactFrequency: ContactFrequency;
   hobbies: { category: string; name: string }[] | null;
   tags: { tag: string }[] | null;
   song: string | null;

@@ -1,24 +1,13 @@
 "use client";
 
-import { Hobby, ProfileData } from "@/lib/types/profile";
+import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
 import Image from "next/image";
 import { Send } from "lucide-react";
 import React, { useRef } from "react";
 
-/* ── 유틸 함수 ── */
-const getContactFrequencyLabel = (freq?: string) => {
-  switch (freq) {
-    case "FREQUENT":
-      return "자주";
-    case "NORMAL":
-      return "보통";
-    case "RARE":
-      return "드물게";
-    default:
-      return freq || "보통";
-  }
-};
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
+/* ── 유틸 함수 ── */
 const getAge = (birthDate?: string) => {
   if (!birthDate) return "?? ";
   return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;

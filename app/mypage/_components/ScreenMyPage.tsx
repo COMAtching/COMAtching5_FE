@@ -42,6 +42,18 @@ const reverseGenderMap: Record<string, string> = {
   FEMALE: "여자",
 };
 
+const frequencyMap: Record<string, ContactFrequency> = {
+  자주: "FREQUENT",
+  보통: "NORMAL",
+  적음: "RARE",
+};
+
+const reverseFrequencyMap: Record<string, string> = {
+  FREQUENT: "자주",
+  NORMAL: "보통",
+  RARE: "적음",
+};
+
 const INTRO_MAX_LENGTH = 60;
 
 /* ───── 메뉴 행 컴포넌트 ───── */
@@ -109,7 +121,9 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const [mbtiTF, setMbtiTF] = useState(initialProfile.mbti?.[2] || "");
   const [mbtiJP, setMbtiJP] = useState(initialProfile.mbti?.[3] || "");
   const [frequency, setFrequency] = useState(
-    initialProfile.contactFrequency || "",
+    initialProfile.contactFrequency
+      ? (reverseFrequencyMap[initialProfile.contactFrequency] ?? "")
+      : "",
   );
   const [intro, setIntro] = useState(initialProfile.intro || "");
   const [song, setSong] = useState(initialProfile.song || "");
@@ -266,7 +280,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         mbti: mbtiSet.has(normalizedMBTI as MBTI)
           ? (normalizedMBTI as MBTI)
           : undefined,
-        contactFrequency: (frequency as ContactFrequency) || undefined,
+        contactFrequency: frequencyMap[frequency] || undefined,
         intro: intro.trim() || undefined,
         song: song.trim() || undefined,
         socialType: socialType,
@@ -322,7 +336,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       nickname !== (initialProfile.nickname || "") ||
       gender !== serverGender ||
       normalizedMBTI !== serverMBTI ||
-      frequency !== (initialProfile.contactFrequency || "") ||
+      frequency !==
+        (reverseFrequencyMap[initialProfile.contactFrequency || ""] || "") ||
       intro !== (initialProfile.intro || "") ||
       song !== (initialProfile.song || "") ||
       currentSocialId !== (initialProfile.socialAccountId || "") ||

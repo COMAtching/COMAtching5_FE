@@ -2,6 +2,7 @@
 
 import React from "react";
 import ProfileButton from "../../profile-builder/_components/ProfileButton";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
 interface MatchingFrequencySectionProps {
   onFrequencySelect: (frequency: string) => void;
@@ -32,7 +33,7 @@ export default function MatchingFrequencySection({
         {OPTIONS.map((option) => (
           <ProfileButton
             key={option}
-            selected={selected === option}
+            selected={getContactFrequencyLabel(selected) === option}
             onClick={() => handleSelect(option)}
           >
             {option}

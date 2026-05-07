@@ -19,7 +19,7 @@ export type MBTI =
   | "ENFJ"
   | "ENTJ";
 export type SocialType = "INSTAGRAM" | "KAKAO";
-export type ContactFrequency = "자주" | "보통" | "적음";
+export type ContactFrequency = "FREQUENT" | "NORMAL" | "RARE";
 
 export interface Hobby {
   category: string;

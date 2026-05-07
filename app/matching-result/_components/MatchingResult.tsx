@@ -5,6 +5,7 @@ import {
 } from "@/lib/utils/matching";
 import Image from "next/image";
 import React from "react";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 
 const MatchingResult = () => {
   // 임시 데이터 (상수에 존재하는 값들로 구성)
@@ -13,7 +14,7 @@ const MatchingResult = () => {
     major: "정보통신전자공학부",
     age: "21",
     mbti: "ENTP",
-    contactFrequency: "보통",
+    contactFrequency: "NORMAL",
     hobbies: ["축구", "영화감상", "캠핑", "코딩", "게임"],
     strengths: ["다정다감", "유머러스", "계획적"],
     song: "한로로 - 사랑하게 될 거야",
@@ -84,7 +85,7 @@ const MatchingResult = () => {
               연락빈도
             </span>
             <span className="typo-16-700 flex w-full items-center text-black">
-              {data.contactFrequency}
+              {getContactFrequencyLabel(data.contactFrequency)}
             </span>
           </div>
         </div>
