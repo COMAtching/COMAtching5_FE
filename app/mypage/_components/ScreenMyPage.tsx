@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useMemo } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
 import ProfileButton from "@/app/profile-builder/_components/ProfileButton";
 import ProfileImageSelection from "@/app/profile-image/_components/ProfileImageSelection";
 import { ChevronRight, Shuffle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useProfileStore } from "@/stores/profile-store";
 import { generateRandomNickname } from "@/lib/utils/nickname";
 import {
   getDefaultProfilesByGender,
@@ -19,12 +17,14 @@ import type {
   ContactFrequency,
   MBTI,
   Hobby,
+  ProfileData,
 } from "@/lib/types/profile";
 import { useMyProfile, useUpdateMyProfile } from "@/hooks/useProfile";
 import { useImageUpload } from "@/hooks/useProfileSignUp";
 import { Loader2 } from "lucide-react";
 import HobbyEditDrawer from "./HobbyEditDrawer";
 import AdvantageEditDrawer from "./AdvantageEditDrawer";
+import { MenuRow } from "./MenuRow";
 import FormSelect from "@/components/ui/FormSelect";
 import { majorCategories, universities } from "@/lib/constants/majors";
 import {
@@ -56,43 +56,19 @@ const frequencyMap: Record<string, ContactFrequency> = {
 
 const INTRO_MAX_LENGTH = 60;
 
-/* ───── 메뉴 행 컴포넌트 ───── */
-
-interface MenuRowProps {
-  label: string;
-  value?: React.ReactNode;
-  hasChevron?: boolean;
-  underline?: boolean;
-  onClick?: () => void;
-}
-
-const MenuRow = ({
-  label,
-  value,
-  hasChevron = false,
-  underline = false,
-  onClick,
-}: MenuRowProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6 text-left"
-  >
-    <span className="typo-16-600 shrink-0 text-[#1A1A1A]">{label}</span>
-    <div className="flex items-center gap-2">
-      {value && (
-        <span
-          className={cn("typo-16-600 text-[#999999]", underline && "underline")}
-        >
-          {value}
-        </span>
-      )}
-      {hasChevron && (
-        <ChevronRight className="h-3 w-3 shrink-0 text-[#999999]" />
-      )}
-    </div>
-  </button>
-);
+/* ───── 유틸 함수 ───── */
+const getProfileIdFromUrl = (
+  url: string | undefined,
+  fallbackProfileId: string,
+): string => {
+  if (!url) return fallbackProfileId;
+  const cleanUrl = url.replace("default_", "");
+  // url이 이미 "rabbit" 이거나, "https://.../rabbit_male%201.png" 일 때 대응
+  const asset = DEFAULT_PROFILE_ASSETS.find(
+    (p) => cleanUrl.includes(p.id) || cleanUrl.includes(p.id.toLowerCase()),
+  );
+  return asset ? asset.id : fallbackProfileId;
+};
 
 /* ───── 메인 화면 ───── */
 
@@ -101,12 +77,16 @@ interface ScreenMyPageProps {
 }
 
 const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
-  const router = useRouter();
-
   // 서버에서 프로필 데이터 가져오기
   const { data: profileResponse, isLoading, isError } = useMyProfile();
-  const { mutate: updateMyProfileMutate } = useUpdateMyProfile();
-  const { mutateAsync: checkNicknameAvailability } = useNicknameAvailability();
+  const { mutate: updateMyProfileMutate, isPending: isUpdating } =
+    useUpdateMyProfile();
+  const {
+    mutateAsync: checkNicknameAvailability,
+    isPending: isCheckingNickname,
+  } = useNicknameAvailability();
+
+  const isSubmitting = isUpdating || isCheckingNickname;
 
   const profile = profileResponse?.data;
 
@@ -180,26 +160,29 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   );
   const fallbackProfileId = availableDefaultProfiles[0]?.id || "dog";
 
-  const getProfileIdFromUrl = (url: string | undefined): string => {
-    if (!url) return fallbackProfileId;
-    const cleanUrl = url.replace("default_", "");
-    // url이 이미 "rabbit" 이거나, "https://.../rabbit_male%201.png" 일 때 대응
-    const asset = DEFAULT_PROFILE_ASSETS.find(
-      (p) => cleanUrl.includes(p.id) || cleanUrl.includes(p.id.toLowerCase()),
-    );
-    return asset ? asset.id : fallbackProfileId;
-  };
-
   // 프로필 이미지
-  const [selectedType, setSelectedType] = useState<"default" | "custom">(
-    "default",
-  );
+  const [selectedType, setSelectedType] = useState<"default" | "custom">(() => {
+    const url = initialProfile.profileImageUrl;
+    if (url && url.startsWith("http") && !url.includes("default_")) {
+      return "custom";
+    }
+    return "default";
+  });
+
   const [customImagePreview, setCustomImagePreview] = useState<string | null>(
-    null,
+    () => {
+      const url = initialProfile.profileImageUrl;
+      if (url && url.startsWith("http") && !url.includes("default_")) {
+        return url;
+      }
+      return null;
+    },
   );
+
   const [profileImageUrl, setProfileImageUrl] = useState<string>(() =>
-    getProfileIdFromUrl(initialProfile.profileImageUrl),
+    getProfileIdFromUrl(initialProfile.profileImageUrl, fallbackProfileId),
   );
+
   const [profileImageFile, setProfileImageFile] = useState<File | undefined>(
     undefined,
   );
@@ -339,7 +322,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     }
   };
 
-  /* --- 프로필 이미지 핸들러 --- */
+  /* ───── 프로필 이미지 핸들러 ───── */
   const handleSelectProfileType = (type: "default" | "custom") => {
     setSelectedType(type);
     if (type === "default") {
@@ -348,42 +331,57 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     }
   };
 
-  const hasChanged = (() => {
-    const normalizedMBTI = mbtiStr.toUpperCase();
-    const serverMBTI = initialProfile.mbti || "";
-    const serverGender = initialProfile.gender === "MALE" ? "남자" : "여자";
-    const serverTags = JSON.stringify(
-      (initialProfile.tags || []).map((t) => t.tag).sort(),
-    );
+  const baseProfile = profile || initialProfile;
+
+  const hasChanged = useMemo(() => {
     const currentTagsStr = JSON.stringify([...tags].sort());
-    const serverHobbies = JSON.stringify(initialProfile.hobbies || []);
     const currentHobbies = JSON.stringify(hobbies);
-    const serverBirthYear = initialProfile.birthDate
-      ? initialProfile.birthDate.split("-")[0]
-      : "";
     const currentSocialId =
       socialType === "INSTAGRAM" ? socialAccountId : kakaoId;
 
-    return (
-      nickname !== (initialProfile.nickname || "") ||
-      gender !== serverGender ||
-      normalizedMBTI !== serverMBTI ||
-      frequency !==
-        (getContactFrequencyLabel(initialProfile.contactFrequency) || "") ||
-      intro !== (initialProfile.intro || "") ||
-      song !== (initialProfile.song || "") ||
-      currentSocialId !== (initialProfile.socialAccountId || "") ||
-      socialType !== (initialProfile.socialType || "INSTAGRAM") ||
-      university !== (initialProfile.university || "") ||
-      department !== (initialProfile.department || "") ||
-      major !== (initialProfile.major || "") ||
-      editableBirthYear !== serverBirthYear ||
-      serverTags !== currentTagsStr ||
-      serverHobbies !== currentHobbies ||
-      profileImageUrl !== getProfileIdFromUrl(initialProfile.profileImageUrl) ||
-      profileImageFile !== undefined
-    );
-  })();
+    return checkProfileChanged({
+      baseProfile,
+      nickname,
+      gender,
+      mbtiStr,
+      frequency,
+      intro,
+      song,
+      currentSocialId,
+      socialType,
+      university,
+      department,
+      major,
+      editableBirthYear,
+      currentTagsStr,
+      currentHobbies,
+      selectedType,
+      profileImageUrl,
+      profileImageFile,
+      fallbackProfileId,
+    });
+  }, [
+    nickname,
+    gender,
+    mbtiStr,
+    frequency,
+    intro,
+    song,
+    socialAccountId,
+    kakaoId,
+    socialType,
+    university,
+    department,
+    major,
+    editableBirthYear,
+    tags,
+    hobbies,
+    selectedType,
+    profileImageUrl,
+    profileImageFile,
+    baseProfile,
+    fallbackProfileId,
+  ]);
 
   return (
     <main className="flex min-h-screen flex-col pb-32">
@@ -750,9 +748,16 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         sideGap={16}
         safeArea
         onClick={handleSubmit}
-        disabled={!hasChanged}
+        disabled={!hasChanged || isSubmitting}
       >
-        수정하기
+        {isSubmitting ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>수정 중...</span>
+          </div>
+        ) : (
+          "수정하기"
+        )}
       </Button>
 
       {/* 관심사 수정 드로어 */}
