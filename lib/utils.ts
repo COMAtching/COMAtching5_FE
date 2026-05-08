@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 export function removeEmoji(text: string) {
   return text
-    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(
+      /[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Emoji_Component}]/gu,
+      "",
+    )
     .replace(/\s+/g, " ")
     .trim();
 }
