@@ -9,6 +9,6 @@ export const getContactFrequencyLabel = (freq?: ContactFrequency | string) => {
     case "RARE":
       return "적음";
     default:
-      return freq || "보통";
+      return freq || "";
   }
 };

@@ -26,6 +26,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "comatching.site",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -175,6 +175,16 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
 
   const profile = profileResponse?.data;
 
+  useEffect(() => {
+    console.log("ScreenMyPage initialProfile prop:", initialProfile);
+  }, [initialProfile]);
+
+  useEffect(() => {
+    if (profileResponse) {
+      console.log("ScreenMyPage useMyProfile data:", profileResponse);
+    }
+  }, [profileResponse]);
+
   /* --- 로컬 편집 상태 (initialProfile로 즉시 초기화) --- */
   const [nickname, setNickname] = useState(initialProfile.nickname || "");
   const [gender, setGender] = useState(
@@ -248,19 +258,37 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   // 프로필 이미지
   const [selectedType, setSelectedType] = useState<"default" | "custom">(() => {
     const url = initialProfile.profileImageUrl;
-    if (url && url.startsWith("http") && !url.includes("default_")) {
-      return "custom";
-    }
+    if (!url) return "default";
+
+    // 1. "default" 문자열이나 "default_" 접두사가 있는 경우 (서버에서 /default 로 줄 때 대응)
+    if (url.includes("default")) return "default";
+
+    // 2. 기본 에셋 ID 중 하나가 포함되어 있는 경우 (서버 전체 경로 대응)
+    const isDefaultAsset = DEFAULT_PROFILE_ASSETS.some(
+      (p) => url.includes(p.id) || url.includes(p.id.toLowerCase()),
+    );
+
+    if (isDefaultAsset) return "default";
+
+    // 3. http로 시작하면서 위 조건에 해당하지 않으면 커스텀 이미지
+    if (url.startsWith("http")) return "custom";
+
     return "default";
   });
 
   const [customImagePreview, setCustomImagePreview] = useState<string | null>(
     () => {
       const url = initialProfile.profileImageUrl;
-      if (url && url.startsWith("http") && !url.includes("default_")) {
-        return url;
-      }
-      return null;
+      if (!url || !url.startsWith("http")) return null;
+
+      // URL에 "default"가 포함되어 있거나 기본 에셋 ID가 포함되어 있으면 커스텀 이미지 아님
+      const isDefault =
+        url.includes("default") ||
+        DEFAULT_PROFILE_ASSETS.some(
+          (p) => url.includes(p.id) || url.includes(p.id.toLowerCase()),
+        );
+
+      return isDefault ? null : url;
     },
   );
 
@@ -366,12 +394,22 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     try {
       let finalImageUrl: string;
 
-      if (profileImageFile) {
-        finalImageUrl = await uploadImage(profileImageFile);
-      } else if (profileImageUrl && !profileImageUrl.startsWith("default_")) {
-        finalImageUrl = `default_${profileImageUrl}`;
+      if (selectedType === "custom") {
+        if (profileImageFile) {
+          // 1. 새 파일 업로드
+          finalImageUrl = await uploadImage(profileImageFile);
+        } else if (customImagePreview) {
+          // 2. 기존 커스텀 이미지 URL 유지 (이미지가 있는 경우)
+          finalImageUrl = initialProfile.profileImageUrl || "default";
+        } else {
+          // 3. 커스텀 탭을 선택했으나 이미지가 없는 경우 ("default" 전송)
+          finalImageUrl = "default";
+        }
       } else {
-        finalImageUrl = profileImageUrl || "default";
+        // 3. 기본 이미지 모드 (default_ 접두사 강제)
+        finalImageUrl = profileImageUrl.startsWith("default_")
+          ? profileImageUrl
+          : `default_${profileImageUrl}`;
       }
 
       const payload = {

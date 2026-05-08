@@ -80,7 +80,8 @@ const AdvantageEditDrawer = ({
         {/* Content */}
         <div className="flex flex-1 flex-col overflow-hidden px-6 pt-4">
           <p className="typo-14-500 text-center text-[#999999]">
-            나의 장점을 골라주세요. 최대 5개까지 선택할 수 있어요.
+            나의 장점을 골라주세요. <br />
+            최대 5개까지 선택할 수 있어요.
           </p>
 
           {/* Scroll Area */}
