@@ -260,18 +260,20 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     const url = initialProfile.profileImageUrl;
     if (!url) return "default";
 
-    // 1. "default" 문자열이나 "default_" 접두사가 있는 경우 (서버에서 /default 로 줄 때 대응)
-    if (url.includes("default")) return "default";
-
-    // 2. 기본 에셋 ID 중 하나가 포함되어 있는 경우 (서버 전체 경로 대응)
-    const isDefaultAsset = DEFAULT_PROFILE_ASSETS.some(
-      (p) => url.includes(p.id) || url.includes(p.id.toLowerCase()),
+    // 1. 기본 에셋 ID 중 하나가 포함되어 있는 경우 (강아지, 고양이 등 캐릭터 이미지)
+    const isAnimalAsset = DEFAULT_PROFILE_ASSETS.some(
+      (p) =>
+        url.includes(p.id) ||
+        url.includes(p.id.toLowerCase()) ||
+        url.includes(`default_${p.id}`),
     );
 
-    if (isDefaultAsset) return "default";
+    if (isAnimalAsset) return "default";
 
-    // 3. http로 시작하면서 위 조건에 해당하지 않으면 커스텀 이미지
-    if (url.startsWith("http")) return "custom";
+    // 2. 그 외에 http로 시작하거나 default.png 같은 경우는 커스텀 탭으로 분류
+    if (url.startsWith("http") || url.includes("default")) {
+      return "custom";
+    }
 
     return "default";
   });
@@ -281,14 +283,19 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       const url = initialProfile.profileImageUrl;
       if (!url || !url.startsWith("http")) return null;
 
-      // URL에 "default"가 포함되어 있거나 기본 에셋 ID가 포함되어 있으면 커스텀 이미지 아님
-      const isDefault =
-        url.includes("default") ||
-        DEFAULT_PROFILE_ASSETS.some(
-          (p) => url.includes(p.id) || url.includes(p.id.toLowerCase()),
-        );
+      // 동물 캐릭터 에셋인 경우 커스텀 미리보기는 null (회색 아이콘)
+      const isAnimalAsset = DEFAULT_PROFILE_ASSETS.some(
+        (p) => url.includes(p.id) || url.includes(p.id.toLowerCase()),
+      );
 
-      return isDefault ? null : url;
+      if (isAnimalAsset) return null;
+
+      // 그냥 default.png 인 경우도 커스텀 미리보기는 null (회색 아이콘)
+      if (url.endsWith("default.png") || url.endsWith("/default")) {
+        return null;
+      }
+
+      return url;
     },
   );
 

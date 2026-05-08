@@ -58,18 +58,20 @@ const ScreenMatching = () => {
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
   const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
-  const hasExtraOption = !!(
-    importantOption ||
-    isSameMajorExclude ||
-    isAgeRangeActive
-  );
+  const extraOptionCount =
+    (importantOption ? 1 : 0) +
+    (isSameMajorExclude ? 1 : 0) +
+    (isAgeRangeActive ? 1 : 0);
+
+  const optionTicketCountOwned = itemData?.data.optionTicketCount ?? 0;
 
   const canSubmit = !!(
     selectedMBTI.length === 2 &&
     (selectedAgeGroup || isAgeRangeActive) &&
     selectedFrequency &&
     selectedHobbyCategory &&
-    matchingTicketCount > 0
+    matchingTicketCount > 0 &&
+    optionTicketCountOwned >= extraOptionCount
   );
 
   const bubbleText = isItemsLoading ? null : matchingTicketCount === 0 ? (
@@ -78,7 +80,7 @@ const ScreenMatching = () => {
     <div className="flex items-center gap-1">
       <Image src="/main/coin.png" alt="coin" width={20} height={20} />
       <span>매칭권 1</span>
-      {hasExtraOption && (
+      {extraOptionCount > 0 && (
         <>
           <Image
             src="/main/elec-bulb.png"
@@ -87,7 +89,7 @@ const ScreenMatching = () => {
             height={20}
             className="ml-1"
           />
-          <span>아이템 1</span>
+          <span>아이템 {extraOptionCount}</span>
         </>
       )}
       <span>소모</span>
@@ -136,7 +138,12 @@ const ScreenMatching = () => {
     const ageInfo = calculateAgeOffsets(selectedAgeGroup);
 
     const payload: MatchingRequest = {
-      ageOption: isAgeRangeActive ? undefined : ageInfo.option,
+      // 1. 슬라이더 사용 시: ageOption은 null, 오프셋은 값
+      // 2. 버튼 사용 시: ageOption은 값, 오프셋은 null
+      ageOption: isAgeRangeActive ? null : ageInfo.option || null,
+      minAgeOffset: isAgeRangeActive ? (minAge ?? null) : null,
+      maxAgeOffset: isAgeRangeActive ? (maxAge ?? null) : null,
+
       mbtiOption: selectedMBTI || undefined,
       hobbyOption: selectedHobbyCategory
         ? hobbyMapping[selectedHobbyCategory]
@@ -146,8 +153,6 @@ const ScreenMatching = () => {
         : undefined,
       sameMajorOption: isSameMajorExclude,
       importantOption: importantOption || undefined,
-      minAgeOffset: minAge ?? ageInfo.min,
-      maxAgeOffset: maxAge ?? ageInfo.max,
     };
 
     match(payload);
