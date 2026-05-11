@@ -45,6 +45,7 @@ async function saveCookies(setCookieHeaders: string[] | undefined) {
         maxAge?: number;
         expires?: Date;
         sameSite?: "strict" | "lax" | "none";
+        domain?: string;
       } = {};
 
       options.forEach((opt) => {
