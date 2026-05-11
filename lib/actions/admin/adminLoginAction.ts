@@ -72,6 +72,9 @@ export async function adminLoginAction(
         // 배포 환경에서는 백엔드와 직접 통신하므로, 서브도메인 간 공유를 위해 명시적으로 도메인 설정
         if (process.env.NODE_ENV === "production") {
           cookieOptions.domain = ".comatching.site";
+        } else {
+          // 로컬에서는 도메인을 지워야 브라우저가 localhost에서 쿠키를 정상적으로 저장함
+          delete cookieOptions.domain;
         }
 
         cookieStore.set(name, value, cookieOptions);
