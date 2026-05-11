@@ -42,15 +42,6 @@ export default function MatchingSliderButton({
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  // 로딩 상태가 끝나면(오류 등) 위치를 다시 0으로 초기화
-  useEffect(() => {
-    if (!isLoading && !isDragging && position !== 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPosition(0);
-      positionRef.current = 0;
-    }
-  }, [isLoading, isDragging, position]);
-
   const handleStart = () => {
     if (isLoading || !isActive) return;
     setIsDragging(true);

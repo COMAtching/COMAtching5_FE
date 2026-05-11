@@ -1,25 +1,7 @@
-import { api } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  MatchingRequest,
-  MatchingResult,
-  ApiResponse,
-} from "@/lib/types/matching";
 import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
-
-/**
- * 매칭 API 호출 (클라이언트 사이드)
- */
-const postMatching = async (
-  payload: MatchingRequest,
-): Promise<ApiResponse<MatchingResult>> => {
-  const { data } = await api.post<ApiResponse<MatchingResult>>(
-    "/api/matching",
-    payload,
-  );
-  return data;
-};
+import { postMatchingAction } from "@/lib/actions/matchingAction";
 
 /**
  * 매칭 실행 Mutation 훅
@@ -31,7 +13,7 @@ export const useMatching = () => {
   const { setResult, setLastPayload, setIsMatching } = useMatchingStore();
 
   return useMutation({
-    mutationFn: postMatching,
+    mutationFn: postMatchingAction,
     onMutate: () => {
       setIsMatching(true);
     },

@@ -55,6 +55,7 @@ const ScreenMatching = () => {
   >("");
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
   const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
@@ -155,7 +156,11 @@ const ScreenMatching = () => {
       importantOption: importantOption || undefined,
     };
 
-    match(payload);
+    match(payload, {
+      onError: () => {
+        setResetKey((prev) => prev + 1);
+      },
+    });
   };
 
   return (
@@ -211,6 +216,7 @@ const ScreenMatching = () => {
       </div>
 
       <MatchingSliderButton
+        key={resetKey}
         onConfirm={handleMatchingSubmit}
         isActive={canSubmit && !isPending}
         isLoading={isPending}

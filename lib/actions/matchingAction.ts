@@ -14,9 +14,9 @@ import { isAxiosError } from "@/lib/server-api";
  */
 export async function postMatchingAction(
   payload: MatchingRequest,
-): Promise<MatchingResult> {
+): Promise<ApiResponse<MatchingResult>> {
   try {
-    const response = await serverApi.post<MatchingResult>({
+    const response = await serverApi.post<ApiResponse<MatchingResult>>({
       path: "/api/matching",
       body: payload,
     });

@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
+import { KakaoLoginButton } from "./SocialButtonList";
+// import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
 import {
   Drawer,
   DrawerContent,
@@ -44,9 +45,9 @@ export default function LoginMethodDrawer({
         <KakaoLoginButton onClick={onKakaoLogin} className="mt-8 mb-4">
           카카오로 시작하기
         </KakaoLoginButton>
-        <GoogleLoginButton className="w-full" onClick={onGoogleLogin}>
+        {/* <GoogleLoginButton className="w-full" onClick={onGoogleLogin}>
           구글로 시작하기
-        </GoogleLoginButton>
+        </GoogleLoginButton> */}
         <div className="typo-14-500 text-bottomsheet-text-caption mt-6 flex flex-col items-center">
           <span>혹은</span>
           <Link href="/login" className="all-[unset] cursor-pointer underline">
