@@ -71,7 +71,6 @@ export default function MatchingSliderButton({
       if (positionRef.current >= maxPos * 0.9) {
         setPosition(maxPos);
         onConfirm();
-        timerRef.current = setTimeout(() => setPosition(0), 1000);
       } else {
         setPosition(0);
       }
@@ -130,7 +129,7 @@ export default function MatchingSliderButton({
             className={cn(
               "typo-16-700 tracking-[0.01em] transition-all select-none",
               isActive
-                ? "animate-shimmer bg-gradient-to-r from-[#666666] via-[#B3B3B3] to-[#666666] bg-clip-text text-transparent"
+                ? "animate-shimmer bg-gradient-to-r from-[#666666] via-[#B3B3B3] to-[#666666] bg-[length:200%_auto] bg-clip-text text-transparent"
                 : "text-color-gray-300",
             )}
             style={

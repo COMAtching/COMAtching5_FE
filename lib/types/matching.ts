@@ -13,7 +13,7 @@ export type HobbyOption =
 export type ImportantOption = "AGE" | "MBTI" | "HOBBY" | "CONTACT";
 
 export interface MatchingRequest {
-  ageOption?: AgeOption;
+  ageOption?: AgeOption | null;
   mbtiOption?: string; // e.g., "IS", "EN"
   hobbyOption?: HobbyOption;
   contactFrequency?: ContactFrequency;
@@ -34,8 +34,10 @@ export interface MatchingResult {
   profileImageUrl: string;
   socialType: SocialType;
   socialAccountId: string;
+  contactFrequency: ContactFrequency;
   hobbies: Hobby[];
   tags: { tag: string }[];
+  song?: string;
 }
 
 export interface ApiResponse<T> {

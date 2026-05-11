@@ -65,6 +65,29 @@ export default function ConfirmChargeDrawer({
     }
   };
 
+  /* 토스 송금 딥링크 */
+  const handleTossTransfer = () => {
+    const accountNo = BANK_INFO.account.replace(/-/g, "");
+    const bankCode = BANK_INFO.bankCode;
+    const message = "포인트충전";
+    const tossDeepLink = `supertoss://send?accountNo=${accountNo}&bankCode=${bankCode}&amount=${amount}&message=${encodeURIComponent(message)}`;
+
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      // 토스 이동 상태 기록 (기존 코드 참고)
+      localStorage.setItem("tossPaymentInProgress", "1");
+
+      // 딥링크 이동
+      const a = document.createElement("a");
+      a.href = tossDeepLink;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      alert("모바일 기기에서 토스 앱을 통해 송금하실 수 있습니다.");
+    }
+  };
+
   /* 충전 완료 알림 */
   const handleConfirm = () => {
     purchase(productId, {
@@ -229,9 +252,13 @@ export default function ConfirmChargeDrawer({
               </Button>
 
               {/* Toss 링크 */}
-              <span className="typo-12-500 text-center leading-[140%] text-[#999999]">
+              <button
+                type="button"
+                onClick={handleTossTransfer}
+                className="typo-12-500 text-center leading-[140%] text-[#999999] underline underline-offset-2"
+              >
                 혹은 Toss로 계좌이체하기
-              </span>
+              </button>
             </div>
           </div>
         </div>

@@ -1,11 +1,39 @@
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
+import { useMatching } from "@/hooks/useMatching";
+import { MatchingRequest } from "@/lib/types/matching";
+import { useRouter } from "next/navigation";
+import { useItems } from "@/hooks/useItems";
 
-const ResultFooter = () => {
+interface ResultFooterProps {
+  lastPayload: MatchingRequest | null;
+}
+
+const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
   const [timeLeft, setTimeLeft] = useState(3);
   const [isHolding, setIsHolding] = useState(false);
   const [isTriggered, setIsTriggered] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { mutate: match, isPending } = useMatching();
+  const { data: itemData } = useItems();
+  const router = useRouter();
+
+  const matchingTicketCountOwned = itemData?.data.matchingTicketCount ?? 0;
+  const optionTicketCountOwned = itemData?.data.optionTicketCount ?? 0;
+
+  // 옵션 티켓 필요 개수 계산
+  // - 같은 전공 제외: 1개
+  // - 중요 옵션: 1개
+  // - 커스텀 나이 구간 (ageOption 없이 min/maxAgeOffset 설정): 1개
+  const optionTicketCount = lastPayload
+    ? (lastPayload.sameMajorOption ? 1 : 0) +
+      (lastPayload.importantOption ? 1 : 0) +
+      (!lastPayload.ageOption &&
+      lastPayload.minAgeOffset != null &&
+      lastPayload.maxAgeOffset != null
+        ? 1
+        : 0)
+    : 0;
 
   const handleHoldStart = (e: React.MouseEvent | React.TouchEvent) => {
     // 롱프레스 시 브라우저 기본 컨텍스트 메뉴 등이 뜨지 않도록 방지 (모바일 대응)
@@ -16,7 +44,7 @@ const ResultFooter = () => {
       // e.preventDefault(); // 필요 시 추가 (단, 스크롤 방해 가능성 있음)
     }
 
-    if (isHolding) return; // 이미 누르는 중이면 무시
+    if (isHolding || isPending) return; // 이미 누르는 중이거나 요청 중이면 무시
 
     setIsHolding(true);
     setTimeLeft(3);
@@ -42,7 +70,12 @@ const ResultFooter = () => {
           if (prev <= 1) {
             setIsTriggered((prevTriggered) => {
               if (prevTriggered) return prevTriggered;
-              alert("한 번 더 뽑기 로직 실행!"); // 로직 실행 위치
+
+              // 같은 조건으로 재매칭 실행
+              if (lastPayload) {
+                match(lastPayload);
+              }
+
               return true;
             });
             setIsHolding(false);
@@ -61,19 +94,27 @@ const ResultFooter = () => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isHolding]);
+  }, [isHolding, lastPayload, match]);
+
+  const handleRetry = () => {
+    // 매칭 페이지로 돌아가서 새로운 조건으로 다시 뽑기
+    router.push("/matching");
+  };
 
   return (
     <div className="mt-6 flex w-full flex-col gap-3">
       {/* Top Row: Retry & Mail Buttons */}
       <div className="flex w-full flex-row gap-[10px]">
         {/* Retry Button */}
-        <button className="flex flex-1 flex-col items-center justify-center rounded-[15px] bg-white px-[22px] py-4 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]">
+        <button
+          onClick={handleRetry}
+          className="flex h-[53px] flex-1 flex-col items-center justify-center rounded-[15px] bg-white px-[22px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
+        >
           <span className="typo-18-700 text-[#4E4E4E]">다시 뽑기</span>
         </button>
 
         {/* Mail Button */}
-        <button className="bg-milky-pink flex flex-1 flex-col items-center justify-center rounded-[15px] px-[22px] py-4 text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]">
+        <button className="bg-milky-pink flex h-[53px] flex-1 flex-col items-center justify-center rounded-[15px] px-[22px] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]">
           <span className="typo-18-700 text-white">쪽지 보내기</span>
         </button>
       </div>
@@ -85,10 +126,16 @@ const ResultFooter = () => {
         onMouseLeave={handleHoldEnd}
         onTouchStart={handleHoldStart}
         onTouchEnd={handleHoldEnd}
+        disabled={
+          isPending ||
+          !lastPayload ||
+          matchingTicketCountOwned < 1 ||
+          optionTicketCountOwned < optionTicketCount
+        }
         aria-label="같은 조건으로 한 번 더 뽑기. 3초간 길게 누르면 실행됩니다."
-        className="flex w-full flex-row items-center justify-center gap-2 rounded-[15px] bg-linear-to-r from-[#FF4D61] to-[#FF775E] px-[22px] py-4 text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px] transition-all select-none active:scale-[0.98]"
+        className="flex w-full flex-row items-center justify-center gap-2 rounded-[15px] bg-linear-to-r from-[#FF4D61] to-[#FF775E] px-[22px] py-4 text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px] transition-all select-none active:scale-[0.98] disabled:opacity-50"
       >
-        {!isHolding && !isTriggered && (
+        {!isHolding && !isTriggered && !isPending && (
           <div
             className="flex h-6 flex-row items-center gap-[10px] rounded-[36px] px-2 py-1 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
             style={{
@@ -106,23 +153,29 @@ const ResultFooter = () => {
               />
               <span className="typo-12-700 text-black">1</span>
             </div>
-            <div className="flex flex-row items-center gap-1">
-              <Image
-                src="/main/elec-bulb.png"
-                alt="bulb"
-                width={16}
-                height={16}
-              />
-              <span className="typo-12-700 text-black">1</span>
-            </div>
+            {optionTicketCount > 0 && (
+              <div className="flex flex-row items-center gap-1">
+                <Image
+                  src="/main/elec-bulb.png"
+                  alt="bulb"
+                  width={16}
+                  height={16}
+                />
+                <span className="typo-12-700 text-black">
+                  {optionTicketCount}
+                </span>
+              </div>
+            )}
           </div>
         )}
-        <span className="typo-18-700">
-          {isHolding
-            ? `${timeLeft}초간 길게 누르세요 ...`
-            : isTriggered
-              ? "처리 중..."
-              : "같은 조건으로 한번 더 뽑기"}
+        <span className="typo-16-700">
+          {isPending
+            ? "매칭 중..."
+            : isHolding
+              ? `${timeLeft}초간 길게 누르세요 ...`
+              : isTriggered
+                ? "처리 중..."
+                : "같은 조건으로 한번 더 뽑기"}
         </span>
       </button>
     </div>
