@@ -34,18 +34,20 @@ export default function QuickBundleCard({ product }: QuickBundleCardProps) {
           height={ICON_SIZE.lg}
         />
         <div className="flex flex-col items-center gap-2">
-          <span className="typo-16-600 text-color-gray-800">
+          <span className="typo-14-600 text-color-gray-800">
             {product.name}
           </span>
           <div className="flex flex-col items-center gap-1">
             <span className="typo-12-600 text-color-gray-400 text-center">
               {description}
             </span>
-            {bonusText && (
-              <span className="typo-12-600 text-color-flame-700 text-center">
-                {bonusText}
-              </span>
-            )}
+            <span
+              className={`typo-12-600 text-color-flame-700 text-center ${
+                bonusText ? "" : "invisible"
+              }`}
+            >
+              {bonusText || "보너스 무료 증정!"}
+            </span>
           </div>
         </div>
       </div>
