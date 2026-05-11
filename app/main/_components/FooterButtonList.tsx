@@ -6,6 +6,7 @@ const MatchingButton = () => {
   return (
     <Link
       href="/matching"
+      prefetch={true}
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
@@ -30,6 +31,7 @@ const SearchMyListButton = () => {
   return (
     <Link
       href="/matching-list"
+      prefetch={true}
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
@@ -48,6 +50,7 @@ const QAButton = () => {
   return (
     <Link
       href="/qa"
+      prefetch={true}
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
