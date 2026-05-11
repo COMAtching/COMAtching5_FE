@@ -13,7 +13,7 @@ export default async function AdminNoticesPage() {
     queryKey: ["adminNotices"],
     queryFn: async () => {
       const res = await serverApi.get({
-        path: "/api/v1/notices/active",
+        path: "/api/v1/admin/notices",
       });
       return res.data;
     },

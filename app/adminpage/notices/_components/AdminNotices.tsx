@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  useActiveNotices,
+  useAllNotices,
   useCreateNotice,
   useUpdateNotice,
   useDeleteNotice,
@@ -36,21 +36,22 @@ function toLocalDateTimeString(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function getStatusInfo(startTime: string, endTime: string) {
-  const now = new Date();
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-
-  if (now < start) {
-    return { label: "예정", color: "text-amber-400", bg: "bg-amber-500/10" };
-  } else if (now > end) {
-    return { label: "종료", color: "text-[#4a4e69]", bg: "bg-[#1e2030]" };
-  } else {
+function getStatusInfo(startTime: string, endTime: string, active: boolean) {
+  if (active) {
     return {
       label: "활성",
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     };
+  }
+
+  const now = new Date();
+  const start = new Date(startTime);
+
+  if (now < start) {
+    return { label: "예정", color: "text-amber-400", bg: "bg-amber-500/10" };
+  } else {
+    return { label: "종료", color: "text-[#4a4e69]", bg: "bg-[#1e2030]" };
   }
 }
 
@@ -241,7 +242,7 @@ export default function AdminNotices() {
   const [editingNotice, setEditingNotice] = useState<NoticeItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
-  const { data: noticesData, isLoading, refetch } = useActiveNotices();
+  const { data: noticesData, isLoading, refetch } = useAllNotices();
   const deleteMutation = useDeleteNotice();
 
   const notices = noticesData?.data ?? [];
@@ -281,7 +282,7 @@ export default function AdminNotices() {
                 공지사항 관리
               </h1>
               <p className="text-xs text-[#6b7094]">
-                활성 공지 {notices.length}건
+                전체 공지 {notices.length}건
               </p>
             </div>
           </div>
@@ -347,7 +348,7 @@ export default function AdminNotices() {
             <Inbox size={28} className="text-[#4a4e69]" />
           </div>
           <p className="text-base font-medium text-[#6b7094]">
-            활성 공지사항이 없습니다
+            등록된 공지사항이 없습니다
           </p>
           <p className="mt-1 text-sm text-[#4a4e69]">
             공지 등록 버튼을 눌러 새 공지사항을 추가하세요
@@ -356,7 +357,11 @@ export default function AdminNotices() {
       ) : (
         <div className="flex flex-col gap-3">
           {notices.map((notice) => {
-            const status = getStatusInfo(notice.startTime, notice.endTime);
+            const status = getStatusInfo(
+              notice.startTime,
+              notice.endTime,
+              notice.active,
+            );
             return (
               <div
                 key={notice.noticeId}

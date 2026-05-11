@@ -16,6 +16,7 @@ export interface NoticeItem {
   content: string;
   startTime: string;
   endTime: string;
+  active: boolean;
 }
 
 export interface CreateNoticeBody {
@@ -27,10 +28,10 @@ export interface CreateNoticeBody {
 
 export type UpdateNoticeBody = CreateNoticeBody;
 
-/* ── 활성 공지사항 조회 ── */
-const fetchActiveNotices = async (): Promise<ApiResponse<NoticeItem[]>> => {
+/* ── 전체 공지사항 조회 (관리자용) ── */
+const fetchAllNotices = async (): Promise<ApiResponse<NoticeItem[]>> => {
   const { data } = await api.get<ApiResponse<NoticeItem[]>>(
-    "/api/v1/notices/active",
+    "/api/v1/admin/notices",
   );
   return data;
 };
@@ -66,11 +67,11 @@ const deleteNotice = async (noticeId: number): Promise<ApiResponse<null>> => {
   return data;
 };
 
-/* ── 훅: 활성 공지사항 조회 ── */
-export const useActiveNotices = () => {
+/* ── 훅: 전체 공지사항 조회 ── */
+export const useAllNotices = () => {
   return useQuery({
     queryKey: ["adminNotices"],
-    queryFn: fetchActiveNotices,
+    queryFn: fetchAllNotices,
   });
 };
 
