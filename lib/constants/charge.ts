@@ -7,13 +7,13 @@ export const ICON_SIZE = {
 /* ── 보유현황 아이콘·라벨 ── */
 export const INVENTORY_ROWS = [
   {
-    icon: "/main/coin.png",
+    icon: "/main/ticket.png",
     alt: "coin",
     label: "보유 뽑기권",
     key: "matching",
   },
   {
-    icon: "/main/elec-bulb.png",
+    icon: "/main/option.png",
     alt: "bulb",
     label: "보유 아이템",
     key: "option",

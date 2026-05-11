@@ -79,12 +79,12 @@ const ScreenMatching = () => {
     "사용할 수 있는 매칭권이 없어요."
   ) : (
     <div className="flex items-center gap-1">
-      <Image src="/main/coin.png" alt="coin" width={20} height={20} />
+      <Image src="/main/ticket.png" alt="coin" width={20} height={20} />
       <span>매칭권 1</span>
       {extraOptionCount > 0 && (
         <>
           <Image
-            src="/main/elec-bulb.png"
+            src="/main/option.png"
             alt="bulb"
             width={20}
             height={20}

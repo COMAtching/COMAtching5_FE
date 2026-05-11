@@ -100,7 +100,7 @@ export default function MatchingImportantOptionSection({
           ) : (
             <div className="border-color-gray-100 flex h-9 w-[86px] items-center justify-center gap-[5px] rounded-[36px] border bg-white px-2">
               <Image
-                src="/main/elec-bulb.png"
+                src="/main/option.png"
                 alt="bulb"
                 width={20}
                 height={20}

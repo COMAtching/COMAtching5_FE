@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
 import { isValidDepositorName } from "@/lib/validators";
@@ -56,11 +57,14 @@ export default function DepositorNameContent() {
       {/* ── 예시 이미지 ── */}
       <div className="flex flex-col gap-2">
         <span className="typo-14-500 text-[#666666]">예시</span>
-        <div className="bg-color-gray-50 flex h-[121px] w-full items-center justify-center rounded-[16px] border border-[#EFEFEF]">
-          <span className="typo-12-500 text-color-gray-400">
-            Toss 앱 입금자명 설정 예시 이미지
-          </span>
-        </div>
+        <Image
+          src="/charge/charge-example.png"
+          alt="입금자명 설정 예시"
+          width={345}
+          height={280}
+          className="h-auto w-full rounded-[16px] border border-[#EFEFEF]"
+          priority
+        />
       </div>
 
       {/* ── 안내 가이드 (Frame 2612440) ── */}

@@ -145,7 +145,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
           >
             <div className="flex flex-row items-center gap-1">
               <Image
-                src="/main/coin.png"
+                src="/main/ticket.png"
                 alt="coin"
                 width={16}
                 height={16}
@@ -156,7 +156,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
             {optionTicketCount > 0 && (
               <div className="flex flex-row items-center gap-1">
                 <Image
-                  src="/main/elec-bulb.png"
+                  src="/main/option.png"
                   alt="bulb"
                   width={16}
                   height={16}

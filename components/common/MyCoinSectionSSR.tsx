@@ -26,7 +26,7 @@ const MyCoinSectionSSR = async ({ className }: MyCoinSectionSSRProps) => {
       <div className="flex items-center">
         <span className="typo-14-600 text-color-text-caption3">보유현황</span>
         <Image
-          src="/main/coin.png"
+          src="/main/ticket.png"
           alt="coin"
           width={20}
           height={20}
@@ -37,7 +37,7 @@ const MyCoinSectionSSR = async ({ className }: MyCoinSectionSSRProps) => {
         </span>
         <div className="mx-4 h-4 w-px bg-black/30" />
         <Image
-          src="/main/elec-bulb.png"
+          src="/main/option.png"
           alt="electric bulb"
           className="mr-2"
           width={20}
