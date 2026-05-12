@@ -32,54 +32,8 @@ export async function adminLoginAction(
       body: { email, password },
     });
 
-    // 🍪 백엔드로부터 받은 쿠키가 있다면 브라우저에 배달해줍니다.
-    if (setCookie) {
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-
-      setCookie.forEach((cookieStr) => {
-        const [nameValue, ...options] = cookieStr.split(";");
-        const [name, ...nameParts] = nameValue.split("=");
-        const value = nameParts.join("=");
-
-        const cookieOptions: {
-          path?: string;
-          httpOnly?: boolean;
-          secure?: boolean;
-          maxAge?: number;
-          expires?: Date;
-          sameSite?: "strict" | "lax" | "none" | boolean;
-          domain?: string;
-        } = {};
-
-        options.forEach((opt) => {
-          const [key, ...valueParts] = opt.trim().split("=");
-          const val = valueParts.join("=");
-          const k = key.toLowerCase();
-          if (k === "path") cookieOptions.path = val;
-          if (k === "httponly") cookieOptions.httpOnly = true;
-          if (k === "secure") cookieOptions.secure = true;
-          if (k === "max-age") cookieOptions.maxAge = parseInt(val);
-          if (k === "expires") cookieOptions.expires = new Date(val);
-          if (k === "domain") cookieOptions.domain = val;
-          if (k === "samesite")
-            cookieOptions.sameSite = val.toLowerCase() as
-              | "strict"
-              | "lax"
-              | "none";
-        });
-
-        // 배포 환경에서는 백엔드와 직접 통신하므로, 서브도메인 간 공유를 위해 명시적으로 도메인 설정
-        if (process.env.NODE_ENV === "production") {
-          cookieOptions.domain = ".comatching.site";
-        } else {
-          // 로컬에서는 도메인을 지워야 브라우저가 localhost에서 쿠키를 정상적으로 저장함
-          delete cookieOptions.domain;
-        }
-
-        cookieStore.set(name, value, cookieOptions);
-      });
-    }
+    // 🍪 serverApi.post 내부에서 response header의 set-cookie를 파싱하여
+    // 이미 cookieStore에 저장했으므로, 여기서 별도로 처리할 필요가 없습니다.
   } catch (error) {
     if (
       error instanceof Error &&
