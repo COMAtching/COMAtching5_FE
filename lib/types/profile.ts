@@ -38,8 +38,8 @@ export interface ProfileData {
   profileImageFile?: File; // 업로드용 실제 파일
 
   // 소셜 정보
-  socialType?: SocialType;
-  socialAccountId?: string;
+  socialType?: SocialType | null;
+  socialAccountId?: string | null;
 
   // 학교 정보
   university?: string;
@@ -49,8 +49,8 @@ export interface ProfileData {
   // 기타
   contactFrequency?: ContactFrequency;
   hobbies?: Hobby[] | string[]; // UI에서는 string[], 제출 시 Hobby[]
-  tags?: { tag: string }[];
-  song?: string;
+  tags?: { tag: string }[] | null;
+  song?: string | null;
   isMatchable?: boolean;
 }
 

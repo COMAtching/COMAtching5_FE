@@ -81,7 +81,7 @@ interface CheckProfileChangedParams {
   intro: string;
   song: string;
   currentSocialId: string;
-  socialType: string;
+  socialType: string | null;
   university: string;
   department: string;
   major: string;
@@ -143,7 +143,7 @@ const checkProfileChanged = (params: CheckProfileChangedParams) => {
     intro !== (baseProfile.intro || "") ||
     song !== (baseProfile.song || "") ||
     currentSocialId !== (baseProfile.socialAccountId || "") ||
-    socialType !== (baseProfile.socialType || "INSTAGRAM") ||
+    socialType !== (baseProfile.socialType || null) ||
     university !== (baseProfile.university || "") ||
     department !== (baseProfile.department || "") ||
     major !== (baseProfile.major || "") ||
@@ -218,8 +218,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       ? initialProfile.socialAccountId || ""
       : "",
   );
-  const [socialType, setSocialType] = useState<"INSTAGRAM" | "KAKAO">(
-    initialProfile.socialType || "INSTAGRAM",
+  const [socialType, setSocialType] = useState<"INSTAGRAM" | "KAKAO" | null>(
+    initialProfile.socialType || null,
   );
   const [editableBirthYear, setEditableBirthYear] = useState(
     initialProfile.birthDate ? initialProfile.birthDate.split("-")[0] : "",
@@ -391,9 +391,13 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     ]);
 
     // 연락처 포맷팅 (인스타그램인 경우 @ 추가)
-    let formattedSocialId = (
-      socialType === "INSTAGRAM" ? socialAccountId : kakaoId
-    ).trim();
+    let formattedSocialId = "";
+    if (socialType === "INSTAGRAM") {
+      formattedSocialId = socialAccountId.trim();
+    } else if (socialType === "KAKAO") {
+      formattedSocialId = kakaoId.trim();
+    }
+
     if (
       socialType === "INSTAGRAM" &&
       formattedSocialId &&
@@ -432,8 +436,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         contactFrequency: frequencyMap[frequency] || undefined,
         intro: intro.trim() || undefined,
         song: song.trim() || undefined,
-        socialType: socialType,
-        socialAccountId: formattedSocialId || undefined,
+        socialType: formattedSocialId ? socialType : null,
+        socialAccountId: formattedSocialId || null,
         major: major.trim() || undefined,
         birthDate: editableBirthYear ? `${editableBirthYear}-01-01` : undefined,
         hobbies: hobbies,
@@ -471,7 +475,11 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     const currentTagsStr = JSON.stringify([...tags].sort());
     const currentHobbies = JSON.stringify(hobbies);
     const currentSocialId =
-      socialType === "INSTAGRAM" ? socialAccountId : kakaoId;
+      socialType === "INSTAGRAM"
+        ? socialAccountId
+        : socialType === "KAKAO"
+          ? kakaoId
+          : "";
 
     return checkProfileChanged({
       baseProfile,
@@ -689,12 +697,24 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               {/* 아이디 입력 */}
               <input
                 type="text"
-                value={socialType === "INSTAGRAM" ? socialAccountId : kakaoId}
-                onChange={(e) =>
+                value={
                   socialType === "INSTAGRAM"
-                    ? setSocialAccountId(e.target.value.trim())
-                    : setKakaoId(e.target.value.trim())
+                    ? socialAccountId
+                    : socialType === "KAKAO"
+                      ? kakaoId
+                      : ""
                 }
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (!socialType) {
+                    setSocialType("INSTAGRAM");
+                    setSocialAccountId(val);
+                  } else if (socialType === "INSTAGRAM") {
+                    setSocialAccountId(val);
+                  } else {
+                    setKakaoId(val);
+                  }
+                }}
                 placeholder="아이디 입력"
                 className="typo-16-600 w-[140px] bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
               />
