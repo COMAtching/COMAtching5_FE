@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import ProfileButton from "@/app/profile-builder/_components/ProfileButton";
 import ProfileImageSelection from "@/app/profile-image/_components/ProfileImageSelection";
@@ -39,6 +40,7 @@ import {
   NicknameAvailabilityResponse,
 } from "@/hooks/useNicknameAvailability";
 import axios from "axios";
+import { withdrawAction } from "@/lib/actions/authAction";
 
 /* ───── 상수 맵핑 ───── */
 
@@ -162,6 +164,7 @@ interface ScreenMyPageProps {
 }
 
 const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
+  const router = useRouter();
   // 서버에서 프로필 데이터 가져오기
   const { data: profileResponse, isLoading, isError } = useMyProfile();
   const { mutate: updateMyProfileMutate, isPending: isUpdating } =
@@ -171,7 +174,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     isPending: isCheckingNickname,
   } = useNicknameAvailability();
 
-  const isSubmitting = isUpdating || isCheckingNickname;
+  const [isWithdrawing, startWithdrawTransition] = useTransition();
+  const isSubmitting = isUpdating || isCheckingNickname || isWithdrawing;
 
   const profile = profileResponse?.data;
 
@@ -860,10 +864,23 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         {/* ── 탈퇴하기 ── */}
         <button
           type="button"
-          className="typo-16-500 self-center text-[#B3B3B3] underline"
+          className="typo-16-500 self-center text-[#B3B3B3] underline disabled:opacity-50"
+          disabled={isSubmitting}
           onClick={() => {
-            if (confirm("정말 탈퇴하시겠습니까?")) {
-              // TODO: 탈퇴 API 호출
+            if (
+              confirm(
+                "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
+              )
+            ) {
+              startWithdrawTransition(async () => {
+                const result = await withdrawAction();
+                if (result.success) {
+                  alert(result.message);
+                  router.replace("/");
+                } else {
+                  alert(result.message);
+                }
+              });
             }
           }}
         >
