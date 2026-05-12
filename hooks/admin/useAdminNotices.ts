@@ -1,5 +1,10 @@
 import { api } from "@/lib/axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  createNoticeAction,
+  updateNoticeAction,
+  deleteNoticeAction,
+} from "@/app/adminpage/notices/_actions/noticeActions";
 import { AxiosError } from "axios";
 
 /* ── 타입 정의 ── */
@@ -36,37 +41,6 @@ const fetchAllNotices = async (): Promise<ApiResponse<NoticeItem[]>> => {
   return data;
 };
 
-/* ── 공지사항 등록 ── */
-const createNotice = async (
-  body: CreateNoticeBody,
-): Promise<ApiResponse<null>> => {
-  const { data } = await api.post<ApiResponse<null>>(
-    "/api/v1/admin/notices",
-    body,
-  );
-  return data;
-};
-
-/* ── 공지사항 수정 ── */
-const updateNotice = async (
-  noticeId: number,
-  body: UpdateNoticeBody,
-): Promise<ApiResponse<null>> => {
-  const { data } = await api.patch<ApiResponse<null>>(
-    `/api/v1/admin/notices/${noticeId}`,
-    body,
-  );
-  return data;
-};
-
-/* ── 공지사항 삭제 ── */
-const deleteNotice = async (noticeId: number): Promise<ApiResponse<null>> => {
-  const { data } = await api.delete<ApiResponse<null>>(
-    `/api/v1/admin/notices/${noticeId}`,
-  );
-  return data;
-};
-
 /* ── 훅: 전체 공지사항 조회 ── */
 export const useAllNotices = () => {
   return useQuery({
@@ -80,11 +54,11 @@ export const useCreateNotice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: CreateNoticeBody) => createNotice(body),
+    mutationFn: createNoticeAction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminNotices"] });
     },
-    onError: (error: AxiosError<{ code: string; message: string }>) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.error(
         "❌ 공지사항 등록 실패:",
         error.response?.data?.message || error.message,
@@ -104,11 +78,11 @@ export const useUpdateNotice = () => {
     }: {
       noticeId: number;
       body: UpdateNoticeBody;
-    }) => updateNotice(noticeId, body),
+    }) => updateNoticeAction(noticeId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminNotices"] });
     },
-    onError: (error: AxiosError<{ code: string; message: string }>) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.error(
         "❌ 공지사항 수정 실패:",
         error.response?.data?.message || error.message,
@@ -122,11 +96,11 @@ export const useDeleteNotice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (noticeId: number) => deleteNotice(noticeId),
+    mutationFn: deleteNoticeAction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminNotices"] });
     },
-    onError: (error: AxiosError<{ code: string; message: string }>) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       console.error(
         "❌ 공지사항 삭제 실패:",
         error.response?.data?.message || error.message,

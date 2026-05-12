@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import Link from "next/link";
 import {
   useAllNotices,
@@ -81,6 +81,12 @@ function NoticeForm({
     editingNotice ? toLocalDateTimeString(new Date(editingNotice.endTime)) : "",
   );
 
+  const idPrefix = useId();
+  const titleId = `${idPrefix}-title`;
+  const contentId = `${idPrefix}-content`;
+  const startTimeId = `${idPrefix}-startTime`;
+  const endTimeId = `${idPrefix}-endTime`;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -144,10 +150,14 @@ function NoticeForm({
       <div className="flex flex-col gap-4">
         {/* 제목 */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-[#8b8fa3]">
+          <label
+            htmlFor={titleId}
+            className="text-xs font-medium text-[#8b8fa3]"
+          >
             제목 <span className="text-red-400">*</span>
           </label>
           <input
+            id={titleId}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -162,10 +172,14 @@ function NoticeForm({
 
         {/* 내용 */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-[#8b8fa3]">
+          <label
+            htmlFor={contentId}
+            className="text-xs font-medium text-[#8b8fa3]"
+          >
             내용 <span className="text-red-400">*</span>
           </label>
           <textarea
+            id={contentId}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="공지사항 내용을 입력하세요"
@@ -177,11 +191,15 @@ function NoticeForm({
         {/* 시작/종료 시간 */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <label className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]">
+            <label
+              htmlFor={startTimeId}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]"
+            >
               <Calendar size={12} />
               시작 시간 <span className="text-red-400">*</span>
             </label>
             <input
+              id={startTimeId}
               type="datetime-local"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
@@ -189,11 +207,15 @@ function NoticeForm({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]">
+            <label
+              htmlFor={endTimeId}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]"
+            >
               <Clock size={12} />
               종료 시간 <span className="text-red-400">*</span>
             </label>
             <input
+              id={endTimeId}
               type="datetime-local"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
