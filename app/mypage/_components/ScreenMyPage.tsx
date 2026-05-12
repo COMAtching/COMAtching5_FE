@@ -860,10 +860,23 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         {/* ── 탈퇴하기 ── */}
         <button
           type="button"
-          className="typo-16-500 self-center text-[#B3B3B3] underline"
-          onClick={() => {
-            if (confirm("정말 탈퇴하시겠습니까?")) {
-              // TODO: 탈퇴 API 호출
+          className="typo-16-500 self-center text-[#B3B3B3] underline disabled:opacity-50"
+          disabled={isSubmitting}
+          onClick={async () => {
+            if (
+              confirm(
+                "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
+              )
+            ) {
+              const { withdrawAction } =
+                await import("@/lib/actions/authAction");
+              const result = await withdrawAction();
+              if (result.success) {
+                alert(result.message);
+                window.location.href = "/";
+              } else {
+                alert(result.message);
+              }
             }
           }}
         >
