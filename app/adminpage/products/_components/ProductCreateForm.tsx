@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import {
   useCreateProduct,
   type CreateProductBody,
@@ -33,6 +33,12 @@ export default function ProductCreateForm({
   ]);
   const [bonusRewards, setBonusRewards] = useState<CreateProductReward[]>([]);
   const [error, setError] = useState("");
+
+  const idPrefix = useId();
+  const nameId = `${idPrefix}-name`;
+  const descriptionId = `${idPrefix}-description`;
+  const priceId = `${idPrefix}-price`;
+  const displayOrderId = `${idPrefix}-displayOrder`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,8 +127,14 @@ export default function ProductCreateForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* 상품명 */}
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <label className="text-xs font-medium text-[#a0a3bd]">상품명</label>
+          <label
+            htmlFor={nameId}
+            className="text-xs font-medium text-[#a0a3bd]"
+          >
+            상품명
+          </label>
           <input
+            id={nameId}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -134,10 +146,14 @@ export default function ProductCreateForm({
 
         {/* 설명 */}
         <div className="flex flex-col gap-1.5 sm:col-span-2">
-          <label className="text-xs font-medium text-[#a0a3bd]">
+          <label
+            htmlFor={descriptionId}
+            className="text-xs font-medium text-[#a0a3bd]"
+          >
             설명 (50자 이하)
           </label>
           <input
+            id={descriptionId}
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -150,10 +166,14 @@ export default function ProductCreateForm({
 
         {/* 가격 */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-[#a0a3bd]">
+          <label
+            htmlFor={priceId}
+            className="text-xs font-medium text-[#a0a3bd]"
+          >
             가격 (원)
           </label>
           <input
+            id={priceId}
             type="number"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
@@ -165,10 +185,14 @@ export default function ProductCreateForm({
 
         {/* 정렬 순서 */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-[#a0a3bd]">
+          <label
+            htmlFor={displayOrderId}
+            className="text-xs font-medium text-[#a0a3bd]"
+          >
             표시 순서 (낮을수록 먼저)
           </label>
           <input
+            id={displayOrderId}
             type="number"
             value={displayOrder}
             onChange={(e) => setDisplayOrder(Number(e.target.value))}

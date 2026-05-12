@@ -10,6 +10,7 @@ import {
   BarChart3,
   LogOut,
   Shield,
+  Bell,
 } from "lucide-react";
 
 const MENU_ITEMS = [
@@ -31,6 +32,15 @@ const MENU_ITEMS = [
     href: "/adminpage/products",
     active: true,
     gradient: "from-[#6366f1] to-[#8b5cf6]",
+  },
+  {
+    id: "notices",
+    title: "공지사항 관리",
+    description: "서비스 공지사항을 등록, 수정, 삭제합니다",
+    icon: Bell,
+    href: "/adminpage/notices",
+    active: true,
+    gradient: "from-[#10b981] to-[#059669]",
   },
   {
     id: "users",

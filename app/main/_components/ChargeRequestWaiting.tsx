@@ -1,6 +1,11 @@
+"use client";
+
 import { RotateCw } from "lucide-react";
+import { useRequestStatus } from "@/hooks/useRequestStatus";
 
 const ChargeRequestWaiting = () => {
+  const { refetch, isFetching } = useRequestStatus();
+
   return (
     <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-[24px] border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
       <div className="flex h-[72px] w-full items-center gap-4">
@@ -26,15 +31,23 @@ const ChargeRequestWaiting = () => {
           </div>
         </div>
 
-        {/* 텍스트 영역 (Frame 2612794) */}
+        {/* 텍스트 영역 */}
         <div className="flex flex-1 flex-col items-start gap-2">
-          {/* 타이틀 행 (Frame 2612797) */}
+          {/* 타이틀 행 */}
           <div className="flex w-full items-center justify-between gap-[10px]">
             <span className="typo-20-600 text-color-text-black leading-6">
               대기중
             </span>
-            {/* ArrowClockwise #9E9E9E 반영 */}
-            <RotateCw className="h-4 w-4 text-[#9E9E9E]" />
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="flex cursor-pointer items-center justify-center p-1 transition-opacity disabled:opacity-50"
+            >
+              <RotateCw
+                className={`h-4 w-4 text-[#9E9E9E] ${isFetching ? "animate-spin" : ""}`}
+              />
+            </button>
           </div>
 
           {/* 설명 문구 */}

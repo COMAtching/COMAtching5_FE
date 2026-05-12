@@ -44,7 +44,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
         className="rounded-t-[16px] bg-white outline-none"
         showHandle={false}
       >
-        <div className="flex max-h-[90dvh] flex-col overflow-hidden">
+        <div className="flex h-[90dvh] flex-col overflow-hidden">
           {/* ... */}
           <ChargeDrawerContext.Provider value={{ setActiveTab }}>
             <DrawerHeader className="shrink-0 gap-0 px-6 pt-6 pb-0">
@@ -60,10 +60,14 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
             </DrawerHeader>
 
             {/* ── 탭 칩 ── */}
-            <ChargeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="relative z-10 shrink-0 bg-white pb-2">
+              <ChargeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              {/* 스크롤 시 뚝 끊기지 않도록 가려주는 그라데이션 */}
+              <div className="pointer-events-none absolute top-full left-0 h-6 w-full bg-gradient-to-b from-white to-transparent" />
+            </div>
 
             {/* ── Scrollable Content ── */}
-            <div className="flex-1 overflow-y-auto px-4 pb-8">
+            <div className="scrollbar-hide relative z-0 flex-1 overflow-y-auto px-4 pt-2 pb-8">
               <ActiveContent />
             </div>
           </ChargeDrawerContext.Provider>

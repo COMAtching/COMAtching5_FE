@@ -45,6 +45,7 @@ async function saveCookies(setCookieHeaders: string[] | undefined) {
         maxAge?: number;
         expires?: Date;
         sameSite?: "strict" | "lax" | "none";
+        domain?: string;
       } = {};
 
       options.forEach((opt) => {
@@ -62,6 +63,15 @@ async function saveCookies(setCookieHeaders: string[] | undefined) {
             | "lax"
             | "none";
       });
+
+      // 🛠️ 로컬 개발 환경에서는 백엔드가 보내는 Domain 설정(.comatching.site 등)을 무시해야
+      // 브라우저가 localhost에서 쿠키를 정상적으로 저장합니다.
+      if (process.env.NODE_ENV !== "production") {
+        delete cookieOptions.domain;
+      } else {
+        // 프로덕션에서는 서브도메인 공유를 위해 명시
+        cookieOptions.domain = ".comatching.site";
+      }
 
       cookieStore.set(name, value, cookieOptions);
     });

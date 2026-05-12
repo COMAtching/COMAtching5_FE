@@ -52,7 +52,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
     <div className="border-color-gray-100 flex items-center justify-between border-b py-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1">
-          <span className="typo-16-600 text-color-text-black">
+          <span className="typo-15-600 text-color-text-black">
             {product.name}
           </span>
           <span className="text-[10px] leading-[12px] font-semibold text-[#808080]">
