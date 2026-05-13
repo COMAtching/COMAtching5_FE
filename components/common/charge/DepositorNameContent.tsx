@@ -14,12 +14,14 @@ export default function DepositorNameContent() {
   const { data: realNameData } = useRealName();
   const { mutate: updateName, isPending } = useUpdateRealName();
 
+  const isInitialized = React.useRef(false);
   useEffect(() => {
-    if (realNameData?.data?.realName && !name) {
+    if (realNameData?.data?.realName && !isInitialized.current) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(realNameData.data.realName);
+      isInitialized.current = true;
     }
-  }, [realNameData, name]);
+  }, [realNameData]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

@@ -17,8 +17,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import Button from "@/components/ui/Button";
 import { BANK_INFO } from "@/lib/constants/charge";
 
-import { usePurchaseLimits, ItemType } from "@/hooks/usePurchaseLimits";
-
 /* ── Props ── */
 interface ConfirmChargeDrawerProps {
   trigger: React.ReactNode;
@@ -28,12 +26,6 @@ interface ConfirmChargeDrawerProps {
   amount: number;
   /** 입금자명 (사전 설정된 값) */
   depositorName?: string;
-  /** 상품 지급 리워드 정보 */
-  rewards?: {
-    itemType: ItemType;
-    itemName: string;
-    quantity: number;
-  }[];
 }
 
 /* ────────────────────────────────────── */
@@ -46,12 +38,11 @@ export default function ConfirmChargeDrawer({
   productId,
   amount,
   depositorName = "천승환",
-  rewards = [],
 }: ConfirmChargeDrawerProps) {
   const queryClient = useQueryClient();
   const drawerContext = React.useContext(ChargeDrawerContext);
   const { mutate: purchase, isPending } = usePurchaseProduct();
-  const { data: limitData } = usePurchaseLimits();
+
   const [open, setOpen] = React.useState(false);
   const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(depositorName);
@@ -256,50 +247,9 @@ export default function ConfirmChargeDrawer({
 
             {/* ── 하단 버튼 영역 ── */}
             <div className="flex w-full flex-col items-center gap-4">
-              {/* 한도 체크 로직 */}
-              {(() => {
-                const limits = limitData?.data.limits || [];
-                // 리워드 중 한도를 초과하는 것이 있는지 확인
-                const exceededLimit = rewards.find((reward) => {
-                  const limit = limits.find(
-                    (l) => l.itemType === reward.itemType,
-                  );
-                  if (!limit) return false;
-                  // 현재 보유 + 대기 + 이번 지급 수량 > 최대 수량
-                  return (
-                    limit.ownedQuantity +
-                      limit.pendingQuantity +
-                      reward.quantity >
-                    limit.maxQuantity
-                  );
-                });
-
-                if (exceededLimit) {
-                  return (
-                    <div className="flex w-full flex-col gap-2">
-                      <Button disabled>구매 한도 초과</Button>
-                      <p className="typo-12-500 text-color-brand-primary-flame text-center">
-                        {exceededLimit.itemName}의 최대 보유 한도(
-                        {
-                          limits.find(
-                            (l) => l.itemType === exceededLimit.itemType,
-                          )?.maxQuantity
-                        }
-                        개)를 초과하여 구매할 수 없습니다.
-                      </p>
-                    </div>
-                  );
-                }
-
-                return (
-                  <Button
-                    disabled={!agreed || isPending}
-                    onClick={handleConfirm}
-                  >
-                    {isPending ? "요청 중..." : "충전 요청 보내기"}
-                  </Button>
-                );
-              })()}
+              <Button disabled={!agreed || isPending} onClick={handleConfirm}>
+                {isPending ? "요청 중..." : "충전 요청 보내기"}
+              </Button>
 
               {/* Toss 링크 */}
               <button
