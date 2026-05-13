@@ -24,7 +24,6 @@ interface ImportantOptionDrawerProps {
 const OPTIONS: { label: string; value: ImportantOption }[] = [
   { label: "MBTI", value: "MBTI" },
   { label: "관심사", value: "HOBBY" },
-  { label: "나이", value: "AGE" },
   { label: "연락빈도", value: "CONTACT" },
 ];
 
@@ -62,7 +61,6 @@ export default function ImportantOptionDrawer({
   selectedOption,
   selections = {
     MBTI: "",
-    AGE: "",
     HOBBY: "",
     CONTACT: "",
   },
@@ -271,7 +269,6 @@ export default function ImportantOptionDrawer({
                   onPointerDown={handlePointerDown}
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
-                  onClick={onSelect}
                 />
               ))}
             </div>

@@ -195,7 +195,6 @@ const ScreenMatching = () => {
           selectedOption={importantOption}
           selections={{
             MBTI: selectedMBTI || "",
-            AGE: selectedAgeGroup || "",
             HOBBY: selectedHobbyCategory || "",
             CONTACT: selectedFrequency || "",
           }}
