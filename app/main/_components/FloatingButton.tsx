@@ -15,13 +15,14 @@ const FloatingButton = ({ fixed = false }: FloatingButtonProps) => {
         fixed ? "absolute top-2 right-4" : "",
       )}
     >
-      <button
-        type="button"
-        aria-label="메시지 보내기"
+      <Link
+        href="/chat-list"
+        prefetch={true}
+        aria-label="채팅 목록 열기"
         className="flex items-center justify-center transition-opacity hover:opacity-70 focus:outline-none"
       >
         <Send size={20} />
-      </button>
+      </Link>
       <Link
         href="/mypage"
         aria-label="마이페이지 열기"
