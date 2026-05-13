@@ -1,16 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
 import { isValidDepositorName } from "@/lib/validators";
 import Button from "@/components/ui/Button";
 import { useUpdateRealName } from "@/hooks/useUpdateRealName";
+import { useRealName } from "@/hooks/useRealName";
 
 export default function DepositorNameContent() {
-  const [name, setName] = React.useState("");
+  const [name, setName] = useState("");
+  const { data: realNameData } = useRealName();
   const { mutate: updateName, isPending } = useUpdateRealName();
+
+  const isInitialized = React.useRef(false);
+  useEffect(() => {
+    if (realNameData?.data?.realName && !isInitialized.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setName(realNameData.data.realName);
+      isInitialized.current = true;
+    }
+  }, [realNameData]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -32,7 +43,7 @@ export default function DepositorNameContent() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-[23px] pt-8 pb-[100px]">
+    <div className="flex flex-col gap-[23px] pt-8 pb-[100px]">
       {/* ── 입금자명 입력 ── */}
       <div className="flex flex-col gap-2">
         <span className="typo-14-500 text-[#666666]">입금자명</span>

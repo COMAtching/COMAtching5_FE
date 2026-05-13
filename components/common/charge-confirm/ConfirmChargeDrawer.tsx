@@ -42,6 +42,7 @@ export default function ConfirmChargeDrawer({
   const queryClient = useQueryClient();
   const drawerContext = React.useContext(ChargeDrawerContext);
   const { mutate: purchase, isPending } = usePurchaseProduct();
+
   const [open, setOpen] = React.useState(false);
   const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(depositorName);
@@ -246,7 +247,6 @@ export default function ConfirmChargeDrawer({
 
             {/* ── 하단 버튼 영역 ── */}
             <div className="flex w-full flex-col items-center gap-4">
-              {/* CTA 버튼 */}
               <Button disabled={!agreed || isPending} onClick={handleConfirm}>
                 {isPending ? "요청 중..." : "충전 요청 보내기"}
               </Button>

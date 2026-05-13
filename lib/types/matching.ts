@@ -10,7 +10,7 @@ export type HobbyOption =
   | "DAILY"
   | "GAME";
 
-export type ImportantOption = "AGE" | "MBTI" | "HOBBY" | "CONTACT";
+export type ImportantOption = "MBTI" | "HOBBY" | "CONTACT";
 
 export interface MatchingRequest {
   ageOption?: AgeOption | null;

@@ -32,8 +32,7 @@ export const useUpdateRealName = () => {
     mutationFn: (realName: string) => postRealName(realName),
     onSuccess: (data) => {
       console.log("✅ 실명 수정 성공:", data);
-      // 실명이 바뀌었으므로 관련 쿼리 무효화 (필요시)
-      // queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["realName"] });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       const errorData = error.response?.data;
