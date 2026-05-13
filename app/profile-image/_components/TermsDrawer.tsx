@@ -67,7 +67,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
     const categoryMap: Record<string, string> = {
       스포츠: "SPORTS",
       문화: "CULTURE",
-      예술: "MUSIC",
+      음악: "MUSIC",
       여행: "LEISURE",
       자기계발: "DAILY",
       게임: "GAME",

@@ -173,7 +173,7 @@ const HobbyEditDrawer = ({
                     getHobbiesByCategory(cat);
                   return (
                     <div key={cat} className="flex flex-col">
-                      {/* 스포츠, 문화예술 등 */}
+                      {/* 스포츠, 문화, 음악 등 */}
                       <h2 className="typo-16-600 mb-3 text-black">{cat}</h2>
                       <div className="flex flex-wrap gap-3">
                         {predefined.map((hobby) => (

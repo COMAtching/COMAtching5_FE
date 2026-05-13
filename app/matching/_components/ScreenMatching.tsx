@@ -26,7 +26,7 @@ import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
 const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
   문화: "CULTURE",
-  예술: "MUSIC",
+  음악: "MUSIC",
   여행: "TRAVEL",
   자기계발: "DAILY",
   게임: "GAME",

@@ -47,6 +47,7 @@ const ScreenMatchingResult = () => {
   return (
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-10">
       <BackButton
+        onClick={() => router.push("/main")}
         text={
           <div className="flex items-center gap-1.5">
             <Image
