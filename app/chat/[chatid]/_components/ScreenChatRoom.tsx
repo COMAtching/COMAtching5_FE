@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUp, ChevronLeft, MoreVertical, UserRound } from "lucide-react";
+import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
+import { useChatMessages } from "@/hooks/useChatMessages";
 
 type ScreenChatRoomProps = {
   chatId: string;
@@ -17,155 +19,7 @@ type ChatMessage = {
   readCount: number;
 };
 
-type ChatApiMessage = {
-  id: string;
-  roomId: string;
-  senderId: number;
-  content: string;
-  type: "TALK";
-  createdAt: string;
-  readCount: number;
-};
-
-const currentUserId = 1;
-
-const roomMessages: ChatApiMessage[] = [
-  {
-    id: "6969e675866d67f1c3b68107",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 1,
-    content: "안녕하세요~~",
-    type: "TALK",
-    createdAt: "2026-01-16T16:19:17.547",
-    readCount: 1,
-  },
-  {
-    id: "6969e675866d67f1c3b68108",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 1,
-    content: "오늘 매칭 너무 반가웠어요.",
-    type: "TALK",
-    createdAt: "2026-01-16T16:20:10.201",
-    readCount: 1,
-  },
-  {
-    id: "6969e675866d67f1c3b68109",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "저도 반가웠어요!",
-    type: "TALK",
-    createdAt: "2026-01-16T16:20:44.120",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68110",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "지금 어디 계세요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:21:05.437",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68111",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 1,
-    content: "부스 앞이에요. 지금 오실 수 있나요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:21:45.901",
-    readCount: 1,
-  },
-  {
-    id: "6969e675866d67f1c3b68112",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "네! 금방 갈게요.",
-    type: "TALK",
-    createdAt: "2026-01-16T16:22:12.014",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68113",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "방금 도착했어요. 어디 계신가요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:23:05.120",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68114",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "사람이 많네요. 혹시 눈에 띄는 옷 입으셨어요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:24:10.450",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68115",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "저는 회색 후드 입고 있어요!",
-    type: "TALK",
-    createdAt: "2026-01-16T16:24:55.991",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68116",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "찾으면 손 흔들게요 ㅎㅎ",
-    type: "TALK",
-    createdAt: "2026-01-16T16:25:20.210",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68117",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "혹시 어느 부스 근처세요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:26:02.735",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68118",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "아, 보이는 것 같아요!",
-    type: "TALK",
-    createdAt: "2026-01-16T16:26:45.501",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68119",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "오케이! 만나면 인사할게요.",
-    type: "TALK",
-    createdAt: "2026-01-16T16:27:30.220",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68120",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "혹시 좋아하는 간식 있어요?",
-    type: "TALK",
-    createdAt: "2026-01-16T16:28:12.044",
-    readCount: 0,
-  },
-  {
-    id: "6969e675866d67f1c3b68121",
-    roomId: "6969e61b866d67f1c3b68106",
-    senderId: 12,
-    content: "저는 츄러스 좋아해요!",
-    type: "TALK",
-    createdAt: "2026-01-16T16:28:50.900",
-    readCount: 0,
-  },
-];
+const currentUserId = 1; // TODO: 실제 로그인 사용자 ID로 변경 필요
 
 const formatMessageTime = (isoString: string) => {
   const parsed = new Date(isoString);
@@ -233,19 +87,47 @@ const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
 export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
+
+  // 1. 과거 대화 내역 가져오기 (API)
+  const { data: historyData } = useChatMessages(chatId);
+
+  // 2. 소켓 연결 및 실시간 메시지 수신
+  const { messages: socketMessages, sendMessage } = useChatRoomSocket(chatId);
+
+  // 3. 전체 메시지 목록 변환 및 중복 제거 (Derived State)
+  const messages = useMemo(() => {
+    // API 데이터와 소켓 데이터를 합침
+    const combined = [...(historyData?.data || [])];
+
+    // 소켓으로 온 메시지 중 이미 내역에 있는 건 제외하고 추가
+    socketMessages.forEach((socketMsg) => {
+      if (!combined.some((m) => m.id === socketMsg.id)) {
+        combined.push(socketMsg);
+      }
+    });
+
+    // 화면 표시용 타입으로 변환
+    return combined.map((m) => ({
+      id: m.id,
+      sender: m.senderId === currentUserId ? "me" : "other",
+      text: m.content,
+      time: formatMessageTime(m.createdAt),
+      readCount: m.readCount,
+    })) as ChatMessage[];
+  }, [historyData, socketMessages]);
+
+  const handleSendMessage = () => {
+    if (!messageText.trim()) return;
+
+    // 소켓으로 전송 (senderId는 서버에서 자동 주입)
+    sendMessage(messageText);
+
+    // 입력창 초기화
+    setMessageText("");
+  };
+
   const isSendEnabled = messageText.trim().length > 0;
-  const filteredMessages = roomMessages.filter(
-    (message) => message.roomId === chatId,
-  );
-  const sourceMessages =
-    filteredMessages.length > 0 ? filteredMessages : roomMessages;
-  const messages: ChatMessage[] = sourceMessages.map((message) => ({
-    id: message.id,
-    sender: message.senderId === currentUserId ? "me" : "other",
-    text: message.content,
-    time: formatMessageTime(message.createdAt),
-    readCount: message.readCount,
-  }));
+  const messages = allMessages;
 
   return (
     <main className="flex min-h-screen flex-col items-center px-4 pt-20 pb-24">
@@ -303,12 +185,18 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             placeholder="메세지를 입력하세요.."
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isSendEnabled) {
+                handleSendMessage();
+              }
+            }}
             className="flex-1 bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
           />
           <button
             type="button"
             aria-label="메시지 보내기"
             disabled={!isSendEnabled}
+            onClick={handleSendMessage}
             className={
               "flex h-10 w-12 items-center justify-center rounded-[24px] border border-white/30 transition-colors " +
               (isSendEnabled

@@ -3,7 +3,6 @@ import {
   Gender,
   MBTI,
   SocialType,
-  Hobby,
   ContactFrequency,
 } from "@/lib/types/profile";
 import {

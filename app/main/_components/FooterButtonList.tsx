@@ -1,8 +1,9 @@
-import React from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useParticipantsCount } from "@/hooks/useParticipantsCount";
 
 const MatchingButton = () => {
+  const { data: participantsCount } = useParticipantsCount();
+
   return (
     <Link
       href="/matching"
@@ -21,7 +22,11 @@ const MatchingButton = () => {
         />
       </div>
       <span className="typo-16-500 text-gray-400">
-        현재 <span className="text-color-flame-700">740명</span> 참여중이에요!
+        현재{" "}
+        <span className="text-color-flame-700">
+          {participantsCount?.data || 0}명
+        </span>{" "}
+        참여중이에요!
       </span>
     </Link>
   );
