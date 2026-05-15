@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
+import { getProfileImageUrl } from "@/lib/utils/profile";
 
 type ChatListItem = {
   id: string;
@@ -222,32 +223,34 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
-  const { data } = useChatRooms();
+  const { data: rooms } = useChatRooms();
 
   // DEBUG: 채팅방 목록 데이터 로그
   useEffect(() => {
-    if (data) {
-      console.log("📡 [Chat Rooms List Data]:", data);
+    if (rooms) {
+      console.log("📡 [Chat Rooms List Data]:", rooms);
     }
-  }, [data]);
+  }, [rooms]);
 
   const chatItems = useMemo(() => {
-    const rooms = data?.data ?? [];
-    if (rooms.length === 0) {
-      return inboxItems;
+    if (!rooms || rooms.length === 0) {
+      return [];
     }
 
     return rooms.map((room) => ({
-      id: room.id,
-      roomId: room.id,
-      name: "username",
-      detail: `매칭 ${room.matchingId}`,
-      preview: room.lastMessage ?? "채팅을 시작해보세요.",
-      time: formatChatTime(room.lastMessageTime),
-      unread: room.unreadCount > 0,
-      avatar: "/profile/default-profile.svg",
+      id: String(room.historyId),
+      roomId: room.chatRoomId,
+      name: room.partner.nickname,
+      detail: `${room.partner.age}세, ${room.partner.major}`,
+      preview: "채팅을 시작해보세요.", // 마지막 메시지 필드가 없으므로 기본값
+      time: formatChatTime(room.matchedAt),
+      unread: false, // 현재 응답에 unreadCount 없음
+      avatar: getProfileImageUrl(
+        room.partner.profileImageUrl,
+        room.partner.gender,
+      ),
     }));
-  }, [data]);
+  }, [rooms]);
 
   return (
     <main className="flex min-h-screen flex-col items-center px-4 py-2 pb-30">

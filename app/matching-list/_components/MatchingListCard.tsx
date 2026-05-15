@@ -7,6 +7,7 @@ import {
 import Image from "next/image";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getAge } from "@/lib/utils/date";
 import {
   getContactFrequencyLabel,
@@ -27,10 +28,12 @@ const CardHeader = ({
   partner,
   isFavorite,
   onFavoriteToggle,
+  onChatClick,
 }: {
   partner: MatchingPartner;
   isFavorite: boolean;
   onFavoriteToggle?: () => void;
+  onChatClick?: () => void;
 }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
@@ -75,7 +78,10 @@ const CardHeader = ({
         type="button"
         aria-label="메시지 보내기"
         className="flex h-4 w-4 items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChatClick?.();
+        }}
       >
         <Send size={16} className="text-color-gray-500" />
       </button>
@@ -214,11 +220,20 @@ const MatchingListCard = ({
 }: MatchingListCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const touchStartTime = useRef<number>(0);
+  const router = useRouter();
 
   const handleCardClick = () => {
     const touchDuration = Date.now() - touchStartTime.current;
     if (touchDuration < 200) {
       setIsExpanded((prev) => !prev);
+    }
+  };
+
+  const handleChatClick = () => {
+    if (item.chatRoomId) {
+      router.push(`/chat/${item.chatRoomId}`);
+    } else {
+      alert("채팅방 정보를 찾을 수 없습니다.");
     }
   };
 
@@ -245,6 +260,7 @@ const MatchingListCard = ({
           partner={item.partner}
           isFavorite={item.favorite}
           onFavoriteToggle={() => onFavoriteToggle?.(item.historyId)}
+          onChatClick={handleChatClick}
         />
         <div className="mt-4 mb-3 w-full">
           <CardStats partner={item.partner} />

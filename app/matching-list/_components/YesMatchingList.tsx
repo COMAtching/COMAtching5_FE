@@ -65,13 +65,9 @@ const YesMatchingList = ({
     // 정렬
     result.sort((a, b) => {
       if (sortOrder === "age") {
-        const ageA = a.partner.birthDate
-          ? new Date(a.partner.birthDate).getTime()
-          : 0;
-        const ageB = b.partner.birthDate
-          ? new Date(b.partner.birthDate).getTime()
-          : 0;
-        // birthDate가 작을수록(오래될수록) 나이가 많음 → 오름차순
+        const ageA = a.partner.age || getAge(a.partner.birthDate, CURRENT_YEAR);
+        const ageB = b.partner.age || getAge(b.partner.birthDate, CURRENT_YEAR);
+        // 나이 오름차순 (어린 순)
         return ageA - ageB;
       }
       const dateA = new Date(a.matchedAt).getTime();

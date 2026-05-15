@@ -36,6 +36,7 @@ export interface MatchingPartner {
 
 export interface MatchingHistoryItem {
   historyId: number;
+  chatRoomId?: string;
   partner: MatchingPartner;
   favorite: boolean;
   matchedAt: string;

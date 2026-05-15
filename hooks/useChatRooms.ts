@@ -1,14 +1,13 @@
 import { api } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
+import { MatchingPartner } from "./useMatchingHistory";
 
 export type ChatRoom = {
-  id: string;
-  matchingId: number;
-  initiatorUserId: number;
-  targetUserId: number;
-  lastMessage: string | null;
-  lastMessageTime: string | null;
-  unreadCount: number;
+  historyId: number;
+  chatRoomId: string;
+  partner: MatchingPartner;
+  favorite: boolean;
+  matchedAt: string;
 };
 
 export type ChatRoomsResponse = {
@@ -18,9 +17,16 @@ export type ChatRoomsResponse = {
   data: ChatRoom[];
 };
 
-export const fetchChatRooms = async (): Promise<ChatRoomsResponse> => {
-  const { data } = await api.get<ChatRoomsResponse>("/api/chat/rooms");
-  return data;
+/**
+ * 채팅방 목록 조회 (전체 응답이 배열인 경우와 객체인 경우 대응)
+ */
+export const fetchChatRooms = async (): Promise<ChatRoom[]> => {
+  const { data } = await api.get<ChatRoom[] | ChatRoomsResponse>(
+    "/api/chat/rooms",
+  );
+  // 백엔드 응답이 { data: [...] } 형태인지 아니면 배열 그 자체인지 확인하여 처리
+  if (Array.isArray(data)) return data;
+  return data.data || [];
 };
 
 export const useChatRooms = () => {
