@@ -63,9 +63,11 @@ const YesMatchingList = ({
     // 정렬
     result.sort((a, b) => {
       if (sortOrder === "age") {
-        const ageA = a.partner.age || getAge(a.partner.birthDate);
-        const ageB = b.partner.age || getAge(b.partner.birthDate);
-        // 나이 오름차순 (어린 순)
+        const rawAgeA = a.partner.age || getAge(a.partner.birthDate);
+        const rawAgeB = b.partner.age || getAge(b.partner.birthDate);
+        const ageA = typeof rawAgeA === "number" ? rawAgeA : 999;
+        const ageB = typeof rawAgeB === "number" ? rawAgeB : 999;
+        // 나이 오름차순 (어린 순), 모르는 나이는 맨 뒤로
         return ageA - ageB;
       }
       const dateA = new Date(a.matchedAt).getTime();
