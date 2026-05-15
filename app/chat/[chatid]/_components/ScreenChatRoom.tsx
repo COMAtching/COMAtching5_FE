@@ -7,7 +7,10 @@ import { ArrowUp, ChevronLeft, MoreVertical, UserRound } from "lucide-react";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useMyProfile } from "@/hooks/useProfile";
+import { getProfileImageUrl } from "@/lib/utils/profile";
+import { useUpdateFavorite } from "@/hooks/useMatchingHistory";
 import { cn } from "@/lib/utils";
+import PartnerProfileModal from "./PartnerProfileModal";
 
 type ScreenChatRoomProps = {
   chatId: string;
@@ -41,19 +44,27 @@ const ChatDateDivider = ({ label }: { label: string }) => {
   );
 };
 
-const IncomingMessage = ({ message }: { message: ChatMessage }) => {
+const IncomingMessage = ({
+  message,
+  partner,
+}: {
+  message: ChatMessage;
+  partner?: MatchingPartner;
+}) => {
   return (
     <div className="flex w-full items-start gap-2">
       <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-white">
         <Image
-          src="/profile/default-profile.svg"
+          src={getProfileImageUrl(partner?.profileImageUrl, partner?.gender)}
           alt="프로필"
           fill
           className="object-cover"
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <span className="typo-12-500 text-[#1A1A1A]">겨울이오길</span>
+        <span className="typo-12-500 text-[#1A1A1A]">
+          {partner?.nickname || "..."}
+        </span>
         <div className="flex items-end gap-2">
           <div className="max-w-55 rounded-3xl rounded-bl-xl bg-white px-3 py-2 text-sm text-[#333333] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
             {message.text}
@@ -87,10 +98,58 @@ const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
 export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
   const currentUserId = myProfile?.data.memberId;
+
+  // 즐겨찾기 토글 mutation
+  const updateFavorite = useUpdateFavorite();
+
+  // 0-1. 현재 채팅방 정보 가져오기 (임시 더미 데이터 사용)
+  // const { data: rooms } = useChatRooms();
+  // const currentRoom = rooms?.find((r) => r.chatRoomId === chatId);
+  // const partner = currentRoom?.partner;
+
+  const partner: MatchingPartner = {
+    memberId: 999,
+    email: "winter@example.com",
+    nickname: "겨울이오길",
+    age: 20,
+    gender: "FEMALE",
+    birthDate: "2004-01-01",
+    major: "정보통신전자공학부",
+    university: "가톨릭대학교",
+    mbti: "ENTP",
+    contactFrequency: "NORMAL",
+    profileImageUrl: "animal_cat",
+    profileImageKey: null,
+    intro: "친하게 지내요! 😆",
+    song: "한로로 - 사랑하게 될 거야",
+    hobbies: [
+      { category: "취미", name: "독서" },
+      { category: "취미", name: "영화감상" },
+      { category: "취미", name: "음악감상" },
+    ],
+    tags: [{ tag: "친절한" }, { tag: "열정적인" }],
+    intros: [],
+    socialType: "INSTAGRAM",
+    socialAccountId: "winterizcoming_",
+  };
+
+  const handleFavoriteToggle = () => {
+    if (!partner) return;
+
+    const newFavoriteStatus = !isFavorite;
+    setIsFavorite(newFavoriteStatus);
+
+    updateFavorite.mutate({
+      historyId: partner.memberId, // MatchingPartner에는 historyId가 없으므로 memberId를 임시로 사용
+      favorite: newFavoriteStatus,
+    });
+  };
 
   // 1. 과거 대화 내역 가져오기 (API)
   const { data: historyData } = useChatMessages(chatId);
@@ -158,17 +217,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           </button>
 
           <div className="flex flex-1 flex-col justify-center">
-            <span className="typo-14-600 text-[#1A1A1A]">겨울이오길</span>
+            <span className="typo-14-600 text-[#1A1A1A]">
+              {partner?.nickname || "..."}
+            </span>
             <div className="flex items-center gap-1 text-xs text-[#999999]">
-              <span>20세</span>
+              <span>{partner?.age || "??"}세</span>
               <span>,</span>
-              <span>정보통신전자공학부</span>
+              <span className="max-w-40 truncate">
+                {partner?.major || "..."}
+              </span>
             </div>
           </div>
 
           <button
             type="button"
             aria-label="상대 사용자 정보 열기"
+            onClick={() => setIsProfileModalOpen(true)}
             className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
           >
             <UserRound size={20} />
@@ -183,7 +247,11 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           message.sender === "me" ? (
             <OutgoingMessage key={message.id} message={message} />
           ) : (
-            <IncomingMessage key={message.id} message={message} />
+            <IncomingMessage
+              key={message.id}
+              message={message}
+              partner={partner}
+            />
           ),
         )}
       </section>
@@ -222,6 +290,15 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         </div>
         <span className="sr-only">chatId: {chatId}</span>
       </div>
+      {partner && (
+        <PartnerProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          partner={partner}
+          isFavorite={isFavorite}
+          onFavoriteToggle={handleFavoriteToggle}
+        />
+      )}
     </main>
   );
 }

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
-import { useChatRooms } from "@/hooks/useChatRooms";
+import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
 import { getProfileImageUrl } from "@/lib/utils/profile";
 
@@ -17,112 +17,6 @@ type ChatListItem = {
   unread?: boolean;
   avatar: string;
 };
-
-const inboxItems: ChatListItem[] = [
-  {
-    id: "chat-1",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "22세, 정보통신전자공학부",
-    preview:
-      "안녕하세요! 오늘 시간 괜찮으세요? 혹시 축제 끝나고 같이 산책하면서 이야기 나눌 수 있을까요?",
-    time: "방금",
-    unread: true,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-2",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "22세, 정보통신전자공학부",
-    preview:
-      "혹시 축제 끝나고 커피 한 잔 하실래요? 요즘 좋아하는 음악이나 취미도 궁금해요!",
-    time: "방금",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-3",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "22세, 정보통신전자공학부",
-    preview:
-      "오늘 매칭 너무 반가웠어요 :) 혹시 시간 괜찮으시면 잠깐 만나서 인사하고 싶어요!",
-    time: "방금",
-    unread: true,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-4",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "23세, 컴퓨터공학과",
-    preview: "지금 어디에 계세요?",
-    time: "1분 전",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-5",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "21세, 심리학과",
-    preview: "공연 같이 보실래요?",
-    time: "3분 전",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-6",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "24세, 경영학과",
-    preview: "인사 늦어서 미안해요!",
-    time: "5분 전",
-    unread: true,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-7",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "22세, 전자공학과",
-    preview: "혹시 좋아하는 음악 장르 있어요?",
-    time: "8분 전",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-8",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "23세, 디자인학과",
-    preview: "지금 부스 앞에서 기다리고 있어요.",
-    time: "12분 전",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-9",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "21세, 사회학과",
-    preview: "요즘 관심사 뭐예요?",
-    time: "18분 전",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-  {
-    id: "chat-10",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "24세, 기계공학과",
-    preview: "저도 그 동아리 관심 있어요!",
-    time: "25분 전",
-    unread: true,
-    avatar: "/profile/default-profile.svg",
-  },
-];
 
 const pickedItems: ChatListItem[] = [
   {
@@ -233,21 +127,28 @@ export default function ScreenChatList() {
   }, [rooms]);
 
   const chatItems = useMemo(() => {
-    if (!rooms || rooms.length === 0) {
+    // 이제 SSR/CSR 모두 배열로 통일되었으므로 단순하게 처리합니다.
+    const roomsArray = (rooms || []) as ChatRoom[];
+
+    if (roomsArray.length === 0) {
       return [];
     }
 
-    return rooms.map((room) => ({
-      id: String(room.historyId),
-      roomId: room.chatRoomId,
-      name: room.partner.nickname,
-      detail: `${room.partner.age}세, ${room.partner.major}`,
-      preview: "채팅을 시작해보세요.", // 마지막 메시지 필드가 없으므로 기본값
-      time: formatChatTime(room.matchedAt),
-      unread: false, // 현재 응답에 unreadCount 없음
+    return roomsArray.map((room) => ({
+      id: String(room.matchingId),
+      roomId: room.id,
+      name: room.otherUser?.nickname || "익명",
+      detail: room.otherUser
+        ? `${room.otherUser.age}세, ${room.otherUser.major}`
+        : "정보 없음",
+      preview: room.lastMessage || "채팅을 시작해보세요.",
+      time: room.lastMessageTime
+        ? formatChatTime(room.lastMessageTime)
+        : "방금",
+      unread: (room.unreadCount || 0) > 0,
       avatar: getProfileImageUrl(
-        room.partner.profileImageUrl,
-        room.partner.gender,
+        room.otherUser?.profileImageUrl,
+        "UNKNOWN", // 성별 정보가 없으므로 기본값 처리
       ),
     }));
   }, [rooms]);

@@ -3,11 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 import { MatchingPartner } from "./useMatchingHistory";
 
 export type ChatRoom = {
-  historyId: number;
-  chatRoomId: string;
-  partner: MatchingPartner;
-  favorite: boolean;
-  matchedAt: string;
+  id: string; // 채팅방 ID
+  matchingId: number; // 매칭 ID
+  initiatorUserId: number;
+  targetUserId: number;
+  otherUser: {
+    memberId: number;
+    nickname: string;
+    profileImageUrl: string;
+    university: string;
+    major: string;
+    age: number;
+  };
+  lastMessage: string | null;
+  lastMessageTime: string | null;
+  unreadCount: number;
 };
 
 export type ChatRoomsResponse = {

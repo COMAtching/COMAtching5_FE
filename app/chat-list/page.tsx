@@ -17,11 +17,9 @@ export default async function ChatListPage() {
       const res = await serverApi.get<ChatRoomsResponse>({
         path: "/api/chat/rooms",
       });
-      console.log("[SSR] Chat rooms response", {
-        count: res.data.data.length,
-        status: res.data.status,
-      });
-      return res.data;
+      console.log("[SSR] Chat rooms response count:", res.data.data.length);
+      // 클라이언트 훅과 동일하게 배열만 반환하도록 수정
+      return res.data.data || [];
     },
   });
 
