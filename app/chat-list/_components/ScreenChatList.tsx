@@ -5,7 +5,6 @@ import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
-import { getProfileImageUrl } from "@/lib/utils/profile";
 
 type ChatListItem = {
   id: string;
@@ -146,10 +145,7 @@ export default function ScreenChatList() {
         ? formatChatTime(room.lastMessageTime)
         : "방금",
       unread: (room.unreadCount || 0) > 0,
-      avatar: getProfileImageUrl(
-        room.otherUser?.profileImageUrl,
-        "UNKNOWN", // 성별 정보가 없으므로 기본값 처리
-      ),
+      avatar: room.otherUser?.profileImageUrl || "/default-profile.png",
     }));
   }, [rooms]);
 

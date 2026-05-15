@@ -329,8 +329,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const birthYear = initialProfile.birthDate
     ? initialProfile.birthDate.split("-")[0]
     : undefined;
-  const currentYear = new Date().getFullYear();
-  const age = birthYear ? currentYear - Number(birthYear) + 1 : undefined;
 
   const { mutateAsync: uploadImage } = useImageUpload();
 

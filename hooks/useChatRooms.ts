@@ -14,6 +14,7 @@ export type ChatRoom = {
     university: string;
     major: string;
     age: number;
+    gender?: import("@/lib/types/profile").Gender;
   };
   lastMessage: string | null;
   lastMessageTime: string | null;

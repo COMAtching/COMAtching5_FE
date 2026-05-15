@@ -12,7 +12,6 @@ import { Search, ArrowUpNarrowWide, Loader2 } from "lucide-react";
 import MatchingListCard from "./MatchingListCard";
 import { getAge } from "@/lib/utils/date";
 import SortDrawer, { SortOrder } from "./SortDrawer";
-import { CURRENT_YEAR } from "@/lib/constants/date";
 
 const SORT_LABELS: Record<SortOrder, string> = {
   oldest: "오래된 순",
@@ -51,8 +50,7 @@ const YesMatchingList = ({
           p.nickname.toLowerCase().includes(query) ||
           p.mbti.toLowerCase().includes(query) ||
           p.major.toLowerCase().includes(query) ||
-          (p.birthDate &&
-            String(getAge(p.birthDate, CURRENT_YEAR)).includes(query))
+          (p.birthDate && String(getAge(p.birthDate)).includes(query))
         );
       });
     }
@@ -65,8 +63,8 @@ const YesMatchingList = ({
     // 정렬
     result.sort((a, b) => {
       if (sortOrder === "age") {
-        const ageA = a.partner.age || getAge(a.partner.birthDate, CURRENT_YEAR);
-        const ageB = b.partner.age || getAge(b.partner.birthDate, CURRENT_YEAR);
+        const ageA = a.partner.age || getAge(a.partner.birthDate);
+        const ageB = b.partner.age || getAge(b.partner.birthDate);
         // 나이 오름차순 (어린 순)
         return ageA - ageB;
       }

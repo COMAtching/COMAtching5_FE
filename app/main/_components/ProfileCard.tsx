@@ -6,12 +6,7 @@ import { Send } from "lucide-react";
 import React, { useRef } from "react";
 
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
-
-/* ── 유틸 함수 ── */
-const getAge = (birthDate?: string) => {
-  if (!birthDate) return "?? ";
-  return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
-};
+import { getAge } from "@/lib/utils/date";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
