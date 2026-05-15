@@ -6,6 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowUp, ChevronLeft, MoreVertical, UserRound } from "lucide-react";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
+import { useMyProfile } from "@/hooks/useProfile";
+import { cn } from "@/lib/utils";
 
 type ScreenChatRoomProps = {
   chatId: string;
@@ -18,8 +20,6 @@ type ChatMessage = {
   time: string;
   readCount: number;
 };
-
-const currentUserId = 1; // TODO: 실제 로그인 사용자 ID로 변경 필요
 
 const formatMessageTime = (isoString: string) => {
   const parsed = new Date(isoString);
@@ -88,6 +88,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
 
+  // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
+  const { data: myProfile } = useMyProfile();
+  const currentUserId = myProfile?.data.memberId;
+
   // 1. 과거 대화 내역 가져오기 (API)
   const { data: historyData } = useChatMessages(chatId);
 
@@ -114,7 +118,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       time: formatMessageTime(m.createdAt),
       readCount: m.readCount,
     })) as ChatMessage[];
-  }, [historyData, socketMessages]);
+  }, [historyData, socketMessages, currentUserId]);
 
   const handleSendMessage = () => {
     if (!messageText.trim()) return;
@@ -127,7 +131,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   };
 
   const isSendEnabled = messageText.trim().length > 0;
-  const messages = allMessages;
 
   return (
     <main className="flex min-h-screen flex-col items-center px-4 pt-20 pb-24">
@@ -197,12 +200,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             aria-label="메시지 보내기"
             disabled={!isSendEnabled}
             onClick={handleSendMessage}
-            className={
-              "flex h-10 w-12 items-center justify-center rounded-[24px] border border-white/30 transition-colors " +
-              (isSendEnabled
+            className={cn(
+              "flex h-10 w-12 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
+              isSendEnabled
                 ? "bg-button-primary text-button-primary-text-default"
-                : "bg-[#E5E5E5] text-[#CCCCCC]")
-            }
+                : "bg-[#E5E5E5] text-[#CCCCCC]",
+            )}
           >
             <ArrowUp className="h-5 w-5" />
           </button>

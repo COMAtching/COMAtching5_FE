@@ -24,7 +24,7 @@ const MatchingButton = () => {
       <span className="typo-16-500 text-gray-400">
         현재{" "}
         <span className="text-color-flame-700">
-          {participantsCount?.data || 0}명
+          {participantsCount?.data?.count ?? 0}명
         </span>{" "}
         참여중이에요!
       </span>

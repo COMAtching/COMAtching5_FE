@@ -1,11 +1,12 @@
 import ScreenChatRoom from "./_components/ScreenChatRoom";
 
 type ChatRoomPageProps = {
-  params: {
+  params: Promise<{
     chatid: string;
-  };
+  }>;
 };
 
-export default function ChatRoomPage({ params }: ChatRoomPageProps) {
-  return <ScreenChatRoom chatId={params.chatid} />;
+export default async function ChatRoomPage({ params }: ChatRoomPageProps) {
+  const { chatid } = await params;
+  return <ScreenChatRoom chatId={chatid} />;
 }
