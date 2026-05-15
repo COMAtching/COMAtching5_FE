@@ -8,7 +8,10 @@ import Image from "next/image";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { getAge } from "@/lib/utils/date";
-import { getContactFrequencyLabel } from "@/lib/utils/profile";
+import {
+  getContactFrequencyLabel,
+  getProfileImageUrl,
+} from "@/lib/utils/profile";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -34,7 +37,7 @@ const CardHeader = ({
     <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
-          src={partner.profileImageUrl || "/default-profile.png"}
+          src={getProfileImageUrl(partner.profileImageUrl, partner.gender)}
           alt={`${partner.nickname || "익명"}님의 프로필 사진`}
           fill
           className="object-cover"
@@ -64,9 +67,7 @@ const CardHeader = ({
         <Star
           size={16}
           className={
-            isFavorite
-              ? "fill-color-flame-700 text-color-flame-700"
-              : "text-color-gray-500"
+            isFavorite ? "fill-[#FF4D61] text-[#FF4D61]" : "text-color-gray-500"
           }
         />
       </button>

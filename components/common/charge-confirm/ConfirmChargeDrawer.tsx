@@ -3,7 +3,7 @@
 import React from "react";
 import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
-import { X, PencilLine, Check } from "lucide-react";
+import { X, Check } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -16,6 +16,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import Button from "@/components/ui/Button";
 import { BANK_INFO } from "@/lib/constants/charge";
+import { usePurchaseProduct } from "@/hooks/usePurchaseProduct";
+import { useRealName } from "@/hooks/useRealName";
+import { ChargeDrawerContext } from "@/components/common/ChargeDrawer";
 
 /* ── Props ── */
 interface ConfirmChargeDrawerProps {
@@ -27,12 +30,6 @@ interface ConfirmChargeDrawerProps {
   /** 입금자명 (사전 설정된 값) */
   depositorName?: string;
 }
-
-/* ────────────────────────────────────── */
-
-import { usePurchaseProduct } from "@/hooks/usePurchaseProduct";
-import { useRealName } from "@/hooks/useRealName";
-import { ChargeDrawerContext } from "@/components/common/ChargeDrawer";
 
 export default function ConfirmChargeDrawer({
   trigger,
@@ -50,20 +47,13 @@ export default function ConfirmChargeDrawer({
   const [name, setName] = React.useState(
     depositorName || realNameData?.data?.realName || "",
   );
-  const [isEditingName, setIsEditingName] = React.useState(false);
 
-  // 실명이 로드되면 이름 업데이트 (단, 사용자가 수동으로 수정 중이지 않을 때)
+  // 실명이 로드되면 이름 업데이트
   React.useEffect(() => {
-    if (realNameData?.data?.realName && !depositorName && !isEditingName) {
+    if (realNameData?.data?.realName && !depositorName && !name) {
       setName(realNameData.data.realName);
     }
-  }, [realNameData, depositorName, isEditingName]);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  /* 입금자명 수정 시 input focus */
-  React.useEffect(() => {
-    if (isEditingName) inputRef.current?.focus();
-  }, [isEditingName]);
+  }, [realNameData, depositorName, name]);
 
   /* 계좌번호 복사 */
   const handleCopy = async () => {
@@ -85,10 +75,7 @@ export default function ConfirmChargeDrawer({
     const tossDeepLink = `supertoss://send?accountNo=${accountNo}&bankCode=${bankCode}&amount=${amount}&message=${encodeURIComponent(message)}`;
 
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      // 토스 이동 상태 기록 (기존 코드 참고)
       localStorage.setItem("tossPaymentInProgress", "1");
-
-      // 딥링크 이동
       const a = document.createElement("a");
       a.href = tossDeepLink;
       a.style.display = "none";
@@ -106,6 +93,8 @@ export default function ConfirmChargeDrawer({
       onSuccess: () => {
         alert("충전 요청이 완료되었습니다!");
         setOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+        if (drawerContext) drawerContext.onClose();
       },
       onError: (error: AxiosError<{ code?: string; message?: string }>) => {
         const errorData = error.response?.data;
@@ -115,7 +104,6 @@ export default function ConfirmChargeDrawer({
         } else if (errorData?.code === "PAY-004") {
           alert("먼저 입금자명을 설정해 주세요.");
           setOpen(false);
-          // 실명 설정 탭으로 이동 (TABS[2]가 입금자명 설정)
           drawerContext?.setActiveTab(2);
         } else {
           alert(
@@ -140,10 +128,10 @@ export default function ConfirmChargeDrawer({
         className="rounded-t-[24px] bg-white outline-none"
         showHandle={false}
       >
-        <div className="flex flex-col px-[15px] pt-6 pb-10">
-          <div className="flex flex-col items-center gap-8">
+        <div className="mx-auto w-full max-w-md pb-10 outline-none">
+          <div className="flex flex-col gap-8 px-4 pt-6">
             {/* ── Header ── */}
-            <DrawerHeader className="w-full shrink-0 gap-0 p-0">
+            <DrawerHeader className="p-0">
               <div className="flex items-center justify-between">
                 <DrawerTitle className="typo-20-700 text-black">
                   계좌이체
@@ -172,15 +160,12 @@ export default function ConfirmChargeDrawer({
                   </div>
 
                   {/* 계좌 정보 박스 */}
-                  <div className="flex flex-col items-center gap-2 rounded-[8px] bg-white py-4">
+                  <div className="flex flex-col items-center gap-2 rounded-[8px] bg-white py-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
                     <span className="typo-16-500 text-color-gray-900 text-center">
                       {BANK_INFO.bank}
                     </span>
-                    <span className="typo-16-500 text-color-gray-900 text-center">
+                    <span className="typo-20-700 text-color-text-black text-center">
                       {BANK_INFO.account}
-                    </span>
-                    <span className="typo-16-500 text-color-gray-900 text-center">
-                      예금주 : {BANK_INFO.holder}
                     </span>
                   </div>
                 </div>
@@ -190,33 +175,11 @@ export default function ConfirmChargeDrawer({
                   <span className="typo-16-600 pb-[2px] text-[#777777]">
                     입금자명
                   </span>
-                  {isEditingName ? (
-                    <div className="flex items-center border-b border-[#6A6A6A] pb-[2px]">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        onBlur={() => setIsEditingName(false)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") setIsEditingName(false);
-                        }}
-                        className="typo-16-700 text-color-gray-900 h-[24px] w-[90px] bg-transparent text-center outline-none"
-                        maxLength={6}
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingName(true)}
-                      className="flex items-center gap-1 border-b border-[#6A6A6A] pb-[2px]"
-                    >
-                      <span className="typo-16-700 text-color-gray-900 leading-none">
-                        {name}
-                      </span>
-                      <PencilLine size={12} className="text-[#6A6A6A]" />
-                    </button>
-                  )}
+                  <div className="flex items-center gap-1 border-b border-[#6A6A6A] pb-[2px]">
+                    <span className="typo-16-700 text-color-gray-900 leading-none">
+                      {name || "미지정"}
+                    </span>
+                  </div>
                 </div>
 
                 {/* 입금액 */}
@@ -262,7 +225,6 @@ export default function ConfirmChargeDrawer({
                 {isPending ? "요청 중..." : "충전 요청 보내기"}
               </Button>
 
-              {/* Toss 링크 */}
               <button
                 type="button"
                 onClick={handleTossTransfer}

@@ -74,7 +74,7 @@ const ProfileStats = ({ profile }: { profile: ProfileData }) => (
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나이</span>
       <span className="typo-16-700 text-color-text-black">
-        {getAge(profile.birthDate)}
+        {profile.age || getAge(profile.birthDate)}
       </span>
     </div>
     <div className="flex flex-1 flex-col gap-1">

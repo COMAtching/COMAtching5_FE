@@ -25,6 +25,7 @@ interface YesMatchingListProps {
   fetchNextPage: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  onFavoriteToggle?: (historyId: number, currentFavorite: boolean) => void;
 }
 
 const YesMatchingList = ({
@@ -32,6 +33,7 @@ const YesMatchingList = ({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  onFavoriteToggle,
 }: YesMatchingListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -167,7 +169,13 @@ const YesMatchingList = ({
       <div className="flex w-full flex-col gap-4">
         {filteredHistory.length > 0 ? (
           filteredHistory.map((item) => (
-            <MatchingListCard key={item.historyId} item={item} />
+            <MatchingListCard
+              key={item.historyId}
+              item={item}
+              onFavoriteToggle={() =>
+                onFavoriteToggle?.(item.historyId, item.favorite)
+              }
+            />
           ))
         ) : (
           <div className="flex h-40 items-center justify-center">

@@ -98,6 +98,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   // 2. 소켓 연결 및 실시간 메시지 수신
   const { messages: socketMessages, sendMessage } = useChatRoomSocket(chatId);
 
+  // DEBUG: 채팅방 데이터 로그
+  useEffect(() => {
+    if (historyData) {
+      console.log("📡 [Chat Room History Data]:", historyData);
+    }
+    if (socketMessages.length > 0) {
+      console.log("🔌 [Chat Room Socket Messages]:", socketMessages);
+    }
+  }, [historyData, socketMessages]);
+
   // 3. 전체 메시지 목록 변환 및 중복 제거 (Derived State)
   const messages = useMemo(() => {
     // API 데이터와 소켓 데이터를 합침

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 import { useChatRooms } from "@/hooks/useChatRooms";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 type ChatListItem = {
   id: string;
@@ -223,6 +223,13 @@ const formatChatTime = (isoString: string | null) => {
 
 export default function ScreenChatList() {
   const { data } = useChatRooms();
+
+  // DEBUG: 채팅방 목록 데이터 로그
+  useEffect(() => {
+    if (data) {
+      console.log("📡 [Chat Rooms List Data]:", data);
+    }
+  }, [data]);
 
   const chatItems = useMemo(() => {
     const rooms = data?.data ?? [];

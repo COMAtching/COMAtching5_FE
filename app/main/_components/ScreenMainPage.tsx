@@ -43,13 +43,11 @@ const ScreenMainPage = () => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setNoticePopup({ active: firstUnconfirmed, isVisible: true });
       } else {
-         
         setNoticePopup((prev) =>
           prev.isVisible ? { ...prev, isVisible: false } : prev,
         );
       }
     } else {
-       
       setNoticePopup((prev) =>
         prev.isVisible ? { ...prev, isVisible: false } : prev,
       );
@@ -76,6 +74,7 @@ const ScreenMainPage = () => {
       nickname: partner.nickname,
       gender: partner.gender,
       birthDate: partner.birthDate ?? undefined,
+      age: partner.age,
       mbti: partner.mbti,
       intro: partner.intro ?? undefined,
       profileImageUrl:
