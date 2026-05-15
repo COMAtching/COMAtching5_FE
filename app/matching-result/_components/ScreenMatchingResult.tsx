@@ -20,6 +20,16 @@ const ScreenMatchingResult = () => {
   const lastPayload = useMatchingStore((s) => s.lastPayload);
   const router = useRouter();
 
+  // DEBUG: 매칭 결과 데이터 로그 출력
+  useEffect(() => {
+    if (result) {
+      console.log("✅ [Matching Result Data]:", result);
+    }
+    if (lastPayload) {
+      console.log("📝 [Matching Last Payload]:", lastPayload);
+    }
+  }, [result, lastPayload]);
+
   useEffect(() => {
     if (isMatching) {
       // eslint-disable-next-line react-hooks/set-state-in-effect

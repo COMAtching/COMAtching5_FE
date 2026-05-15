@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import { MATCHING_AGE_LIMITS } from "@/lib/constants/matching";
 
 interface AgeRangeDrawerProps {
   trigger: React.ReactNode;
@@ -20,8 +21,8 @@ interface AgeRangeDrawerProps {
   onConfirm: (minAge: number, maxAge: number) => void;
 }
 
-const MIN_AGE = 20;
-const MAX_AGE = 29;
+const MIN_AGE = MATCHING_AGE_LIMITS.MIN;
+const MAX_AGE = MATCHING_AGE_LIMITS.MAX;
 const ALL_AGES = Array.from(
   { length: MAX_AGE - MIN_AGE + 1 },
   (_, i) => MIN_AGE + i,

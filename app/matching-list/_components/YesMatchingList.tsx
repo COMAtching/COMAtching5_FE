@@ -108,7 +108,7 @@ const YesMatchingList = ({
   return (
     <div className="flex w-full flex-col items-center gap-4 pb-10">
       {/* 검색 바 */}
-      <div className="flex h-9 w-full max-w-[343px] items-center justify-between rounded-[12px] bg-[#B3B3B31A] px-4 py-[11px]">
+      <div className="flex h-9 w-full items-center justify-between rounded-[12px] bg-[#B3B3B31A] px-4 py-[11px]">
         <input
           type="text"
           placeholder="닉네임, 나이, 전공, MBTI 등을 입력하세요"
@@ -121,7 +121,7 @@ const YesMatchingList = ({
       </div>
 
       {/* 필터 바 */}
-      <div className="flex w-full max-w-[343px] items-center justify-end gap-6">
+      <div className="flex w-full items-center justify-end gap-6">
         {/* 즐겨찾기 필터 */}
         <button
           type="button"
@@ -164,7 +164,7 @@ const YesMatchingList = ({
       </div>
 
       {/* 카드 리스트 */}
-      <div className="flex w-full max-w-[343px] flex-col gap-4">
+      <div className="flex w-full flex-col gap-4">
         {filteredHistory.length > 0 ? (
           filteredHistory.map((item) => (
             <MatchingListCard key={item.historyId} item={item} />

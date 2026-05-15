@@ -20,34 +20,50 @@ import {
   MatchingPartner,
 } from "@/hooks/useMatchingHistory";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
+import { useActiveNotices, Notice } from "@/hooks/useActiveNotices";
 
 const ScreenMainPage = () => {
-  // 실제 서비스 시에는 서버에서 받아온 데이터(notice)가 있는지 여부에 따라 렌더링을 결정할 수 있습니다.
-  const noticeData = {
-    id: "match-notice-001", // 공지사항 고유 ID (데이터를 받아올 때 id가 포함되어 있다고 가정)
-    title: "매칭 안내문",
-    detail:
-      "현재 많은 수요로 인해 일부 유형에 이용자가 몰리는 현상이 일어나고 있습니다. 원하는 유형이 나오지 않을 수도 있으니 이 점 양해 부탁드립니다. 코매칭을 이용해 주셔서 감사합니다.",
-  };
+  const [noticePopup, setNoticePopup] = useState<{
+    active: Notice | null;
+    isVisible: boolean;
+  }>({ active: null, isVisible: false });
 
-  const [isNoticeVisible, setIsNoticeVisible] = useState(false);
+  const { data: noticesData } = useActiveNotices();
   const { data: historyData, isLoading } = useMatchingHistory();
   const { isPurchasePending } = useRequestStatus();
 
   useEffect(() => {
-    // 로컬스토리지에 해당 공지 ID가 저장되어 있는지 확인
-    const confirmed = localStorage.getItem(`notice_confirmed_${noticeData.id}`);
-    if (!confirmed) {
-      // 컴포넌트 마운트 직후 상태 변경으로 인한 cascading render 린트 에러 방지를 위해 비동기 처리
-      const timeoutId = setTimeout(() => setIsNoticeVisible(true), 0);
-      return () => clearTimeout(timeoutId);
+    if (noticesData?.data && noticesData.data.length > 0) {
+      const firstUnconfirmed = noticesData.data.find(
+        (notice) =>
+          !localStorage.getItem(`notice_confirmed_${notice.noticeId}`),
+      );
+
+      if (firstUnconfirmed) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setNoticePopup({ active: firstUnconfirmed, isVisible: true });
+      } else {
+         
+        setNoticePopup((prev) =>
+          prev.isVisible ? { ...prev, isVisible: false } : prev,
+        );
+      }
+    } else {
+       
+      setNoticePopup((prev) =>
+        prev.isVisible ? { ...prev, isVisible: false } : prev,
+      );
     }
-  }, [noticeData.id]);
+  }, [noticesData]);
 
   const handleNoticeClose = () => {
-    // 확인 버튼 클릭 시 로컬스토리지에 해당 공지 ID 저장
-    localStorage.setItem(`notice_confirmed_${noticeData.id}`, "true");
-    setIsNoticeVisible(false);
+    if (noticePopup.active) {
+      localStorage.setItem(
+        `notice_confirmed_${noticePopup.active.noticeId}`,
+        "true",
+      );
+      setNoticePopup((prev) => ({ ...prev, isVisible: false }));
+    }
   };
 
   // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
@@ -82,10 +98,10 @@ const ScreenMainPage = () => {
       <MainHeader />
       <MyCoinSection />
       {isPurchasePending && <ChargeRequestWaiting />}
-      {isNoticeVisible && noticeData && (
+      {noticePopup.isVisible && noticePopup.active && (
         <NoticeSection
-          title={noticeData.title}
-          detail={noticeData.detail}
+          title={noticePopup.active.title}
+          detail={noticePopup.active.content}
           onClose={handleNoticeClose}
         />
       )}

@@ -31,22 +31,33 @@ interface ConfirmChargeDrawerProps {
 /* ────────────────────────────────────── */
 
 import { usePurchaseProduct } from "@/hooks/usePurchaseProduct";
+import { useRealName } from "@/hooks/useRealName";
 import { ChargeDrawerContext } from "@/components/common/ChargeDrawer";
 
 export default function ConfirmChargeDrawer({
   trigger,
   productId,
   amount,
-  depositorName = "천승환",
+  depositorName,
 }: ConfirmChargeDrawerProps) {
   const queryClient = useQueryClient();
   const drawerContext = React.useContext(ChargeDrawerContext);
   const { mutate: purchase, isPending } = usePurchaseProduct();
+  const { data: realNameData } = useRealName();
 
   const [open, setOpen] = React.useState(false);
   const [agreed, setAgreed] = React.useState(false);
-  const [name, setName] = React.useState(depositorName);
+  const [name, setName] = React.useState(
+    depositorName || realNameData?.data?.realName || "",
+  );
   const [isEditingName, setIsEditingName] = React.useState(false);
+
+  // 실명이 로드되면 이름 업데이트 (단, 사용자가 수동으로 수정 중이지 않을 때)
+  React.useEffect(() => {
+    if (realNameData?.data?.realName && !depositorName && !isEditingName) {
+      setName(realNameData.data.realName);
+    }
+  }, [realNameData, depositorName, isEditingName]);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   /* 입금자명 수정 시 input focus */

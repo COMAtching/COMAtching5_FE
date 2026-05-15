@@ -10,6 +10,7 @@ import ScreenMainPage from "./_components/ScreenMainPage";
 import { ItemsResponse } from "@/hooks/useItems";
 import { MatchingHistoryResponse } from "@/hooks/useMatchingHistory";
 import { RequestStatusResponse } from "@/hooks/useRequestStatus";
+import { NoticeResponse } from "@/hooks/useActiveNotices";
 
 export default async function MainPage() {
   const queryClient = new QueryClient();
@@ -46,6 +47,15 @@ export default async function MainPage() {
         return res.data;
       },
       initialPageParam: 0,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["activeNotices"],
+      queryFn: async () => {
+        const res = await serverApi.get<NoticeResponse>({
+          path: "/api/v1/notices/active",
+        });
+        return res.data;
+      },
     }),
   ]);
 

@@ -98,7 +98,7 @@ const CardStats = ({ partner }: { partner: MatchingPartner }) => (
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나이</span>
       <span className="typo-16-700 text-color-text-black">
-        {getAge(partner.birthDate)}
+        {partner.age || getAge(partner.birthDate)}
       </span>
     </div>
     <div className="flex flex-1 flex-col gap-1">

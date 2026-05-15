@@ -18,6 +18,7 @@ export interface MatchingPartner {
   nickname: string;
   gender: Gender;
   birthDate: string | null;
+  age: number | null;
   mbti: MBTI;
   intro: string | null;
   profileImageUrl: string | null;

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Check, Delete } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AgeRangeDrawer from "./AgeRangeDrawer";
+import { MATCHING_AGE_LIMITS } from "@/lib/constants/matching";
 
 interface MatchingAgeOptionProps {
   onAgeRangeSelect: (minAge: number, maxAge: number) => void;
@@ -13,8 +14,8 @@ interface MatchingAgeOptionProps {
   maxAge?: number;
 }
 
-const DEFAULT_MIN = 20;
-const DEFAULT_MAX = 29;
+const DEFAULT_MIN = MATCHING_AGE_LIMITS.MIN;
+const DEFAULT_MAX = MATCHING_AGE_LIMITS.MAX;
 
 export default function MatchingAgeOption({
   onAgeRangeSelect,
