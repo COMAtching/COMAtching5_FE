@@ -74,7 +74,7 @@ const ScreenMainPage = () => {
       nickname: partner.nickname,
       gender: partner.gender,
       birthDate: partner.birthDate ?? undefined,
-      age: partner.age,
+      age: partner.age ?? undefined,
       mbti: partner.mbti,
       intro: partner.intro ?? undefined,
       profileImageUrl:

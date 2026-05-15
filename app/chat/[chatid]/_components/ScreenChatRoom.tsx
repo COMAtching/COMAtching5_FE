@@ -8,7 +8,10 @@ import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useMyProfile } from "@/hooks/useProfile";
 import { getProfileImageUrl } from "@/lib/utils/profile";
-import { useUpdateFavorite } from "@/hooks/useMatchingHistory";
+import {
+  useUpdateFavorite,
+  type MatchingPartner,
+} from "@/hooks/useMatchingHistory";
 import { cn } from "@/lib/utils";
 import PartnerProfileModal from "./PartnerProfileModal";
 
