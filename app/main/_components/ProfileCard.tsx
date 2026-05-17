@@ -6,12 +6,7 @@ import { Send } from "lucide-react";
 import React, { useRef } from "react";
 
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
-
-/* ── 유틸 함수 ── */
-const getAge = (birthDate?: string) => {
-  if (!birthDate) return "?? ";
-  return new Date().getFullYear() - new Date(birthDate).getFullYear() + 1;
-};
+import { getAge } from "@/lib/utils/date";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -74,7 +69,7 @@ const ProfileStats = ({ profile }: { profile: ProfileData }) => (
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나이</span>
       <span className="typo-16-700 text-color-text-black">
-        {getAge(profile.birthDate)}
+        {profile.age || getAge(profile.birthDate)}
       </span>
     </div>
     <div className="flex flex-1 flex-col gap-1">

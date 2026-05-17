@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { AxiosError } from "axios";
 
 export interface RequestStatusResponse {

@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import ProfileButton from "@/app/profile-builder/_components/ProfileButton";
 import ProfileImageSelection from "@/app/profile-image/_components/ProfileImageSelection";
-import { ChevronRight, Shuffle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { generateRandomNickname } from "@/lib/utils/nickname";
 import {
   getDefaultProfilesByGender,
   DEFAULT_PROFILE_ASSETS,
@@ -330,8 +329,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const birthYear = initialProfile.birthDate
     ? initialProfile.birthDate.split("-")[0]
     : undefined;
-  const currentYear = new Date().getFullYear();
-  const age = birthYear ? currentYear - Number(birthYear) + 1 : undefined;
 
   const { mutateAsync: uploadImage } = useImageUpload();
 
@@ -340,6 +337,21 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     const trimmedNickname = nickname.trim();
     if (!trimmedNickname) {
       alert("닉네임을 입력해 주세요.");
+      return;
+    }
+
+    // 나이(출생연도) 검증 (2000년생~2007년생)
+    if (!editableBirthYear) {
+      alert("출생연도를 입력해 주세요.");
+      return;
+    }
+    const birthYearNum = parseInt(editableBirthYear, 10);
+    if (
+      Number.isNaN(birthYearNum) ||
+      birthYearNum < 2000 ||
+      birthYearNum > 2007
+    ) {
+      alert("2000년생부터 2007년생까지만 가입 가능합니다.");
       return;
     }
 
@@ -564,7 +576,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           {/* 닉네임 */}
           <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
             <span className="typo-16-600 shrink-0 text-[#1A1A1A]">닉네임</span>
-            <div className="ml-4 flex flex-1 items-center justify-end gap-2">
+            <div className="ml-4 flex flex-1 items-center justify-end">
               <input
                 type="text"
                 value={nickname}
@@ -572,16 +584,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
                 placeholder="닉네임 입력"
                 className="typo-16-600 w-full bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
               />
-              <button
-                type="button"
-                onClick={() => {
-                  const name = generateRandomNickname();
-                  setNickname(name);
-                }}
-                className="text-[#999999]"
-              >
-                <Shuffle size={16} />
-              </button>
             </div>
           </div>
 

@@ -40,9 +40,11 @@ const frequencyMapping: Record<string, ContactFrequency> = {
 
 import { useItems } from "@/hooks/useItems";
 import { useMatching } from "@/hooks/useMatching";
+import { useMyProfile } from "@/hooks/useProfile";
 
 const ScreenMatching = () => {
   const { data: itemData, isLoading: isItemsLoading } = useItems();
+  const { data: myProfile } = useMyProfile();
   const { mutate: match, isPending } = useMatching();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
@@ -56,6 +58,18 @@ const ScreenMatching = () => {
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
   const [resetKey, setResetKey] = useState(0);
+
+  // 현재 사용자 나이 계산 (한국식 나이: 현재연도 - 태어난연도 + 1)
+  const userAge = React.useMemo(() => {
+    if (!myProfile?.data.birthDate) return 0;
+    try {
+      const birthYear = new Date(myProfile.data.birthDate).getFullYear();
+      const currentYear = new Date().getFullYear();
+      return currentYear - birthYear + 1;
+    } catch {
+      return 0;
+    }
+  }, [myProfile]);
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
   const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
@@ -100,13 +114,16 @@ const ScreenMatching = () => {
   const bubbleTextColor =
     matchingTicketCount === 0 ? "text-color-gray-600" : "text-black";
 
+  const handleAgeGroupSelect = (group: string) => {
+    setSelectedAgeGroup(group);
+    // 나이 그룹 선택 시 나이 구간(슬라이더) 설정 초기화
+    setMinAge(undefined);
+    setMaxAge(undefined);
+  };
+
   const handleAgeRangeSelect = (min: number, max: number) => {
-    if (selectedAgeGroup) {
-      alert(
-        "나이 구간 옵션을 사용하면 기존에 선택한 나이 옵션(연하/동갑/연상)이 해제됩니다.",
-      );
-      setSelectedAgeGroup("");
-    }
+    // 나이 구간 설정 시 나이 그룹(연하/동갑/연상) 초기화
+    setSelectedAgeGroup("");
     setMinAge(min);
     setMaxAge(max);
   };
@@ -138,12 +155,23 @@ const ScreenMatching = () => {
 
     const ageInfo = calculateAgeOffsets(selectedAgeGroup);
 
+    // 실제 서버로 보낼 절대 나이 계산
+    let finalMinAge: number | null = null;
+    let finalMaxAge: number | null = null;
+
+    if (isAgeRangeActive) {
+      finalMinAge = minAge ?? null;
+      finalMaxAge = maxAge ?? null;
+    } else if (ageInfo.min !== null && ageInfo.max !== null) {
+      finalMinAge = userAge + ageInfo.min;
+      finalMaxAge = userAge + ageInfo.max;
+    }
+
     const payload: MatchingRequest = {
-      // 1. 슬라이더 사용 시: ageOption은 null, 오프셋은 값
-      // 2. 버튼 사용 시: ageOption은 값, 오프셋은 null
+      // 이제 오프셋이 아닌 실제 나이를 보냅니다. (필드명은 규격상 Offset 유지)
       ageOption: isAgeRangeActive ? null : ageInfo.option || null,
-      minAgeOffset: isAgeRangeActive ? (minAge ?? null) : null,
-      maxAgeOffset: isAgeRangeActive ? (maxAge ?? null) : null,
+      minAgeOffset: finalMinAge,
+      maxAgeOffset: finalMaxAge,
 
       mbtiOption: selectedMBTI || undefined,
       hobbyOption: selectedHobbyCategory
@@ -180,9 +208,8 @@ const ScreenMatching = () => {
         />
 
         <MatchingAgeSection
-          onAgeGroupSelect={setSelectedAgeGroup}
+          onAgeGroupSelect={handleAgeGroupSelect}
           selected={isAgeRangeActive ? "" : selectedAgeGroup}
-          disabled={isAgeRangeActive}
         />
 
         <MatchingFrequencySection

@@ -12,7 +12,6 @@ import { Search, ArrowUpNarrowWide, Loader2 } from "lucide-react";
 import MatchingListCard from "./MatchingListCard";
 import { getAge } from "@/lib/utils/date";
 import SortDrawer, { SortOrder } from "./SortDrawer";
-import { CURRENT_YEAR } from "@/lib/constants/date";
 
 const SORT_LABELS: Record<SortOrder, string> = {
   oldest: "오래된 순",
@@ -25,6 +24,7 @@ interface YesMatchingListProps {
   fetchNextPage: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  onFavoriteToggle?: (historyId: number, currentFavorite: boolean) => void;
 }
 
 const YesMatchingList = ({
@@ -32,6 +32,7 @@ const YesMatchingList = ({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  onFavoriteToggle,
 }: YesMatchingListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -49,8 +50,7 @@ const YesMatchingList = ({
           p.nickname.toLowerCase().includes(query) ||
           p.mbti.toLowerCase().includes(query) ||
           p.major.toLowerCase().includes(query) ||
-          (p.birthDate &&
-            String(getAge(p.birthDate, CURRENT_YEAR)).includes(query))
+          (p.birthDate && String(getAge(p.birthDate)).includes(query))
         );
       });
     }
@@ -63,13 +63,11 @@ const YesMatchingList = ({
     // 정렬
     result.sort((a, b) => {
       if (sortOrder === "age") {
-        const ageA = a.partner.birthDate
-          ? new Date(a.partner.birthDate).getTime()
-          : 0;
-        const ageB = b.partner.birthDate
-          ? new Date(b.partner.birthDate).getTime()
-          : 0;
-        // birthDate가 작을수록(오래될수록) 나이가 많음 → 오름차순
+        const rawAgeA = a.partner.age || getAge(a.partner.birthDate);
+        const rawAgeB = b.partner.age || getAge(b.partner.birthDate);
+        const ageA = typeof rawAgeA === "number" ? rawAgeA : 999;
+        const ageB = typeof rawAgeB === "number" ? rawAgeB : 999;
+        // 나이 오름차순 (어린 순), 모르는 나이는 맨 뒤로
         return ageA - ageB;
       }
       const dateA = new Date(a.matchedAt).getTime();
@@ -108,7 +106,7 @@ const YesMatchingList = ({
   return (
     <div className="flex w-full flex-col items-center gap-4 pb-10">
       {/* 검색 바 */}
-      <div className="flex h-9 w-full max-w-[343px] items-center justify-between rounded-[12px] bg-[#B3B3B31A] px-4 py-[11px]">
+      <div className="flex h-9 w-full items-center justify-between rounded-[12px] bg-[#B3B3B31A] px-4 py-[11px]">
         <input
           type="text"
           placeholder="닉네임, 나이, 전공, MBTI 등을 입력하세요"
@@ -121,7 +119,7 @@ const YesMatchingList = ({
       </div>
 
       {/* 필터 바 */}
-      <div className="flex w-full max-w-[343px] items-center justify-end gap-6">
+      <div className="flex w-full items-center justify-end gap-6">
         {/* 즐겨찾기 필터 */}
         <button
           type="button"
@@ -164,10 +162,16 @@ const YesMatchingList = ({
       </div>
 
       {/* 카드 리스트 */}
-      <div className="flex w-full max-w-[343px] flex-col gap-4">
+      <div className="flex w-full flex-col gap-4">
         {filteredHistory.length > 0 ? (
           filteredHistory.map((item) => (
-            <MatchingListCard key={item.historyId} item={item} />
+            <MatchingListCard
+              key={item.historyId}
+              item={item}
+              onFavoriteToggle={() =>
+                onFavoriteToggle?.(item.historyId, item.favorite)
+              }
+            />
           ))
         ) : (
           <div className="flex h-40 items-center justify-center">

@@ -7,8 +7,12 @@ import {
 import Image from "next/image";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getAge } from "@/lib/utils/date";
-import { getContactFrequencyLabel } from "@/lib/utils/profile";
+import {
+  getContactFrequencyLabel,
+  getProfileImageUrl,
+} from "@/lib/utils/profile";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -24,17 +28,19 @@ const CardHeader = ({
   partner,
   isFavorite,
   onFavoriteToggle,
+  onChatClick,
 }: {
   partner: MatchingPartner;
   isFavorite: boolean;
   onFavoriteToggle?: () => void;
+  onChatClick?: () => void;
 }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
     <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
-          src={partner.profileImageUrl || "/default-profile.png"}
+          src={getProfileImageUrl(partner.profileImageUrl, partner.gender)}
           alt={`${partner.nickname || "익명"}님의 프로필 사진`}
           fill
           className="object-cover"
@@ -64,9 +70,7 @@ const CardHeader = ({
         <Star
           size={16}
           className={
-            isFavorite
-              ? "fill-color-flame-700 text-color-flame-700"
-              : "text-color-gray-500"
+            isFavorite ? "fill-[#FF4D61] text-[#FF4D61]" : "text-color-gray-500"
           }
         />
       </button>
@@ -74,7 +78,10 @@ const CardHeader = ({
         type="button"
         aria-label="메시지 보내기"
         className="flex h-4 w-4 items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChatClick?.();
+        }}
       >
         <Send size={16} className="text-color-gray-500" />
       </button>
@@ -98,7 +105,7 @@ const CardStats = ({ partner }: { partner: MatchingPartner }) => (
     <div className="flex flex-1 flex-col gap-1">
       <span className="typo-12-600 text-[#777777]">나이</span>
       <span className="typo-16-700 text-color-text-black">
-        {getAge(partner.birthDate)}
+        {partner.age || getAge(partner.birthDate)}
       </span>
     </div>
     <div className="flex flex-1 flex-col gap-1">
@@ -213,11 +220,20 @@ const MatchingListCard = ({
 }: MatchingListCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const touchStartTime = useRef<number>(0);
+  const router = useRouter();
 
   const handleCardClick = () => {
     const touchDuration = Date.now() - touchStartTime.current;
     if (touchDuration < 200) {
       setIsExpanded((prev) => !prev);
+    }
+  };
+
+  const handleChatClick = () => {
+    if (item.chatRoomId) {
+      router.push(`/chat/${item.chatRoomId}`);
+    } else {
+      alert("채팅방 정보를 찾을 수 없습니다.");
     }
   };
 
@@ -244,6 +260,7 @@ const MatchingListCard = ({
           partner={item.partner}
           isFavorite={item.favorite}
           onFavoriteToggle={() => onFavoriteToggle?.(item.historyId)}
+          onChatClick={handleChatClick}
         />
         <div className="mt-4 mb-3 w-full">
           <CardStats partner={item.partner} />

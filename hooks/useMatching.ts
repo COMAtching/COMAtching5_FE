@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
 import { postMatchingAction } from "@/lib/actions/matchingAction";
+import { MatchingRequest } from "@/lib/types/matching";
 
 /**
  * 매칭 실행 Mutation 훅
@@ -13,7 +14,10 @@ export const useMatching = () => {
   const { setResult, setLastPayload, setIsMatching } = useMatchingStore();
 
   return useMutation({
-    mutationFn: postMatchingAction,
+    mutationFn: (payload: MatchingRequest) => {
+      console.log("🚀 [Matching Request] Sending payload:", payload);
+      return postMatchingAction(payload);
+    },
     onMutate: () => {
       setIsMatching(true);
     },
