@@ -9,7 +9,7 @@ export default function ScreenLoginActionSection() {
   };
 
   return (
-    <section className="flex flex-col items-center">
+    <section className="flex w-full flex-col items-center">
       <BubbleDiv top={-4} />
       <KakaoLoginButton
         className="mt-[1.6vh] mb-[0.49vh]"
@@ -18,9 +18,10 @@ export default function ScreenLoginActionSection() {
       >
         카카오로 빠르게 시작하기
       </KakaoLoginButton>
+      <span className="typo-14-500 text-color-text-caption2 mt-4">또는</span>
       <Link
         href="/login"
-        className="all-[unset] typo-12-500 text-color-gray-500 hover:text-color-gray-700 mt-2 cursor-pointer underline transition-colors"
+        className="all-[unset] typo-14-500 text-color-text-caption2 cursor-pointer underline transition-colors"
       >
         이메일로 로그인
       </Link>
