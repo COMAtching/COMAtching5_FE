@@ -1,17 +1,11 @@
 "use client";
 import BubbleDiv from "@/app/_components/BubbleDiv";
-import { KakaoLoginButton, GoogleLoginButton } from "./SocialButtonList";
-import LoginMethodDrawer from "./LoginMethodDrawer";
+import { KakaoLoginButton } from "./SocialButtonList";
+import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
-    // alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
-  };
-
-  const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`;
-    // alert("코매칭 서비스는 10/13일부로 종료되었습니다.");
   };
 
   return (
@@ -24,14 +18,12 @@ export default function ScreenLoginActionSection() {
       >
         카카오로 빠르게 시작하기
       </KakaoLoginButton>
-      <LoginMethodDrawer
-        onKakaoLogin={handleKakaoLogin}
-        onGoogleLogin={handleGoogleLogin}
+      <Link
+        href="/login"
+        className="all-[unset] typo-12-500 text-color-gray-500 hover:text-color-gray-700 mt-2 cursor-pointer underline transition-colors"
       >
-        <button type="button" className="all-[unset] cursor-pointer underline">
-          다른 방법으로 로그인
-        </button>
-      </LoginMethodDrawer>
+        이메일로 로그인
+      </Link>
       <span className="typo-12-600 text-footo-text-main mt-[6.75vh] mb-[6.15vh]">
         Developed By Team Comatching, Catholic University of Korea
       </span>
