@@ -91,10 +91,14 @@ export default function ConfirmChargeDrawer({
   const handleConfirm = () => {
     purchase(productId, {
       onSuccess: () => {
-        alert("충전 요청이 완료되었습니다!");
+        alert(
+          "충전 요청이 완료되었습니다! 토스가 설치되어 있다면 토스로 바로 이동합니다.",
+        );
         setOpen(false);
         queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-        if (drawerContext) drawerContext.onClose();
+
+        // 토스 송금 앱으로 즉시 자동 연동
+        handleTossTransfer();
       },
       onError: (error: AxiosError<{ code?: string; message?: string }>) => {
         const errorData = error.response?.data;

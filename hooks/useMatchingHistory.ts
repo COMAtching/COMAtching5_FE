@@ -64,18 +64,29 @@ export const fetchMatchingHistoryPage = async (
   page: number = 0,
   size: number = 30,
 ): Promise<MatchingHistoryResponse> => {
-  const { data } = await api.get<MatchingHistoryResponse>(
-    "/api/matching/history",
-    {
-      params: {
-        page,
-        size,
-        sort: "matchedAt,desc",
-      },
-    },
+  console.log(
+    `📡 [fetchMatchingHistoryPage] 매칭 내역 API 호출 시작... (pageParam: ${page}, size: ${size})`,
   );
-  console.log("Matching History Data:", data);
-  return data;
+  try {
+    const { data } = await api.get<MatchingHistoryResponse>(
+      "/api/matching/history",
+      {
+        params: {
+          page,
+          size,
+          sort: "matchedAt,desc",
+        },
+      },
+    );
+    console.log("✅ [fetchMatchingHistoryPage] 매칭 내역 API 호출 성공:", data);
+    return data;
+  } catch (error) {
+    console.error(
+      "❌ [fetchMatchingHistoryPage] 매칭 내역 API 호출 실패:",
+      error,
+    );
+    throw error;
+  }
 };
 
 /** React Query useInfiniteQuery 훅 */
@@ -89,8 +100,8 @@ export const useMatchingHistory = () => {
         ? lastPage.data.currentPage + 1
         : undefined;
     },
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 0,
+    gcTime: 0,
   });
 };
 
@@ -155,6 +166,7 @@ export const useUpdateFavorite = () => {
     onSettled: () => {
       // 최종적으로 무효화
       queryClient.invalidateQueries({ queryKey: ["matchingHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["chatMemberProfile"] });
     },
   });
 };

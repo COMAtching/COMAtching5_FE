@@ -340,6 +340,21 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       return;
     }
 
+    // 나이(출생연도) 검증 (2000년생~2007년생)
+    if (!editableBirthYear) {
+      alert("출생연도를 입력해 주세요.");
+      return;
+    }
+    const birthYearNum = parseInt(editableBirthYear, 10);
+    if (
+      Number.isNaN(birthYearNum) ||
+      birthYearNum < 2000 ||
+      birthYearNum > 2007
+    ) {
+      alert("2000년생부터 2007년생까지만 가입 가능합니다.");
+      return;
+    }
+
     // 닉네임이 변경된 경우에만 중복 검사
     if (trimmedNickname !== (initialProfile.nickname || "")) {
       try {
