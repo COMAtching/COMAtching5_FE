@@ -453,10 +453,26 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         socialAccountId: formattedSocialId || null,
         major: major.trim() || undefined,
         birthDate: editableBirthYear ? `${editableBirthYear}-01-01` : undefined,
-        hobbies: hobbies.map((h) => ({
-          category: h.category,
-          name: removeEmoji(h.name),
-        })),
+        hobbies: hobbies.map((h) => {
+          const categoryMap: Record<string, string> = {
+            스포츠: "SPORTS",
+            문화: "CULTURE",
+            음악: "MUSIC",
+            여행: "LEISURE",
+            자기계발: "DAILY",
+            게임: "GAME",
+            SPORTS: "SPORTS",
+            CULTURE: "CULTURE",
+            MUSIC: "MUSIC",
+            LEISURE: "LEISURE",
+            DAILY: "DAILY",
+            GAME: "GAME",
+          };
+          return {
+            category: categoryMap[h.category] || "DAILY",
+            name: removeEmoji(h.name),
+          };
+        }),
         tags: tags.filter(Boolean).map((t) => ({ tag: t })),
         profileImageKey: finalImageUrl || "default",
         isMatchable: true,
