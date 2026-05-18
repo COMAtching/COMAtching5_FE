@@ -14,6 +14,7 @@ type ChatListItem = {
   preview: string;
   time: string;
   unread?: boolean;
+  unreadCount?: number;
   avatar: string;
 };
 
@@ -34,7 +35,7 @@ function ChatListRow({ item }: { item: ChatListItem }) {
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <div className="flex min-w-0 items-end gap-2">
           <span className="typo-18-700 shrink-0 text-[#3C4043]">
             {item.name}
@@ -44,23 +45,25 @@ function ChatListRow({ item }: { item: ChatListItem }) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="typo-14-500 min-w-0 flex-1 truncate text-[#9AA0A6]">
-            {item.preview}
-          </span>
-          <span className="h-1 w-1 shrink-0 rounded-full bg-[#999999]" />
-          <span className="typo-14-500 shrink-0 text-[#80868B]">
-            {item.time}
-          </span>
-        </div>
+        <span className="typo-14-500 min-w-0 truncate text-[#9AA0A6]">
+          {item.preview}
+        </span>
       </div>
 
-      <div
-        className={`ml-auto h-3 w-3 shrink-0 rounded-full bg-[#FF4D61] ${
-          item.unread ? "opacity-100" : "opacity-0"
-        }`}
-        aria-hidden="true"
-      />
+      <div className="flex min-w-[65px] shrink-0 flex-col items-end justify-center gap-1.5 pl-2">
+        <span className="typo-12-500 whitespace-nowrap text-[#9AA0A6]">
+          {item.time}
+        </span>
+        {item.unread &&
+        item.unreadCount !== undefined &&
+        item.unreadCount > 0 ? (
+          <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#FF4D61] px-1.5 text-[11px] leading-none font-bold text-white shadow-sm">
+            {item.unreadCount > 99 ? "99+" : item.unreadCount}
+          </div>
+        ) : (
+          <div className="h-5 w-5 opacity-0" aria-hidden="true" />
+        )}
+      </div>
     </Link>
   );
 }
@@ -133,6 +136,7 @@ export default function ScreenChatList() {
         ? formatChatTime(room.lastMessageTime)
         : "방금",
       unread: (room.unreadCount || 0) > 0,
+      unreadCount: room.unreadCount || 0,
       avatar: room.otherUser?.profileImageUrl || "/default-profile.png",
     }));
   }, [rooms]);

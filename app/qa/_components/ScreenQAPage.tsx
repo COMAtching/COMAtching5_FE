@@ -7,7 +7,7 @@ const ScreenQAPage = () => {
   return (
     <div className="flex min-h-screen flex-col px-4 pb-10">
       <header className="py-4">
-        <BackButton text="QA" />
+        <BackButton text="FAQ" />
       </header>
 
       <main className="mt-4 flex flex-col gap-4">

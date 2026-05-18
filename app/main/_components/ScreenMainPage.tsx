@@ -24,50 +24,19 @@ import { useRequestStatus } from "@/hooks/useRequestStatus";
 import { useActiveNotices, Notice } from "@/hooks/useActiveNotices";
 
 const ScreenMainPage = () => {
-  const [noticePopup, setNoticePopup] = useState<{
-    active: Notice | null;
-    isVisible: boolean;
-  }>({ active: null, isVisible: false });
-
   const { data: noticesData } = useActiveNotices();
   const { data: historyData, isLoading } = useMatchingHistory();
   const { isPurchasePending } = useRequestStatus();
 
-  useEffect(() => {
-    if (noticesData?.data && noticesData.data.length > 0) {
-      const firstUnconfirmed = noticesData.data.find(
-        (notice) =>
-          !localStorage.getItem(`notice_confirmed_${notice.noticeId}`),
-      );
+  const activeNotice = noticesData?.data?.[0] || null;
 
-      if (firstUnconfirmed) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setNoticePopup({ active: firstUnconfirmed, isVisible: true });
-      } else {
-        setNoticePopup((prev) =>
-          prev.isVisible ? { ...prev, isVisible: false } : prev,
-        );
-      }
-    } else {
-      setNoticePopup((prev) =>
-        prev.isVisible ? { ...prev, isVisible: false } : prev,
-      );
-    }
-  }, [noticesData]);
-
-  const handleNoticeClose = () => {
-    if (noticePopup.active) {
-      localStorage.setItem(
-        `notice_confirmed_${noticePopup.active.noticeId}`,
-        "true",
-      );
-      setNoticePopup((prev) => ({ ...prev, isVisible: false }));
-    }
-  };
-
-  // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성
-  const allContent =
-    historyData?.pages.flatMap((page) => page?.data?.content || []) ?? [];
+  // 매칭 히스토리 데이터에서 파트너 정보를 추출하여 프로필 목록 생성 (탈퇴한 사용자는 메인에서 숨김)
+  const allContent = (
+    historyData?.pages.flatMap((page) => page?.data?.content || []) ?? []
+  ).filter(
+    (item) =>
+      item.partner?.nickname !== "탈퇴한 사용자" && item.partner?.age !== 57,
+  );
 
   const profileList: ProfileData[] = allContent.map(
     (item: MatchingHistoryItem) => {
@@ -102,11 +71,10 @@ const ScreenMainPage = () => {
       <MainHeader />
       <MyCoinSection />
       {isPurchasePending && <ChargeRequestWaiting />}
-      {noticePopup.isVisible && noticePopup.active && (
+      {activeNotice && (
         <NoticeSection
-          title={noticePopup.active.title}
-          detail={noticePopup.active.content}
-          onClose={handleNoticeClose}
+          title={activeNotice.title}
+          detail={activeNotice.content}
         />
       )}
       {!isLoading &&

@@ -83,11 +83,14 @@ const IncomingMessage = ({
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <span className="typo-12-500 text-[#1A1A1A]">{nickname || "..."}</span>
         <div className="flex items-end gap-2">
-          <div className="max-w-55 rounded-3xl rounded-bl-xl bg-white px-3 py-2 text-sm text-[#333333] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
+          <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
             {message.text}
           </div>
-          <div className="flex items-center gap-2 text-xs text-[#B3B3B3]">
-            <span>{message.time}</span>
+          <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
+            <span className="text-[#B3B3B3]">{message.time}</span>
+            {message.readCount === 1 && (
+              <span className="text-[#999999]">1</span>
+            )}
           </div>
         </div>
       </div>
@@ -98,10 +101,11 @@ const IncomingMessage = ({
 const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
   return (
     <div className="flex w-full items-end justify-end gap-2">
-      <div className="flex flex-col items-end gap-1 text-xs text-[#999999]">
+      <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
+        {message.readCount === 1 && <span className="text-[#999999]">1</span>}
         <span className="text-[#B3B3B3]">{message.time}</span>
       </div>
-      <div className="max-w-55 rounded-3xl rounded-br-xl bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] px-3 py-2 text-sm text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
+      <div className="max-w-[244px] rounded-[16px_16px_8px_16px] bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] p-3 text-sm leading-[140%] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
         {message.text}
       </div>
     </div>
@@ -195,7 +199,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, [refetchHistory, chatId]);
 
   // 2. 소켓 연결 및 실시간 메시지 수신
-  const { messages: socketMessages, sendMessage } = useChatRoomSocket(chatId);
+  const {
+    messages: socketMessages,
+    sendMessage,
+    sendReadReceipt,
+  } = useChatRoomSocket(chatId, currentUserId);
+
+  // 2-1. 채팅방 진입 시 STOMP로 읽음(READ) 이벤트 전송
+  useEffect(() => {
+    sendReadReceipt();
+  }, [chatId, sendReadReceipt]);
 
   // DEBUG: 채팅방 데이터 로그
   useEffect(() => {

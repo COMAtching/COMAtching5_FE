@@ -54,7 +54,7 @@ const SearchMyListButton = () => {
 const QAButton = () => {
   return (
     <Link
-      href="/qa"
+      href="/FAQ"
       prefetch={true}
       style={{
         background:
@@ -64,7 +64,7 @@ const QAButton = () => {
     >
       <div className="flex items-center gap-3">
         <span className="typo-18-600 text-color-gray-700">📖</span>
-        <span className="typo-18-600 text-color-gray-900">QA</span>
+        <span className="typo-18-600 text-color-gray-900">FAQ</span>
       </div>
     </Link>
   );

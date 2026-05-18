@@ -473,7 +473,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
             name: removeEmoji(h.name),
           };
         }),
-        tags: tags.filter(Boolean).map((t) => ({ tag: t })),
+        tags: tags.filter(Boolean).map((t) => ({ tag: removeEmoji(t) })),
         profileImageKey: finalImageUrl || "default",
         isMatchable: true,
       };
@@ -503,7 +503,9 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const baseProfile = profile || initialProfile;
 
   const hasChanged = useMemo(() => {
-    const currentTagsStr = JSON.stringify([...tags].sort());
+    const currentTagsStr = JSON.stringify(
+      tags.map((t) => removeEmoji(t)).sort(),
+    );
     const currentHobbies = JSON.stringify(hobbies);
     const currentSocialId =
       socialType === "INSTAGRAM"

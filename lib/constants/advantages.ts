@@ -6,7 +6,7 @@ export const ADVANTAGES: Record<AdvantageCategory, string[]> = {
     "🧊 각진 얼굴",
     "😶 둥근 얼굴",
     "🔪 날렵한 얼굴",
-    "🤏 작은 얼굴",
+    "😊 작은 얼굴",
     "☺️ 보조개",
     "✨ 점",
     "👀 쌍꺼풀",

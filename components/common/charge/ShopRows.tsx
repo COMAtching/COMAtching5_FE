@@ -40,14 +40,6 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
     .map((r) => `${r.itemName} ${r.quantity}개`)
     .join("+");
 
-  // 보너스 리워드
-  const bonusText =
-    product.bonusRewards.length > 0
-      ? product.bonusRewards
-          .map((r) => `${r.itemName} ${r.quantity}개`)
-          .join(", ") + " 무료 증정!"
-      : null;
-
   return (
     <div className="border-color-gray-100 flex items-center justify-between border-b py-4">
       <div className="flex flex-col gap-1">
@@ -59,8 +51,10 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
             {description}
           </span>
         </div>
-        {bonusText && (
-          <span className="typo-10-600 text-color-flame-700">{bonusText}</span>
+        {product.description && (
+          <span className="typo-10-600 text-color-flame-700">
+            {product.description}
+          </span>
         )}
       </div>
       <ConfirmChargeDrawer

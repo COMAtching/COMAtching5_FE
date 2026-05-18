@@ -20,14 +20,6 @@ export default function QuickBundleCard({
     .map((r) => `${r.itemName} ${r.quantity}개`)
     .join("+");
 
-  // 보너스 리워드 텍스트
-  const bonusText =
-    product.bonusRewards.length > 0
-      ? product.bonusRewards
-          .map((r) => `${r.itemName} ${r.quantity}개`)
-          .join(", ") + " 무료 증정!"
-      : null;
-
   return (
     <div className="border-color-gray-64 bg-color-gray-50 flex flex-1 flex-col items-center justify-between rounded-[16px] border p-2 pt-4">
       <div className="flex flex-col items-center gap-2">
@@ -46,13 +38,11 @@ export default function QuickBundleCard({
             <span className="typo-12-600 text-color-gray-400 text-center">
               {description}
             </span>
-            <span
-              className={`typo-12-600 text-color-flame-700 text-center ${
-                bonusText ? "" : "invisible"
-              }`}
-            >
-              {bonusText || "보너스 무료 증정!"}
-            </span>
+            {product.description && (
+              <span className="typo-12-600 text-color-flame-700 text-center">
+                {product.description}
+              </span>
+            )}
           </div>
         </div>
       </div>
