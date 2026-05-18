@@ -24,6 +24,14 @@ export const metadata: Metadata = {
   },
   description: "대학교 축제에서 운명의 인연을 만나보세요!",
   keywords: ["대학축제", "커플매칭", "소개팅", "만남", "대학생", "축제"],
+  icons: {
+    icon: [
+      { url: "/logo/icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo/icon.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/logo/icon.png",
+    apple: [{ url: "/logo/icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "코매칭 - 대학축제 커플매칭",
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
