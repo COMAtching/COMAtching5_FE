@@ -114,7 +114,7 @@ const ScreenMatching = () => {
             height={20}
             className="ml-1"
           />
-          <span>아이템 {extraOptionCount}</span>
+          <span>옵션권 {extraOptionCount}</span>
         </>
       )}
       <span>소모</span>
