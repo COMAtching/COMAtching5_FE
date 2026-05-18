@@ -32,6 +32,7 @@ export const useChatMessages = (roomId: string) => {
     queryKey: ["chatMessages", roomId],
     queryFn: () => fetchChatMessages(roomId),
     enabled: !!roomId,
-    staleTime: 1000 * 60, // 1분간 캐시 유지
+    staleTime: 0,
+    gcTime: 0, // 캐시를 남기지 않음
   });
 };

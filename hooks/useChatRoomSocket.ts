@@ -17,6 +17,13 @@ export type ChatMessagePayload = {
 export function useChatRoomSocket(roomId: string) {
   const { client, status } = useChatSocketStore();
   const [messages, setMessages] = useState<ChatMessagePayload[]>([]);
+  const [prevRoomId, setPrevRoomId] = useState(roomId);
+
+  // roomId가 변경될 때마다(즉 방을 나갔다 들어올 때마다) 소켓 메시지 상태를 초기화 (render-time state reset)
+  if (roomId !== prevRoomId) {
+    setPrevRoomId(roomId);
+    setMessages([]);
+  }
 
   const handleMessage = useCallback(
     (message: IMessage) => {

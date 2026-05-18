@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowUp, ChevronLeft, MoreVertical, UserRound } from "lucide-react";
+import {
+  ArrowUp,
+  ChevronLeft,
+  Loader2,
+  MoreVertical,
+  UserRound,
+} from "lucide-react";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useMyProfile } from "@/hooks/useProfile";
@@ -177,7 +183,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   };
 
   // 1. 과거 대화 내역 가져오기 (API)
-  const { data: historyData } = useChatMessages(chatId);
+  const {
+    data: historyData,
+    refetch: refetchHistory,
+    isLoading,
+  } = useChatMessages(chatId);
+
+  // 채팅방에 들어올 때마다(혹은 Next.js Router 캐시로 인해 컴포넌트가 재사용될 때마다) 과거 내역을 무조건 갱신
+  useEffect(() => {
+    refetchHistory();
+  }, [refetchHistory, chatId]);
 
   // 2. 소켓 연결 및 실시간 메시지 수신
   const { messages: socketMessages, sendMessage } = useChatRoomSocket(chatId);
@@ -282,7 +297,11 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       </header>
 
       <section className="scrollbar-hide relative z-0 mt-10 mb-18 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-8">
-        {messages.length === 0 ? (
+        {isLoading ? (
+          <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
+          </div>
+        ) : messages.length === 0 ? (
           <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-[24px] border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
             <div className="flex h-[92.32px] w-[116px] flex-col items-center justify-center gap-3">
               <Image

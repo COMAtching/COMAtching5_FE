@@ -75,7 +75,7 @@ const ScreenExtraInfoDetail = () => {
   };
 
   return (
-    <main className="relative flex min-h-svh flex-col overflow-x-hidden px-4 pb-[120px]">
+    <main className="relative flex min-h-svh flex-col overflow-x-hidden px-4 pb-[180px]">
       <ProgressStepBar currentStep={3} totalSteps={3} />
       <div className="my-6 flex flex-col gap-2 text-center">
         <h1 className="typo-20-700 text-[#373737]">추가정보 입력</h1>

@@ -561,7 +561,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   ]);
 
   return (
-    <main className="flex min-h-screen flex-col pb-32">
+    <main className="scrollbar-hide flex h-dvh flex-col overflow-y-auto pb-32">
       {/* 헤더 */}
       <div className="px-4 py-2">
         <BackButton text="프로필 수정" />

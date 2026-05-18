@@ -13,6 +13,8 @@ import { ADVANTAGES, type AdvantageCategory } from "@/lib/constants/advantages";
 import Button from "@/components/ui/Button";
 import { removeEmoji } from "@/lib/utils";
 
+import HobbySearchInput from "@/app/hobby-select/_components/HobbySearchInput";
+
 interface AdvantageDrawerProps {
   children: React.ReactNode;
   selectedAdvantages: string[];
@@ -26,6 +28,7 @@ const AdvantageDrawer = ({
 }: AdvantageDrawerProps) => {
   const [selected, setSelected] = useState<string[]>(selectedAdvantages);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const resolveDisplayAdvantages = (advantages: string[]) => {
     const normalizedSelected = new Set(
@@ -42,6 +45,7 @@ const AdvantageDrawer = ({
     setIsOpen(open);
     if (open) {
       setSelected(resolveDisplayAdvantages(selectedAdvantages));
+      setSearchKeyword(""); // 모달 열릴 때 검색어 초기화
     }
   };
 
@@ -88,24 +92,36 @@ const AdvantageDrawer = ({
           </DrawerClose>
         </DrawerHeader>
 
+        <div className="mt-6">
+          <HobbySearchInput onSearch={(keyword) => setSearchKeyword(keyword)} />
+        </div>
+
         {/* 장점 목록 스크롤 영역 */}
         <div className="scrollbar-hide mt-6 flex max-h-[60vh] flex-col gap-8 overflow-y-auto pb-8">
-          {(Object.keys(ADVANTAGES) as AdvantageCategory[]).map((category) => (
-            <div key={category} className="flex flex-col">
-              <h2 className="typo-16-600 mb-3 text-black">{category}</h2>
-              <div className="flex flex-wrap gap-3">
-                {ADVANTAGES[category].map((adv) => (
-                  <HobbyButton
-                    key={adv}
-                    onClick={() => toggleAdvantage(adv)}
-                    selected={selected.includes(adv)}
-                  >
-                    {adv}
-                  </HobbyButton>
-                ))}
+          {(Object.keys(ADVANTAGES) as AdvantageCategory[]).map((category) => {
+            const filteredAdvs = ADVANTAGES[category].filter((adv) =>
+              adv.toLowerCase().includes(searchKeyword.toLowerCase()),
+            );
+
+            if (filteredAdvs.length === 0) return null;
+
+            return (
+              <div key={category} className="flex flex-col">
+                <h2 className="typo-16-600 mb-3 text-black">{category}</h2>
+                <div className="flex flex-wrap gap-3">
+                  {filteredAdvs.map((adv) => (
+                    <HobbyButton
+                      key={adv}
+                      onClick={() => toggleAdvantage(adv)}
+                      selected={selected.includes(adv)}
+                    >
+                      {adv}
+                    </HobbyButton>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* 하단 고정 버튼 영역 */}

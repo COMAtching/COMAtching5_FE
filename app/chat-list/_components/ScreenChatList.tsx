@@ -103,14 +103,15 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
-  const { data: rooms } = useChatRooms();
+  const { data: rooms, refetch: refetchRooms } = useChatRooms();
 
-  // DEBUG: 채팅방 목록 데이터 로그
+  // DEBUG 및 항상 최신 갱신: 컴포넌트 마운트(또는 활성화) 시 캐시 무효화 및 재호출
   useEffect(() => {
+    refetchRooms();
     if (rooms) {
       console.log("📡 [Chat Rooms List Data]:", rooms);
     }
-  }, [rooms]);
+  }, [refetchRooms, rooms]);
 
   const chatItems = useMemo(() => {
     // 이제 SSR/CSR 모두 배열로 통일되었으므로 단순하게 처리합니다.
