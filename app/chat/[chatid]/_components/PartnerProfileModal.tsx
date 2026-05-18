@@ -38,6 +38,16 @@ const PartnerProfileModal = ({
   isFavorite,
   onFavoriteToggle,
 }: PartnerProfileModalProps) => {
+  const hasInstagram =
+    partner.socialType !== "KAKAO" && partner.socialAccountId;
+  const instagramUrl = hasInstagram
+    ? `https://instagram.com/${
+        partner.socialAccountId!.startsWith("@")
+          ? partner.socialAccountId!.slice(1)
+          : partner.socialAccountId
+      }`
+    : null;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogPortal>
@@ -97,12 +107,26 @@ const PartnerProfileModal = ({
                         )}
                       />
                     </button>
-                    <button
-                      onClick={onClose}
-                      className="flex h-4 w-4 items-center justify-center"
-                    >
-                      <Send size={16} className="text-color-gray-500" />
-                    </button>
+                    {instagramUrl ? (
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-80"
+                        aria-label="인스타그램 바로가기"
+                      >
+                        <Send size={16} className="text-color-gray-500" />
+                      </a>
+                    ) : (
+                      <button
+                        onClick={onClose}
+                        className="flex h-4 w-4 items-center justify-center"
+                        aria-label="닫기"
+                      >
+                        <Send size={16} className="text-color-gray-500" />
+                      </button>
+                    )}
                     <div className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]">
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
@@ -215,11 +239,25 @@ const PartnerProfileModal = ({
                       {partner.socialAccountId}
                     </span>
                   </div>
+                ) : partner.socialAccountId ? (
+                  <a
+                    href={`https://instagram.com/${
+                      partner.socialAccountId.startsWith("@")
+                        ? partner.socialAccountId.slice(1)
+                        : partner.socialAccountId
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
+                  >
+                    <span className="typo-15-600 text-color-text-white">
+                      @{partner.socialAccountId}
+                    </span>
+                  </a>
                 ) : (
                   <span className="typo-15-600 text-color-text-white">
-                    {partner.socialAccountId
-                      ? `@${partner.socialAccountId}`
-                      : "비공개"}
+                    비공개
                   </span>
                 )}
               </footer>

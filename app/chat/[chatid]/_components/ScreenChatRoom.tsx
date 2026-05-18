@@ -355,7 +355,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             disabled={!isSendEnabled}
             onClick={handleSendMessage}
             className={cn(
-              "flex h-10 w-12 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
+              "flex h-10 w-12 shrink-0 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
               isSendEnabled
                 ? "bg-button-primary text-button-primary-text-default"
                 : "bg-[#E5E5E5] text-[#CCCCCC]",

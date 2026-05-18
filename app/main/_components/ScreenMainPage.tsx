@@ -18,6 +18,7 @@ import NoContactSection from "./NoContactSection";
 import {
   useMatchingHistory,
   MatchingPartner,
+  MatchingHistoryItem,
 } from "@/hooks/useMatchingHistory";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
 import { useActiveNotices, Notice } from "@/hooks/useActiveNotices";
@@ -69,27 +70,31 @@ const ScreenMainPage = () => {
     historyData?.pages.flatMap((page) => page?.data?.content || []) ?? [];
 
   const profileList: ProfileData[] = allContent.map(
-    ({ partner }: { partner: MatchingPartner }) => ({
-      memberId: partner.memberId,
-      nickname: partner.nickname,
-      gender: partner.gender,
-      birthDate: partner.birthDate ?? undefined,
-      age: partner.age ?? undefined,
-      mbti: partner.mbti,
-      intro: partner.intro ?? undefined,
-      profileImageUrl:
-        partner.profileImageUrl ?? partner.profileImageKey ?? undefined,
-      socialType: partner.socialType ?? undefined,
-      socialAccountId: partner.socialAccountId ?? "",
-      university: partner.university,
-      major: partner.major,
-      contactFrequency: partner.contactFrequency as ContactFrequency,
-      hobbies: (partner.hobbies ?? []).map(
-        (h: { category: string; name: string }) => h.name,
-      ),
-      tags: partner.tags ?? undefined,
-      song: partner.song ?? undefined,
-    }),
+    (item: MatchingHistoryItem) => {
+      const { partner } = item;
+      return {
+        chatRoomId: item.chatRoomId,
+        memberId: partner.memberId,
+        nickname: partner.nickname,
+        gender: partner.gender,
+        birthDate: partner.birthDate ?? undefined,
+        age: partner.age ?? undefined,
+        mbti: partner.mbti,
+        intro: partner.intro ?? undefined,
+        profileImageUrl:
+          partner.profileImageUrl ?? partner.profileImageKey ?? undefined,
+        socialType: partner.socialType ?? undefined,
+        socialAccountId: partner.socialAccountId ?? "",
+        university: partner.university,
+        major: partner.major,
+        contactFrequency: partner.contactFrequency as ContactFrequency,
+        hobbies: (partner.hobbies ?? []).map(
+          (h: { category: string; name: string }) => h.name,
+        ),
+        tags: partner.tags ?? undefined,
+        song: partner.song ?? undefined,
+      };
+    },
   );
 
   return (

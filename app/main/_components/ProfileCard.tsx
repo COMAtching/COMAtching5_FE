@@ -4,6 +4,7 @@ import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
 import Image from "next/image";
 import { Send } from "lucide-react";
 import React, { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { getAge } from "@/lib/utils/date";
@@ -23,7 +24,13 @@ const Tag = ({ text }: { text: string }) => (
 );
 
 /* ── 프로필 헤더 (이미지 + 닉네임 + 액션 아이콘) ── */
-const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
+const ProfileHeader = ({
+  profile,
+  onChatClick,
+}: {
+  profile: ProfileData;
+  onChatClick?: () => void;
+}) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
     <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
@@ -50,7 +57,10 @@ const ProfileHeader = ({ profile }: { profile: ProfileData }) => (
         type="button"
         aria-label="메시지 보내기"
         className="flex h-4 w-4 items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChatClick?.();
+        }}
       >
         <Send size={16} className="text-color-gray-800" />
       </button>
@@ -179,10 +189,23 @@ const SocialIdDisplay = ({ profile }: { profile: ProfileData }) => {
       </div>
     );
   }
+
+  const cleanId = profile.socialAccountId.startsWith("@")
+    ? profile.socialAccountId.slice(1)
+    : profile.socialAccountId;
+
   return (
-    <span className="typo-15-600 text-color-text-white">
-      @{profile.socialAccountId}
-    </span>
+    <a
+      href={`https://instagram.com/${cleanId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
+    >
+      <span className="typo-15-600 text-color-text-white">
+        @{profile.socialAccountId}
+      </span>
+    </a>
   );
 };
 
@@ -199,11 +222,20 @@ const ProfileCard = ({
   onToggleExpanded,
 }: ProfileCardProps) => {
   const touchStartTime = useRef<number>(0);
+  const router = useRouter();
 
   const handleCardClick = () => {
     const touchDuration = Date.now() - touchStartTime.current;
     if (touchDuration < 200) {
       onToggleExpanded();
+    }
+  };
+
+  const handleChatClick = () => {
+    if (profile.chatRoomId) {
+      router.push(`/chat/${profile.chatRoomId}`);
+    } else {
+      alert("채팅방 정보를 찾을 수 없습니다.");
     }
   };
 
@@ -226,7 +258,7 @@ const ProfileCard = ({
         }}
         className="flex w-full cursor-pointer flex-col items-center justify-start gap-3 p-4"
       >
-        <ProfileHeader profile={profile} />
+        <ProfileHeader profile={profile} onChatClick={handleChatClick} />
         <ProfileStats profile={profile} />
         <div className="flex w-full flex-col">
           <ProfileDetails profile={profile} isExpanded={isExpanded} />

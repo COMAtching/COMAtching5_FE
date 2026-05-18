@@ -211,10 +211,23 @@ const SocialIdDisplay = ({ partner }: { partner: MatchingPartner }) => {
       </div>
     );
   }
+
+  const cleanId = partner.socialAccountId.startsWith("@")
+    ? partner.socialAccountId.slice(1)
+    : partner.socialAccountId;
+
   return (
-    <span className="typo-15-600 text-color-text-white">
-      @{partner.socialAccountId}
-    </span>
+    <a
+      href={`https://instagram.com/${cleanId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
+    >
+      <span className="typo-15-600 text-color-text-white">
+        @{partner.socialAccountId}
+      </span>
+    </a>
   );
 };
 

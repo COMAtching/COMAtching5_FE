@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   output: "standalone", // Docker 최적화를 위한 standalone 모드
+  devIndicators: false,
 
   // 🛠️ 로컬 개발 환경: CORS/쿠키 문제 해결을 위한 API 프록시
   // localhost:3000/api/* → srv.comatching.site/api/* 로 중계

@@ -27,6 +27,7 @@ export interface Hobby {
 }
 
 export interface ProfileData {
+  chatRoomId?: string;
   // 기본 정보
   memberId: number;
   nickname?: string;
