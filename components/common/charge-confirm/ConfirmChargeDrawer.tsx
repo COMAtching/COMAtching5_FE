@@ -228,14 +228,6 @@ export default function ConfirmChargeDrawer({
               <Button disabled={!agreed || isPending} onClick={handleConfirm}>
                 {isPending ? "요청 중..." : "충전 요청 보내기"}
               </Button>
-
-              <button
-                type="button"
-                onClick={handleTossTransfer}
-                className="typo-12-500 text-center leading-[140%] text-[#999999] underline underline-offset-2"
-              >
-                혹은 Toss로 계좌이체하기
-              </button>
             </div>
           </div>
         </div>
