@@ -6,7 +6,7 @@ export type HobbyOption =
   | "SPORTS"
   | "CULTURE"
   | "MUSIC"
-  | "TRAVEL"
+  | "LEISURE"
   | "DAILY"
   | "GAME";
 

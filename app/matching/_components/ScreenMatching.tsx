@@ -4,6 +4,7 @@ import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import MatchingAgeOption from "./MatchingAgeOption";
 import MatchingAgeSection from "./MatchingAgeSection";
 import MatchingHobbySection from "./MatchingHobbySection";
@@ -27,7 +28,7 @@ const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
   문화: "CULTURE",
   음악: "MUSIC",
-  여행: "TRAVEL",
+  여행: "LEISURE",
   자기계발: "DAILY",
   게임: "GAME",
 };
@@ -43,6 +44,7 @@ import { useMatching } from "@/hooks/useMatching";
 import { useMyProfile } from "@/hooks/useProfile";
 
 const ScreenMatching = () => {
+  const router = useRouter();
   const { data: itemData, isLoading: isItemsLoading } = useItems();
   const { data: myProfile } = useMyProfile();
   const { mutate: match, isPending } = useMatching();
@@ -162,17 +164,17 @@ const ScreenMatching = () => {
     if (isAgeRangeActive) {
       finalMinAge = minAge ?? null;
       finalMaxAge = maxAge ?? null;
-    } else if (ageInfo.min !== null && ageInfo.max !== null) {
-      finalMinAge = userAge + ageInfo.min;
-      finalMaxAge = userAge + ageInfo.max;
+    } else {
+      // 연상/연하/동갑 선택 시에는 직접 지정하는 나이 구간(min/max)을 null로 전달하여
+      // 백엔드가 ageOption("OLDER"/"YOUNGER"/"EQUAL")만 보고 올바르게 연산하도록 유도합니다.
+      finalMinAge = null;
+      finalMaxAge = null;
     }
 
     const payload: MatchingRequest = {
-      // 이제 오프셋이 아닌 실제 나이를 보냅니다. (필드명은 규격상 Offset 유지)
       ageOption: isAgeRangeActive ? null : ageInfo.option || null,
       minAgeOffset: finalMinAge,
       maxAgeOffset: finalMaxAge,
-
       mbtiOption: selectedMBTI || undefined,
       hobbyOption: selectedHobbyCategory
         ? hobbyMapping[selectedHobbyCategory]
@@ -193,7 +195,7 @@ const ScreenMatching = () => {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-30">
-      <BackButton text="매칭하기" />
+      <BackButton text="매칭하기" onClick={() => router.push("/main")} />
       <MyCoinSection className="my-6" />
 
       <div className="flex w-full flex-col gap-4">
