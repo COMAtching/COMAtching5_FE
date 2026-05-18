@@ -11,6 +11,8 @@ interface MatchingSliderButtonProps {
   isActive?: boolean;
   bubbleText?: React.ReactNode;
   bubbleTextColor?: string;
+  bubbleWidth?: number | "fit";
+  renderRawBubble?: boolean;
 }
 
 export default function MatchingSliderButton({
@@ -19,6 +21,8 @@ export default function MatchingSliderButton({
   isActive = false,
   bubbleText,
   bubbleTextColor,
+  bubbleWidth,
+  renderRawBubble = false,
 }: MatchingSliderButtonProps) {
   const [position, setPosition] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -92,11 +96,18 @@ export default function MatchingSliderButton({
 
   return (
     <div className="fixed bottom-10 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-1">
-      {bubbleText && (
-        <BubbleDiv typo="typo-12-600" textColor={bubbleTextColor}>
-          {bubbleText}
-        </BubbleDiv>
-      )}
+      {bubbleText &&
+        (renderRawBubble ? (
+          bubbleText
+        ) : (
+          <BubbleDiv
+            typo="typo-12-600"
+            textColor={bubbleTextColor}
+            w={bubbleWidth}
+          >
+            {bubbleText}
+          </BubbleDiv>
+        ))}
       <div
         ref={containerRef}
         role="slider"

@@ -93,6 +93,14 @@ const ScreenMatching = () => {
 
   const bubbleText = isItemsLoading ? null : matchingTicketCount === 0 ? (
     "사용할 수 있는 매칭권이 없어요."
+  ) : extraOptionCount === 0 ? (
+    <Image
+      src="/bubble/bubble.png"
+      alt="매칭권 1 소모"
+      width={226}
+      height={42}
+      className="pointer-events-none drop-shadow-md"
+    />
   ) : (
     <div className="flex items-center gap-1">
       <Image src="/main/ticket.png" alt="coin" width={20} height={20} />
@@ -250,6 +258,7 @@ const ScreenMatching = () => {
         isLoading={isPending}
         bubbleText={bubbleText}
         bubbleTextColor={bubbleTextColor}
+        renderRawBubble={extraOptionCount === 0 && matchingTicketCount > 0}
       />
     </main>
   );
