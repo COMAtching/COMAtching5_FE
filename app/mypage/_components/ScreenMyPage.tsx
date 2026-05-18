@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button";
 import ProfileButton from "@/app/profile-builder/_components/ProfileButton";
 import ProfileImageSelection from "@/app/profile-image/_components/ProfileImageSelection";
 import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, removeEmoji } from "@/lib/utils";
 import {
   getDefaultProfilesByGender,
   DEFAULT_PROFILE_ASSETS,
@@ -453,7 +453,10 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         socialAccountId: formattedSocialId || null,
         major: major.trim() || undefined,
         birthDate: editableBirthYear ? `${editableBirthYear}-01-01` : undefined,
-        hobbies: hobbies,
+        hobbies: hobbies.map((h) => ({
+          category: h.category,
+          name: removeEmoji(h.name),
+        })),
         tags: tags.filter(Boolean).map((t) => ({ tag: t })),
         profileImageKey: finalImageUrl || "default",
         isMatchable: true,
