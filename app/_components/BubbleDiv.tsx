@@ -25,6 +25,12 @@ const BubbleDiv = ({
 }) => {
   const { data: participantsData } = useParticipantsCount();
   const count = participantsData?.data?.count ?? 775;
+
+  React.useEffect(() => {
+    console.log("💬 [BubbleDiv] participantsData changed:", participantsData);
+    console.log("💬 [BubbleDiv] Resolved count:", count);
+  }, [participantsData, count]);
+
   const shadowClass = shadow ? "drop-shadow-md" : "";
 
   return (

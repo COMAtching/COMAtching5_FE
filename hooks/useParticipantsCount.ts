@@ -14,10 +14,19 @@ export interface ParticipantsCountResponse {
 /* ── fetcher ── */
 export const fetchParticipantsCount =
   async (): Promise<ParticipantsCountResponse> => {
-    const { data } = await api.get<ParticipantsCountResponse>(
-      "/api/auth/participants",
+    console.log(
+      "📡 [useParticipantsCount] Fetching count from /api/auth/participants...",
     );
-    return data;
+    try {
+      const { data } = await api.get<ParticipantsCountResponse>(
+        "/api/auth/participants",
+      );
+      console.log("✅ [useParticipantsCount] Fetch success:", data);
+      return data;
+    } catch (error) {
+      console.error("❌ [useParticipantsCount] Fetch failed:", error);
+      throw error;
+    }
   };
 
 /* ── hook ── */
