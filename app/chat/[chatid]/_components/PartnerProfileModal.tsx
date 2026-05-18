@@ -249,7 +249,9 @@ const PartnerProfileModal = ({
                     className="flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
                   >
                     <span className="typo-15-600 text-color-text-white">
-                      @{partner.socialAccountId}
+                      {partner.socialAccountId.startsWith("@")
+                        ? partner.socialAccountId
+                        : `@${partner.socialAccountId}`}
                     </span>
                   </a>
                 ) : (

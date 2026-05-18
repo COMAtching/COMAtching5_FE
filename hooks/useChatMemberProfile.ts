@@ -4,8 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 export interface ChatMemberProfile {
   memberId: number;
   nickname: string;
-  profileImageUrl: string;
+  profileImageUrl: string | null;
   major: string;
+  age: number;
+  mbti: string;
+  contactFrequency: string;
+  hobbies: { category: string; name: string }[];
+  tags: { tag: string }[];
+  song: string | null;
+  intro: string | null;
+  socialType: string | null;
+  socialAccountId: string | null;
   historyId: number | null;
   favorite: boolean;
 }

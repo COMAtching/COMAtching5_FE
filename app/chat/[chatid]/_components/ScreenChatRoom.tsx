@@ -54,14 +54,19 @@ const IncomingMessage = ({
   message,
   nickname,
   profileImageUrl,
+  onProfileClick,
 }: {
   message: ChatMessage;
   nickname?: string;
   profileImageUrl?: string;
+  onProfileClick?: () => void;
 }) => {
   return (
     <div className="flex w-full items-start gap-2">
-      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-white">
+      <div
+        className="relative h-8 w-8 shrink-0 cursor-pointer overflow-hidden rounded-full bg-white transition-opacity hover:opacity-80"
+        onClick={onProfileClick}
+      >
         <Image
           src={getProfileImageUrl(profileImageUrl, "FEMALE")}
           alt="프로필"
@@ -101,6 +106,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
@@ -119,14 +125,24 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const opponentProfile = profileRes?.data;
 
   const mergedPartner = useMemo(() => {
+    const rawFreq = opponentProfile?.contactFrequency || "NORMAL";
+    const mappedFreq =
+      rawFreq === "자주"
+        ? "FREQUENT"
+        : rawFreq === "보통"
+          ? "NORMAL"
+          : rawFreq === "적음"
+            ? "RARE"
+            : rawFreq;
+
     return {
-      memberId: partnerMemberId || 999,
+      memberId: opponentProfile?.memberId || partnerMemberId || 999,
       email: "winter@example.com",
       nickname:
         opponentProfile?.nickname ||
         currentRoom?.otherUser.nickname ||
         "겨울이오길",
-      age: currentRoom?.otherUser.age || 20,
+      age: opponentProfile?.age || currentRoom?.otherUser.age || 20,
       gender: currentRoom?.otherUser.gender || "FEMALE",
       birthDate: "2004-01-01",
       major:
@@ -134,24 +150,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         currentRoom?.otherUser.major ||
         "정보통신전자공학부",
       university: currentRoom?.otherUser.university || "가톨릭대학교",
-      mbti: "ENTP",
-      contactFrequency: "NORMAL",
+      mbti: opponentProfile?.mbti || "ENTP",
+      contactFrequency: mappedFreq,
       profileImageUrl:
         opponentProfile?.profileImageUrl ||
         currentRoom?.otherUser.profileImageUrl ||
         "animal_cat",
       profileImageKey: null,
-      intro: "친하게 지내요! 😆",
-      song: "한로로 - 사랑하게 될 거야",
-      hobbies: [
-        { category: "취미", name: "독서" },
-        { category: "취미", name: "영화감상" },
-        { category: "취미", name: "음악감상" },
-      ],
-      tags: [{ tag: "친절한" }, { tag: "열정적인" }],
+      intro: opponentProfile?.intro || "친하게 지내요! 😆",
+      song: opponentProfile?.song || null,
+      hobbies: opponentProfile?.hobbies || [],
+      tags: opponentProfile?.tags || [],
       intros: [],
-      socialType: "INSTAGRAM",
-      socialAccountId: "winterizcoming_",
+      socialType: opponentProfile?.socialType || "INSTAGRAM",
+      socialAccountId: opponentProfile?.socialAccountId || "",
     } as MatchingPartner;
   }, [opponentProfile, currentRoom, partnerMemberId]);
 
@@ -208,6 +220,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       createdAt: m.createdAt,
     })) as ChatMessage[];
   }, [historyData, socketMessages, currentUserId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (!messageText.trim()) return;
@@ -323,12 +339,14 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                       opponentProfile?.profileImageUrl ||
                       currentRoom?.otherUser.profileImageUrl
                     }
+                    onProfileClick={() => setIsProfileModalOpen(true)}
                   />
                 )}
               </React.Fragment>
             );
           })
         )}
+        <div ref={messagesEndRef} />
       </section>
 
       <div

@@ -126,7 +126,10 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
             : null,
         socialAccountId:
           profile.socialType && profile.socialAccountId
-            ? profile.socialAccountId
+            ? profile.socialType === "INSTAGRAM" &&
+              !profile.socialAccountId.startsWith("@")
+              ? `@${profile.socialAccountId}`
+              : profile.socialAccountId
             : null,
         university: profile.university || "",
         major: profile.major || "",

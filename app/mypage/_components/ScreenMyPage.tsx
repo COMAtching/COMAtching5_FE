@@ -687,7 +687,14 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               {/* SNS 타입 토글 아이콘 */}
               <button
                 type="button"
-                onClick={() => setSocialType("INSTAGRAM")}
+                onClick={() => {
+                  setSocialType("INSTAGRAM");
+                  if (!socialAccountId) {
+                    setSocialAccountId("@");
+                  } else if (!socialAccountId.startsWith("@")) {
+                    setSocialAccountId(`@${socialAccountId}`);
+                  }
+                }}
                 className="flex-shrink-0"
               >
                 <Image
@@ -730,11 +737,14 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
                       : ""
                 }
                 onChange={(e) => {
-                  const val = e.target.value.trim();
-                  if (!socialType) {
-                    setSocialType("INSTAGRAM");
-                    setSocialAccountId(val);
-                  } else if (socialType === "INSTAGRAM") {
+                  let val = e.target.value.trim();
+                  if (!socialType || socialType === "INSTAGRAM") {
+                    if (!val.startsWith("@")) {
+                      val = "@" + val;
+                    }
+                    if (!socialType) {
+                      setSocialType("INSTAGRAM");
+                    }
                     setSocialAccountId(val);
                   } else {
                     setKakaoId(val);

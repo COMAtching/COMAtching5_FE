@@ -147,7 +147,7 @@ const ScreenExtraInfoDetail = () => {
                     setContactId("");
                   } else {
                     setContactType(opt.key as "instagram" | "kakao");
-                    setContactId("");
+                    setContactId(opt.key === "instagram" ? "@" : "");
                   }
                 }}
               >
@@ -173,7 +173,15 @@ const ScreenExtraInfoDetail = () => {
               placeholder={selectedOption.placeholder}
               className="typo-18-600 text-black"
               value={contactId}
-              onChange={(e) => setContactId(e.target.value)}
+              onChange={(e) => {
+                let val = e.target.value;
+                if (contactType === "instagram") {
+                  if (!val.startsWith("@")) {
+                    val = "@" + val;
+                  }
+                }
+                setContactId(val);
+              }}
             />
           )}
         </div>

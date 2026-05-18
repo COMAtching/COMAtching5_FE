@@ -202,7 +202,9 @@ const SocialIdDisplay = ({ profile }: { profile: ProfileData }) => {
       className="flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
     >
       <span className="typo-15-600 text-color-text-white">
-        @{profile.socialAccountId}
+        {profile.socialAccountId.startsWith("@")
+          ? profile.socialAccountId
+          : `@${profile.socialAccountId}`}
       </span>
     </a>
   );
