@@ -7,10 +7,11 @@ import Button from "@/components/ui/Button";
 import ProfileButton from "@/app/profile-builder/_components/ProfileButton";
 import ProfileImageSelection from "@/app/profile-image/_components/ProfileImageSelection";
 import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, removeEmoji } from "@/lib/utils";
 import {
   getDefaultProfilesByGender,
   DEFAULT_PROFILE_ASSETS,
+  getAutoSwitchProfileIdByGender,
 } from "@/lib/constants/defaultProfiles";
 import type {
   Gender,
@@ -452,7 +453,26 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         socialAccountId: formattedSocialId || null,
         major: major.trim() || undefined,
         birthDate: editableBirthYear ? `${editableBirthYear}-01-01` : undefined,
-        hobbies: hobbies,
+        hobbies: hobbies.map((h) => {
+          const categoryMap: Record<string, string> = {
+            스포츠: "SPORTS",
+            문화: "CULTURE",
+            음악: "MUSIC",
+            여행: "LEISURE",
+            자기계발: "DAILY",
+            게임: "GAME",
+            SPORTS: "SPORTS",
+            CULTURE: "CULTURE",
+            MUSIC: "MUSIC",
+            LEISURE: "LEISURE",
+            DAILY: "DAILY",
+            GAME: "GAME",
+          };
+          return {
+            category: categoryMap[h.category] || "DAILY",
+            name: removeEmoji(h.name),
+          };
+        }),
         tags: tags.filter(Boolean).map((t) => ({ tag: t })),
         profileImageKey: finalImageUrl || "default",
         isMatchable: true,
@@ -472,7 +492,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     }
   };
 
-  /* ───── 프로필 이미지 핸들러 ───── */
   const handleSelectProfileType = (type: "default" | "custom") => {
     setSelectedType(type);
     if (type === "default") {
@@ -488,9 +507,13 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     const currentHobbies = JSON.stringify(hobbies);
     const currentSocialId =
       socialType === "INSTAGRAM"
-        ? socialAccountId
+        ? socialAccountId.trim()
+          ? socialAccountId.trim().startsWith("@")
+            ? socialAccountId.trim()
+            : `@${socialAccountId.trim()}`
+          : ""
         : socialType === "KAKAO"
-          ? kakaoId
+          ? kakaoId.trim()
           : "";
 
     return checkProfileChanged({
@@ -556,7 +579,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         <ProfileImageSelection
           selected={selectedType}
           onSelect={handleSelectProfileType}
-          gender={profile?.gender}
+          gender={genderMap[gender]}
           selectedProfile={profileImageUrl}
           onProfileSelect={(id) => {
             setProfileImageUrl(id);
@@ -735,16 +758,10 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           <div className="box-border border-b border-[#E5E5E5] py-4">
             <label className="typo-16-600 mb-2 block text-black">성별</label>
             <div className="flex gap-1.5">
-              <ProfileButton
-                selected={gender === "여자"}
-                onClick={() => setGender("여자")}
-              >
+              <ProfileButton selected={gender === "여자"} disabled={true}>
                 여자
               </ProfileButton>
-              <ProfileButton
-                selected={gender === "남자"}
-                onClick={() => setGender("남자")}
-              >
+              <ProfileButton selected={gender === "남자"} disabled={true}>
                 남자
               </ProfileButton>
             </div>

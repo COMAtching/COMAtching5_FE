@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "srv.comatching.site",
+      },
+      {
+        protocol: "https",
         hostname: "comatching5.s3.ap-northeast-2.amazonaws.com",
       },
     ],

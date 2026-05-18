@@ -31,7 +31,7 @@ export const useChatMemberProfile = (memberId?: number) => {
     queryKey: ["chatMemberProfile", memberId],
     queryFn: () => fetchChatMemberProfile(memberId!),
     enabled: !!memberId,
-    staleTime: 1000 * 60 * 60, // 📡 상대방 프로필 정보는 1시간 동안 완전 신선(Fresh)하다고 판단하여 API 재호출 완벽 차단
-    gcTime: 1000 * 60 * 90, // 🧠 1시간 30분 동안 메모리에 든든하게 캐시 보관
+    staleTime: 1000 * 10, // 📡 10초 동안은 캐시를 유지하여 잦은 재진입 시 불필요한 API 호출을 차단합니다
+    gcTime: 1000 * 15, // 🧠 15초 뒤에 미사용 캐시를 정리합니다
   });
 };

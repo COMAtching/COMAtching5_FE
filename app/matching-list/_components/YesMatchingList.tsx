@@ -44,13 +44,15 @@ const YesMatchingList = ({
     // 검색 필터
     if (searchQuery.trim()) {
       const query = searchQuery.trim().toLowerCase();
+      const cleanQuery = query.replace("살", "").trim();
       result = result.filter((item) => {
         const p = item.partner;
+        const rawAge = p.age || (p.birthDate ? getAge(p.birthDate) : null);
         return (
           p.nickname.toLowerCase().includes(query) ||
           p.mbti.toLowerCase().includes(query) ||
           p.major.toLowerCase().includes(query) ||
-          (p.birthDate && String(getAge(p.birthDate)).includes(query))
+          (rawAge !== null && String(rawAge).includes(cleanQuery))
         );
       });
     }

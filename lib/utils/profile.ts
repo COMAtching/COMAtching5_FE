@@ -36,6 +36,7 @@ export const getProfileImageUrl = (
     const animalId = filename
       .replace("animal_", "")
       .replace("default_", "")
+      .replace(/_(male|female)/i, "") // _male 또는 _female 접미사 제거
       .replace(/\d+.*$/, "") // animal_dinosaur1.png -> dinosaur
       .replace(/\..*$/, ""); // 확장자 제거
 

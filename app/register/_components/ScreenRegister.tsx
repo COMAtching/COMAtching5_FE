@@ -55,7 +55,8 @@ export const ScreenRegister = () => {
       {
         onSuccess: (data) => {
           if (data.status === 200) {
-            // TODO: 회원가입 완료 후 이동 (예: router.push("/login"))
+            alert("가입이 완료되었습니다.");
+            router.push("/login");
           } else {
             alert("회원가입에 실패했습니다. 다시 시도해주세요.");
           }

@@ -120,6 +120,14 @@ export function getAutoSwitchProfileIdByGender(
     return null;
   }
 
+  // 뱀(여성전용) ↔ 말(남성전용) 특수 스위칭 매핑
+  if (currentProfileId === "snake" && newGender === "MALE") {
+    return "horse";
+  }
+  if (currentProfileId === "horse" && newGender === "FEMALE") {
+    return "snake";
+  }
+
   const asset = DEFAULT_PROFILE_ASSETS.find((p) => p.id === currentProfileId);
   if (!asset) {
     return null;

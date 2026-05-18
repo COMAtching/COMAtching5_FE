@@ -55,6 +55,25 @@ function TypingText({
   return <>{displayedText}</>;
 }
 
+const formatMBTISelection = (mbti: string): string => {
+  const mbtiMap: Record<string, string> = {
+    E: "외향형",
+    I: "내향형",
+    S: "감각형",
+    N: "직관형",
+    T: "사고형",
+    F: "감정형",
+    J: "판단형",
+    P: "인식형",
+  };
+  const chars = mbti.split("").filter(Boolean);
+  const labels = chars.map((c) => mbtiMap[c] || c);
+  if (labels.length === 2) {
+    return `${labels[0]}, 그리고 ${labels[1]}`;
+  }
+  return labels.join(", ");
+};
+
 export default function ImportantOptionDrawer({
   trigger,
   onSelect,
@@ -224,7 +243,7 @@ export default function ImportantOptionDrawer({
                   </span>
                 </div>
               ) : (
-                <div className="relative flex w-full flex-col items-end gap-1 pt-3">
+                <div className="relative mx-auto flex w-[calc(100%-12px)] flex-col items-end gap-1 pt-3">
                   {typingStep >= 1 && (
                     <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
                       <span className="typo-14-500 text-right text-white">
@@ -241,7 +260,11 @@ export default function ImportantOptionDrawer({
                       <span className="typo-18-600 w-full text-right text-white">
                         <TypingText
                           key={selectedOption}
-                          text={`${selectedItem?.label}는 ${selections[selectedOption]} 이면 좋겠어!`}
+                          text={
+                            selectedOption === "MBTI"
+                              ? `MBTI는 ${formatMBTISelection(selections.MBTI)} 이면 좋겠어!`
+                              : `${selectedItem?.label}는 ${selections[selectedOption]} 이면 좋겠어!`
+                          }
                         />
                       </span>
                     </div>

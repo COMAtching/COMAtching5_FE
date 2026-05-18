@@ -28,13 +28,22 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log("[Service Worker] 백그라운드 메시지 수신:", payload);
 
-  const notificationTitle = payload.notification?.title || "새 알림";
-  const notificationOptions = {
-    body: payload.notification?.body || "",
-    icon: payload.notification?.icon || "/logo/logo.svg",
-  };
+  // 1. 만약 payload.notification 필드가 존재한다면, FCM SDK가 백그라운드에서 자동으로 알림을 보여줍니다.
+  // 이 상황에서 수동으로 showNotification을 또 부르면 알림이 2개 뜨게 되므로 수동 팝업은 패스합니다!
+  if (payload.notification) {
+    console.log("[Service Worker] notification 필드 존재로 인한 자동 알림 완료. 수동 노출 생략.");
+    return;
+  }
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  // 2. 오직 payload.notification이 없고 payload.data만 있는 'Data-only Message' 형태일 때만 수동으로 띄웁니다.
+  if (payload.data) {
+    const notificationTitle = payload.data.title || "새 알림";
+    const notificationOptions = {
+      body: payload.data.body || payload.data.message || "",
+      icon: payload.data.icon || "/logo/logo.svg",
+    };
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  }
 });
   `;
 

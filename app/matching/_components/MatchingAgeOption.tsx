@@ -61,9 +61,14 @@ export default function MatchingAgeOption({
           onConfirm={handleConfirm}
           trigger={
             <button className="flex flex-col gap-1 text-left outline-none">
-              <h2 className="typo-20-700 text-color-text-black">
-                나이 구간 선택하기
-              </h2>
+              <div className="flex items-end gap-1">
+                <h2 className="typo-20-700 text-color-text-black">
+                  나이 구간 선택하기
+                </h2>
+                <span className="typo-10-600 text-color-gray-400 mb-[3px] leading-[12px]">
+                  선택
+                </span>
+              </div>
               <p className="typo-14-500 text-color-text-caption3">
                 선택됨: {displayText}
               </p>
@@ -113,9 +118,14 @@ export default function MatchingAgeOption({
       trigger={
         <button className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5 text-left outline-none">
           <div className="flex flex-col gap-1">
-            <h2 className="typo-20-700 text-color-text-black">
-              나이 구간 선택하기
-            </h2>
+            <div className="flex items-end gap-1">
+              <h2 className="typo-20-700 text-color-text-black">
+                나이 구간 선택하기
+              </h2>
+              <span className="typo-10-600 text-color-gray-400 mb-[3px] leading-[12px]">
+                선택
+              </span>
+            </div>
             <p className="typo-14-500 text-color-text-caption3">
               원하는 나이 범위를 설정해 보세요!
             </p>

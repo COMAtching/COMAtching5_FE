@@ -3,6 +3,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { useToastStore } from "@/stores/toast-store";
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -74,8 +75,24 @@ export async function registerServiceWorkerAndGetToken() {
 
     // 포그라운드 메시지 수신 리스너
     onMessage(messaging, (payload) => {
-      console.log("[Foreground] 메시지 수신:", payload);
-      // 여기에 포그라운드 알림 UI 처리
+      console.log("🔔 [FCM Foreground Payload] 수신된 알림 전체 구조:");
+      console.log(JSON.stringify(payload, null, 2));
+      console.dir(payload);
+
+      // notification 이나 data 필드에서 어떻게든 정보를 추출합니다.
+      const title =
+        payload.notification?.title || payload.data?.title || "새로운 알림";
+      const body =
+        payload.notification?.body ||
+        payload.data?.body ||
+        payload.data?.message ||
+        "";
+
+      // 커스텀 인앱 토스트 알림 노출
+      useToastStore.getState().showToast({
+        title,
+        body,
+      });
     });
 
     return token;
