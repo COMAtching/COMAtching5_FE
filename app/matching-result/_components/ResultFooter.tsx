@@ -4,12 +4,14 @@ import { useMatching } from "@/hooks/useMatching";
 import { MatchingRequest } from "@/lib/types/matching";
 import { useRouter } from "next/navigation";
 import { useItems } from "@/hooks/useItems";
+import { useMatchingStore } from "@/stores/matching-store";
 
 interface ResultFooterProps {
   lastPayload: MatchingRequest | null;
 }
 
 const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
+  const result = useMatchingStore((s) => s.result);
   const [timeLeft, setTimeLeft] = useState(3);
   const [isHolding, setIsHolding] = useState(false);
   const [isTriggered, setIsTriggered] = useState(false);
@@ -96,25 +98,36 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
     };
   }, [isHolding, lastPayload, match]);
 
-  const handleRetry = () => {
-    // 매칭 페이지로 돌아가서 새로운 조건으로 다시 뽑기
-    router.push("/matching");
+  const handleHome = () => {
+    // 메인 홈으로 이동
+    router.push("/main");
+  };
+
+  const handleMailClick = () => {
+    if (result?.chatRoomId) {
+      router.push(`/chat/${result.chatRoomId}`);
+    } else {
+      router.push("/chat-list");
+    }
   };
 
   return (
     <div className="mt-6 flex w-full flex-col gap-3">
-      {/* Top Row: Retry & Mail Buttons */}
+      {/* Top Row: Home & Mail Buttons */}
       <div className="flex w-full flex-row gap-[10px]">
-        {/* Retry Button */}
+        {/* Home Button */}
         <button
-          onClick={handleRetry}
+          onClick={handleHome}
           className="flex h-[53px] flex-1 flex-col items-center justify-center rounded-[15px] bg-white px-[22px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
         >
-          <span className="typo-18-700 text-[#4E4E4E]">다시 뽑기</span>
+          <span className="typo-18-700 text-[#4E4E4E]">홈으로</span>
         </button>
 
         {/* Mail Button */}
-        <button className="bg-milky-pink flex h-[53px] flex-1 flex-col items-center justify-center rounded-[15px] px-[22px] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]">
+        <button
+          onClick={handleMailClick}
+          className="bg-milky-pink flex h-[53px] flex-1 flex-col items-center justify-center rounded-[15px] px-[22px] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
+        >
           <span className="typo-18-700 text-white">쪽지 보내기</span>
         </button>
       </div>

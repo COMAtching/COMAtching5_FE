@@ -38,6 +38,7 @@ export interface MatchingResult {
   hobbies: Hobby[];
   tags: { tag: string }[];
   song?: string;
+  chatRoomId?: number;
 }
 
 export interface ApiResponse<T> {
