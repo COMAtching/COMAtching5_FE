@@ -44,9 +44,6 @@ const MatchingResult = ({ data }: MatchingResultProps) => {
           </div>
           {/* Nickname & Label (Frame 2612933) */}
           <div className="flex flex-col items-start gap-1">
-            <span className="typo-12-600 flex items-center text-[#777777]">
-              내가 뽑은 사람
-            </span>
             <span className="typo-16-600 flex items-center text-black">
               {data.nickname}
             </span>

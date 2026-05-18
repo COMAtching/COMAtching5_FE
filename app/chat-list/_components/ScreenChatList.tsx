@@ -17,19 +17,6 @@ type ChatListItem = {
   avatar: string;
 };
 
-const pickedItems: ChatListItem[] = [
-  {
-    id: "picked-1",
-    roomId: "6969e61b866d67f1c3b68106",
-    name: "username",
-    detail: "22세, 정보통신전자공학부",
-    preview: "아직 연락 안한 분들께 용기내어 연락해봐요!",
-    time: "방금",
-    unread: false,
-    avatar: "/profile/default-profile.svg",
-  },
-];
-
 function ChatListRow({ item }: { item: ChatListItem }) {
   return (
     <Link
@@ -162,19 +149,6 @@ export default function ScreenChatList() {
         {chatItems.map((item) => (
           <ChatListRow key={item.id} item={item} />
         ))}
-      </section>
-
-      <section className="mt-10 flex w-full flex-col gap-4">
-        <ChatSectionTitle
-          title="내가 뽑은 사람"
-          description="아직 연락 안한 분들께 용기내어 연락해봐요!"
-        />
-
-        <div className="flex flex-col">
-          {pickedItems.map((item) => (
-            <ChatListRow key={item.id} item={item} />
-          ))}
-        </div>
       </section>
     </main>
   );

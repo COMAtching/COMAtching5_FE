@@ -27,11 +27,11 @@ const NoMatchingList = ({ nickname = "회원" }: NoMatchingListProps) => {
       <p className="typo-14-500 text-color-gray-500 w-[345px] text-center leading-[160%]">
         아직 매칭된 상대가 없어요.
         <br />
-        아직{" "}
+        현재{" "}
         <span className="text-color-flame-700 typo-14-700">
           {count.toLocaleString()}
         </span>
-        명이 {nickname}님을 기다리고 있어요.
+        명이 참여중이에요.
         <br />
         나와 딱 맞는 이성친구를 만들어봐요!
       </p>

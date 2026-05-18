@@ -15,7 +15,7 @@ export const INVENTORY_ROWS = [
   {
     icon: "/main/option.png",
     alt: "bulb",
-    label: "보유 아이템",
+    label: "보유 옵션권",
     key: "option",
   },
 ] as const;

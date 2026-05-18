@@ -277,8 +277,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 className="h-10 w-10"
               />
               <p className="typo-14-500 w-[116px] text-center leading-[140%] text-[#666666]">
-                내가 뽑은 사람과
-                <br /> 대화를 시작해 보세요
+                대화를 시작해 보세요
               </p>
             </div>
             <button

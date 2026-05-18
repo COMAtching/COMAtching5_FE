@@ -46,7 +46,6 @@ const ProfileHeader = ({
 
     {/* 닉네임 */}
     <div className="flex flex-1 flex-col items-start gap-1">
-      <span className="typo-12-600 text-[#777777]">내가 뽑은 사람</span>
       <span className="typo-16-600 text-color-text-black">
         {profile.nickname || "익명"}
       </span>

@@ -11,6 +11,7 @@ const StartExtraInfo = () => {
   const [showSecond, setShowSecond] = useState(false);
   const [showThird, setShowThird] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [showSkip, setShowSkip] = useState(false);
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
@@ -47,7 +48,10 @@ const StartExtraInfo = () => {
             "transition-opacity duration-700 ease-in-out",
             showThird ? "opacity-100" : "opacity-0",
           )}
-          onTransitionEnd={() => setButtonDisabled(false)}
+          onTransitionEnd={() => {
+            setButtonDisabled(false);
+            setTimeout(() => setShowSkip(true), 1000);
+          }}
         >
           물론, 나중에 수정할 수 있어요.
         </span>
@@ -61,7 +65,10 @@ const StartExtraInfo = () => {
       </Button>
       <Link
         href="/profile-image"
-        className="typo-14-500 mt-7 text-gray-500 transition-colors duration-300 hover:text-gray-800"
+        className={cn(
+          "typo-14-500 mt-7 text-gray-500 transition-all duration-700 ease-in-out hover:text-gray-800",
+          showSkip ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
       >
         다음에 할게요
       </Link>

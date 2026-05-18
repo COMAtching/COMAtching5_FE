@@ -21,6 +21,36 @@ export default function ShopContent() {
   // 번들 아이템: isBundle이 true인 경우 -> 빠른 구매/번들 상세
   const bundleItems = products.filter((item) => item.isBundle);
 
+  const images = [
+    "/bundle/mini 1.png",
+    "/bundle/silsok 1.png",
+    "/bundle/first 1.png",
+    "/bundle/full 1.png",
+    "/bundle/super 1.png",
+    "/bundle/hyper 1.png",
+  ];
+
+  // 순수 함수 규칙(ESLint)을 준수하고 리렌더링 시 최적화를 위해 결정론적 seed 기반 셔플을 사용합니다.
+  let seed = 12345;
+  const lcg = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+
+  const shuffledImages = [...images];
+  for (let i = shuffledImages.length - 1; i > 0; i--) {
+    const j = Math.floor(lcg() * (i + 1));
+    [shuffledImages[i], shuffledImages[j]] = [
+      shuffledImages[j],
+      shuffledImages[i],
+    ];
+  }
+
+  const bundleItemsWithImages = bundleItems.map((item, index) => ({
+    ...item,
+    imageUrl: shuffledImages[index % shuffledImages.length],
+  }));
+
   return (
     <div className="flex flex-col gap-8 pt-8">
       {/* ── 보유현황 카드 ── */}
@@ -33,16 +63,16 @@ export default function ShopContent() {
       ) : (
         <>
           {/* ── 빠른 구매 ── */}
-          {bundleItems.length > 0 && (
+          {bundleItemsWithImages.length > 0 && (
             <div className="flex flex-col gap-4">
               <span className="typo-16-700 text-[#373737]">빠른 구매</span>
               <div className="scrollbar-hide flex w-full snap-x snap-mandatory gap-2 overflow-x-auto">
-                {bundleItems.map((item) => (
+                {bundleItemsWithImages.map((item) => (
                   <div
                     key={item.id}
                     className="flex-1 shrink-0 basis-[calc(50%-4px)] snap-start"
                   >
-                    <QuickBundleCard product={item} />
+                    <QuickBundleCard product={item} imageUrl={item.imageUrl} />
                   </div>
                 ))}
               </div>
