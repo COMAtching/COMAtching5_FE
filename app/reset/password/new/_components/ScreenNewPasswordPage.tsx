@@ -74,6 +74,10 @@ const ScreenNewPasswordPage = () => {
         },
 
         onError: (error) => {
+          // '존재하지 않는 유저' 에러가 이미 표시된 상태라면, 중복 클릭 시 다른 에러(인증번호 오류 등)로 덮어쓰지 않고 유지합니다.
+          if (errorMessage.includes("존재하지 않는")) {
+            return;
+          }
           setErrorMessage(
             error.message ||
               "비밀번호 변경에 실패했습니다. 다시 시도해 주세요.",

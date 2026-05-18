@@ -58,9 +58,12 @@ export const LoginForm = () => {
         </Button>
       </form>
       <div className="typo-14-500 text-color-text-caption2 flex w-full justify-center">
-        <Link href="/find-email" className="cursor-pointer">
+        <span
+          onClick={() => alert("미지원 서비스입니다.")}
+          className="cursor-pointer"
+        >
           이메일 찾기
-        </Link>
+        </span>
         <span className="mx-4">|</span>
         <Link href="/reset" className="cursor-pointer">
           비밀번호 변경

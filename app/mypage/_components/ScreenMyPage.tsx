@@ -492,26 +492,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     }
   };
 
-  /* ───── 프로필 이미지 핸들러 ───── */
-  const handleGenderChange = (newGenderKo: "남자" | "여자") => {
-    setGender(newGenderKo);
-    const newGenderKey = genderMap[newGenderKo];
-
-    // 성별 변경 시 현재 선택된 동물 캐릭터의 대응되는 성별 이미지가 있는지 확인
-    const nextProfileId = getAutoSwitchProfileIdByGender(
-      profileImageUrl,
-      newGenderKey,
-    );
-    if (nextProfileId) {
-      setProfileImageUrl(nextProfileId);
-    } else {
-      const availableProfiles = getDefaultProfilesByGender(newGenderKey);
-      if (availableProfiles.length > 0) {
-        setProfileImageUrl(availableProfiles[0].id);
-      }
-    }
-  };
-
   const handleSelectProfileType = (type: "default" | "custom") => {
     setSelectedType(type);
     if (type === "default") {
@@ -527,9 +507,13 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     const currentHobbies = JSON.stringify(hobbies);
     const currentSocialId =
       socialType === "INSTAGRAM"
-        ? socialAccountId
+        ? socialAccountId.trim()
+          ? socialAccountId.trim().startsWith("@")
+            ? socialAccountId.trim()
+            : `@${socialAccountId.trim()}`
+          : ""
         : socialType === "KAKAO"
-          ? kakaoId
+          ? kakaoId.trim()
           : "";
 
     return checkProfileChanged({
@@ -773,19 +757,9 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           {/* ── 성별 ── */}
           <div className="box-border border-b border-[#E5E5E5] py-4">
             <label className="typo-16-600 mb-2 block text-black">성별</label>
-            <div className="flex gap-1.5">
-              <ProfileButton
-                selected={gender === "여자"}
-                onClick={() => handleGenderChange("여자")}
-              >
-                여자
-              </ProfileButton>
-              <ProfileButton
-                selected={gender === "남자"}
-                onClick={() => handleGenderChange("남자")}
-              >
-                남자
-              </ProfileButton>
+            <div className="pointer-events-none flex gap-1.5 opacity-60">
+              <ProfileButton selected={gender === "여자"}>여자</ProfileButton>
+              <ProfileButton selected={gender === "남자"}>남자</ProfileButton>
             </div>
           </div>
 

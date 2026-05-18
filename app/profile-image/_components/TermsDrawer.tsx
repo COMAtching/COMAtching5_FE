@@ -148,8 +148,12 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
 
         if (result.success) {
           setIsOpen(false);
-          clearProfile();
+          // 페이지 이동이 완료되기 전에 프로필 데이터가 비워져서 '여성 강아지(female_dog)' 기본 이미지로 화면이 깜빡이는 현상을 방지하기 위해,
+          // 먼저 이동하고 약간의 딜레이(500ms) 후에 프로필 저장소를 클리어합니다.
           router.push("/main");
+          setTimeout(() => {
+            clearProfile();
+          }, 500);
         } else {
           alert(result.message);
         }
