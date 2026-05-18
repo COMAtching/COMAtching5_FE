@@ -9,12 +9,21 @@ import { useItemHistory } from "@/hooks/useItemHistory";
 export default function ChargeHistoryContent() {
   const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useItemHistory({
-      historyType: filterType, // You can map to "USE" or "CHARGE" based on filters if you add UI for it
-    });
+    useItemHistory();
 
   const allItems =
     data?.pages.flatMap((page) => page?.data?.content || []) || [];
+
+  const filteredItems = React.useMemo(() => {
+    if (!filterType) return allItems;
+    if (filterType === "CHARGE") {
+      // 충전/획득은 CHARGE와 EVENT 타입을 포함합니다.
+      return allItems.filter(
+        (item) => item.historyType === "CHARGE" || item.historyType === "EVENT",
+      );
+    }
+    return allItems.filter((item) => item.historyType === filterType);
+  }, [allItems, filterType]);
 
   return (
     <div className="flex flex-col gap-[23px] pt-8">
@@ -49,12 +58,12 @@ export default function ChargeHistoryContent() {
           <div className="text-color-gray-400 typo-14-500 flex items-center justify-center py-10">
             불러오는 중...
           </div>
-        ) : allItems.length === 0 ? (
+        ) : filteredItems.length === 0 ? (
           <div className="text-color-gray-400 typo-14-500 flex items-center justify-center py-10">
             내역이 없습니다.
           </div>
         ) : (
-          allItems.map((item) => (
+          filteredItems.map((item) => (
             <ChargeHistoryListItem key={item.historyId} item={item} />
           ))
         )}
