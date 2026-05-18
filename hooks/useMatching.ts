@@ -22,10 +22,17 @@ export const useMatching = () => {
       setIsMatching(true);
     },
     onSuccess: (response, payload) => {
+      if (!response.success) {
+        setIsMatching(false);
+        console.error("❌ 매칭 실패:", response.message);
+        alert(response.message || "매칭 중 오류가 발생했습니다.");
+        return;
+      }
+
       console.log("✅ 매칭 성공:", response);
 
       // 1. 결과 데이터를 Zustand store에 저장
-      setResult(response.data);
+      setResult(response.data!);
       setIsMatching(false);
 
       // 2. 마지막 매칭 조건 저장 (같은 조건 재매칭용)

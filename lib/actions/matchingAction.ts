@@ -8,20 +8,26 @@ import {
 } from "@/lib/types/matching";
 import { isAxiosError } from "@/lib/server-api";
 
+export type MatchingActionResult = {
+  success: boolean;
+  message?: string;
+  data?: MatchingResult;
+};
+
 /**
  * 매칭 실행 Server Action
  * 백엔드 API를 호출하여 매칭을 진행합니다.
  */
 export async function postMatchingAction(
   payload: MatchingRequest,
-): Promise<ApiResponse<MatchingResult>> {
+): Promise<MatchingActionResult> {
   try {
     const response = await serverApi.post<ApiResponse<MatchingResult>>({
       path: "/api/matching",
       body: payload,
     });
 
-    return response.data;
+    return { success: true, data: response.data.data };
   } catch (error) {
     if (isAxiosError(error)) {
       const message =
@@ -31,10 +37,10 @@ export async function postMatchingAction(
         message,
         payload,
       });
-      throw new Error(message);
+      return { success: false, message };
     }
 
     console.error("[postMatchingAction] Unexpected Error:", error);
-    throw new Error("알 수 없는 오류가 발생했습니다.");
+    return { success: false, message: "알 수 없는 오류가 발생했습니다." };
   }
 }
