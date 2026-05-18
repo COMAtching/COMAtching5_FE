@@ -8,16 +8,19 @@ const StartOnBoarding = () => {
   const [showFirst, setShowFirst] = useState(false);
   const [showSecond, setShowSecond] = useState(false);
   const [showThird, setShowThird] = useState(false);
+  const [showFourth, setShowFourth] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
     const t2 = setTimeout(() => setShowSecond(true), 1100);
     const t3 = setTimeout(() => setShowThird(true), 2100);
+    const t4 = setTimeout(() => setShowFourth(true), 3100);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, []);
 
@@ -49,11 +52,19 @@ const StartOnBoarding = () => {
             transition: "opacity 0.7s ease",
           }}
         >
-          원활한 매칭을 위해 여러분의 정보가 필요해요!
+          원활한 매칭을 위해
         </span>
         <span
           style={{
             opacity: showThird ? 1 : 0,
+            transition: "opacity 0.7s ease",
+          }}
+        >
+          여러분의 정보가 필요해요!
+        </span>
+        <span
+          style={{
+            opacity: showFourth ? 1 : 0,
             transition: "opacity 0.7s ease",
           }}
           onTransitionEnd={() => setButtonDisabled(false)}
