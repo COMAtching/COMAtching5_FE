@@ -98,7 +98,11 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   };
 
   const handleComplete = async () => {
-    if (!allAgreed || isSubmitting) return;
+    if (isSubmitting) return;
+
+    if (!allAgreed) {
+      setAgreements({ terms: true, privacy: true });
+    }
 
     try {
       let finalImageUrl: string;
@@ -296,18 +300,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
             <Button
               type="button"
               className="bg-button-primary text-button-primary-text-default"
-              style={
-                !allAgreed
-                  ? {
-                      background: "#1A1A1A",
-                      border: "0.8px solid rgba(255, 255, 255, 0.3)",
-                      color: "#FFFFFF",
-                      borderRadius: "16px",
-                    }
-                  : undefined
-              }
               onClick={handleComplete}
-              disabled={!allAgreed}
             >
               모두 동의하고 시작하기
             </Button>

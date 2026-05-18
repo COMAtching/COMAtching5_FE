@@ -109,12 +109,12 @@ const ScreenExtraInfoDetail = () => {
         {advantages.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {advantages.map((adv) => (
-              <span
+              <div
                 key={adv}
-                className="typo-14-500 rounded-full bg-[#FFEBED] px-3 py-[7.5px] text-[#FF4D61]"
+                className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B3]/15 px-3 py-2 backdrop-blur-[50px]"
               >
-                {adv}
-              </span>
+                <span className="typo-14-500 text-black">{adv}</span>
+              </div>
             ))}
           </div>
         )}
