@@ -757,9 +757,13 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           {/* ── 성별 ── */}
           <div className="box-border border-b border-[#E5E5E5] py-4">
             <label className="typo-16-600 mb-2 block text-black">성별</label>
-            <div className="pointer-events-none flex gap-1.5 opacity-60">
-              <ProfileButton selected={gender === "여자"}>여자</ProfileButton>
-              <ProfileButton selected={gender === "남자"}>남자</ProfileButton>
+            <div className="flex gap-1.5">
+              <ProfileButton selected={gender === "여자"} disabled={true}>
+                여자
+              </ProfileButton>
+              <ProfileButton selected={gender === "남자"} disabled={true}>
+                남자
+              </ProfileButton>
             </div>
           </div>
 
