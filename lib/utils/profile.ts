@@ -2,15 +2,26 @@ import { DEFAULT_PROFILE_ASSETS } from "../constants/defaultProfiles";
 import { ContactFrequency, Gender } from "../types/profile";
 
 export const getContactFrequencyLabel = (freq?: ContactFrequency | string) => {
-  switch (freq) {
+  if (!freq) return "보통"; // 🛡️ 정보가 없거나 빈 경우 기본값 '보통' 반환해 빈 칸으로 노출되는 버그 방지
+
+  const normalized = String(freq).trim().toUpperCase();
+
+  switch (normalized) {
     case "FREQUENT":
+    case "자주":
       return "자주";
     case "NORMAL":
+    case "보통":
       return "보통";
     case "RARE":
+    case "적음":
       return "적음";
     default:
-      return freq || "";
+      // 소문자 및 부분 일치 처리
+      if (normalized.includes("FREQ")) return "자주";
+      if (normalized.includes("NORM")) return "보통";
+      if (normalized.includes("RARE")) return "적음";
+      return freq;
   }
 };
 

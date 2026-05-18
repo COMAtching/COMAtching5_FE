@@ -38,9 +38,16 @@ messaging.onBackgroundMessage((payload) => {
   // 2. 오직 payload.notification이 없고 payload.data만 있는 'Data-only Message' 형태일 때만 수동으로 띄웁니다.
   if (payload.data) {
     const notificationTitle = payload.data.title || "새 알림";
+    
+    // 알림이 쌓여서 스팸 감지(도배)되는 현상을 방지하기 위해 고유 태그(tag) 지정
+    // tag가 같으면 이전 알림을 덮어쓰고, renotify: true로 진동/사운드만 다시 울립니다.
+    const tag = payload.data.roomId ? "comatching-room-" + payload.data.roomId : "comatching-chat";
+    
     const notificationOptions = {
       body: payload.data.body || payload.data.message || "",
       icon: payload.data.icon || "/logo/logo.svg",
+      tag: tag,
+      renotify: true,
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
   }

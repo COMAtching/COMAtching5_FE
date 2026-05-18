@@ -2,9 +2,11 @@
 
 import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
 import Image from "next/image";
-import { Send } from "lucide-react";
+import { Send, Star } from "lucide-react";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useUpdateFavorite } from "@/hooks/useMatchingHistory";
 
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { getAge } from "@/lib/utils/date";
@@ -27,9 +29,11 @@ const Tag = ({ text }: { text: string }) => (
 const ProfileHeader = ({
   profile,
   onChatClick,
+  onFavoriteToggle,
 }: {
   profile: ProfileData;
   onChatClick?: () => void;
+  onFavoriteToggle?: (e: React.MouseEvent) => void;
 }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
@@ -51,7 +55,25 @@ const ProfileHeader = ({
       </span>
     </div>
 
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-5">
+      {profile.historyId !== undefined && (
+        <button
+          type="button"
+          aria-label="즐겨찾기 토글"
+          className="flex h-4 w-4 items-center justify-center"
+          onClick={onFavoriteToggle}
+        >
+          <Star
+            size={16}
+            className={cn(
+              "transition-colors",
+              profile.favorite
+                ? "fill-[#FF4D61] text-[#FF4D61]"
+                : "text-color-gray-800",
+            )}
+          />
+        </button>
+      )}
       <button
         type="button"
         aria-label="메시지 보내기"
@@ -224,6 +246,7 @@ const ProfileCard = ({
 }: ProfileCardProps) => {
   const touchStartTime = useRef<number>(0);
   const router = useRouter();
+  const { mutate: updateFavoriteMutate } = useUpdateFavorite();
 
   const handleCardClick = () => {
     const touchDuration = Date.now() - touchStartTime.current;
@@ -238,6 +261,15 @@ const ProfileCard = ({
     } else {
       alert("채팅방 정보를 찾을 수 없습니다.");
     }
+  };
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (profile.historyId === undefined) return;
+    updateFavoriteMutate({
+      historyId: profile.historyId,
+      favorite: !profile.favorite,
+    });
   };
 
   return (
@@ -259,7 +291,11 @@ const ProfileCard = ({
         }}
         className="flex w-full cursor-pointer flex-col items-center justify-start gap-3 p-4"
       >
-        <ProfileHeader profile={profile} onChatClick={handleChatClick} />
+        <ProfileHeader
+          profile={profile}
+          onChatClick={handleChatClick}
+          onFavoriteToggle={handleFavoriteToggle}
+        />
         <ProfileStats profile={profile} />
         <div className="flex w-full flex-col">
           <ProfileDetails profile={profile} isExpanded={isExpanded} />

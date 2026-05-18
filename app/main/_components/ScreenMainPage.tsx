@@ -62,6 +62,8 @@ const ScreenMainPage = () => {
         ),
         tags: partner.tags ?? undefined,
         song: partner.song ?? undefined,
+        historyId: item.historyId,
+        favorite: item.favorite,
       };
     },
   );

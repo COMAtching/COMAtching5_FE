@@ -385,7 +385,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         className="fixed right-0 bottom-5 left-0 z-20 pb-2"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center gap-3 rounded-[24px] border border-white/30 bg-white/70 py-2 pr-1 pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
+        <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-[24px] border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
             type="text"
             placeholder="메세지를 입력하세요.."
@@ -396,7 +396,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 handleSendMessage();
               }
             }}
-            className="flex-1 bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
+            className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
           />
           <button
             type="button"
@@ -404,7 +404,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             disabled={!isSendEnabled}
             onClick={handleSendMessage}
             className={cn(
-              "flex h-10 w-12 shrink-0 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
+              "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
               isSendEnabled
                 ? "bg-button-primary text-button-primary-text-default"
                 : "bg-[#E5E5E5] text-[#CCCCCC]",

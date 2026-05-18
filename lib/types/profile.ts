@@ -54,6 +54,8 @@ export interface ProfileData {
   tags?: { tag: string }[] | null;
   song?: string | null;
   isMatchable?: boolean;
+  historyId?: number;
+  favorite?: boolean;
 }
 
 // 백엔드 전송용 타입 (필수 필드 및 변경된 스펙 반영)
