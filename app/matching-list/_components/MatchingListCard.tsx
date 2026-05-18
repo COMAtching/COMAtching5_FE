@@ -13,6 +13,11 @@ import {
   getContactFrequencyLabel,
   getProfileImageUrl,
 } from "@/lib/utils/profile";
+import {
+  findWithEmoji,
+  ALL_HOBBIES,
+  ALL_ADVANTAGES,
+} from "@/lib/utils/matching";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -149,7 +154,10 @@ const CardDetails = ({
       <div className="flex flex-wrap gap-1">
         {partner.hobbies && partner.hobbies.length > 0 ? (
           partner.hobbies.map((hobby) => (
-            <Tag key={hobby.name} text={hobby.name} />
+            <Tag
+              key={hobby.name}
+              text={findWithEmoji(ALL_HOBBIES, hobby.name)}
+            />
           ))
         ) : (
           <Tag text="없음" />
@@ -162,7 +170,9 @@ const CardDetails = ({
       <span className="typo-12-600 text-[#777777]">장점</span>
       <div className="flex flex-wrap gap-1">
         {partner.tags && partner.tags.length > 0 ? (
-          partner.tags.map((t) => <Tag key={t.tag} text={t.tag} />)
+          partner.tags.map((t) => (
+            <Tag key={t.tag} text={findWithEmoji(ALL_ADVANTAGES, t.tag)} />
+          ))
         ) : (
           <Tag text="없음" />
         )}

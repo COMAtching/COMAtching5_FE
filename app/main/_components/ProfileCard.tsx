@@ -7,6 +7,11 @@ import React, { useRef } from "react";
 
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { getAge } from "@/lib/utils/date";
+import {
+  findWithEmoji,
+  ALL_HOBBIES,
+  ALL_ADVANTAGES,
+} from "@/lib/utils/matching";
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
@@ -118,12 +123,10 @@ const ProfileDetails = ({
       <span className="typo-12-600 text-[#777777]">관심사</span>
       <div className="flex flex-wrap gap-1">
         {profile.hobbies && profile.hobbies.length > 0 ? (
-          profile.hobbies.map((hobby) => (
-            <Tag
-              key={typeof hobby === "string" ? hobby : hobby.name}
-              text={typeof hobby === "string" ? hobby : hobby.name}
-            />
-          ))
+          profile.hobbies.map((hobby) => {
+            const name = typeof hobby === "string" ? hobby : hobby.name;
+            return <Tag key={name} text={findWithEmoji(ALL_HOBBIES, name)} />;
+          })
         ) : (
           <Tag text="없음" />
         )}
@@ -135,7 +138,9 @@ const ProfileDetails = ({
       <span className="typo-12-600 text-[#777777]">장점</span>
       <div className="flex flex-wrap gap-1">
         {profile.tags && profile.tags.length > 0 ? (
-          profile.tags.map((t) => <Tag key={t.tag} text={t.tag} />)
+          profile.tags.map((t) => (
+            <Tag key={t.tag} text={findWithEmoji(ALL_ADVANTAGES, t.tag)} />
+          ))
         ) : (
           <Tag text="없음" />
         )}
