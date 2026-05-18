@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import {
   getDefaultProfilesByGender,
   DEFAULT_PROFILE_ASSETS,
+  getAutoSwitchProfileIdByGender,
 } from "@/lib/constants/defaultProfiles";
 import type {
   Gender,
@@ -473,6 +474,25 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   };
 
   /* ───── 프로필 이미지 핸들러 ───── */
+  const handleGenderChange = (newGenderKo: "남자" | "여자") => {
+    setGender(newGenderKo);
+    const newGenderKey = genderMap[newGenderKo];
+
+    // 성별 변경 시 현재 선택된 동물 캐릭터의 대응되는 성별 이미지가 있는지 확인
+    const nextProfileId = getAutoSwitchProfileIdByGender(
+      profileImageUrl,
+      newGenderKey,
+    );
+    if (nextProfileId) {
+      setProfileImageUrl(nextProfileId);
+    } else {
+      const availableProfiles = getDefaultProfilesByGender(newGenderKey);
+      if (availableProfiles.length > 0) {
+        setProfileImageUrl(availableProfiles[0].id);
+      }
+    }
+  };
+
   const handleSelectProfileType = (type: "default" | "custom") => {
     setSelectedType(type);
     if (type === "default") {
@@ -556,7 +576,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         <ProfileImageSelection
           selected={selectedType}
           onSelect={handleSelectProfileType}
-          gender={profile?.gender}
+          gender={genderMap[gender]}
           selectedProfile={profileImageUrl}
           onProfileSelect={(id) => {
             setProfileImageUrl(id);
@@ -737,13 +757,13 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
             <div className="flex gap-1.5">
               <ProfileButton
                 selected={gender === "여자"}
-                onClick={() => setGender("여자")}
+                onClick={() => handleGenderChange("여자")}
               >
                 여자
               </ProfileButton>
               <ProfileButton
                 selected={gender === "남자"}
-                onClick={() => setGender("남자")}
+                onClick={() => handleGenderChange("남자")}
               >
                 남자
               </ProfileButton>
