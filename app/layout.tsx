@@ -7,6 +7,7 @@ import { QueryProvider } from "@/providers/query-provider";
 // import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
 import ChatSocketInitializer from "@/components/common/ChatSocketInitializer";
+import ToastContainer from "@/components/common/ToastContainer";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -72,6 +73,7 @@ export default async function RootLayout({
             <Blur />
             <FcmInitializer />
             <ChatSocketInitializer />
+            <ToastContainer />
             {children}
           </div>
           {/* </ServiceStatusProvider> */}
