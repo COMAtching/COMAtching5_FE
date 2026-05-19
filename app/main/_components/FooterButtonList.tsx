@@ -60,10 +60,17 @@ const SearchMyListButton = () => {
 };
 
 const QAButton = () => {
+  const handleQAClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (alertIfBlocked()) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Link
       href="/FAQ"
       prefetch={true}
+      onClick={handleQAClick}
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
