@@ -99,6 +99,13 @@ export async function registerServiceWorkerAndGetToken() {
         title,
         body,
       });
+
+      // 포그라운드 알림 수신 시 전역 커스텀 이벤트 발행 (메인 페이지 등 실시간 갱신용)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("fcm-message-received", { detail: payload }),
+        );
+      }
     });
 
     return token;

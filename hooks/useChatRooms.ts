@@ -54,3 +54,36 @@ export const useChatRooms = () => {
     refetchInterval: 1000 * 15, // 5초마다 주기적으로 서버에서 데이터를 갱신하여 상대방 메시지 실시간 반영
   });
 };
+
+export type UnreadCountResponse = {
+  code: string;
+  status: number;
+  message: string;
+  data: number;
+};
+
+export const fetchUnreadCount = async (): Promise<number> => {
+  console.log("📡 [fetchUnreadCount] API 호출 시작...");
+  try {
+    const { data } = await api.get<number | UnreadCountResponse>(
+      "/api/chat/rooms/unread-count",
+    );
+    console.log("📡 [fetchUnreadCount] API 호출 성공:", data);
+
+    if (typeof data === "number") return data;
+    return typeof data.data === "number" ? data.data : 0;
+  } catch (error) {
+    console.error("❌ [fetchUnreadCount] API 호출 실패:", error);
+    return 0;
+  }
+};
+
+export const useUnreadCount = () => {
+  return useQuery({
+    queryKey: ["chatUnreadCount"],
+    queryFn: fetchUnreadCount,
+    staleTime: 0,
+    gcTime: 0,
+    refetchInterval: 1000 * 15, // 15초마다 주기적으로 서버에서 데이터를 갱신
+  });
+};

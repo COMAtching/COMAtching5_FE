@@ -98,11 +98,11 @@ export default function ProfileProgressCard() {
           <span className="text-color-text-caption3 text-[11px] leading-[14px] font-semibold">
             {isCompleted
               ? "완벽해요! 프로필이 모두 채워졌습니다. ✨"
-              : "프로필 정보를 채우고 완벽한 상대를 만나보세요!"}
+              : "프로필 정보를 채우고 확률을 높여보세요!"}
           </span>
           {!isCompleted && (
             <div className="flex items-center gap-0.5 text-[11px] leading-[14px] font-bold text-[#e83abc]">
-              <span>작성하러 가기</span>
+              <span>작성하기</span>
               <ArrowRight size={11} className="mt-[1px] animate-pulse" />
             </div>
           )}

@@ -13,8 +13,8 @@ const MainHeader = () => {
         <Image
           src="/logo/comatching-logo.svg"
           alt="Comatching"
-          width={140}
-          height={32}
+          width={125}
+          height={22}
           priority
         />
       </Link>
