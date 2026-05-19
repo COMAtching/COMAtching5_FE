@@ -59,11 +59,49 @@ messaging.onBackgroundMessage((payload) => {
     const notificationOptions = {
       body: payload.data.body || payload.data.message || "",
       icon: payload.data.icon || "/logo/logo.svg",
+      image: payload.data.image || undefined, // 알림에 들어갈 큰 사진/이미지 추가
       tag: tag,
       renotify: true,
+      data: payload.data, // 알림 클릭 시 꺼내 쓰기 위해 payload.data 전체 저장
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
   }
+});
+
+// 🔔 백그라운드 푸시 알림 클릭 시 해당 채팅방으로 이동하는 핸들러
+self.addEventListener("notificationclick", (event) => {
+  console.log("[Service Worker FCM] 알림 클릭 감지됨!");
+  event.notification.close(); // 알림 창 닫기
+
+  // 전달된 데이터에서 roomId 추출
+  const payloadData = event.notification.data || {};
+  const roomId = payloadData.roomId;
+
+  // 이동할 목적지 주소 설정
+  const targetPath = roomId ? "/chat/" + roomId : "/chat-list";
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        // 1. 이미 열려 있는 코매칭 관련 탭이 있는지 확인
+        for (const client of clientList) {
+          // http/https 상관없이 호스트 도메인이 같으면 기존 창 이용
+          const clientUrl = new URL(client.url);
+          if (clientUrl.origin === self.location.origin && "focus" in client) {
+            client.focus(); // 탭 포커스
+            if ("navigate" in client) {
+              return client.navigate(targetPath); // 탭 주소 이동
+            }
+          }
+        }
+
+        // 2. 열려 있는 탭이 전혀 없으면 새 윈도우 창 오픈
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(targetPath);
+        }
+      })
+  );
 });
   `;
 

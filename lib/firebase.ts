@@ -133,11 +133,14 @@ export function setupForegroundMessageHandler(): Unsubscribe | null {
         payload.data?.body ||
         payload.data?.message ||
         "";
+      const icon =
+        payload.notification?.icon || payload.data?.icon || undefined;
 
       // 커스텀 인앱 토스트 알림 노출
       useToastStore.getState().showToast({
         title,
         body,
+        icon,
         link: payload.data?.roomId ? `/chat/${payload.data.roomId}` : undefined,
       });
     });

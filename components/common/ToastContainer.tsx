@@ -26,13 +26,15 @@ export default function ToastContainer() {
       <div className="flex w-full cursor-pointer items-start gap-3 rounded-[20px] border border-gray-100 bg-white/95 p-4 shadow-[0px_10px_30px_rgba(0,0,0,0.15)] backdrop-blur-md transition-transform active:scale-[0.98]">
         {/* 알림 아이콘: COMAtching 그라데이션 브랜드 테두리 적용 */}
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-gradient-to-tr from-[#FF775E] to-[#E83ABC] p-[1.5px]">
-          <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-white">
+          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-white">
             <Image
-              src="/logo/icon.png"
+              src={toast.icon || "/logo/icon.png"}
               alt="COMAtching"
-              width={22}
-              height={22}
-              className="rounded-full"
+              width={toast.icon ? 38 : 22}
+              height={toast.icon ? 38 : 22}
+              className={
+                toast.icon ? "h-full w-full object-cover" : "rounded-full"
+              }
             />
           </div>
         </div>
