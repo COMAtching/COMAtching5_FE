@@ -38,7 +38,14 @@ export default function FcmInitializer() {
     const isPublicPath = PUBLIC_PATHS.some((path) =>
       path === "/" ? pathname === "/" : pathname.startsWith(path),
     );
-    if (isPublicPath) return;
+    if (isPublicPath) {
+      // 🔐 로그인/로그아웃/랜딩 페이지 등 공개 페이지에 있을 때는 등록 완료 플래그를 리셋합니다.
+      // 이를 통해 로그아웃 후 다른 계정으로 재로그인 시 신규 토큰 등록이 100% 보장됩니다.
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem(FCM_REGISTERED_KEY);
+      }
+      return;
+    }
 
     // 세션 당 1회만 실행 (페이지 이동마다 중복 등록 방지)
     if (sessionStorage.getItem(FCM_REGISTERED_KEY)) return;
