@@ -198,6 +198,9 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const {
     data: historyData,
     refetch: refetchHistory,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
     isError,
     error,
@@ -250,7 +253,9 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   // 3. 전체 메시지 목록 변환 및 중복 제거 (Derived State)
   const messages = useMemo(() => {
     // API 데이터와 소켓 데이터를 합침
-    const combined = [...(historyData?.data || [])];
+    // 페이지네이션의 각 페이지들을 합칩니다. 오래된 대화가 앞부분에 오도록 뒤집어서 병합합니다.
+    const pages = historyData?.pages || [];
+    const combined = [...pages].reverse().flatMap((page) => page.data || []);
 
     // 소켓으로 온 메시지 중 이미 내역에 있는 건 제외하고 추가
     socketMessages.forEach((socketMsg) => {
@@ -282,6 +287,26 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    // 첫 진입 시 자동으로 맨 아래로 가기 전에는 작동하지 않도록 방어
+    if (!hasInitiallyScrolledRef.current) return;
+
+    // 맨 위에서 300px 이내로 들어오면 선제적으로 다음 페이지(더 오래된 메시지)를 미리 가져옵니다.
+    if (container.scrollTop < 300 && hasNextPage && !isFetchingNextPage) {
+      // 1. 스크롤 위치 보존을 위한 높이 저장
+      const previousScrollHeight = container.scrollHeight;
+
+      // 2. 다음 페이지 불러오기
+      fetchNextPage().then(() => {
+        // 3. 데이터를 불러온 후 스크롤 위치 복정
+        requestAnimationFrame(() => {
+          container.scrollTop = container.scrollHeight - previousScrollHeight;
+        });
+      });
+    }
+  };
 
   const handleSendMessage = () => {
     if (!messageText.trim()) return;
@@ -339,7 +364,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         </div>
       </header>
 
-      <section className="scrollbar-hide relative z-0 mt-10 mb-18 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-8">
+      <section
+        onScroll={handleScroll}
+        className="scrollbar-hide relative z-0 mt-10 mb-18 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-8"
+      >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
