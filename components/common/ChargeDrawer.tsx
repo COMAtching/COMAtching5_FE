@@ -15,6 +15,7 @@ import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryConten
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
 import ChargeTabs from "@/components/common/charge/ChargeTabs";
 import { TABS } from "@/lib/constants/charge";
+import { alertIfBlocked } from "@/lib/constants/date";
 
 /* ── Context ── */
 interface ChargeDrawerContextType {
@@ -33,12 +34,20 @@ const TAB_CONTENT = [ShopContent, ChargeHistoryContent, DepositorNameContent];
 /* ────────────────────────────────────── */
 
 export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
+  const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
 
   const ActiveContent = TAB_CONTENT[activeTab];
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen && alertIfBlocked()) {
+      return;
+    }
+    setOpen(newOpen);
+  };
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
         className="rounded-t-[16px] bg-white outline-none"

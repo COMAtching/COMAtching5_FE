@@ -6,6 +6,7 @@ import { QueryProvider } from "@/providers/query-provider";
 // import { ServiceStatusProvider } from "@/providers/service-status-provider";
 // import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
+import PwaInitializer from "@/components/common/PwaInitializer";
 import ChatSocketInitializer from "@/components/common/ChatSocketInitializer";
 import ToastContainer from "@/components/common/ToastContainer";
 
@@ -32,6 +33,11 @@ export const metadata: Metadata = {
     shortcut: "/logo/icon.png",
     apple: [{ url: "/logo/icon.png", sizes: "180x180", type: "image/png" }],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "코매칭",
+  },
   openGraph: {
     title: "코매칭 - 대학축제 커플매칭",
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
@@ -52,6 +58,10 @@ export const metadata: Metadata = {
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
     images: ["/og-image.png"],
   },
+  other: {
+    // TODO: 네이버 서치어드바이저 등록 시 발급받는 HTML 메타 태그의 content 값을 여기에 적으시면 연동됩니다.
+    "naver-site-verification": "7b6e08b25a57e167f4e15e021ca296b726efc6df",
+  },
 };
 
 export const viewport = {
@@ -59,6 +69,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#fff",
 };
 
 export default async function RootLayout({
@@ -80,6 +91,7 @@ export default async function RootLayout({
           <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
             <Blur />
             <FcmInitializer />
+            <PwaInitializer />
             <ChatSocketInitializer />
             <ToastContainer />
             {children}

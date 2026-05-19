@@ -29,7 +29,7 @@ const OPTIONS: { label: string; value: ImportantOption }[] = [
 
 function TypingText({
   text,
-  speed = 30,
+  speed = 15,
   onComplete,
 }: {
   text: string;
@@ -256,8 +256,8 @@ export default function ImportantOptionDrawer({
                     </div>
                   )}
                   {typingStep >= 2 && (
-                    <div className="bg-button-primary mt-1 flex w-full items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-4 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]">
-                      <span className="typo-18-600 w-full text-right text-white">
+                    <div className="bg-button-primary mt-1 flex items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-5 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]">
+                      <span className="typo-18-600 text-right text-white">
                         <TypingText
                           key={selectedOption}
                           text={

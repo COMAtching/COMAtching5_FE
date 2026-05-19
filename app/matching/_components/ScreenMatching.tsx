@@ -42,6 +42,7 @@ const frequencyMapping: Record<string, ContactFrequency> = {
 import { useItems } from "@/hooks/useItems";
 import { useMatching } from "@/hooks/useMatching";
 import { useMyProfile } from "@/hooks/useProfile";
+import { alertIfBlocked, IS_TESTING } from "@/lib/constants/date";
 
 const ScreenMatching = () => {
   const router = useRouter();
@@ -60,6 +61,13 @@ const ScreenMatching = () => {
   const [importantOption, setImportantOption] =
     useState<ImportantOption | null>(null);
   const [resetKey, setResetKey] = useState(0);
+
+  // 테스트 모드일 때 매칭 화면 진입 방지 및 리다이렉트
+  React.useEffect(() => {
+    if (alertIfBlocked()) {
+      router.push("/main");
+    }
+  }, [router]);
 
   // 현재 사용자 나이 계산 (한국식 나이: 현재연도 - 태어난연도 + 1)
   const userAge = React.useMemo(() => {
@@ -158,6 +166,11 @@ const ScreenMatching = () => {
   };
 
   const handleMatchingSubmit = () => {
+    if (alertIfBlocked()) {
+      router.push("/main");
+      return;
+    }
+
     if (!canSubmit) {
       alert("모든 조건을 선택해 주세요!");
       return;
@@ -195,6 +208,11 @@ const ScreenMatching = () => {
     };
 
     match(payload, {
+      onSuccess: (res) => {
+        if (!res.success) {
+          setResetKey((prev) => prev + 1);
+        }
+      },
       onError: () => {
         setResetKey((prev) => prev + 1);
       },

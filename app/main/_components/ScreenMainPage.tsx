@@ -14,6 +14,7 @@ import ProfileSlider from "./ProfileSlider";
 import { ProfileData, ContactFrequency } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
 import NoContactSection from "./NoContactSection";
+import ProfileProgressCard from "./ProfileProgressCard";
 
 import {
   useMatchingHistory,
@@ -22,11 +23,27 @@ import {
 } from "@/hooks/useMatchingHistory";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
 import { useActiveNotices, Notice } from "@/hooks/useActiveNotices";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ScreenMainPage = () => {
+  const queryClient = useQueryClient();
   const { data: noticesData } = useActiveNotices();
   const { data: historyData, isLoading } = useMatchingHistory();
   const { isPurchasePending } = useRequestStatus();
+
+  useEffect(() => {
+    const handleFcmMessage = (event: Event) => {
+      console.log("🔔 [MainPage] FCM 알림 수신 -> 실시간 메인 데이터 갱신!");
+      queryClient.invalidateQueries({ queryKey: ["chatUnreadCount"] });
+      queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+      queryClient.invalidateQueries({ queryKey: ["matchingHistory"] });
+    };
+
+    window.addEventListener("fcm-message-received", handleFcmMessage);
+    return () => {
+      window.removeEventListener("fcm-message-received", handleFcmMessage);
+    };
+  }, [queryClient]);
 
   const activeNotice = noticesData?.data?.[0] || null;
 
@@ -72,6 +89,7 @@ const ScreenMainPage = () => {
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
       <MainHeader />
       <MyCoinSection />
+      <ProfileProgressCard />
       {isPurchasePending && <ChargeRequestWaiting />}
       {activeNotice && (
         <NoticeSection

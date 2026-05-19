@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import PartnerProfileModal from "./PartnerProfileModal";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
+import { AxiosError } from "axios";
 
 type ScreenChatRoomProps = {
   chatId: string;
@@ -117,6 +118,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const hasInitiallyScrolledRef = React.useRef(false);
+
+  // 채팅방이 바뀌면 즉시 스크롤 초기화
+  useEffect(() => {
+    hasInitiallyScrolledRef.current = false;
+  }, [chatId]);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
@@ -191,7 +198,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     data: historyData,
     refetch: refetchHistory,
     isLoading,
+    isError,
+    error,
   } = useChatMessages(chatId);
+
+  // 404 에러 발생 시 채팅방 목록으로 안전하게 리다이렉트
+  useEffect(() => {
+    if (isError && error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 404) {
+        alert("존재하지 않거나 참여할 수 없는 채팅방입니다.");
+        router.replace("/chat-list");
+      }
+    }
+  }, [isError, error, router]);
 
   // 채팅방에 들어올 때마다(혹은 Next.js Router 캐시로 인해 컴포넌트가 재사용될 때마다) 과거 내역을 무조건 갱신
   useEffect(() => {
@@ -250,7 +270,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, [historyData, socketMessages, currentUserId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length === 0) return;
+
+    if (!hasInitiallyScrolledRef.current) {
+      // 처음 진입했을 때는 딜레이 없이 즉시 가장 아래로 이동 (빠른 속도감)
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      hasInitiallyScrolledRef.current = true;
+    } else {
+      // 새로운 실시간 대화가 전송되거나 들어왔을 때는 부드럽게 스크롤
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const handleSendMessage = () => {

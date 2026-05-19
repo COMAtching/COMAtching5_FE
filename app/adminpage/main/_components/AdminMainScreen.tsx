@@ -25,6 +25,15 @@ const MENU_ITEMS = [
     badge: "LIVE",
   },
   {
+    id: "users",
+    title: "사용자 관리",
+    description: "가입된 사용자 목록 조회 및 관리",
+    icon: Users,
+    href: "/adminpage/users",
+    active: true,
+    gradient: "from-[#06b6d4] to-[#3b82f6]",
+  },
+  {
     id: "products",
     title: "상품 관리",
     description: "매칭권/옵션권 상품을 등록, 수정, 관리합니다",
@@ -41,15 +50,6 @@ const MENU_ITEMS = [
     href: "/adminpage/notices",
     active: true,
     gradient: "from-[#10b981] to-[#059669]",
-  },
-  {
-    id: "users",
-    title: "사용자 관리",
-    description: "가입된 사용자 목록 조회 및 관리",
-    icon: Users,
-    href: "#",
-    active: false,
-    gradient: "from-[#06b6d4] to-[#3b82f6]",
   },
   {
     id: "stats",

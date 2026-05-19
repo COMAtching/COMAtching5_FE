@@ -15,8 +15,8 @@ const StartExtraInfo = () => {
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
-    const t2 = setTimeout(() => setShowSecond(true), 1100);
-    const t3 = setTimeout(() => setShowThird(true), 2100);
+    const t2 = setTimeout(() => setShowSecond(true), 700);
+    const t3 = setTimeout(() => setShowThird(true), 1300);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -29,7 +29,7 @@ const StartExtraInfo = () => {
       <div className="typo-18-600 mt-[18.1vh] mb-[44.2vh] flex flex-col items-center gap-2 leading-[160%] text-gray-800">
         <span
           className={cn(
-            "transition-opacity duration-700 ease-in-out",
+            "transition-opacity duration-500 ease-in-out",
             showFirst ? "opacity-100" : "opacity-0",
           )}
         >
@@ -37,7 +37,7 @@ const StartExtraInfo = () => {
         </span>
         <span
           className={cn(
-            "transition-opacity duration-700 ease-in-out",
+            "transition-opacity duration-500 ease-in-out",
             showSecond ? "opacity-100" : "opacity-0",
           )}
         >
@@ -45,12 +45,12 @@ const StartExtraInfo = () => {
         </span>
         <span
           className={cn(
-            "transition-opacity duration-700 ease-in-out",
+            "transition-opacity duration-500 ease-in-out",
             showThird ? "opacity-100" : "opacity-0",
           )}
           onTransitionEnd={() => {
             setButtonDisabled(false);
-            setTimeout(() => setShowSkip(true), 1000);
+            setTimeout(() => setShowSkip(true), 600);
           }}
         >
           물론, 나중에 수정할 수 있어요.
@@ -66,7 +66,7 @@ const StartExtraInfo = () => {
       <Link
         href="/profile-image"
         className={cn(
-          "typo-14-500 mt-7 text-gray-500 transition-all duration-700 ease-in-out hover:text-gray-800",
+          "typo-14-500 mt-7 text-gray-500 transition-all duration-500 ease-in-out hover:text-gray-800",
           showSkip ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       >

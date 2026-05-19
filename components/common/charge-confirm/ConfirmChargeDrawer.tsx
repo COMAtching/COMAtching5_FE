@@ -89,6 +89,13 @@ export default function ConfirmChargeDrawer({
 
   /* 충전 완료 알림 */
   const handleConfirm = () => {
+    if (!name) {
+      alert("먼저 입금자명을 설정해 주세요.");
+      setOpen(false);
+      drawerContext?.setActiveTab(2);
+      return;
+    }
+
     purchase(productId, {
       onSuccess: () => {
         alert(
@@ -105,8 +112,12 @@ export default function ConfirmChargeDrawer({
         if (errorData?.code === "PAY-003") {
           alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
           setOpen(false);
-        } else if (errorData?.code === "PAY-004") {
-          alert("먼저 입금자명을 설정해 주세요.");
+        } else if (
+          errorData?.code === "PAY-004" ||
+          errorData?.message?.includes("사용자명") ||
+          errorData?.message?.includes("입금자명")
+        ) {
+          alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
           setOpen(false);
           drawerContext?.setActiveTab(2);
         } else {

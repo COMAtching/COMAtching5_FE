@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
+import NoMatchingList from "@/app/matching-list/_components/NoMatchingList";
 
 type ChatListItem = {
   id: string;
@@ -168,11 +169,17 @@ export default function ScreenChatList() {
         가볍게 인사는 어떠신가요?
       </span>
 
-      <section className="mt-6 flex w-full flex-col">
-        {chatItems.map((item) => (
-          <ChatListRow key={item.id} item={item} />
-        ))}
-      </section>
+      {chatItems.length === 0 ? (
+        <div className="flex w-full flex-1 flex-col items-center justify-center pt-20">
+          <NoMatchingList type="chat" />
+        </div>
+      ) : (
+        <section className="mt-6 flex w-full flex-col">
+          {chatItems.map((item) => (
+            <ChatListRow key={item.id} item={item} />
+          ))}
+        </section>
+      )}
     </main>
   );
 }

@@ -75,8 +75,14 @@ export async function registerServiceWorkerAndGetToken() {
 
     // 포그라운드 메시지 수신 리스너
     onMessage(messaging, (payload) => {
-      console.log("🔔 [FCM Foreground Payload] 수신된 알림 전체 구조:");
-      console.log(JSON.stringify(payload, null, 2));
+      console.log(
+        "%c🔔 [Firebase Cloud Messaging] 포그라운드 알림 수신!",
+        "background: #1e1b4b; color: #a855f7; font-size: 13px; font-weight: bold; padding: 4px 8px; border-radius: 4px;",
+      );
+      console.log(
+        "👉 수신된 알림 전체 구조:",
+        JSON.stringify(payload, null, 2),
+      );
       console.dir(payload);
 
       // FCM 메시지 수신 커스텀 이벤트 디스패치 (채팅방 목록 등에서 실시간 최신화에 활용)
@@ -115,6 +121,13 @@ export async function registerServiceWorkerAndGetToken() {
         body,
         link: payload.data?.roomId ? `/chat/${payload.data.roomId}` : undefined,
       });
+
+      // 포그라운드 알림 수신 시 전역 커스텀 이벤트 발행 (메인 페이지 등 실시간 갱신용)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("fcm-message-received", { detail: payload }),
+        );
+      }
     });
 
     return token;

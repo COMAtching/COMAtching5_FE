@@ -16,14 +16,23 @@ import {
   ALL_ADVANTAGES,
 } from "@/lib/utils/matching";
 
-/* ── 태그 컴포넌트 ── */
-const Tag = ({ text }: { text: string }) => (
-  <div className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]">
-    <span className="typo-14-500 text-color-text-black whitespace-nowrap">
-      {text}
-    </span>
-  </div>
-);
+/* ── 다보이게 하는 태그 ── */
+const EmojiTag = ({ fullText }: { fullText: string }) => {
+  const spaceIdx = fullText.indexOf(" ");
+  const emoji = spaceIdx !== -1 ? fullText.slice(0, spaceIdx) : fullText;
+  const label = spaceIdx !== -1 ? fullText.slice(spaceIdx + 1) : "";
+
+  return (
+    <div className="flex h-8 items-center justify-center gap-1.5 rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px] select-none">
+      <span className="text-sm leading-none">{emoji}</span>
+      {label && (
+        <span className="typo-14-500 text-color-text-black whitespace-nowrap">
+          {label}
+        </span>
+      )}
+    </div>
+  );
+};
 
 /* ── 프로필 헤더 (이미지 + 닉네임 + 액션 아이콘) ── */
 const ProfileHeader = ({
@@ -156,10 +165,15 @@ const ProfileDetails = ({
         {profile.hobbies && profile.hobbies.length > 0 ? (
           profile.hobbies.map((hobby) => {
             const name = typeof hobby === "string" ? hobby : hobby.name;
-            return <Tag key={name} text={findWithEmoji(ALL_HOBBIES, name)} />;
+            return (
+              <EmojiTag
+                key={name}
+                fullText={findWithEmoji(ALL_HOBBIES, name)}
+              />
+            );
           })
         ) : (
-          <Tag text="없음" />
+          <span className="typo-14-500 text-color-text-black">없음</span>
         )}
       </div>
     </div>
@@ -170,10 +184,13 @@ const ProfileDetails = ({
       <div className="flex flex-wrap gap-1">
         {profile.tags && profile.tags.length > 0 ? (
           profile.tags.map((t) => (
-            <Tag key={t.tag} text={findWithEmoji(ALL_ADVANTAGES, t.tag)} />
+            <EmojiTag
+              key={t.tag}
+              fullText={findWithEmoji(ALL_ADVANTAGES, t.tag)}
+            />
           ))
         ) : (
-          <Tag text="없음" />
+          <span className="typo-14-500 text-color-text-black">없음</span>
         )}
       </div>
     </div>
