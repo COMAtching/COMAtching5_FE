@@ -1,9 +1,14 @@
 "use client";
-import React from "react";
+import React, { useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { QA_LIST } from "@/lib/constants/qa";
+import { useRouter } from "next/navigation";
+import { withdrawAction } from "@/lib/actions/authAction";
 
 const ScreenQAPage = () => {
+  const router = useRouter();
+  const [isSubmitting, startWithdrawTransition] = useTransition();
+
   return (
     <div className="flex min-h-screen flex-col px-4 pb-10">
       <header className="py-4">
@@ -32,7 +37,7 @@ const ScreenQAPage = () => {
         ))}
       </main>
 
-      <footer className="mt-10 px-4 text-center">
+      <footer className="mt-10 flex flex-col items-center gap-6 px-4 text-center">
         <p className="typo-14-400 text-gray-400">
           더 궁금한 점이 있으신가요?
           <br />
@@ -42,6 +47,31 @@ const ScreenQAPage = () => {
           </span>
           로 문의주세요!
         </p>
+
+        <button
+          type="button"
+          className="typo-14-500 mt-4 cursor-pointer text-[#B3B3B3] underline disabled:opacity-50"
+          disabled={isSubmitting}
+          onClick={() => {
+            if (
+              confirm(
+                "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
+              )
+            ) {
+              startWithdrawTransition(async () => {
+                const result = await withdrawAction();
+                if (result.success) {
+                  alert(result.message);
+                  router.replace("/");
+                } else {
+                  alert(result.message);
+                }
+              });
+            }
+          }}
+        >
+          {isSubmitting ? "탈퇴 처리 중..." : "탈퇴하기"}
+        </button>
       </footer>
     </div>
   );

@@ -83,7 +83,6 @@ interface CheckProfileChangedParams {
   currentSocialId: string;
   socialType: string | null;
   university: string;
-  department: string;
   major: string;
   editableBirthYear: string;
   currentTagsStr: string;
@@ -92,6 +91,7 @@ interface CheckProfileChangedParams {
   profileImageUrl: string;
   profileImageFile: File | undefined;
   fallbackProfileId: string;
+  isMatchable: boolean;
 }
 
 const checkProfileChanged = (params: CheckProfileChangedParams) => {
@@ -106,7 +106,6 @@ const checkProfileChanged = (params: CheckProfileChangedParams) => {
     currentSocialId,
     socialType,
     university,
-    department,
     major,
     editableBirthYear,
     currentTagsStr,
@@ -115,6 +114,7 @@ const checkProfileChanged = (params: CheckProfileChangedParams) => {
     profileImageUrl,
     profileImageFile,
     fallbackProfileId,
+    isMatchable,
   } = params;
 
   const normalizedMBTI = mbtiStr.toUpperCase();
@@ -128,33 +128,88 @@ const checkProfileChanged = (params: CheckProfileChangedParams) => {
     ? baseProfile.birthDate.split("-")[0]
     : "";
 
-  const serverType =
-    baseProfile.profileImageUrl?.startsWith("http") &&
-    !baseProfile.profileImageUrl.includes("default_")
-      ? "custom"
-      : "default";
+  const serverType = (() => {
+    const url = baseProfile.profileImageUrl;
+    if (!url) return "default";
 
-  return (
-    nickname !== (baseProfile.nickname || "") ||
-    gender !== serverGender ||
-    normalizedMBTI !== serverMBTI ||
-    frequency !==
-      (getContactFrequencyLabel(baseProfile.contactFrequency) || "") ||
-    intro !== (baseProfile.intro || "") ||
-    song !== (baseProfile.song || "") ||
-    currentSocialId !== (baseProfile.socialAccountId || "") ||
-    socialType !== (baseProfile.socialType || null) ||
-    university !== (baseProfile.university || "") ||
-    department !== (baseProfile.department || "") ||
-    major !== (baseProfile.major || "") ||
-    editableBirthYear !== serverBirthYear ||
-    serverTags !== currentTagsStr ||
-    serverHobbies !== currentHobbies ||
-    selectedType !== serverType ||
-    profileImageUrl !==
-      getProfileIdFromUrl(baseProfile.profileImageUrl, fallbackProfileId) ||
-    profileImageFile !== undefined
-  );
+    const isAnimalAsset = DEFAULT_PROFILE_ASSETS.some(
+      (p) =>
+        url.includes(p.id) ||
+        url.includes(p.id.toLowerCase()) ||
+        url.includes(`default_${p.id}`),
+    );
+
+    if (isAnimalAsset) return "default";
+
+    if (url.startsWith("http") || url.includes("default")) {
+      return "custom";
+    }
+
+    return "default";
+  })();
+
+  const serverIsMatchable = baseProfile.isMatchable !== false;
+
+  const diffs = {
+    nickname: nickname !== (baseProfile.nickname || ""),
+    gender: gender !== serverGender,
+    mbti: normalizedMBTI !== serverMBTI,
+    frequency:
+      frequency !==
+      (getContactFrequencyLabel(baseProfile.contactFrequency) || ""),
+    intro: intro !== (baseProfile.intro || ""),
+    song: song !== (baseProfile.song || ""),
+    socialId: currentSocialId !== (baseProfile.socialAccountId || ""),
+    socialType: socialType !== (baseProfile.socialType || null),
+    university: university !== (baseProfile.university || ""),
+    major: major !== (baseProfile.major || ""),
+    birthYear: editableBirthYear !== serverBirthYear,
+    tags: serverTags !== currentTagsStr,
+    hobbies: serverHobbies !== currentHobbies,
+    selectedType: selectedType !== serverType,
+    profileImageUrl:
+      profileImageUrl !==
+      getProfileIdFromUrl(baseProfile.profileImageUrl, fallbackProfileId),
+    profileImageFile: profileImageFile !== undefined,
+    isMatchable: isMatchable !== serverIsMatchable,
+  };
+
+  console.log("🔍 [MyPage Diff Diagnostics]:", {
+    diffs,
+    details: {
+      nickname: { local: nickname, server: baseProfile.nickname || "" },
+      gender: { local: gender, server: serverGender },
+      mbti: { local: normalizedMBTI, server: serverMBTI },
+      frequency: {
+        local: frequency,
+        server: getContactFrequencyLabel(baseProfile.contactFrequency) || "",
+      },
+      intro: { local: intro, server: baseProfile.intro || "" },
+      song: { local: song, server: baseProfile.song || "" },
+      socialId: {
+        local: currentSocialId,
+        server: baseProfile.socialAccountId || "",
+      },
+      socialType: { local: socialType, server: baseProfile.socialType || null },
+      university: { local: university, server: baseProfile.university || "" },
+      major: { local: major, server: baseProfile.major || "" },
+      birthYear: { local: editableBirthYear, server: serverBirthYear },
+      tags: { local: currentTagsStr, server: serverTags },
+      hobbies: { local: currentHobbies, server: serverHobbies },
+      selectedType: { local: selectedType, server: serverType },
+      profileImageUrl: {
+        local: profileImageUrl,
+        server: getProfileIdFromUrl(
+          baseProfile.profileImageUrl,
+          fallbackProfileId,
+        ),
+      },
+      profileImageFile: { local: profileImageFile, server: undefined },
+      isMatchable: { local: isMatchable, server: serverIsMatchable },
+    },
+  });
+
+  return Object.values(diffs).some(Boolean);
 };
 
 /* ───── 메인 화면 ───── */
@@ -226,6 +281,9 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   );
   const [university, setUniversity] = useState(initialProfile.university || "");
   const [major, setMajor] = useState(initialProfile.major || "");
+  const [isMatchable, setIsMatchable] = useState(
+    initialProfile.isMatchable !== false,
+  );
 
   const initialDepartment = useMemo(() => {
     if (initialProfile.department) return initialProfile.department;
@@ -475,7 +533,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         }),
         tags: tags.filter(Boolean).map((t) => ({ tag: removeEmoji(t) })),
         profileImageKey: finalImageUrl || "default",
-        isMatchable: true,
+        isMatchable,
       };
 
       updateMyProfileMutate(payload, {
@@ -529,7 +587,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       currentSocialId,
       socialType,
       university,
-      department,
       major,
       editableBirthYear,
       currentTagsStr,
@@ -538,6 +595,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       profileImageUrl,
       profileImageFile,
       fallbackProfileId,
+      isMatchable,
     });
   }, [
     nickname,
@@ -550,7 +608,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     kakaoId,
     socialType,
     university,
-    department,
     major,
     editableBirthYear,
     tags,
@@ -560,6 +617,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     profileImageFile,
     baseProfile,
     fallbackProfileId,
+    isMatchable,
   ]);
 
   return (
@@ -910,33 +968,34 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               />
             </div>
           </div>
-        </div>
 
-        {/* ── 탈퇴하기 ── */}
-        <button
-          type="button"
-          className="typo-16-500 self-center text-[#B3B3B3] underline disabled:opacity-50"
-          disabled={isSubmitting}
-          onClick={() => {
-            if (
-              confirm(
-                "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
-              )
-            ) {
-              startWithdrawTransition(async () => {
-                const result = await withdrawAction();
-                if (result.success) {
-                  alert(result.message);
-                  router.replace("/");
-                } else {
-                  alert(result.message);
-                }
-              });
-            }
-          }}
-        >
-          탈퇴하기
-        </button>
+          {/* ── 매칭 여부 (isMatchable) 토글 ── */}
+          <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
+            <div className="flex flex-col gap-1 pr-4">
+              <span className="typo-16-600 text-[#1A1A1A]">
+                다른 사람에게 뽑히기
+              </span>
+              <span className="text-xs text-[#999999]">
+                비활성화 시 상대방이 나를 뽑을 수 없어요.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsMatchable(!isMatchable)}
+              className={cn(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden",
+                isMatchable ? "bg-[#FF4D61]" : "bg-gray-200",
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out",
+                  isMatchable ? "translate-x-5" : "translate-x-0",
+                )}
+              />
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* ===== 하단 수정하기 버튼 ===== */}

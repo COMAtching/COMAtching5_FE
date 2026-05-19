@@ -50,6 +50,10 @@ export default function ProfileProgressCard() {
   const progressPercent = Math.round((filledCount / checkFields.length) * 100);
   const isCompleted = progressPercent === 100;
 
+  if (isCompleted) {
+    return null;
+  }
+
   return (
     <div
       onClick={() => router.push("/mypage")}
@@ -74,7 +78,7 @@ export default function ProfileProgressCard() {
           </div>
           <span
             className={`typo-15-700 ${
-              isCompleted ? "text-emerald-600" : "text-[#e83abc]"
+              isCompleted ? "text-emerald-600" : "text-[#999999]"
             }`}
           >
             {progressPercent}%
@@ -98,10 +102,10 @@ export default function ProfileProgressCard() {
           <span className="text-color-text-caption3 text-[11px] leading-[14px] font-semibold">
             {isCompleted
               ? "완벽해요! 프로필이 모두 채워졌습니다. ✨"
-              : "프로필 정보를 채우고 확률을 높여보세요!"}
+              : "프로필 정보를 채우고 매칭 확률을 높여보세요!"}
           </span>
           {!isCompleted && (
-            <div className="flex items-center gap-0.5 text-[11px] leading-[14px] font-bold text-[#e83abc]">
+            <div className="flex items-center gap-0.5 text-[11px] leading-[14px] font-bold text-[#999999]">
               <span>작성하기</span>
               <ArrowRight size={11} className="mt-[1px] animate-pulse" />
             </div>
