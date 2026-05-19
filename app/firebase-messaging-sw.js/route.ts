@@ -58,8 +58,7 @@ messaging.onBackgroundMessage((payload) => {
     
     const notificationOptions = {
       body: payload.data.body || payload.data.message || "",
-      icon: payload.data.icon || "/logo/logo.svg",
-      image: payload.data.image || undefined, // 알림에 들어갈 큰 사진/이미지 추가
+      icon: "/logo/icon.png",
       tag: tag,
       renotify: true,
       data: payload.data, // 알림 클릭 시 꺼내 쓰기 위해 payload.data 전체 저장
