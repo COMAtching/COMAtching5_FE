@@ -291,11 +291,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     // 입력창 초기화
     setMessageText("");
-
-    // 입력창으로 다시 포커스를 돌려 키보드를 유지
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
   };
 
   const isSendEnabled = messageText.trim().length > 0;
