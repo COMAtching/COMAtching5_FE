@@ -40,6 +40,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
 
   const handleHoldStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (alertIfBlocked()) {
+      router.push("/main");
       return;
     }
 
@@ -80,6 +81,11 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
 
               // 같은 조건으로 재매칭 실행
               if (lastPayload) {
+                if (alertIfBlocked()) {
+                  router.push("/main");
+                  setIsHolding(false);
+                  return true;
+                }
                 match(lastPayload);
               }
 
@@ -101,7 +107,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isHolding, lastPayload, match]);
+  }, [isHolding, lastPayload, match, router]);
 
   const handleHome = () => {
     // 메인 홈으로 이동

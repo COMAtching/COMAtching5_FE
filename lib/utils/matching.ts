@@ -12,5 +12,7 @@ export const findWithEmoji = (
   list: readonly string[] | string[],
   text: string,
 ) => {
-  return list.find((item) => item.includes(text)) || text;
+  const found = list.find((item) => item.includes(text));
+  if (found) return found;
+  return `➕ ${text}`;
 };

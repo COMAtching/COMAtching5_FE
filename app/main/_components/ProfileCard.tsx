@@ -3,7 +3,7 @@
 import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
 import Image from "next/image";
 import { Send, Star } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUpdateFavorite } from "@/hooks/useMatchingHistory";
@@ -16,34 +16,21 @@ import {
   ALL_ADVANTAGES,
 } from "@/lib/utils/matching";
 
-/* ── 클릭하면 텍스트가 열리는 태그 ── */
+/* ── 다보이게 하는 태그 ── */
 const EmojiTag = ({ fullText }: { fullText: string }) => {
-  const [expanded, setExpanded] = useState(false);
-
   const spaceIdx = fullText.indexOf(" ");
   const emoji = spaceIdx !== -1 ? fullText.slice(0, spaceIdx) : fullText;
   const label = spaceIdx !== -1 ? fullText.slice(spaceIdx + 1) : "";
 
   return (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        setExpanded((prev) => !prev);
-      }}
-      className="flex h-8 items-center justify-center gap-1 rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-2 py-2 backdrop-blur-[50px] transition-all duration-300 select-none active:scale-95"
-      style={{
-        paddingLeft: expanded ? "10px" : undefined,
-        paddingRight: expanded ? "10px" : undefined,
-      }}
-    >
+    <div className="flex h-8 items-center justify-center gap-1.5 rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px] select-none">
       <span className="text-sm leading-none">{emoji}</span>
-      {expanded && label && (
+      {label && (
         <span className="typo-14-500 text-color-text-black whitespace-nowrap">
           {label}
         </span>
       )}
-    </button>
+    </div>
   );
 };
 

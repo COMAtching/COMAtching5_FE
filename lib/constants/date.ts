@@ -1,7 +1,7 @@
 export const CURRENT_YEAR = 2026;
 
 // true 이면 충전하기 및 매칭하기를 차단하고 "2026년 5월 20일 10시에 시작합니다." 얼럿을 띄웁니다.
-export const IS_TESTING = false;
+export const IS_TESTING = true;
 
 // 차단 시 띄울 얼럿 문구
 export const BLOCK_MESSAGE =
