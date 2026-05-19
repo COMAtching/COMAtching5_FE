@@ -25,6 +25,15 @@ if (!firebase.apps.length) {
 }
 const messaging = firebase.messaging();
 
+// 서비스 워커 업데이트 즉시 활성화 및 클라이언트 제어 권한 획득
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
 messaging.onBackgroundMessage((payload) => {
   console.log(
     "%c🔔 [Service Worker FCM] 백그라운드 알림 수신!",

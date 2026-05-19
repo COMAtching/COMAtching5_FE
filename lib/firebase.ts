@@ -3,6 +3,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import type { Unsubscribe } from "firebase/messaging";
 import { useToastStore } from "@/stores/toast-store";
 
 export const firebaseConfig = {
@@ -25,7 +26,7 @@ if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 
-// 서비스 워커 등록 및 FCM 토큰 가져오기
+// 서비스 워커 등록 및 FCM 토큰 가져오기 (토큰만 반환, 리스너 등록 안 함)
 export async function registerServiceWorkerAndGetToken() {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
     return null;
@@ -61,7 +62,6 @@ export async function registerServiceWorkerAndGetToken() {
       return null;
     }
 
-    // 87자(미패딩)인 경우 88자(패딩)로 보정하거나 Uint8Array로 변환하여 브라우저 호환성 확보
     // 유저 요청에 따라 변환 로직 삭제하고 직접 사용
     const vapidKey = rawVapidKey.replace(/["']/g, "");
 
@@ -73,8 +73,28 @@ export async function registerServiceWorkerAndGetToken() {
 
     console.log("FCM Token:", token);
 
-    // 포그라운드 메시지 수신 리스너
-    onMessage(messaging, (payload) => {
+    return token;
+  } catch (error) {
+    console.error("서비스 워커 등록 실패:", error);
+    return null;
+  }
+}
+
+/**
+ * 포그라운드 메시지 수신 리스너를 등록합니다.
+ * ⚠️ 이 함수는 토큰 등록과 별도로, 컴포넌트 마운트 시 항상 호출되어야 합니다.
+ * sessionStorage 가드 안에 넣으면 리스너가 등록되지 않아 알림을 못 받습니다!
+ */
+export function setupForegroundMessageHandler(): Unsubscribe | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const messaging = getMessaging(app);
+
+    console.log("[FCM] onMessage 리스너 등록 중...");
+    const unsubscribe = onMessage(messaging, (payload) => {
       console.log(
         "%c🔔 [Firebase Cloud Messaging] 포그라운드 알림 수신!",
         "background: #1e1b4b; color: #a855f7; font-size: 13px; font-weight: bold; padding: 4px 8px; border-radius: 4px;",
@@ -86,15 +106,14 @@ export async function registerServiceWorkerAndGetToken() {
       console.dir(payload);
 
       // FCM 메시지 수신 커스텀 이벤트 디스패치 (채팅방 목록 등에서 실시간 최신화에 활용)
-      if (typeof window !== "undefined" && payload.data?.roomId) {
+      if (payload.data?.roomId) {
         window.dispatchEvent(
           new CustomEvent("fcm-chat-received", { detail: payload }),
         );
       }
 
       // 채팅 메시지 알림이고, 사용자가 현재 해당 채팅방 안에 있다면 토스트 알림을 띄우지 않습니다.
-      const pathname =
-        typeof window !== "undefined" ? window.location.pathname : "";
+      const pathname = window.location.pathname;
       const chatRoomMatch = pathname.match(/^\/chat\/([^/]+)/);
       const currentChatId = chatRoomMatch ? chatRoomMatch[1] : null;
       const payloadRoomId = payload.data?.roomId;
@@ -121,18 +140,12 @@ export async function registerServiceWorkerAndGetToken() {
         body,
         link: payload.data?.roomId ? `/chat/${payload.data.roomId}` : undefined,
       });
-
-      // 포그라운드 알림 수신 시 전역 커스텀 이벤트 발행 (메인 페이지 등 실시간 갱신용)
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("fcm-message-received", { detail: payload }),
-        );
-      }
     });
 
-    return token;
+    console.log("[FCM] onMessage 리스너 등록 완료 ✅");
+    return unsubscribe;
   } catch (error) {
-    console.error("서비스 워커 등록 실패:", error);
+    console.error("[FCM] 포그라운드 메시지 핸들러 설정 실패:", error);
     return null;
   }
 }

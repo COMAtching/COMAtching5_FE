@@ -2,7 +2,11 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { registerServiceWorkerAndGetToken } from "@/lib/firebase";
+import {
+  registerServiceWorkerAndGetToken,
+  setupForegroundMessageHandler,
+} from "@/lib/firebase";
+import { useToastStore } from "@/stores/toast-store";
 import axios from "axios";
 
 const FCM_REGISTERED_KEY = "fcm_registered";
@@ -18,6 +22,17 @@ const PUBLIC_PATHS = [
 export default function FcmInitializer() {
   const pathname = usePathname();
 
+  // ✅ 포그라운드 메시지 리스너: 항상 등록 (토큰 등록 여부와 무관)
+  // sessionStorage 가드와 분리해야 매 마운트마다 리스너가 살아있음
+  useEffect(() => {
+    console.log("[FCM] 포그라운드 리스너 등록 시도...");
+    const unsubscribe = setupForegroundMessageHandler();
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
+
+  // ✅ FCM 토큰 등록: 세션 당 1회만 실행 (중복 등록 방지)
   useEffect(() => {
     // 공개 페이지에서는 실행 안 함
     const isPublicPath = PUBLIC_PATHS.some((path) =>
