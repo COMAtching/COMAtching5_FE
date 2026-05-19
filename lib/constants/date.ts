@@ -4,7 +4,8 @@ export const CURRENT_YEAR = 2026;
 export const IS_TESTING = false;
 
 // 차단 시 띄울 얼럿 문구
-export const BLOCK_MESSAGE = "2026년 5월 20일 10시에 시작합니다.";
+export const BLOCK_MESSAGE =
+  "코매칭 서비스는 2026년 5월 20일 10시에 시작합니다.";
 
 /**
  * 테스트 모드(IS_TESTING === true)인 경우 공통 문구 얼럿을 띄우고 true를 반환합니다.
