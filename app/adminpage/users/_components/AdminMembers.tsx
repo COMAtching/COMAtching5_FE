@@ -37,11 +37,11 @@ export default function AdminMembers() {
   const [matchingAction, setMatchingAction] = useState<
     "ADD" | "REMOVE" | "NONE"
   >("NONE");
-  const [matchingQuantity, setMatchingQuantity] = useState<number>(1);
+  const [matchingQuantity, setMatchingQuantity] = useState<number | "">(1);
   const [optionAction, setOptionAction] = useState<"ADD" | "REMOVE" | "NONE">(
     "NONE",
   );
-  const [optionQuantity, setOptionQuantity] = useState<number>(1);
+  const [optionQuantity, setOptionQuantity] = useState<number | "">(1);
   const [adjustReason, setAdjustReason] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -107,6 +107,15 @@ export default function AdminMembers() {
       return;
     }
 
+    // 백엔드 요청 전 전송 제한 검증 (최대 10개)
+    if (
+      (matchingAction !== "NONE" && (Number(matchingQuantity) || 0) > 10) ||
+      (optionAction !== "NONE" && (Number(optionQuantity) || 0) > 10)
+    ) {
+      alert("각 매칭권과 옵션권은 10개씩만 조정할 수 있습니다.");
+      return;
+    }
+
     setIsSubmitting(true);
     const promises: Promise<unknown>[] = [];
 
@@ -116,7 +125,7 @@ export default function AdminMembers() {
           memberId: editingMember.id,
           body: {
             itemType: "MATCHING_TICKET",
-            quantity: matchingQuantity,
+            quantity: Number(matchingQuantity) || 1,
             action: matchingAction,
             reason: adjustReason.trim(),
           },
@@ -130,7 +139,7 @@ export default function AdminMembers() {
           memberId: editingMember.id,
           body: {
             itemType: "OPTION_TICKET",
-            quantity: optionQuantity,
+            quantity: Number(optionQuantity) || 1,
             action: optionAction,
             reason: adjustReason.trim(),
           },
@@ -189,9 +198,9 @@ export default function AdminMembers() {
       itemType === "MATCHING_TICKET" ? matchingQuantity : optionQuantity;
 
     if (action === "ADD") {
-      return current + quantity;
+      return current + (Number(quantity) || 0);
     } else if (action === "REMOVE") {
-      return Math.max(0, current - quantity);
+      return Math.max(0, current - (Number(quantity) || 0));
     }
     return current;
   };
@@ -209,7 +218,7 @@ export default function AdminMembers() {
       itemType === "MATCHING_TICKET"
         ? editingMember.matchingTicketCount
         : editingMember.optionTicketCount;
-    return current < quantity;
+    return current < (Number(quantity) || 0);
   };
 
   return (
@@ -534,7 +543,9 @@ export default function AdminMembers() {
                       <button
                         type="button"
                         onClick={() =>
-                          setMatchingQuantity(Math.max(1, matchingQuantity - 1))
+                          setMatchingQuantity(
+                            Math.max(1, (Number(matchingQuantity) || 0) - 1),
+                          )
                         }
                         className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
                       >
@@ -544,17 +555,25 @@ export default function AdminMembers() {
                         type="number"
                         min="1"
                         value={matchingQuantity}
-                        onChange={(e) =>
-                          setMatchingQuantity(
-                            Math.max(1, parseInt(e.target.value) || 1),
-                          )
-                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setMatchingQuantity("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            setMatchingQuantity(
+                              Number.isNaN(parsed) ? "" : Math.max(1, parsed),
+                            );
+                          }
+                        }}
                         className="h-6 w-10 [appearance:textfield] border-0 bg-[#161827] text-center text-xs font-bold text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <button
                         type="button"
                         onClick={() =>
-                          setMatchingQuantity(matchingQuantity + 1)
+                          setMatchingQuantity(
+                            (Number(matchingQuantity) || 0) + 1,
+                          )
                         }
                         className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
                       >
@@ -616,7 +635,9 @@ export default function AdminMembers() {
                       <button
                         type="button"
                         onClick={() =>
-                          setOptionQuantity(Math.max(1, optionQuantity - 1))
+                          setOptionQuantity(
+                            Math.max(1, (Number(optionQuantity) || 0) - 1),
+                          )
                         }
                         className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
                       >
@@ -626,16 +647,24 @@ export default function AdminMembers() {
                         type="number"
                         min="1"
                         value={optionQuantity}
-                        onChange={(e) =>
-                          setOptionQuantity(
-                            Math.max(1, parseInt(e.target.value) || 1),
-                          )
-                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setOptionQuantity("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            setOptionQuantity(
+                              Number.isNaN(parsed) ? "" : Math.max(1, parsed),
+                            );
+                          }
+                        }}
                         className="h-6 w-10 [appearance:textfield] border-0 bg-[#161827] text-center text-xs font-bold text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <button
                         type="button"
-                        onClick={() => setOptionQuantity(optionQuantity + 1)}
+                        onClick={() =>
+                          setOptionQuantity((Number(optionQuantity) || 0) + 1)
+                        }
                         className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
                       >
                         <Plus size={11} />
