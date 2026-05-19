@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
+import { alertIfBlocked } from "@/lib/constants/date";
 
 const MatchingButton = () => {
   const { data: participantsCount } = useParticipantsCount();
+
+  const handleMatchingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (alertIfBlocked()) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Link
       href="/matching"
       prefetch={true}
+      onClick={handleMatchingClick}
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",

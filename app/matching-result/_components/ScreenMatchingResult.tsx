@@ -8,6 +8,7 @@ import ResultFooter from "./ResultFooter";
 import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
 import { m, LazyMotion, AnimatePresence } from "motion/react";
+import { IS_TESTING } from "@/lib/constants/date";
 
 // 애니메이션 엔진(domAnimation)을 비동기적으로 동적 임포트 (초기 번들 사이즈 최적화)
 const loadFeatures = () =>
@@ -39,7 +40,7 @@ const ScreenMatchingResult = () => {
 
   useEffect(() => {
     if (!result && !isMatching) {
-      router.replace("/matching");
+      router.replace(IS_TESTING ? "/main" : "/matching");
       return;
     }
 
@@ -57,7 +58,13 @@ const ScreenMatchingResult = () => {
   return (
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-10">
       <BackButton
-        onClick={() => router.push("/matching")}
+        onClick={() => {
+          if (IS_TESTING) {
+            router.push("/main");
+          } else {
+            router.push("/matching");
+          }
+        }}
         text={
           <div className="flex items-center gap-1.5">
             <Image
