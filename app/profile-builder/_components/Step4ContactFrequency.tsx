@@ -14,7 +14,7 @@ export default function Step4ContactFrequency({
   defaultValue,
 }: Step4ContactFrequencyProps) {
   const [selected, setSelected] = useState(
-    getContactFrequencyLabel(defaultValue) || "",
+    defaultValue ? getContactFrequencyLabel(defaultValue) : "",
   );
 
   const handleSelect = (frequency: string) => {

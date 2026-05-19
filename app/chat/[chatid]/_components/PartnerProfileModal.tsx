@@ -104,26 +104,6 @@ const PartnerProfileModal = ({
                         )}
                       />
                     </button>
-                    {instagramUrl ? (
-                      <a
-                        href={instagramUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-80"
-                        aria-label="인스타그램 바로가기"
-                      >
-                        <Send size={16} className="text-color-gray-500" />
-                      </a>
-                    ) : (
-                      <button
-                        onClick={onClose}
-                        className="flex h-4 w-4 items-center justify-center"
-                        aria-label="닫기"
-                      >
-                        <Send size={16} className="text-color-gray-500" />
-                      </button>
-                    )}
                     <div className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]">
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
@@ -222,7 +202,7 @@ const PartnerProfileModal = ({
                   background:
                     "linear-gradient(93.29deg, #FF775E 0.01%, #FF4D61 47.4%, #E83ABC 100%)",
                 }}
-                className="flex h-[42px] w-full items-center px-4 backdrop-blur-[50px]"
+                className="flex h-[42px] w-full items-center justify-between px-4 backdrop-blur-[50px]"
               >
                 {partner.socialType === "KAKAO" ? (
                   <div className="flex items-center gap-2">
@@ -258,6 +238,20 @@ const PartnerProfileModal = ({
                   <span className="typo-15-600 text-color-text-white">
                     비공개
                   </span>
+                )}
+
+                {/* 인스타그램 바로가기 (메시지 아이콘 하단 이동) */}
+                {instagramUrl && (
+                  <a
+                    href={instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-[linear-gradient(111.41deg,rgba(255,255,255,0.3)_5.28%,rgba(255,255,255,0.5)_101.41%)] transition-opacity hover:opacity-80"
+                    aria-label="인스타그램 DM 바로가기"
+                  >
+                    <Send size={11} className="text-white" />
+                  </a>
                 )}
               </footer>
             </div>

@@ -75,8 +75,14 @@ export async function registerServiceWorkerAndGetToken() {
 
     // 포그라운드 메시지 수신 리스너
     onMessage(messaging, (payload) => {
-      console.log("🔔 [FCM Foreground Payload] 수신된 알림 전체 구조:");
-      console.log(JSON.stringify(payload, null, 2));
+      console.log(
+        "%c🔔 [Firebase Cloud Messaging] 포그라운드 알림 수신!",
+        "background: #1e1b4b; color: #a855f7; font-size: 13px; font-weight: bold; padding: 4px 8px; border-radius: 4px;",
+      );
+      console.log(
+        "👉 수신된 알림 전체 구조:",
+        JSON.stringify(payload, null, 2),
+      );
       console.dir(payload);
 
       // notification 이나 data 필드에서 어떻게든 정보를 추출합니다.
