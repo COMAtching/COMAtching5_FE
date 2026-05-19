@@ -8,7 +8,6 @@ import {
   useAdjustMemberItems,
   AdminMember,
 } from "@/hooks/admin/useAdminMembers";
-import { useToastStore } from "@/stores/toast-store";
 import { AxiosError } from "axios";
 import {
   ArrowLeft,
@@ -44,8 +43,6 @@ export default function AdminMembers() {
   const [optionQuantity, setOptionQuantity] = useState<number | "">(1);
   const [adjustReason, setAdjustReason] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  const { showToast } = useToastStore();
 
   const {
     data: membersData,
@@ -91,19 +88,11 @@ export default function AdminMembers() {
   const handleSave = async () => {
     if (!editingMember) return;
     if (matchingAction === "NONE" && optionAction === "NONE") {
-      showToast({
-        title: "입력 오류",
-        body: "조정할 아이템 수량을 최소 하나 이상 설정해주세요.",
-        icon: "error",
-      });
+      alert("조정할 아이템 수량을 최소 하나 이상 설정해주세요.");
       return;
     }
     if (!adjustReason.trim()) {
-      showToast({
-        title: "입력 오류",
-        body: "조정 사유를 입력해주세요.",
-        icon: "error",
-      });
+      alert("조정 사유를 입력해주세요.");
       return;
     }
 
@@ -149,11 +138,9 @@ export default function AdminMembers() {
 
     try {
       await Promise.all(promises);
-      showToast({
-        title: "조정 완료",
-        body: `${editingMember.nickname}님의 아이템이 정상적으로 조정되었습니다.`,
-        icon: "success",
-      });
+      alert(
+        `${editingMember.nickname}님의 아이템이 정상적으로 조정되었습니다.`,
+      );
       closeEditModal();
     } catch (error) {
       const axiosError = error as AxiosError<{
@@ -173,11 +160,7 @@ export default function AdminMembers() {
         bodyMsg = errorMessage;
       }
 
-      showToast({
-        title: "조정 실패",
-        body: bodyMsg,
-        icon: "error",
-      });
+      alert("조정 실패: " + bodyMsg);
     } finally {
       setIsSubmitting(false);
     }
