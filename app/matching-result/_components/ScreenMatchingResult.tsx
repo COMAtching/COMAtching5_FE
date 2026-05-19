@@ -97,20 +97,20 @@ const ScreenMatchingResult = () => {
               animate={{ opacity: 1 }}
               className="flex w-full flex-col"
             >
-              {/* 카드 내부 콘텐츠만 blur → clear */}
+              {/* 카드 내부 콘텐츠 페이드 인 */}
               <m.div
-                initial={{ filter: "blur(10px)" }}
-                animate={{ filter: "blur(0px)" }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               >
                 <MatchingResult data={result} />
               </m.div>
 
-              {/* 푸터도 blur → clear, 약간 딜레이 */}
+              {/* 푸터 페이드 인, 약간 딜레이 */}
               <m.div
-                initial={{ filter: "blur(8px)", opacity: 0.3 }}
-                animate={{ filter: "blur(0px)", opacity: 1 }}
-                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
               >
                 <ResultFooter lastPayload={lastPayload} />
               </m.div>

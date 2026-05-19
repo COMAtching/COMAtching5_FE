@@ -45,7 +45,12 @@ self.addEventListener("fetch", (event) => {
         return cachedResponse;
       }
       return fetch(event.request).catch(() => {
-        // Offline fallback could go here
+        // 네트워크 연결 실패 시 브라우저가 에러를 뿜지 않도록 503 에러 Response 반환
+        return new Response("Network Error", {
+          status: 503,
+          statusText: "Network Error",
+          headers: { "Content-Type": "text/plain" },
+        });
       });
     }),
   );
