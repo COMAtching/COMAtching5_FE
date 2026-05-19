@@ -13,9 +13,9 @@ const StartOnBoarding = () => {
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowFirst(true), 100);
-    const t2 = setTimeout(() => setShowSecond(true), 1100);
-    const t3 = setTimeout(() => setShowThird(true), 2100);
-    const t4 = setTimeout(() => setShowFourth(true), 3100);
+    const t2 = setTimeout(() => setShowSecond(true), 700);
+    const t3 = setTimeout(() => setShowThird(true), 1300);
+    const t4 = setTimeout(() => setShowFourth(true), 1900);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -30,7 +30,7 @@ const StartOnBoarding = () => {
         <span
           style={{
             opacity: showFirst ? 1 : 0,
-            transition: "opacity 0.7s ease",
+            transition: "opacity 0.5s ease",
           }}
         >
           <span
@@ -49,7 +49,7 @@ const StartOnBoarding = () => {
         <span
           style={{
             opacity: showSecond ? 1 : 0,
-            transition: "opacity 0.7s ease",
+            transition: "opacity 0.5s ease",
           }}
         >
           원활한 매칭을 위해
@@ -57,7 +57,7 @@ const StartOnBoarding = () => {
         <span
           style={{
             opacity: showThird ? 1 : 0,
-            transition: "opacity 0.7s ease",
+            transition: "opacity 0.5s ease",
           }}
         >
           여러분의 정보가 필요해요!
@@ -65,7 +65,7 @@ const StartOnBoarding = () => {
         <span
           style={{
             opacity: showFourth ? 1 : 0,
-            transition: "opacity 0.7s ease",
+            transition: "opacity 0.5s ease",
           }}
           onTransitionEnd={() => setButtonDisabled(false)}
         >
