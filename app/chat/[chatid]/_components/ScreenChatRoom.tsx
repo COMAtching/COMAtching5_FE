@@ -118,6 +118,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const hasInitiallyScrolledRef = React.useRef(false);
+
+  // 채팅방이 바뀌면 즉시 스크롤 초기화
+  useEffect(() => {
+    hasInitiallyScrolledRef.current = false;
+  }, [chatId]);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
@@ -264,7 +270,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, [historyData, socketMessages, currentUserId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length === 0) return;
+
+    if (!hasInitiallyScrolledRef.current) {
+      // 처음 진입했을 때는 딜레이 없이 즉시 가장 아래로 이동 (빠른 속도감)
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      hasInitiallyScrolledRef.current = true;
+    } else {
+      // 새로운 실시간 대화가 전송되거나 들어왔을 때는 부드럽게 스크롤
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const handleSendMessage = () => {
