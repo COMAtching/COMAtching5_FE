@@ -52,7 +52,7 @@ const ScreenExtraInfoDetail = () => {
     contactType === null
       ? true
       : contactType === "instagram"
-        ? contactId.startsWith("@") && contactId.length > 1
+        ? contactId.startsWith("@") && contactId.slice(1).trim().length > 0
         : contactId.trim().length > 0;
 
   const isValid = isContactValid;

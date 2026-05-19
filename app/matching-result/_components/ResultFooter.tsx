@@ -54,6 +54,14 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
 
     if (isHolding || isPending) return; // 이미 누르는 중이거나 요청 중이면 무시
 
+    // 매칭권 또는 옵션권이 부족하면 롱프레스 자체를 차단
+    if (
+      !lastPayload ||
+      matchingTicketCountOwned < 1 ||
+      optionTicketCountOwned < optionTicketCount
+    )
+      return;
+
     setIsHolding(true);
     setTimeLeft(3);
     setIsTriggered(false);
