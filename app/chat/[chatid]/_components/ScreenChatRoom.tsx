@@ -119,6 +119,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   // 채팅방이 바뀌면 즉시 스크롤 초기화
   useEffect(() => {
@@ -290,6 +291,11 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     // 입력창 초기화
     setMessageText("");
+
+    // 입력창으로 다시 포커스를 돌려 키보드를 유지
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const isSendEnabled = messageText.trim().length > 0;
@@ -416,6 +422,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       >
         <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-[24px] border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
+            ref={inputRef}
             type="text"
             placeholder="메세지를 입력하세요.."
             value={messageText}

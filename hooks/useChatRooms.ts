@@ -83,6 +83,5 @@ export const useUnreadCount = () => {
     queryFn: fetchUnreadCount,
     staleTime: 0,
     gcTime: 0,
-    refetchInterval: 1000 * 15, // 15초마다 주기적으로 서버에서 데이터를 갱신
   });
 };
