@@ -968,33 +968,6 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               />
             </div>
           </div>
-
-          {/* ── 매칭 여부 (isMatchable) 토글 ── */}
-          <div className="box-border flex w-full items-center justify-between border-b border-[#E5E5E5] py-6">
-            <div className="flex flex-col gap-1 pr-4">
-              <span className="typo-16-600 text-[#1A1A1A]">
-                다른 사람에게 뽑히기
-              </span>
-              <span className="text-xs text-[#999999]">
-                비활성화 시 상대방이 나를 뽑을 수 없어요.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsMatchable(!isMatchable)}
-              className={cn(
-                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden",
-                isMatchable ? "bg-[#FF4D61]" : "bg-gray-200",
-              )}
-            >
-              <span
-                className={cn(
-                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out",
-                  isMatchable ? "translate-x-5" : "translate-x-0",
-                )}
-              />
-            </button>
-          </div>
         </div>
       </section>
 

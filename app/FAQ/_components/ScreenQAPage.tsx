@@ -1,13 +1,16 @@
 "use client";
+
 import React, { useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { QA_LIST } from "@/lib/constants/qa";
 import { useRouter } from "next/navigation";
 import { withdrawAction } from "@/lib/actions/authAction";
+import { useUpdateMyProfile } from "@/hooks/useProfile";
 
 const ScreenQAPage = () => {
   const router = useRouter();
   const [isSubmitting, startWithdrawTransition] = useTransition();
+  const { mutateAsync: updateProfile } = useUpdateMyProfile();
 
   return (
     <div className="flex min-h-screen flex-col px-4 pb-10">
@@ -58,19 +61,38 @@ const ScreenQAPage = () => {
                 "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
               )
             ) {
-              startWithdrawTransition(async () => {
-                const result = await withdrawAction();
-                if (result.success) {
-                  alert(result.message);
-                  router.replace("/");
-                } else {
-                  alert(result.message);
-                }
-              });
+              if (
+                confirm(
+                  "잠깐! 탈퇴 대신 다른 사람에게 더 이상 뽑히지 않도록(매칭 비활성화) 설정하시겠습니까?\n\n[확인]을 누르면 탈퇴하지 않고 매칭만 비활성화합니다.\n[취소]를 누르면 탈퇴 처리를 계속 진행합니다.",
+                )
+              ) {
+                // Yes -> 매칭 비활성화 (isMatchable: false)
+                startWithdrawTransition(async () => {
+                  try {
+                    await updateProfile({ isMatchable: false });
+                    alert(
+                      "매칭 비활성화 설정이 완료되었습니다. 이제 다른 사람에게 더 이상 뽑히지 않습니다.",
+                    );
+                  } catch (error) {
+                    alert("설정 중 오류가 발생했습니다. 다시 시도해 주세요.");
+                  }
+                });
+              } else {
+                // No -> 실제 탈퇴 진행
+                startWithdrawTransition(async () => {
+                  const result = await withdrawAction();
+                  if (result.success) {
+                    alert(result.message);
+                    router.replace("/");
+                  } else {
+                    alert(result.message);
+                  }
+                });
+              }
             }
           }}
         >
-          {isSubmitting ? "탈퇴 처리 중..." : "탈퇴하기"}
+          {isSubmitting ? "처리 중..." : "탈퇴하기"}
         </button>
       </footer>
     </div>
