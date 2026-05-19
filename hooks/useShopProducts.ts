@@ -16,6 +16,12 @@ export interface ShopProduct {
   displayOrder: number;
   isActive: boolean;
   isBundle: boolean;
+  purchaseLimitPerMember?: number | null;
+  firstPurchaseOnly?: boolean;
+  usedPurchaseCount?: number;
+  remainingPurchaseCount?: number | null;
+  purchaseCountPurchasable?: boolean;
+  purchaseBlockReason?: string;
   rewards: ShopReward[];
   bonusRewards: ShopReward[];
 }

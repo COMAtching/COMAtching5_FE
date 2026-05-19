@@ -14,6 +14,7 @@ import ProfileSlider from "./ProfileSlider";
 import { ProfileData, ContactFrequency } from "@/lib/types/profile";
 import ChargeRequestWaiting from "./ChargeRequestWaiting";
 import NoContactSection from "./NoContactSection";
+import ProfileProgressCard from "./ProfileProgressCard";
 
 import {
   useMatchingHistory,
@@ -72,6 +73,7 @@ const ScreenMainPage = () => {
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
       <MainHeader />
       <MyCoinSection />
+      <ProfileProgressCard />
       {isPurchasePending && <ChargeRequestWaiting />}
       {activeNotice && (
         <NoticeSection

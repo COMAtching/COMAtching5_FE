@@ -6,11 +6,22 @@ import { AxiosError } from "axios";
 export interface AdminMember {
   id: number;
   email: string;
+  realName: string;
   nickname: string;
   gender: "MALE" | "FEMALE";
   profileImageUrl: string | null;
   matchingTicketCount: number;
   optionTicketCount: number;
+}
+
+export interface PagingResponse<T> {
+  content: T[];
+  currentPage: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
 
 interface ApiResponse<T> {
@@ -30,9 +41,19 @@ export interface AdjustMemberItemsBody {
 /* ── 1. 관리자 사용자 목록 조회 ── */
 const fetchAdminMembers = async (
   keyword?: string,
-): Promise<ApiResponse<AdminMember[]>> => {
-  const params = keyword ? { keyword } : {};
-  const { data } = await api.get<ApiResponse<AdminMember[]>>(
+  page: number = 0,
+  size: number = 20,
+): Promise<ApiResponse<PagingResponse<AdminMember>>> => {
+  const params: { keyword?: string; page: number; size: number; sort: string } =
+    {
+      page,
+      size,
+      sort: "id,desc",
+    };
+  if (keyword) {
+    params.keyword = keyword;
+  }
+  const { data } = await api.get<ApiResponse<PagingResponse<AdminMember>>>(
     "/api/v1/admin/users",
     { params },
   );
@@ -40,10 +61,14 @@ const fetchAdminMembers = async (
 };
 
 /* ── 훅: 사용자 목록 조회 ── */
-export const useAdminMembers = (keyword?: string) => {
+export const useAdminMembers = (
+  keyword?: string,
+  page: number = 0,
+  size: number = 20,
+) => {
   return useQuery({
-    queryKey: ["adminMembers", keyword],
-    queryFn: () => fetchAdminMembers(keyword),
+    queryKey: ["adminMembers", keyword, page, size],
+    queryFn: () => fetchAdminMembers(keyword, page, size),
   });
 };
 

@@ -195,6 +195,11 @@ const ScreenMatching = () => {
     };
 
     match(payload, {
+      onSuccess: (res) => {
+        if (!res.success) {
+          setResetKey((prev) => prev + 1);
+        }
+      },
       onError: () => {
         setResetKey((prev) => prev + 1);
       },

@@ -34,6 +34,21 @@ export default function QuickBundleCard({
           <span className="typo-14-600 text-color-gray-800">
             {product.name}
           </span>
+          {product.purchaseLimitPerMember !== null &&
+            product.purchaseLimitPerMember !== undefined && (
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[9px] leading-[11px] font-bold ${
+                  product.remainingPurchaseCount &&
+                  product.remainingPurchaseCount > 0
+                    ? "bg-color-flame-70/10 text-color-flame-700 border-color-flame-70/20 border"
+                    : "bg-color-gray-100 text-color-gray-400 border-color-gray-100 border"
+                }`}
+              >
+                {product.remainingPurchaseCount === 0
+                  ? "구매 완료"
+                  : `${product.remainingPurchaseCount}회 남음`}
+              </span>
+            )}
           <div className="flex flex-col items-center gap-1">
             <span className="typo-12-600 text-color-gray-400 text-center">
               {description}
@@ -54,9 +69,16 @@ export default function QuickBundleCard({
         trigger={
           <button
             type="button"
-            className="typo-16-600 bg-color-flame-700 mt-4 flex h-10 w-full items-center justify-center rounded-[8px] text-white"
+            disabled={product.remainingPurchaseCount === 0}
+            className={`typo-16-600 mt-4 flex h-10 w-full items-center justify-center rounded-[8px] text-white transition-colors ${
+              product.remainingPurchaseCount === 0
+                ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
+                : "bg-color-flame-700"
+            }`}
           >
-            {product.price.toLocaleString()}원
+            {product.remainingPurchaseCount === 0
+              ? "구매 완료"
+              : `${product.price.toLocaleString()}원`}
           </button>
         }
         amount={product.price}

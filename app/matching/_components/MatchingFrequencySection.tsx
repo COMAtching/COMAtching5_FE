@@ -33,7 +33,7 @@ export default function MatchingFrequencySection({
         {OPTIONS.map((option) => (
           <ProfileButton
             key={option}
-            selected={getContactFrequencyLabel(selected) === option}
+            selected={selected === option}
             onClick={() => handleSelect(option)}
           >
             {option}

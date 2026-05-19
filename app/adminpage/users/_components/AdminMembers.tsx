@@ -29,6 +29,10 @@ export default function AdminMembers() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [editingMember, setEditingMember] = useState<AdminMember | null>(null);
 
+  // 페이지네이션 상태
+  const [page, setPage] = useState(0);
+  const [size] = useState(20);
+
   // 아이템 조절 모달 폼 상태 (동시 수정 지원)
   const [matchingAction, setMatchingAction] = useState<
     "ADD" | "REMOVE" | "NONE"
@@ -47,15 +51,17 @@ export default function AdminMembers() {
     data: membersData,
     isLoading,
     isRefetching,
-  } = useAdminMembers(searchKeyword || undefined);
+  } = useAdminMembers(searchKeyword || undefined, page, size);
 
   const adjustMutation = useAdjustMemberItems();
 
-  const members = membersData?.data ?? [];
+  const pagingInfo = membersData?.data;
+  const members = pagingInfo?.content ?? [];
 
   // 검색 실행
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setPage(0);
     setSearchKeyword(searchInput.trim());
   };
 
@@ -63,6 +69,7 @@ export default function AdminMembers() {
   const handleClearSearch = () => {
     setSearchInput("");
     setSearchKeyword("");
+    setPage(0);
   };
 
   // 조정 모달 열기
@@ -226,7 +233,7 @@ export default function AdminMembers() {
               </h1>
               <p className="text-xs text-[#6b7094]">
                 {searchKeyword ? `'${searchKeyword}' 검색 결과 ` : "전체 "}{" "}
-                {members.length}명 사용자
+                {pagingInfo?.totalElements ?? 0}명 사용자
               </p>
             </div>
           </div>
@@ -312,6 +319,11 @@ export default function AdminMembers() {
                     <span className="text-sm font-bold text-white sm:text-base">
                       {member.nickname}
                     </span>
+                    {member.realName && (
+                      <span className="rounded-md bg-[#1e2030] px-2 py-0.5 text-[10px] font-bold text-[#a0a3bd]">
+                        {member.realName}
+                      </span>
+                    )}
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                         member.gender === "FEMALE"
@@ -373,6 +385,56 @@ export default function AdminMembers() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 페이지네이션 */}
+      {pagingInfo && pagingInfo.totalPages >= 1 && (
+        <div className="mt-8 flex items-center justify-between border-t border-[#1e2030] pt-6">
+          <button
+            type="button"
+            disabled={!pagingInfo.hasPrevious || isLoading || isRefetching}
+            onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+            className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#06b6d4]/40 hover:bg-[#22253a] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#2a2d42] disabled:hover:bg-[#161827] disabled:hover:text-[#8b8fa3]"
+          >
+            이전
+          </button>
+
+          <div className="hidden items-center gap-1.5 sm:flex">
+            {Array.from({ length: pagingInfo.totalPages }).map((_, idx) => {
+              const isActive = idx === pagingInfo.currentPage;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setPage(idx)}
+                  disabled={isLoading || isRefetching}
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold transition-all duration-200 ${
+                    isActive
+                      ? "bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white shadow-lg shadow-[#06b6d4]/10"
+                      : "border border-[#1e2030] bg-[#161827]/40 text-[#8b8fa3] hover:border-[#2a2d42] hover:bg-[#22253a] hover:text-white"
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="text-xs font-semibold text-[#6b7094] sm:hidden">
+            {pagingInfo.currentPage + 1} / {pagingInfo.totalPages} 페이지
+          </div>
+
+          <button
+            type="button"
+            disabled={!pagingInfo.hasNext || isLoading || isRefetching}
+            onClick={() =>
+              setPage((prev) => Math.min(pagingInfo.totalPages - 1, prev + 1))
+            }
+            className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#06b6d4]/40 hover:bg-[#22253a] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#2a2d42] disabled:hover:bg-[#161827] disabled:hover:text-[#8b8fa3]"
+          >
+            다음
+          </button>
         </div>
       )}
 

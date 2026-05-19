@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import PartnerProfileModal from "./PartnerProfileModal";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
+import { AxiosError } from "axios";
 
 type ScreenChatRoomProps = {
   chatId: string;
@@ -191,7 +192,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     data: historyData,
     refetch: refetchHistory,
     isLoading,
+    isError,
+    error,
   } = useChatMessages(chatId);
+
+  // 404 에러 발생 시 채팅방 목록으로 안전하게 리다이렉트
+  useEffect(() => {
+    if (isError && error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 404) {
+        alert("존재하지 않거나 참여할 수 없는 채팅방입니다.");
+        router.replace("/chat-list");
+      }
+    }
+  }, [isError, error, router]);
 
   // 채팅방에 들어올 때마다(혹은 Next.js Router 캐시로 인해 컴포넌트가 재사용될 때마다) 과거 내역을 무조건 갱신
   useEffect(() => {
