@@ -58,6 +58,10 @@ export const metadata: Metadata = {
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
     images: ["/og-image.png"],
   },
+  other: {
+    // TODO: 네이버 서치어드바이저 등록 시 발급받는 HTML 메타 태그의 content 값을 여기에 적으시면 연동됩니다.
+    "naver-site-verification": "7b6e08b25a57e167f4e15e021ca296b726efc6df",
+  },
 };
 
 export const viewport = {
@@ -65,7 +69,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#ea580c",
+  themeColor: "#fff",
 };
 
 export default async function RootLayout({
