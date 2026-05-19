@@ -51,6 +51,5 @@ export const useChatRooms = () => {
     queryFn: fetchChatRooms,
     staleTime: 0, // 항상 최신 데이터를 유지하도록 설정
     gcTime: 0, // 메모리 캐싱을 아예 하지 않고 컴포넌트가 꺼지면 즉시 캐시 소멸
-    refetchInterval: 1000 * 15, // 5초마다 주기적으로 서버에서 데이터를 갱신하여 상대방 메시지 실시간 반영
   });
 };

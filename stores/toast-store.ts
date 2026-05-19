@@ -5,11 +5,17 @@ interface Toast {
   title: string;
   body: string;
   icon?: string;
+  link?: string;
 }
 
 interface ToastState {
   toast: Toast | null;
-  showToast: (params: { title: string; body: string; icon?: string }) => void;
+  showToast: (params: {
+    title: string;
+    body: string;
+    icon?: string;
+    link?: string;
+  }) => void;
   hideToast: () => void;
 }
 

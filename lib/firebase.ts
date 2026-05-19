@@ -79,6 +79,27 @@ export async function registerServiceWorkerAndGetToken() {
       console.log(JSON.stringify(payload, null, 2));
       console.dir(payload);
 
+      // FCM 메시지 수신 커스텀 이벤트 디스패치 (채팅방 목록 등에서 실시간 최신화에 활용)
+      if (typeof window !== "undefined" && payload.data?.roomId) {
+        window.dispatchEvent(
+          new CustomEvent("fcm-chat-received", { detail: payload }),
+        );
+      }
+
+      // 채팅 메시지 알림이고, 사용자가 현재 해당 채팅방 안에 있다면 토스트 알림을 띄우지 않습니다.
+      const pathname =
+        typeof window !== "undefined" ? window.location.pathname : "";
+      const chatRoomMatch = pathname.match(/^\/chat\/([^/]+)/);
+      const currentChatId = chatRoomMatch ? chatRoomMatch[1] : null;
+      const payloadRoomId = payload.data?.roomId;
+
+      if (payloadRoomId && currentChatId === payloadRoomId) {
+        console.log(
+          `[FCM] 현재 활성화된 채팅방(${payloadRoomId})의 메시지이므로 인앱 알림을 표시하지 않습니다.`,
+        );
+        return;
+      }
+
       // notification 이나 data 필드에서 어떻게든 정보를 추출합니다.
       const title =
         payload.notification?.title || payload.data?.title || "새로운 알림";
@@ -92,6 +113,7 @@ export async function registerServiceWorkerAndGetToken() {
       useToastStore.getState().showToast({
         title,
         body,
+        link: payload.data?.roomId ? `/chat/${payload.data.roomId}` : undefined,
       });
     });
 

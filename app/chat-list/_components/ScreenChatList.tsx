@@ -108,13 +108,31 @@ const formatChatTime = (isoString: string | null) => {
 export default function ScreenChatList() {
   const { data: rooms, refetch: refetchRooms } = useChatRooms();
 
-  // DEBUG 및 항상 최신 갱신: 컴포넌트 마운트(또는 활성화) 시 캐시 무효화 및 재호출
+  // 컴포넌트 마운트 시 최신 데이터 호출
   useEffect(() => {
     refetchRooms();
+  }, [refetchRooms]);
+
+  // 데이터 변경 로그
+  useEffect(() => {
     if (rooms) {
       console.log("📡 [Chat Rooms List Data]:", rooms);
     }
-  }, [refetchRooms, rooms]);
+  }, [rooms]);
+
+  // FCM 채팅 알림 수신 시 채팅방 목록 실시간 최신화
+  useEffect(() => {
+    const handleFcmChat = () => {
+      console.log(
+        "🔔 [FCM Chat Notification Received] Refreshing chat list...",
+      );
+      refetchRooms();
+    };
+    window.addEventListener("fcm-chat-received", handleFcmChat);
+    return () => {
+      window.removeEventListener("fcm-chat-received", handleFcmChat);
+    };
+  }, [refetchRooms]);
 
   const chatItems = useMemo(() => {
     // 이제 SSR/CSR 모두 배열로 통일되었으므로 단순하게 처리합니다.
