@@ -6,6 +6,7 @@ import { QueryProvider } from "@/providers/query-provider";
 // import { ServiceStatusProvider } from "@/providers/service-status-provider";
 // import { getInitialMaintenanceStatus } from "@/lib/status";
 import FcmInitializer from "@/components/common/FcmInitializer";
+import PwaInitializer from "@/components/common/PwaInitializer";
 import ChatSocketInitializer from "@/components/common/ChatSocketInitializer";
 import ToastContainer from "@/components/common/ToastContainer";
 
@@ -31,6 +32,11 @@ export const metadata: Metadata = {
     ],
     shortcut: "/logo/icon.png",
     apple: [{ url: "/logo/icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "코매칭",
   },
   openGraph: {
     title: "코매칭 - 대학축제 커플매칭",
@@ -59,6 +65,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#ea580c",
 };
 
 export default async function RootLayout({
@@ -80,6 +87,7 @@ export default async function RootLayout({
           <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
             <Blur />
             <FcmInitializer />
+            <PwaInitializer />
             <ChatSocketInitializer />
             <ToastContainer />
             {children}

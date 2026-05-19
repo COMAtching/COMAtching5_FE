@@ -26,7 +26,11 @@ if (!firebase.apps.length) {
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log("[Service Worker] 백그라운드 메시지 수신:", payload);
+  console.log(
+    "%c🔔 [Service Worker FCM] 백그라운드 알림 수신!",
+    "background: #111827; color: #06b6d4; font-size: 13px; font-weight: bold; padding: 4px 8px; border-radius: 4px;"
+  );
+  console.log("👉 페이로드 전체 구조:", JSON.stringify(payload, null, 2));
 
   // 1. 만약 payload.notification 필드가 존재한다면, FCM SDK가 백그라운드에서 자동으로 알림을 보여줍니다.
   // 이 상황에서 수동으로 showNotification을 또 부르면 알림이 2개 뜨게 되므로 수동 팝업은 패스합니다!

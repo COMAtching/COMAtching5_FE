@@ -38,9 +38,13 @@ export default function QuickBundleCard({
             <span className="typo-12-600 text-color-gray-400 text-center">
               {description}
             </span>
-            {product.description && (
+            {product.description ? (
               <span className="typo-12-600 text-color-flame-700 text-center">
                 {product.description}
+              </span>
+            ) : (
+              <span className="typo-12-600 text-center opacity-0 select-none">
+                &nbsp;
               </span>
             )}
           </div>

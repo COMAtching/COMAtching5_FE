@@ -51,10 +51,12 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
             {description}
           </span>
         </div>
-        {product.description && (
+        {product.description ? (
           <span className="typo-10-600 text-color-flame-700">
             {product.description}
           </span>
+        ) : (
+          <span className="typo-10-600 opacity-0 select-none">&nbsp;</span>
         )}
       </div>
       <ConfirmChargeDrawer
