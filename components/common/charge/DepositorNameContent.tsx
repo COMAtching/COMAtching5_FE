@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
 import { isValidDepositorName } from "@/lib/validators";
@@ -63,19 +62,6 @@ export default function DepositorNameContent() {
             maxLength={6}
           />
         </div>
-      </div>
-
-      {/* ── 예시 이미지 ── */}
-      <div className="flex flex-col gap-2">
-        <span className="typo-14-500 text-[#666666]">예시</span>
-        <Image
-          src="/charge/charge-example.png"
-          alt="입금자명 설정 예시"
-          width={345}
-          height={280}
-          className="h-auto w-full rounded-[16px] border border-[#EFEFEF]"
-          priority
-        />
       </div>
 
       {/* ── 안내 가이드 (Frame 2612440) ── */}
