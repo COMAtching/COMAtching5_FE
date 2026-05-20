@@ -237,7 +237,7 @@ export default function ConfirmChargeDrawer({
             {/* ── 하단 버튼 영역 ── */}
             <div className="flex w-full flex-col items-center gap-4">
               <Button disabled={!agreed || isPending} onClick={handleConfirm}>
-                {isPending ? "요청 중..." : "충전 요청 보내기"}
+                {isPending ? "요청 중..." : "Toss로 계좌이체하기"}
               </Button>
             </div>
           </div>
