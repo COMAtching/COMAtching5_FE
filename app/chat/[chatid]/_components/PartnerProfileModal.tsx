@@ -112,6 +112,16 @@ const PartnerProfileModal = ({
                   </div>
                 </div>
 
+                {/* Major Section */}
+                <div className="mt-4 flex w-full flex-col items-start gap-1">
+                  <span className="typo-12-600 flex items-center text-[#777777]">
+                    전공
+                  </span>
+                  <span className="typo-16-700 text-color-text-black flex items-center">
+                    {partner.major || "미설정"}
+                  </span>
+                </div>
+
                 {/* 스펙 섹션 (나이, MBTI, 연락빈도) */}
                 <div className="mt-4 mb-3 flex w-full items-start gap-2">
                   <div className="flex flex-1 flex-col gap-1">
