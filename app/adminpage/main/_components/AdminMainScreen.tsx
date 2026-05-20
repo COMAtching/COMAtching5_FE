@@ -54,10 +54,10 @@ const MENU_ITEMS = [
   {
     id: "stats",
     title: "통계",
-    description: "서비스 이용 현황 및 매출 데이터를 확인합니다",
+    description: "서비스 이용 현황 및 성비 데이터를 확인합니다",
     icon: BarChart3,
-    href: "#",
-    active: false,
+    href: "/adminpage/stats",
+    active: true,
     gradient: "from-[#f59e0b] to-[#ef4444]",
   },
 ];

@@ -464,7 +464,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
     // 연락처 포맷팅 (인스타그램인 경우 @ 추가)
     let formattedSocialId = "";
     if (socialType === "INSTAGRAM") {
-      formattedSocialId = socialAccountId.trim();
+      const trimmed = socialAccountId.trim();
+      formattedSocialId = trimmed === "@" || trimmed === "" ? "" : trimmed;
     } else if (socialType === "KAKAO") {
       formattedSocialId = kakaoId.trim();
     }
