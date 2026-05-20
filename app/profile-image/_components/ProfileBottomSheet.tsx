@@ -51,7 +51,9 @@ const ProfileBottomSheet = ({
           </button>
         </div>
 
-        <div className="mt-6 min-h-0 flex-1 overflow-y-auto">{children}</div>
+        <div className="scrollbar-hide mt-6 min-h-0 flex-1 overflow-y-auto">
+          {children}
+        </div>
 
         {footer && <div className="mt-auto w-full pt-4">{footer}</div>}
       </DrawerContent>

@@ -313,14 +313,14 @@ const ProfileCard = ({
           onChatClick={handleChatClick}
           onFavoriteToggle={handleFavoriteToggle}
         />
-        {/* Major Section */}
+        {/* Major Section (조회하기 스타일) */}
         <div className="flex w-full flex-col items-start gap-1">
-          <span className="typo-12-600 flex items-center text-[#777777]">
-            전공
-          </span>
-          <span className="typo-16-700 text-color-text-black flex items-center">
-            {profile.major || "미설정"}
-          </span>
+          <span className="typo-12-600 text-[#777777]">전공</span>
+          <div className="flex items-center gap-3">
+            <span className="typo-18-600 text-color-gray-900">
+              {profile.major || "미설정"}
+            </span>
+          </div>
         </div>
         <ProfileStats profile={profile} />
         <div className="flex w-full flex-col">
