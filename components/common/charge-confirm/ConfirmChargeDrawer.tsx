@@ -43,7 +43,6 @@ export default function ConfirmChargeDrawer({
   const { data: realNameData } = useRealName();
 
   const [open, setOpen] = React.useState(false);
-  const [agreed, setAgreed] = React.useState(false);
   const [name, setName] = React.useState(
     depositorName || realNameData?.data?.realName || "",
   );
@@ -131,13 +130,7 @@ export default function ConfirmChargeDrawer({
   };
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={(val) => {
-        setOpen(val);
-        if (!val) setAgreed(false);
-      }}
-    >
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
         className="rounded-t-[24px] bg-white outline-none"
@@ -210,33 +203,11 @@ export default function ConfirmChargeDrawer({
                   </div>
                 </div>
               </div>
-
-              {/* ── 동의 체크 ── */}
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setAgreed((prev) => !prev)}
-                  className={cn(
-                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors",
-                    agreed
-                      ? "bg-gradient-to-br from-[#FF775E] via-[#FF4D61] to-[#E83ABC]"
-                      : "border-2 border-[#CCCCCC] bg-white",
-                  )}
-                  aria-label="동의 체크"
-                >
-                  {agreed && (
-                    <Check size={14} className="text-white" strokeWidth={3} />
-                  )}
-                </button>
-                <span className="typo-16-700 text-black">
-                  상기 계좌로 입금을 완료했습니다.
-                </span>
-              </div>
             </div>
 
             {/* ── 하단 버튼 영역 ── */}
             <div className="flex w-full flex-col items-center gap-4">
-              <Button disabled={!agreed || isPending} onClick={handleConfirm}>
+              <Button disabled={isPending} onClick={handleConfirm}>
                 {isPending ? "요청 중..." : "Toss로 계좌이체하기"}
               </Button>
             </div>
