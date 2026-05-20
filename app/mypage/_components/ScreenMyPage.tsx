@@ -399,6 +399,12 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       return;
     }
 
+    const trimmedIntro = intro.trim();
+    if (!trimmedIntro) {
+      alert("자기소개는 공백으로 입력할 수 없어요.");
+      return;
+    }
+
     // 나이(출생연도) 검증 (2000년생~2007년생)
     if (!editableBirthYear) {
       alert("출생연도를 입력해 주세요.");
