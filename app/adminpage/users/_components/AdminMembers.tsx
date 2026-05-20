@@ -311,11 +311,6 @@ export default function AdminMembers() {
                     <span className="text-sm font-bold text-white sm:text-base">
                       {member.nickname}
                     </span>
-                    {member.realName && (
-                      <span className="rounded-md bg-[#1e2030] px-2 py-0.5 text-[10px] font-bold text-[#a0a3bd]">
-                        {member.realName}
-                      </span>
-                    )}
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                         member.gender === "FEMALE"
