@@ -120,6 +120,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const lastMessageIdRef = React.useRef<string | null>(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // 채팅방이 바뀌면 즉시 스크롤 초기화
   useEffect(() => {
@@ -278,13 +280,21 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   useEffect(() => {
     if (messages.length === 0) return;
 
+    const lastMsg = messages[messages.length - 1];
+    const lastId = lastMsg ? lastMsg.id : null;
+
     if (!hasInitiallyScrolledRef.current) {
-      // 처음 진입했을 때는 딜레이 없이 즉시 가장 아래로 이동 (빠른 속도감)
+      // 처음 진입했을 때는 즉시 가장 아래로 이동 (빠른 속도감)
       messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
       hasInitiallyScrolledRef.current = true;
-    } else {
-      // 새로운 실시간 대화가 전송되거나 들어왔을 때는 부드럽게 스크롤
+      lastMessageIdRef.current = lastId;
+      return;
+    }
+
+    // 마지막 메시지 ID가 변경되었을 때만 (실시간 새 메시지 송수신 시) 하단으로 부드럽게 스크롤
+    if (lastId !== lastMessageIdRef.current) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      lastMessageIdRef.current = lastId;
     }
   }, [messages]);
 
@@ -364,8 +374,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         </div>
       </header>
 
+      {isFetchingNextPage && (
+        <div className="absolute top-[72px] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
+          <Loader2 className="h-5 w-5 animate-spin text-[#FF4D61]" />
+        </div>
+      )}
+
       <section
+        ref={scrollContainerRef}
         onScroll={handleScroll}
+        style={{ overflowAnchor: "none" }}
         className="scrollbar-hide relative z-0 mt-10 mb-18 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-8"
       >
         {isLoading ? (
@@ -397,44 +415,46 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             </button>
           </div>
         ) : (
-          messages.map((message, index) => {
-            const prevMessage = index > 0 ? messages[index - 1] : null;
+          <>
+            {messages.map((message, index) => {
+              const prevMessage = index > 0 ? messages[index - 1] : null;
 
-            // YYYY년 MM월 DD일 형식으로 변환
-            const getFormattedDate = (isoString: string) => {
-              const d = new Date(isoString);
-              if (Number.isNaN(d.getTime())) return "";
-              return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-            };
+              // YYYY년 MM월 DD일 형식으로 변환
+              const getFormattedDate = (isoString: string) => {
+                const d = new Date(isoString);
+                if (Number.isNaN(d.getTime())) return "";
+                return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+              };
 
-            const currentDateStr = getFormattedDate(message.createdAt);
-            const prevDateStr = prevMessage
-              ? getFormattedDate(prevMessage.createdAt)
-              : "";
-            const showDivider = currentDateStr !== prevDateStr;
+              const currentDateStr = getFormattedDate(message.createdAt);
+              const prevDateStr = prevMessage
+                ? getFormattedDate(prevMessage.createdAt)
+                : "";
+              const showDivider = currentDateStr !== prevDateStr;
 
-            return (
-              <React.Fragment key={message.id}>
-                {showDivider && <ChatDateDivider label={currentDateStr} />}
-                {message.sender === "me" ? (
-                  <OutgoingMessage message={message} />
-                ) : (
-                  <IncomingMessage
-                    message={message}
-                    nickname={
-                      opponentProfile?.nickname ||
-                      currentRoom?.otherUser.nickname
-                    }
-                    profileImageUrl={
-                      opponentProfile?.profileImageUrl ||
-                      currentRoom?.otherUser.profileImageUrl
-                    }
-                    onProfileClick={() => setIsProfileModalOpen(true)}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })
+              return (
+                <React.Fragment key={message.id}>
+                  {showDivider && <ChatDateDivider label={currentDateStr} />}
+                  {message.sender === "me" ? (
+                    <OutgoingMessage message={message} />
+                  ) : (
+                    <IncomingMessage
+                      message={message}
+                      nickname={
+                        opponentProfile?.nickname ||
+                        currentRoom?.otherUser.nickname
+                      }
+                      profileImageUrl={
+                        opponentProfile?.profileImageUrl ||
+                        currentRoom?.otherUser.profileImageUrl
+                      }
+                      onProfileClick={() => setIsProfileModalOpen(true)}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </>
         )}
         <div ref={messagesEndRef} />
       </section>

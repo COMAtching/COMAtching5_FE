@@ -22,15 +22,15 @@ export const fetchChatMessages = async (
   roomId: string,
   page: number = 0,
   size: number = 20,
+  beforeMessageId?: string,
 ): Promise<ChatMessagesResponse> => {
+  const params: Record<string, string | number> = { page, size };
+  if (beforeMessageId) {
+    params.beforeMessageId = beforeMessageId;
+  }
   const { data } = await api.get<ChatMessagesResponse>(
     `/api/chat/rooms/${roomId}/messages`,
-    {
-      params: {
-        page,
-        size,
-      },
-    },
+    { params },
   );
   return data;
 };
@@ -38,16 +38,26 @@ export const fetchChatMessages = async (
 export const useChatMessages = (roomId: string) => {
   return useInfiniteQuery({
     queryKey: ["chatMessages", roomId],
-    queryFn: ({ pageParam = 0 }) =>
-      fetchChatMessages(roomId, pageParam as number, 20),
-    initialPageParam: 0,
+    queryFn: ({ pageParam }) => {
+      if (!pageParam) {
+        return fetchChatMessages(roomId, 0, 20);
+      }
+      const { page, beforeMessageId } = pageParam as {
+        page: number;
+        beforeMessageId: string;
+      };
+      return fetchChatMessages(roomId, page, 20, beforeMessageId);
+    },
+    initialPageParam: null as { page: number; beforeMessageId?: string } | null,
     getNextPageParam: (lastPage, allPages) => {
-      // 만약 응답 메시지 개수가 요청 크기(20)보다 작으면 다음 페이지 없음
       const lastPageSize = lastPage.data?.length ?? 0;
       if (lastPageSize < 20) {
         return undefined;
       }
-      return allPages.length; // 다음 페이지 번호 (0부터 시작하므로 allPages.length와 같음)
+      return {
+        page: allPages.length,
+        beforeMessageId: lastPage.data[0]?.id,
+      };
     },
     enabled: !!roomId,
     staleTime: 0,
