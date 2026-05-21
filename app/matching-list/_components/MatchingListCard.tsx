@@ -286,6 +286,15 @@ const MatchingListCard = ({
           onFavoriteToggle={() => onFavoriteToggle?.(item.historyId)}
           onChatClick={handleChatClick}
         />
+        {/* Major Section */}
+        <div className="mt-4 flex w-full flex-col items-start gap-1">
+          <span className="typo-12-600 text-[#777777]">전공</span>
+          <div className="flex items-center gap-3">
+            <span className="typo-18-600 text-color-gray-900">
+              {item.partner.major || "미설정"}
+            </span>
+          </div>
+        </div>
         <div className="mt-4 mb-3 w-full">
           <CardStats partner={item.partner} />
         </div>
