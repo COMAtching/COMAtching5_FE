@@ -74,26 +74,6 @@ export default function DirectChargeDrawer({
     }
   };
 
-  /* 토스 송금 딥링크 */
-  const handleTossTransfer = (customAmount: number) => {
-    const accountNo = BANK_INFO.account.replace(/-/g, "");
-    const bankCode = BANK_INFO.bankCode;
-    const message = "포인트충전";
-    const tossDeepLink = `supertoss://send?accountNo=${accountNo}&bankCode=${bankCode}&amount=${customAmount}&message=${encodeURIComponent(message)}`;
-
-    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      localStorage.setItem("tossPaymentInProgress", "1");
-      const a = document.createElement("a");
-      a.href = tossDeepLink;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else {
-      alert("모바일 기기에서 토스 앱을 통해 송금하실 수 있습니다.");
-    }
-  };
-
   /* 충전 완료 알림 */
   const handleConfirmAction = (customAmount: number) => {
     if (!name) {
@@ -104,15 +84,15 @@ export default function DirectChargeDrawer({
     }
 
     purchase(productId, {
-      onSuccess: () => {
-        alert(
-          "충전 요청이 완료되었습니다! 토스가 설치되어 있다면 토스로 바로 이동합니다.",
-        );
+      onSuccess: async () => {
+        try {
+          await navigator.clipboard.writeText(BANK_INFO.account);
+        } catch (err) {
+          console.error("Failed to copy account number: ", err);
+        }
+        alert("계좌번호가 복사되었습니다.");
         onOpenChange(false);
         queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-
-        // 토스 송금 앱으로 즉시 자동 연동
-        handleTossTransfer(customAmount);
       },
       onError: (error: AxiosError<{ code?: string; message?: string }>) => {
         const errorData = error.response?.data;
