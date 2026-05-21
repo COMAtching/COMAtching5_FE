@@ -143,7 +143,23 @@ export default function ScreenChatList() {
       return [];
     }
 
-    return roomsArray.map((room) => ({
+    // 최신 메시지 순으로 정렬 (메시지가 없는 방은 아래로 보냄, 메시지 유무가 같으면 매칭 ID 최신순 정렬)
+    const sortedRooms = [...roomsArray].sort((a, b) => {
+      const timeA = a.lastMessageTime
+        ? new Date(a.lastMessageTime).getTime()
+        : 0;
+      const timeB = b.lastMessageTime
+        ? new Date(b.lastMessageTime).getTime()
+        : 0;
+
+      if (timeA !== timeB) {
+        return timeB - timeA;
+      }
+
+      return b.matchingId - a.matchingId;
+    });
+
+    return sortedRooms.map((room) => ({
       id: String(room.matchingId),
       roomId: room.id,
       name: room.otherUser?.nickname || "익명",

@@ -513,7 +513,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
           : undefined,
         contactFrequency: frequencyMap[frequency] || undefined,
         intro: intro.trim() || undefined,
-        song: song.trim() || undefined,
+        song: song.trim() || null,
         socialType: formattedSocialId ? socialType : null,
         socialAccountId: formattedSocialId || null,
         major: major.trim() || undefined,
