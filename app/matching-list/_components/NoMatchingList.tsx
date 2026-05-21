@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
 
-import { alertIfBlocked } from "@/lib/constants/date";
-
 interface NoMatchingListProps {
   nickname?: string;
   type?: "matching" | "chat";
@@ -59,9 +57,6 @@ const NoMatchingList = ({
       {/* button */}
       <button
         onClick={() => {
-          if (alertIfBlocked()) {
-            return;
-          }
           router.push("/matching");
         }}
         className="bg-milky-pink flex h-[38px] w-[136px] items-center justify-center gap-2 rounded-full px-4 py-2 shadow-sm transition-transform active:scale-95"

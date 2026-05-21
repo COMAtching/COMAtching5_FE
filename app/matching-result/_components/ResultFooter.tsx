@@ -39,10 +39,10 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
     : 0;
 
   const handleHoldStart = (e: React.MouseEvent | React.TouchEvent) => {
-    if (alertIfBlocked()) {
-      router.push("/main");
-      return;
-    }
+    // if (alertIfBlocked()) {
+    //   router.push("/main");
+    //   return;
+    // }
 
     // 롱프레스 시 브라우저 기본 컨텍스트 메뉴 등이 뜨지 않도록 방지 (모바일 대응)
     if ("button" in e && e.button !== 0) return; // 마우스 왼쪽 클릭만 허용
@@ -89,11 +89,11 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
 
               // 같은 조건으로 재매칭 실행
               if (lastPayload) {
-                if (alertIfBlocked()) {
-                  router.push("/main");
-                  setIsHolding(false);
-                  return true;
-                }
+                // if (alertIfBlocked()) {
+                //   router.push("/main");
+                //   setIsHolding(false);
+                //   return true;
+                // }
                 match(lastPayload);
               }
 

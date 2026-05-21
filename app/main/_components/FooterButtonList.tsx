@@ -1,21 +1,13 @@
 import Link from "next/link";
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
-import { alertIfBlocked } from "@/lib/constants/date";
 
 const MatchingButton = () => {
   const { data: participantsCount } = useParticipantsCount();
-
-  const handleMatchingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (alertIfBlocked()) {
-      e.preventDefault();
-    }
-  };
 
   return (
     <Link
       href="/matching"
       prefetch={true}
-      onClick={handleMatchingClick}
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
@@ -60,17 +52,10 @@ const SearchMyListButton = () => {
 };
 
 const QAButton = () => {
-  const handleQAClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (alertIfBlocked()) {
-      e.preventDefault();
-    }
-  };
-
   return (
     <Link
       href="/FAQ"
       prefetch={true}
-      onClick={handleQAClick}
       style={{
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
