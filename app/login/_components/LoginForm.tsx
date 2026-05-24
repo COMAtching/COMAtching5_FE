@@ -18,7 +18,16 @@ export const LoginForm = () => {
 
   return (
     <section className="mt-10 flex w-full flex-1 flex-col items-start gap-6">
-      <form className="flex w-full flex-col gap-4" action={formAction}>
+      {/* 원본: <form className="flex w-full flex-col gap-4" action={formAction}> */}
+      {/* 변경: 제출 차단 후 알림 표시 */}
+      <form
+        className="flex w-full flex-col gap-4"
+        action={formAction}
+        onSubmit={(e) => {
+          e.preventDefault();
+          alert("코매칭 서비스는 23일부로 종료되었습니다");
+        }}
+      >
         <div className="flex w-full flex-col gap-2">
           <label htmlFor="email" className="typo-14-500 text-gray-700">
             아이디(이메일)
