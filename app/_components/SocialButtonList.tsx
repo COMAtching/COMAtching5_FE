@@ -23,11 +23,6 @@ export function KakaoLoginButton({
   return (
     <Button
       {...props}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        alert("코매칭 서비스는 23일부로 종료되었습니다");
-      }}
       className={cn(
         "typo-20-600 flex w-full items-center gap-6 bg-[#FEE500] text-black",
         props.className,
