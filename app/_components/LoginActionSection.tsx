@@ -5,8 +5,7 @@ import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
-    // window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
-    alert("코매칭 서비스는 종료되었습니다");
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
   };
 
   return (
@@ -20,19 +19,9 @@ export default function ScreenLoginActionSection() {
         카카오로 빠르게 시작하기
       </KakaoLoginButton>
       <span className="typo-14-500 text-color-text-caption2 mt-4">또는</span>
-      {/* <Link
-        href="/login"
-        className="all-[unset] typo-14-500 text-color-text-caption2 cursor-pointer underline transition-colors"
-      >
-        이메일로 로그인
-      </Link> */}
       <Link
         href="/login"
         className="all-[unset] typo-14-500 text-color-text-caption2 cursor-pointer underline transition-colors"
-        onClick={(e) => {
-          e.preventDefault();
-          alert("코매칭 서비스는 종료되었습니다");
-        }}
       >
         이메일로 로그인
       </Link>
