@@ -21,8 +21,6 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# 🔥 .env 포함
-COPY .env .env
 COPY . .
 
 RUN pnpm run build
@@ -39,9 +37,6 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# 🔥 .env 복사
-COPY --from=builder /app/.env ./.env
-
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
@@ -51,5 +46,5 @@ USER nextjs
 
 EXPOSE 3000
 
-# 🔥 .env → 환경변수 export 후 실행
-CMD ["sh", "-c", "set -a && . ./.env && set +a && node server.js"]
+# 환경변수는 docker run --env-file .env 또는 -e KEY=VALUE 로 외부 주입
+CMD ["node", "server.js"]
