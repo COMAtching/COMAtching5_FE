@@ -1,7 +1,7 @@
 # ===========================
 # Stage 1: Dependencies
 # ===========================
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN pnpm install --prod --frozen-lockfile
 # ===========================
 # Stage 2: Builder
 # ===========================
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
@@ -31,7 +31,7 @@ RUN pnpm run build
 # ===========================
 # Stage 3: Runner
 # ===========================
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 ENV NODE_ENV=production
