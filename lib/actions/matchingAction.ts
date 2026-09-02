@@ -7,6 +7,7 @@ import {
   ApiResponse,
 } from "@/lib/types/matching";
 import { isAxiosError } from "@/lib/server-api";
+import { MatchingRequestSchema } from "@/lib/validations";
 
 export type MatchingActionResult = {
   success: boolean;
@@ -21,10 +22,16 @@ export type MatchingActionResult = {
 export async function postMatchingAction(
   payload: MatchingRequest,
 ): Promise<MatchingActionResult> {
+  // ✅ 런타임 입력값 검증
+  const parsed = MatchingRequestSchema.safeParse(payload);
+  if (!parsed.success) {
+    return { success: false, message: "매칭 요청 값이 올바르지 않습니다" };
+  }
+
   try {
     const response = await serverApi.post<ApiResponse<MatchingResult>>({
       path: "/api/matching",
-      body: payload,
+      body: parsed.data,
     });
 
     return { success: true, data: response.data.data };

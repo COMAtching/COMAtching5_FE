@@ -3,6 +3,7 @@
 import { serverApi } from "@/lib/server-api";
 import { ProfileSubmitData } from "@/lib/types/profile";
 import { isAxiosError } from "@/lib/server-api";
+import { ProfileSubmitSchema } from "@/lib/validations";
 
 export type ProfileSignUpState = {
   success: boolean;
@@ -13,10 +14,19 @@ export async function profileSignUpAction(
   prevState: ProfileSignUpState | null,
   data: ProfileSubmitData,
 ): Promise<ProfileSignUpState> {
+  // ✅ 런타임 입력값 검증
+  const parsed = ProfileSubmitSchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "입력값이 올바르지 않습니다",
+    };
+  }
+
   try {
     await serverApi.post({
       path: "/api/auth/signup/profile",
-      body: data,
+      body: parsed.data,
     });
 
     return { success: true, message: "회원가입 성공" };

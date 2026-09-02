@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { serverApi } from "@/lib/server-api";
 import { isAxiosError } from "axios";
+import { LoginSchema, safeRedirectUrl } from "@/lib/validations";
 
 type LoginState = {
   success: boolean;
@@ -22,26 +23,29 @@ export async function loginAction(
   const email = formData.get("email");
   const password = formData.get("password");
 
+  // ✅ 런타임 입력값 검증
+  const parsed = LoginSchema.safeParse({ email, password });
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "입력값이 올바르지 않습니다",
+    };
+  }
+
   let redirectUrl: string | null = null;
 
   try {
-    const { finalUrl, setCookie } = await serverApi.post<LoginResponse>({
+    const { finalUrl } = await serverApi.post<LoginResponse>({
       path: "/api/auth/login",
-      body: { email, password },
+      body: { email: parsed.data.email, password: parsed.data.password },
     });
 
     // 🍪 serverApi.post 내부에서 response header의 set-cookie를 파싱하여
     // 이미 cookieStore에 저장했으므로, 여기서 별도로 처리할 필요가 없습니다.
 
     if (finalUrl) {
-      // https://comatching.site/onboarding -> /onboarding 추출
-      try {
-        const url = new URL(finalUrl);
-        redirectUrl = url.pathname + url.search;
-      } catch {
-        // 이미 상대 경로인 경우
-        redirectUrl = finalUrl;
-      }
+      // https://comatching.site/onboarding → /onboarding 추출 (오픈 리다이렉트 방지)
+      redirectUrl = safeRedirectUrl(finalUrl);
     }
   } catch (error) {
     if (
