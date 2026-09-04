@@ -21,7 +21,7 @@ const MyTicketSection = ({ className }: MyTicketSectionProps) => {
     >
       <div className="flex items-center gap-2">
         <Image src="/main/ticket.png" alt="ticket" width={20} height={20} />
-        <span className="typo-12-600 text-color-text-caption3">보유뾽기권</span>
+        <span className="typo-12-600 text-color-text-caption3">보유뽑기권</span>
         <span className="typo-14-600 text-color-text-black">
           {matchingTicketCount}개
         </span>
