@@ -31,59 +31,53 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
   ({ onFinish, onSpinChange, className }, ref) => {
     const [isSpinning, setIsSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
-    const hapticTimersRef = useRef<NodeJS.Timeout[]>([]);
-
-    // 언마운트 시 진동 및 타이머 정리
+    // 언마운트 시 진행 중인 진동 즉시 중단
     useEffect(() => {
       return () => {
-        hapticTimersRef.current.forEach(clearTimeout);
         if (typeof window !== "undefined" && "vibrate" in navigator) {
           navigator.vibrate(0);
         }
       };
     }, []);
 
-    // 갤럭시 등 안드로이드 브라우저 햅틱 피드백 (회전 감속에 맞춤)
+    // 갤럭시 등 안드로이드 크롬 햅틱 피드백 (회전 감속에 맞춘 연속 진동 패턴)
     const triggerHapticFeedback = () => {
       if (typeof window === "undefined" || !("vibrate" in navigator)) return;
 
-      // 이전 타이머 정리
-      hapticTimersRef.current.forEach(clearTimeout);
-      hapticTimersRef.current = [];
+      try {
+        // 기존 진동 즉시 정지
+        navigator.vibrate(0);
 
-      // 1. 출발 순간 진동
-      navigator.vibrate(35);
+        // [진동, 대기, 진동, 대기...] 형식의 패턴 생성 (총 7초 회전과 싱크)
+        const pattern: number[] = [];
+        let elapsed = 0;
+        let pause = 75; // 초기 빠른 회전 시 대기 간격
 
-      // 2. 회전하는 동안 점점 느려지는 틱 진동
-      let elapsed = 0;
-      let delay = 60;
+        // 0초부터 ~6.3초까지 감속되는 틱 진동 패턴 생성
+        while (elapsed < 6300) {
+          // 손끝에 확실히 느껴지도록 25ms ~ 45ms 강도로 점진적 조절
+          const vibDuration = elapsed < 3000 ? 30 : elapsed < 5000 ? 38 : 45;
+          pattern.push(vibDuration);
+          pattern.push(pause);
+          elapsed += vibDuration + pause;
+          // 회전이 느려질수록 진동 간격을 점차 넓힘
+          pause = Math.min(800, Math.floor(pause * 1.09));
+        }
 
-      const tick = () => {
-        elapsed += delay;
-        if (elapsed >= 6500) return;
+        // 마지막 당첨 순간(7초)까지 대기 시간을 마지막 pause에 합산
+        const remainingWait = Math.max(100, 7000 - elapsed);
+        if (pattern.length > 0) {
+          pattern[pattern.length - 1] += remainingWait;
+        }
 
-        try {
-          navigator.vibrate(10);
-        } catch {}
+        // 7초 정지 순간 당첨 축하 묵직한 더블 햅틱 (80ms 진동 -> 80ms 쉼 -> 150ms 진동)
+        pattern.push(80, 80, 150);
 
-        // 시간이 지날수록 간격이 점차 늘어남 (감속 체감)
-        const progress = elapsed / 7000;
-        delay = Math.floor(60 + Math.pow(progress, 3) * 600);
-
-        const timer = setTimeout(tick, delay);
-        hapticTimersRef.current.push(timer);
-      };
-
-      const firstTimer = setTimeout(tick, delay);
-      hapticTimersRef.current.push(firstTimer);
-
-      // 3. 7초 뒤 당첨 멈춤 진동
-      const endTimer = setTimeout(() => {
-        try {
-          navigator.vibrate([60, 50, 120]);
-        } catch {}
-      }, 7000);
-      hapticTimersRef.current.push(endTimer);
+        // 버튼 클릭(사용자 인터랙션) 스택에서 네이티브 패턴 통째로 즉시 전달
+        navigator.vibrate(pattern);
+      } catch (err) {
+        console.error("Vibration failed:", err);
+      }
     };
 
     const spin = () => {
@@ -134,7 +128,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
     return (
       <div
         className={cn(
-          "relative flex w-full max-w-[356px] flex-col items-center justify-center",
+          "relative flex w-full max-w-[min(340px,42dvh)] flex-col items-center justify-center",
           className,
         )}
       >
