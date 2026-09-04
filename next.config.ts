@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone", // Docker 최적화를 위한 standalone 모드
   devIndicators: false,
-  // @ts-expect-error Next.js 16 AI agent rules generation toggle
   agentRules: false,
   // compiler: {
   //   removeConsole:
