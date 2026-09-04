@@ -1,4 +1,5 @@
 ﻿"use client";
+import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -18,38 +19,15 @@ const ROULETTE_OPTIONS = [1, 2, 3, 4, 5];
 // 5분할 임시 원판 컴포넌트 (초기 상태: 12시 정각이 5번과 1번의 '경계선')
 const TempWheel = () => {
   return (
-    <div
-      className="relative h-full w-full overflow-hidden rounded-full border-4 border-white shadow-inner"
-      style={{
-        // 0도(12시)가 딱 경계선이 되도록 배치
-        background: `conic-gradient(#FFD1DC 0deg 72deg, #FFE4E1 72deg 144deg, #E0F7FA 144deg 216deg, #E8F5E9 216deg 288deg, #FFF9C4 288deg 360deg)`,
-      }}
-    >
-      {/* 12시 방향 초기 경계선을 눈으로 확인할 수 있는 기준선(검은선) */}
-      <div className="pointer-events-none absolute top-0 left-1/2 z-10 -ml-px h-full w-0.5 bg-black/20" />
-
-      {ROULETTE_OPTIONS.map((item, index) => {
-        // 각 칸의 중심 각도: (인덱스 * 72) + 36도
-        // 1번: 36도, 2번: 108도, 3번: 180도, 4번: 252도, 5번: 324도
-        const centerAngle = index * 72 + 36;
-        return (
-          <div
-            key={item}
-            className="absolute top-0 left-1/2 -ml-4 flex h-full w-8 justify-start pt-6"
-            style={{
-              transform: `rotate(${centerAngle}deg) translateY(-40%)`,
-              transformOrigin: "center center",
-            }}
-          >
-            <span
-              className="typo-16-700 font-bold text-gray-700 drop-shadow-sm"
-              style={{ transform: `rotate(-${centerAngle}deg)` }}
-            >
-              {item}
-            </span>
-          </div>
-        );
-      })}
+    <div className="relative h-full w-full">
+      <Image
+        src="/roulette/Roulette.png"
+        alt="룰렛 원판"
+        fill
+        priority
+        sizes="560px"
+        className="object-cover"
+      />
     </div>
   );
 };
@@ -115,9 +93,9 @@ const Roulette = ({ onFinish, className }: RouletteProps) => {
       </div>
 
       {/* 룰렛 원판 회전 컨테이너 */}
-      <div className="relative flex h-70 w-70 items-center justify-center">
+      <div className="relative flex h-140 w-140 items-center justify-center">
         <div
-          className="relative h-full w-full transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0.9,0.08,1)]"
+          className="relative h-full w-full transition-transform duration-7000 ease-[cubic-bezier(0.12,0.9,0.08,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           {/* 5분할 임시 원판 */}
