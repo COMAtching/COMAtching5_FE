@@ -21,7 +21,7 @@ const ScreenRouletteMain = () => {
   };
 
   return (
-    <div className="flex h-dvh w-full flex-col items-center justify-between overflow-hidden px-5 pt-3 pb-6">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-between overflow-y-auto px-5 pt-3 pb-6">
       {/* Top Group: Header, Badge, Tagline */}
       <div className="flex w-full flex-col items-center">
         <PageHeader

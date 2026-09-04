@@ -128,7 +128,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
     return (
       <div
         className={cn(
-          "relative flex w-full max-w-[min(340px,78vw)] flex-col items-center justify-center",
+          "relative flex w-full max-w-[min(340px,78vw,42dvh)] flex-col items-center justify-center",
           className,
         )}
       >
