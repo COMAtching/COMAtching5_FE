@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone", // Docker 최적화를 위한 standalone 모드
   devIndicators: false,
+  agentRules: false,
   // compiler: {
   //   removeConsole:
   //     process.env.NODE_ENV === "production"

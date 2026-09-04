@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import MainHeader from "./MainHeader";
 import {
   QAButton,
@@ -18,12 +18,12 @@ import ProfileProgressCard from "./ProfileProgressCard";
 
 import {
   useMatchingHistory,
-  MatchingPartner,
   MatchingHistoryItem,
 } from "@/hooks/useMatchingHistory";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
-import { useActiveNotices, Notice } from "@/hooks/useActiveNotices";
+import { useActiveNotices } from "@/hooks/useActiveNotices";
 import { useQueryClient } from "@tanstack/react-query";
+import RouletteEntrySection from "./RouletteEntrySection";
 
 const ScreenMainPage = () => {
   const queryClient = useQueryClient();
@@ -32,7 +32,7 @@ const ScreenMainPage = () => {
   const { isPurchasePending } = useRequestStatus();
 
   useEffect(() => {
-    const handleFcmMessage = (event: Event) => {
+    const handleFcmMessage = () => {
       console.log("🔔 [MainPage] FCM 알림 수신 -> 실시간 메인 데이터 갱신!");
       queryClient.invalidateQueries({ queryKey: ["chatUnreadCount"] });
       queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
@@ -104,6 +104,7 @@ const ScreenMainPage = () => {
           <NoContactSection />
         ))}
       <MatchingButton />
+      <RouletteEntrySection />
       <div className="flex w-full gap-2">
         <SearchMyListButton />
         <QAButton />

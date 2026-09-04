@@ -8,12 +8,14 @@ type BackButtonProps = {
   className?: string;
   onClick?: () => void;
   text?: React.ReactNode;
+  variant?: "default" | "plain";
 };
 
 export const BackButton = ({
   className = "",
   onClick,
   text,
+  variant = "default",
 }: BackButtonProps) => {
   const router = useRouter();
   const handleClick = onClick ?? (() => router.back());
@@ -27,7 +29,9 @@ export const BackButton = ({
           onClick={handleClick}
           aria-label="뒤로 가기"
           className={cn(
-            "absolute left-0 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-[#FFFFFF]/30 bg-[#FFFFFF]/50 [box-shadow:0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]",
+            "absolute left-0 flex h-12 w-12 cursor-pointer items-center justify-center",
+            variant === "default" &&
+              "rounded-full border border-[#FFFFFF]/30 bg-[#FFFFFF]/50 [box-shadow:0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]",
             className,
           )}
         >

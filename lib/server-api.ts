@@ -3,10 +3,10 @@ export { isAxiosError };
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const API_URL = process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_URL;
-if (!API_URL) {
-  throw new Error("SERVER_API_URL or NEXT_PUBLIC_API_URL is not defined");
-}
+const API_URL =
+  process.env.SERVER_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://srv.comatching.site";
 
 // 0. 인증 및 재발급 처리가 필요 없는 Public API 목록
 const PUBLIC_PATHS = ["/api/auth/login", "/api/auth/password/code"];
