@@ -1,14 +1,15 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { CircleAlert } from "lucide-react";
-import PageHeader from "@/components/common/PageHeader";
+import RouletteHeader from "../../_components/RouletteHeader";
 import Button from "@/components/ui/Button";
-import Roulette, { RouletteHandle } from "./Roulette";
+import Roulette, { RouletteHandle } from "../../_components/Roulette";
+import RouletteProbabilityBottomSheet from "../../_components/RouletteProbabilityBottomSheet";
 
 // TODO: 실제 API 연동 시 대체
 const MOCK_REMAINING_CHANCES = 1;
 
-const ScreenRouletteMain = () => {
+const ScreenRouletteFree = () => {
   const remainingChances = MOCK_REMAINING_CHANCES;
   const hasChances = remainingChances > 0;
 
@@ -21,15 +22,22 @@ const ScreenRouletteMain = () => {
   };
 
   return (
-    <div className="flex min-h-dvh w-full flex-col items-center justify-between overflow-y-auto px-5 pt-3 pb-6">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-between overflow-x-hidden overflow-y-auto px-5 pt-3 pb-6">
       {/* Top Group: Header, Badge, Tagline */}
       <div className="flex w-full flex-col items-center">
-        <PageHeader
+        <RouletteHeader
           title="룰렛"
           sidebar={
-            <span className="typo-14-500 text-color-text-caption3">
-              확률 안내
-            </span>
+            <RouletteProbabilityBottomSheet
+              trigger={
+                <button
+                  type="button"
+                  className="typo-14-500 text-color-text-caption3 cursor-pointer transition-opacity hover:opacity-80"
+                >
+                  확률 안내
+                </button>
+              }
+            />
           }
         />
 
@@ -41,7 +49,7 @@ const ScreenRouletteMain = () => {
         </div>
 
         {/* Tagline */}
-        <p className="typo-20-600 text-color-text-black mt-4 mb-1 text-center">
+        <p className="typo-20-600 text-color-text-black m b-1 mt-4 text-center">
           {hasChances ? (
             <>
               매일 한 번,{" "}
@@ -55,13 +63,11 @@ const ScreenRouletteMain = () => {
       </div>
 
       {/* Center: Roulette Wheel */}
-      <div className="my-auto flex w-full items-center justify-center">
-        <Roulette
-          ref={rouletteRef}
-          onSpinChange={setIsSpinning}
-          onFinish={(idx) => console.log("당첨 인덱스:", idx)}
-        />
-      </div>
+      <Roulette
+        ref={rouletteRef}
+        onSpinChange={setIsSpinning}
+        onFinish={(idx) => console.log("당첨 인덱스:", idx)}
+      />
 
       {/* Bottom Group: Spin Button + Notice */}
       <div className="flex w-full flex-col items-center gap-3">
@@ -83,4 +89,4 @@ const ScreenRouletteMain = () => {
   );
 };
 
-export default ScreenRouletteMain;
+export default ScreenRouletteFree;

@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 
 import { BackButton } from "@/components/ui/BackButton";
 import React from "react";
 
-type PageHeaderProps = {
+type RouletteHeaderProps = {
   title?: React.ReactNode;
   sidebar?: React.ReactNode;
 };
 
-const PageHeader = ({ title, sidebar }: PageHeaderProps) => {
+const RouletteHeader = ({ title, sidebar }: RouletteHeaderProps) => {
   return (
     <header className="flex h-[64px] w-full items-center justify-between py-2">
       <BackButton className="shrink-0" />
@@ -30,4 +30,4 @@ const PageHeader = ({ title, sidebar }: PageHeaderProps) => {
   );
 };
 
-export default PageHeader;
+export default RouletteHeader;
