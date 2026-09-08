@@ -49,7 +49,7 @@ const ScreenRouletteFree = () => {
         </div>
 
         {/* Tagline */}
-        <p className="typo-20-600 text-color-text-black m b-1 mt-4 text-center">
+        <p className="typo-20-600 text-color-text-black mt-4 mb-1 text-center">
           {hasChances ? (
             <>
               매일 한 번,{" "}
