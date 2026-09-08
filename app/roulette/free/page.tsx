@@ -1,4 +1,4 @@
-import ScreenRouletteMain from "./_components/ScreenRouletteMain";
+import ScreenRouletteFree from "./_components/ScreenRouletteFree";
 
 export const metadata = {
   title: "이벤트 룰렛",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function RoulettePage() {
-  return <ScreenRouletteMain />;
+  return <ScreenRouletteFree />;
 }

@@ -149,9 +149,9 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
           {/* 고정된 그림자: 회전하지 않음 */}
           <div className="absolute inset-0 rounded-full shadow-[0_0_24px_rgba(0,0,0,0.1),0_12px_12px_rgba(0,0,0,0.08)]" />
 
-          {/* 룰렛 이미지만 회전 */}
+          {/* 룰렛 이미지만 회전 (rounded-full과 will-change 추가로 회전 시 네 모서리 돌출 방지) */}
           <div
-            className="absolute inset-0 transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0.9,0.08,1)]"
+            className="absolute inset-0 overflow-hidden rounded-full transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0.9,0.08,1)] will-change-transform"
             style={{ transform: `rotate(${rotation}deg)` }}
           >
             <Image
@@ -160,7 +160,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
               priority
               fill
               sizes="(max-width: 356px) 100vw, 356px"
-              className="block object-contain"
+              className="block rounded-full object-contain"
             />
           </div>
         </div>
