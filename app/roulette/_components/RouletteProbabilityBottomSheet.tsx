@@ -15,32 +15,43 @@ import { cn } from "@/lib/utils";
 
 // 컴포넌트 내부에 직접 데이터 정의
 const FREE_ROULETTE_ITEMS = [
-  { reward: "옵션권 2장", probability: "39%" },
-  { reward: "옵션권 5장", probability: "25%" },
-  { reward: "풀세트", probability: "18%" },
-  { reward: "뽑기권 5장", probability: "10%" },
+  { reward: "옵션권 1장", probability: "45%" },
+  { reward: "옵션권 2장", probability: "25%" },
+  { reward: "꽝", probability: "15%" },
+  { reward: "뽑기권 1장", probability: "12%" },
+  { reward: "풀세트(뽑기권 1장 + 옵션권 3장)", probability: "3%" },
 ];
 
 const SPECIAL_ROULETTE_ITEMS = [
-  { reward: "스타벅스 쿠폰", probability: "5%" },
-  { reward: "10,000 코인", probability: "15%" },
-  { reward: "5,000 코인", probability: "30%" },
-  { reward: "1,000 코인", probability: "50%" },
+  { reward: "옵션권 2장", probability: "39%" },
+  { reward: "옵션권 5장", probability: "25%" },
+  { reward: "뽑기권 1장", probability: "18%" },
+  { reward: "풀세트", probability: "10%" },
+  { reward: "뽑기권 5장", probability: "3%" },
+  { reward: "뽑기권 10장", probability: "2%" },
+  { reward: "1만원권 상품권", probability: "2%" },
+  { reward: "2만원권 상품권", probability: "1%" },
 ];
 
 export interface RouletteProbabilityBottomSheetProps {
   /** 바텀시트를 열 트리거 엘리먼트 */
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   /** 처음에 보여줄 기본 탭 (기본값: "free") */
   defaultTab?: "free" | "special";
   /** DrawerContent 추가 클래스명 */
   className?: string;
+  /** Controlled state (open) */
+  open?: boolean;
+  /** Controlled state (onOpenChange) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function RouletteProbabilityBottomSheet({
   trigger,
   defaultTab = "free",
   className,
+  open,
+  onOpenChange,
 }: RouletteProbabilityBottomSheetProps) {
   const [activeTab, setActiveTab] = useState<"free" | "special">(defaultTab);
 
@@ -48,8 +59,8 @@ export default function RouletteProbabilityBottomSheet({
     activeTab === "free" ? FREE_ROULETTE_ITEMS : SPECIAL_ROULETTE_ITEMS;
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
       <DrawerContent
         showHandle={false}
