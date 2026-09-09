@@ -3,8 +3,12 @@ import React, { useRef, useState } from "react";
 import { CircleAlert } from "lucide-react";
 import RouletteHeader from "../../_components/RouletteHeader";
 import Button from "@/components/ui/Button";
-import Roulette, { RouletteHandle } from "../../_components/Roulette";
+import Roulette, {
+  RouletteHandle,
+  RouletteItem,
+} from "../../_components/Roulette";
 import RouletteProbabilityBottomSheet from "../../_components/RouletteProbabilityBottomSheet";
+import RouletteResultModal from "../../_components/RouletteResultModal";
 
 // TODO: 실제 API 연동 시 대체
 const MOCK_REMAINING_CHANCES = 1;
@@ -15,6 +19,9 @@ const ScreenRouletteFree = () => {
 
   const rouletteRef = useRef<RouletteHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [resultItem, setResultItem] = useState<RouletteItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProbabilityOpen, setIsProbabilityOpen] = useState(false);
 
   const handleSpin = () => {
     if (!hasChances || isSpinning) return;
@@ -26,9 +33,12 @@ const ScreenRouletteFree = () => {
       {/* Top Group: Header, Badge, Tagline */}
       <div className="flex w-full flex-col items-center">
         <RouletteHeader
-          title="룰렛"
+          title="무료 룰렛"
           sidebar={
             <RouletteProbabilityBottomSheet
+              defaultTab="free"
+              open={isProbabilityOpen}
+              onOpenChange={setIsProbabilityOpen}
               trigger={
                 <button
                   type="button"
@@ -67,7 +77,11 @@ const ScreenRouletteFree = () => {
         type="free"
         ref={rouletteRef}
         onSpinChange={setIsSpinning}
-        onFinish={(item) => console.log("당첨:", item.label)}
+        onFinish={(item) => {
+          setIsProbabilityOpen(false); // 바텀시트 닫기
+          setResultItem(item);
+          setIsModalOpen(true);
+        }}
       />
 
       {/* Bottom Group: Spin Button + Notice */}
@@ -86,6 +100,15 @@ const ScreenRouletteFree = () => {
           <span>1일 1회 참여할 수 있어요</span>
         </div>
       </div>
+
+      <RouletteResultModal
+        open={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          rouletteRef.current?.reset();
+        }}
+        item={resultItem}
+      />
     </div>
   );
 };

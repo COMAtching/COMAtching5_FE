@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 export interface RouletteHandle {
   spin: () => void;
+  reset: () => void;
 }
 
 export type RouletteType = "free" | "special";
@@ -31,8 +32,8 @@ const ROULETTE_CONFIG: Record<
     items: [
       { id: 1, label: "옵션권 1장" },
       { id: 2, label: "옵션권 2장" },
-      { id: 3, label: "꽝" },
-      { id: 4, label: "뽑기권 1장" },
+      { id: 3, label: "뽑기권 1장" },
+      { id: 4, label: "꽝" },
       { id: 5, label: "풀세트" },
     ],
   },
@@ -64,6 +65,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
 
     const [isSpinning, setIsSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
+    const [transitionDuration, setTransitionDuration] = useState(7000);
 
     // 언마운트 시 진행 중인 진동 즉시 중단
     useEffect(() => {
@@ -109,6 +111,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
     const spin = () => {
       if (isSpinning) return;
       setIsSpinning(true);
+      setTransitionDuration(7000);
       onSpinChange?.(true);
 
       triggerHapticFeedback();
@@ -141,8 +144,16 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
       }, 7000);
     };
 
+    const reset = () => {
+      setTransitionDuration(0); // 0초로 설정하여 즉시 회전 원복
+      setRotation(0);
+      setIsSpinning(false);
+      onSpinChange?.(false);
+    };
+
     useImperativeHandle(ref, () => ({
       spin,
+      reset,
     }));
 
     return (
@@ -171,8 +182,12 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
 
           {/* 룰렛 이미지만 회전 */}
           <div
-            className="absolute inset-0 overflow-hidden rounded-full transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0.9,0.08,1)] will-change-transform"
-            style={{ transform: `rotate(${rotation}deg)` }}
+            className="absolute inset-0 overflow-hidden rounded-full ease-[cubic-bezier(0.12,0.9,0.08,1)] will-change-transform"
+            style={{
+              transform: `rotate(${rotation}deg)`,
+              transitionDuration: `${transitionDuration}ms`,
+              transitionProperty: "transform",
+            }}
           >
             <Image
               src={imageSrc}

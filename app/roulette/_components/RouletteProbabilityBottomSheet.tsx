@@ -35,17 +35,23 @@ const SPECIAL_ROULETTE_ITEMS = [
 
 export interface RouletteProbabilityBottomSheetProps {
   /** 바텀시트를 열 트리거 엘리먼트 */
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   /** 처음에 보여줄 기본 탭 (기본값: "free") */
   defaultTab?: "free" | "special";
   /** DrawerContent 추가 클래스명 */
   className?: string;
+  /** Controlled state (open) */
+  open?: boolean;
+  /** Controlled state (onOpenChange) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function RouletteProbabilityBottomSheet({
   trigger,
   defaultTab = "free",
   className,
+  open,
+  onOpenChange,
 }: RouletteProbabilityBottomSheetProps) {
   const [activeTab, setActiveTab] = useState<"free" | "special">(defaultTab);
 
@@ -53,8 +59,8 @@ export default function RouletteProbabilityBottomSheet({
     activeTab === "free" ? FREE_ROULETTE_ITEMS : SPECIAL_ROULETTE_ITEMS;
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
       <DrawerContent
         showHandle={false}
