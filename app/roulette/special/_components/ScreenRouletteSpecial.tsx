@@ -51,9 +51,10 @@ const ScreenRouletteSpecial = () => {
 
       {/* Center: Roulette Wheel */}
       <Roulette
+        type="special"
         ref={rouletteRef}
         onSpinChange={setIsSpinning}
-        onFinish={(idx) => console.log("당첨 인덱스:", idx)}
+        onFinish={(item) => console.log("당첨:", item.label)}
       />
 
       {/* Bottom Group: Spin Button + Notice */}

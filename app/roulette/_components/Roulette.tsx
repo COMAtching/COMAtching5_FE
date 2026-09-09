@@ -4,7 +4,6 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
@@ -13,24 +12,59 @@ export interface RouletteHandle {
   spin: () => void;
 }
 
+export type RouletteType = "free" | "special";
+
+export interface RouletteItem {
+  id: number;
+  label: string;
+}
+
+// ==========================================
+// 룰렛 타입별 설정 (이미지 & 상품 배열)
+// ==========================================
+const ROULETTE_CONFIG: Record<
+  RouletteType,
+  { imageSrc: string; items: RouletteItem[] }
+> = {
+  free: {
+    imageSrc: "/roulette/roulette3.png",
+    items: [
+      { id: 1, label: "옵션권 1장" },
+      { id: 2, label: "옵션권 2장" },
+      { id: 3, label: "꽝" },
+      { id: 4, label: "뽑기권 1장" },
+      { id: 5, label: "풀세트" },
+    ],
+  },
+  special: {
+    imageSrc: "/roulette/special_roulette.png",
+    items: [
+      { id: 1, label: "옵션권 2장" },
+      { id: 2, label: "옵션권 5장" },
+      { id: 3, label: "뽑기권 1장" },
+      { id: 4, label: "풀세트" },
+      { id: 5, label: "뽑기권 5장" },
+      { id: 6, label: "뽑기권 10장" },
+      { id: 7, label: "1만원권 상품권" },
+      { id: 8, label: "2만원권 상품권" },
+    ],
+  },
+};
+
 interface RouletteProps {
-  onFinish?: (resultItem: number) => void;
+  type: RouletteType;
+  onFinish?: (item: RouletteItem) => void;
   onSpinChange?: (isSpinning: boolean) => void;
   className?: string;
 }
 
-// 룰렛에 배치될 옵션들 (12시 경계선 기준 시계방향: 1, 2, 3, 4, 5)
-// 0도 ~ 72도: 1번
-// 72도 ~ 144도: 2번
-// 144도 ~ 216도: 3번
-// 216도 ~ 288도: 4번
-// 288도 ~ 360도: 5번
-const ROULETTE_OPTIONS = [1, 2, 3, 4, 5];
-
 const Roulette = forwardRef<RouletteHandle, RouletteProps>(
-  ({ onFinish, onSpinChange, className }, ref) => {
+  ({ type, onFinish, onSpinChange, className }, ref) => {
+    const { imageSrc, items } = ROULETTE_CONFIG[type];
+
     const [isSpinning, setIsSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
+
     // 언마운트 시 진행 중인 진동 즉시 중단
     useEffect(() => {
       return () => {
@@ -45,35 +79,27 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
       if (typeof window === "undefined" || !("vibrate" in navigator)) return;
 
       try {
-        // 기존 진동 즉시 정지
         navigator.vibrate(0);
 
-        // [진동, 대기, 진동, 대기...] 형식의 패턴 생성 (총 7초 회전과 싱크)
         const pattern: number[] = [];
         let elapsed = 0;
-        let pause = 75; // 초기 빠른 회전 시 대기 간격
+        let pause = 75;
 
-        // 0초부터 ~6.3초까지 감속되는 틱 진동 패턴 생성
         while (elapsed < 6300) {
-          // 손끝에 확실히 느껴지도록 25ms ~ 45ms 강도로 점진적 조절
           const vibDuration = elapsed < 3000 ? 30 : elapsed < 5000 ? 38 : 45;
           pattern.push(vibDuration);
           pattern.push(pause);
           elapsed += vibDuration + pause;
-          // 회전이 느려질수록 진동 간격을 점차 넓힘
           pause = Math.min(800, Math.floor(pause * 1.09));
         }
 
-        // 마지막 당첨 순간(7초)까지 대기 시간을 마지막 pause에 합산
         const remainingWait = Math.max(100, 7000 - elapsed);
         if (pattern.length > 0) {
           pattern[pattern.length - 1] += remainingWait;
         }
 
-        // 7초 정지 순간 당첨 축하 묵직한 더블 햅틱 (80ms 진동 -> 80ms 쉼 -> 150ms 진동)
+        // 7초 정지 순간 당첨 축하 묵직한 더블 햅틱
         pattern.push(80, 80, 150);
-
-        // 버튼 클릭(사용자 인터랙션) 스택에서 네이티브 패턴 통째로 즉시 전달
         navigator.vibrate(pattern);
       } catch (err) {
         console.error("Vibration failed:", err);
@@ -85,35 +111,29 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
       setIsSpinning(true);
       onSpinChange?.(true);
 
-      // 햅틱 진동 실행
       triggerHapticFeedback();
 
-      // 1. 당첨될 인덱스 랜덤 선택 (0 ~ 4)
-      const resultIndex = Math.floor(Math.random() * ROULETTE_OPTIONS.length);
-      const resultItem = ROULETTE_OPTIONS[resultIndex];
+      // 당첨 아이템 랜덤 선택
+      const resultIndex = Math.floor(Math.random() * items.length);
+      const resultItem = items[resultIndex];
 
-      // 2. 1칸당 차지하는 각도 (360 / 5 = 72도)
-      const segmentAngle = 360 / ROULETTE_OPTIONS.length;
-
-      // 3. 당첨 각도 계산
-      // 초기 0도가 '경계선'이므로, 각 번호의 중앙은 (인덱스 * 72) + 36도에 위치합니다.
-      // 이 중앙을 12시(360도)로 끌고 오기 위한 목표 각도:
+      // 1칸당 각도 계산
+      const segmentAngle = 360 / items.length;
+      // 당첨 칸의 중앙을 12시 방향으로 가져오는 각도
       const itemCenterAngle = resultIndex * segmentAngle + segmentAngle / 2;
       const targetAngle = 360 - itemCenterAngle;
 
-      // 4. 경계선 아슬아슬한 곳까지 도달 (-31도 ~ +31도 오차)
-      // 칸의 중앙 기준 좌우 경계선(±36도) 직전까지 아슬아슬하게 회전
+      // 경계선 아슬아슬한 오차 (-31도 ~ +31도)
       const randomOffset = Math.floor(Math.random() * 63) - 31;
-      const spins = 10; // 기본 10바퀴 회전
+      const spins = 10;
 
-      // 누적 각도 계산
       const currentBase = rotation - (rotation % 360);
       const finalRotation =
         currentBase + spins * 360 + targetAngle + randomOffset;
 
       setRotation(finalRotation);
 
-      // 5. 회전 완료 콜백 (7초 뒤)
+      // 7초 뒤 결과 콜백
       setTimeout(() => {
         setIsSpinning(false);
         onSpinChange?.(false);
@@ -132,7 +152,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
           className,
         )}
       >
-        {/* 룰렛 상단 하트 포인터 (SVG) */}
+        {/* 룰렛 상단 하트 포인터 */}
         <div className="absolute -top-6 z-20 flex flex-col items-center justify-center drop-shadow-md">
           <Image
             src="/roulette/heart.svg"
@@ -149,13 +169,13 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
           {/* 고정된 그림자: 회전하지 않음 */}
           <div className="absolute inset-0 rounded-full shadow-[0_0_24px_rgba(0,0,0,0.1),0_12px_12px_rgba(0,0,0,0.08)]" />
 
-          {/* 룰렛 이미지만 회전 (rounded-full과 will-change 추가로 회전 시 네 모서리 돌출 방지) */}
+          {/* 룰렛 이미지만 회전 */}
           <div
             className="absolute inset-0 overflow-hidden rounded-full transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0.9,0.08,1)] will-change-transform"
             style={{ transform: `rotate(${rotation}deg)` }}
           >
             <Image
-              src="/roulette/roulette3.png"
+              src={imageSrc}
               alt="룰렛 원판"
               priority
               fill
