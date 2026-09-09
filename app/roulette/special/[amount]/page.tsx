@@ -9,10 +9,10 @@ import Button from "@/components/ui/Button";
 export default function SpecialAmountPage({
   params,
 }: {
-  params: { amount: string };
+  params: Promise<{ amount: string }>;
 }) {
   const router = useRouter();
-  const { amount } = params;
+  const { amount } = React.use(params);
 
   // 유효하지 않은 값이면 렌더링 즉시 튕겨냄 (useEffect 불필요)
   if (amount !== "10000" && amount !== "20000") {
