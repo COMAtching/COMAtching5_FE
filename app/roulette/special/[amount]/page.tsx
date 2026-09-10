@@ -40,23 +40,21 @@ export default function SpecialAmountPage({
       </div>
 
       {/* 닫기 버튼 */}
-      <div className="flex w-full justify-end px-5 pt-[60px] pb-4">
-        <button
-          onClick={() => router.push("/roulette/special")}
-          className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-80"
-        >
-          <X size={24} className="text-[#999999]" />
-        </button>
-      </div>
+      <X
+        size={24}
+        onClick={() => router.push("/roulette/special")}
+        className="text-color-gray-400 mt-[60px] mr-5 mb-4 cursor-pointer self-end transition-opacity hover:opacity-80"
+      />
 
       <div className="flex w-full flex-col items-center px-4">
         {/* 축하 메시지 */}
-        <h1 className="mt-2 text-center text-[24px] leading-[140%] font-semibold text-[#1A1A1A]">
-          당첨을 축하해요!
+        <h1 className="typo-24-600 text-color-text-black mt-2 w-full text-center">
+          특별 보상에 <br />
+          <span className="text-color-brand-primary-flame">당첨</span>됐어요!
         </h1>
 
         {/* 당첨 금액 */}
-        <h2 className="mt-[20px] text-center text-[40px] leading-[140%] font-bold text-[#1A1A1A]">
+        <h2 className="text-color-text-black mt-[20px] text-center text-[40px] leading-[140%] font-bold">
           {displayAmount}원
         </h2>
 
@@ -64,9 +62,7 @@ export default function SpecialAmountPage({
         <div className="mt-[20px] flex w-[218px] items-center gap-[16px]">
           <div className="h-0 flex-1 border border-[#FF4D61]" />
           <div className="flex h-[30px] shrink-0 items-center justify-center rounded-full bg-[#FF4D61] px-[12px] py-[4px]">
-            <span className="text-[16px] leading-[140%] font-semibold text-white">
-              상품권
-            </span>
+            <span className="typo-16-600 text-white">상품권</span>
           </div>
           <div className="h-0 flex-1 border border-[#FF4D61]" />
         </div>
@@ -86,36 +82,34 @@ export default function SpecialAmountPage({
           {/* Way 1 */}
           <div className="flex w-full flex-col gap-[16px]">
             <div className="flex items-center gap-[8px]">
-              <div className="flex h-[25px] items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
-                <span className="text-[12px] leading-[140%] font-semibold text-[#808080]">
-                  방법 1
+              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
+                <span className="typo-12-600 text-color-gray-400">
+                  수령 방법 1
                 </span>
               </div>
-              <span className="text-[14px] leading-[140%] font-semibold text-[#1A1A1A]">
-                마이페이지 확인
+              <span className="typo-14-600 text-color-text-black">
+                부스에서 인증하기
               </span>
             </div>
-            <p className="text-[14px] leading-[140%] font-medium text-[#808080]">
-              마이페이지 - 내 아이템에서 상품권을 확인하세요.
+            <p className="typo-14-500 text-color-gray-400">
+              코마 부스에 방문하여 화면과 닉네임을 보여주세요
             </p>
           </div>
 
           {/* Way 2 */}
           <div className="flex w-full flex-col gap-[16px]">
             <div className="flex items-center gap-[8px]">
-              <div className="flex h-[25px] items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
-                <span className="text-[12px] leading-[140%] font-semibold text-[#808080]">
-                  방법 2
+              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
+                <span className="typo-12-600 text-color-gray-400">
+                  수령 방법 2
                 </span>
               </div>
-              <span className="text-[14px] leading-[140%] font-semibold text-[#1A1A1A]">
-                현장 데스크 교환
+              <span className="typo-14-600 text-color-text-black">
+                인스타그램 인증
               </span>
             </div>
-            <p className="text-[14px] leading-[140%] font-medium whitespace-pre-wrap text-[#808080]">
-              {
-                "축제 기간 중 총학생회 부스에 방문하여\n당첨 화면을 보여주고 실물 상품권으로 교환하세요."
-              }
+            <p className="typo-14-500 text-color-gray-400 whitespace-pre-wrap">
+              {"코마 공식 인스타그램 DM으로 \n화면과 닉네임을 보내주세요"}
             </p>
           </div>
         </div>
@@ -125,11 +119,17 @@ export default function SpecialAmountPage({
 
       {/* 하단 영역 (버튼 + 유의사항) */}
       <div className="flex w-full flex-col items-center gap-6 px-4 pt-10 pb-[30px]">
-        <Button onClick={() => router.push("/roulette/special")}>확인</Button>
+        <Button
+          onClick={() =>
+            window.open("https://www.instagram.com/cuk_coma", "_blank")
+          }
+        >
+          인스타그램으로 문의하기
+        </Button>
         <div className="flex items-center justify-center gap-2">
-          <Info size={12} className="text-[#B3B3B3]" />
-          <span className="text-[12px] leading-[14px] font-medium text-[#B3B3B3]">
-            결제 취소 시 지급된 보상이 회수될 수 있어요
+          <Info size={12} className="text-color-gray-300" />
+          <span className="typo-12-500 text-color-gray-300">
+            준비 수량 소진 시 동일 가치 이상의 아이템으로 대체될 수 있어요
           </span>
         </div>
       </div>

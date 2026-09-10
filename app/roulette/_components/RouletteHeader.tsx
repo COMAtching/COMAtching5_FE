@@ -1,6 +1,7 @@
 "use client";
 
 import { BackButton } from "@/components/ui/BackButton";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 type RouletteHeaderProps = {
@@ -9,9 +10,14 @@ type RouletteHeaderProps = {
 };
 
 const RouletteHeader = ({ title, sidebar }: RouletteHeaderProps) => {
+  const router = useRouter();
+
   return (
     <header className="flex h-[64px] w-full items-center justify-between py-2">
-      <BackButton className="shrink-0" />
+      <BackButton
+        className="shrink-0"
+        onClick={() => router.push("/roulette")}
+      />
 
       {title && (
         <div className="flex flex-1 justify-center text-center">

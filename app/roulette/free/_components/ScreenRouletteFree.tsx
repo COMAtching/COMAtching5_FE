@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CircleAlert } from "lucide-react";
 import RouletteHeader from "../../_components/RouletteHeader";
 import Button from "@/components/ui/Button";
@@ -14,6 +15,7 @@ import RouletteResultModal from "../../_components/RouletteResultModal";
 const MOCK_REMAINING_CHANCES = 1;
 
 const ScreenRouletteFree = () => {
+  const router = useRouter();
   const remainingChances = MOCK_REMAINING_CHANCES;
   const hasChances = remainingChances > 0;
 
