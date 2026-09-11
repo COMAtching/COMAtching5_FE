@@ -118,6 +118,7 @@ export default function RouletteResultModal({
                 src={imageSrc}
                 alt={item.label}
                 fill
+                priority
                 className="object-contain drop-shadow-[0px_6.25px_25px_rgba(0,0,0,0.14)]"
               />
             </div>

@@ -11,14 +11,23 @@ import Roulette, {
 import RouletteProbabilityBottomSheet from "../../_components/RouletteProbabilityBottomSheet";
 import SpecialRouletteChanceCard from "./SpecialRouletteChanceCard";
 import RouletteResultModal from "../../_components/RouletteResultModal";
+import { useRouletteStatus } from "@/hooks/useRouletteStatus";
+import { useSpinRoulette } from "@/hooks/useSpinRoulette";
 
-// TODO: 실제 API 연동 시 대체
-const MOCK_REMAINING_CHANCES = 1;
+// 스페셜 룰렛 참여 기준 금액 (누적 결제 3,500원 이상)
+const SPECIAL_TARGET_AMOUNT = 3500;
 
 const ScreenRouletteSpecial = () => {
   const router = useRouter();
-  const remainingChances = MOCK_REMAINING_CHANCES;
-  const hasChances = remainingChances > 0;
+  const { data: rouletteStatus, isLoading } = useRouletteStatus();
+  const { mutate: spinRoulette, isPending } = useSpinRoulette("SPECIAL");
+
+  // 오늘 이미 참여했으면(true) 더 이상 돌릴 수 없음
+  // 스페셜 룰렛은 isSpecialParticipated가 false이고 누적 결제금이 기준 이상이어야 참여 가능
+  const totalPay = rouletteStatus?.totalPay ?? 0;
+  const isSpecialParticipated = rouletteStatus?.isSpecialParticipated ?? true;
+  const hasChances =
+    !isSpecialParticipated && totalPay >= SPECIAL_TARGET_AMOUNT;
 
   const rouletteRef = useRef<RouletteHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -27,8 +36,14 @@ const ScreenRouletteSpecial = () => {
   const [isProbabilityOpen, setIsProbabilityOpen] = useState(false);
 
   const handleSpin = () => {
-    if (!hasChances || isSpinning) return;
-    rouletteRef.current?.spin();
+    if (!hasChances || isSpinning || isPending) return;
+
+    spinRoulette(undefined, {
+      onSuccess: (res) => {
+        // 서버에서 성공 응답이 오면 반환된 rewardName을 타겟으로 룰렛 회전 시작
+        rouletteRef.current?.spin(res.rewardName);
+      },
+    });
   };
 
   return (
@@ -56,7 +71,10 @@ const ScreenRouletteSpecial = () => {
 
         {/* Special Remaining chances card */}
         <div className="mt-1">
-          <SpecialRouletteChanceCard />
+          <SpecialRouletteChanceCard
+            currentAmount={totalPay}
+            targetAmount={SPECIAL_TARGET_AMOUNT}
+          />
         </div>
       </div>
 
@@ -82,11 +100,19 @@ const ScreenRouletteSpecial = () => {
       {/* Bottom Group: Spin Button + Notice */}
       <div className="flex w-full flex-col items-center gap-3">
         <Button
-          disabled={!hasChances || isSpinning}
+          disabled={isLoading || !hasChances || isSpinning || isPending}
           onClick={handleSpin}
           className="typo-20-600 bg-button-primary w-full py-4"
         >
-          {isSpinning ? "돌아가는 중..." : "룰렛 돌리기"}
+          {isLoading || isPending
+            ? "확인 중..."
+            : isSpinning
+              ? "돌아가는 중..."
+              : isSpecialParticipated
+                ? "오늘은 이미 참여했어요"
+                : !hasChances
+                  ? `${(SPECIAL_TARGET_AMOUNT - totalPay).toLocaleString()}원 더 결제하면 참여 가능`
+                  : "룰렛 돌리기"}
         </Button>
 
         {/* Participation notice */}

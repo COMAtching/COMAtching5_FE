@@ -4,11 +4,14 @@ import React from "react";
 import RouletteHeader from "./RouletteHeader";
 import RouletteProbabilityBottomSheet from "./RouletteProbabilityBottomSheet";
 import { FreeRouletteCard, SpecialRouletteCard } from "./RouletteCards";
+import { useRouletteStatus } from "@/hooks/useRouletteStatus";
 
 /**
  * 룰렛 메인 화면 (허브) 컴포넌트
  */
 const ScreenRouletteMain = () => {
+  const { data: rouletteStatus } = useRouletteStatus();
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-hidden px-4 pt-3 pb-8">
       {/* Roulette Header */}
@@ -41,8 +44,16 @@ const ScreenRouletteMain = () => {
 
         {/* Cards */}
         <div className="mt-6 flex w-full flex-col items-center gap-4">
-          <FreeRouletteCard />
-          <SpecialRouletteCard />
+          <FreeRouletteCard
+            remainingChances={rouletteStatus?.isFreeParticipated ? 1 : 0}
+          />
+          <SpecialRouletteCard
+            currentAmount={rouletteStatus?.totalPay ?? 0}
+            targetAmount={3500}
+            isSpecialParticipated={
+              rouletteStatus?.isSpecialParticipated ?? false
+            }
+          />
         </div>
       </div>
     </div>

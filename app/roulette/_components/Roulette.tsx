@@ -9,7 +9,7 @@ import React, {
 import { cn } from "@/lib/utils";
 
 export interface RouletteHandle {
-  spin: () => void;
+  spin: (targetItemName?: string) => void;
   reset: () => void;
 }
 
@@ -108,7 +108,7 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
       }
     };
 
-    const spin = () => {
+    const spin = (targetItemName?: string) => {
       if (isSpinning) return;
       setIsSpinning(true);
       setTransitionDuration(7000);
@@ -116,8 +116,14 @@ const Roulette = forwardRef<RouletteHandle, RouletteProps>(
 
       triggerHapticFeedback();
 
-      // 당첨 아이템 랜덤 선택
-      const resultIndex = Math.floor(Math.random() * items.length);
+      // 당첨 아이템 랜덤 선택 (API에서 타겟이 오면 해당 타겟 매칭)
+      let resultIndex = Math.floor(Math.random() * items.length);
+      if (targetItemName) {
+        const foundIndex = items.findIndex((i) => i.label === targetItemName);
+        if (foundIndex !== -1) {
+          resultIndex = foundIndex;
+        }
+      }
       const resultItem = items[resultIndex];
 
       // 1칸당 각도 계산

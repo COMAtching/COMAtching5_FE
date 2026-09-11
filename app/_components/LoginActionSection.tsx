@@ -5,7 +5,11 @@ import Link from "next/link";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
+    console.log("🟡 카카오 로그인 URL:", url);
+    // 외부 OAuth 엔드포인트로 리다이렉트 (Next.js 내부 경로 아님)
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.href = url;
   };
 
   return (
