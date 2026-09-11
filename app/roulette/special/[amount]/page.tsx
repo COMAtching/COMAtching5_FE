@@ -40,11 +40,14 @@ export default function SpecialAmountPage({
       </div>
 
       {/* 닫기 버튼 */}
-      <X
-        size={24}
+      <button
+        type="button"
         onClick={() => router.push("/roulette/special")}
-        className="text-color-gray-400 mt-[60px] mr-5 mb-4 cursor-pointer self-end transition-opacity hover:opacity-80"
-      />
+        aria-label="닫기"
+        className="mt-[60px] mr-5 mb-4 flex h-8 w-8 cursor-pointer items-center justify-center self-end rounded-md transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
+      >
+        <X size={24} className="text-color-gray-400" aria-hidden="true" />
+      </button>
 
       <div className="flex w-full flex-col items-center px-4">
         {/* 축하 메시지 */}
