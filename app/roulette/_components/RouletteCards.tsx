@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Check } from "lucide-react";
 
@@ -13,10 +13,17 @@ type FreeRouletteCardProps = {
 };
 
 export const FreeRouletteCard = ({
-  remainingChances = 1,
+  remainingChances = 0,
 }: FreeRouletteCardProps) => {
+  const router = useRouter();
+  const hasChances = remainingChances > 0;
+
   return (
-    <div className="relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px]">
+    <div
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+        !hasChances ? "opacity-50" : ""
+      }`}
+    >
       {/* Upper Content */}
       <div className="flex w-full items-center justify-between gap-2">
         {/* Left Info */}
@@ -32,13 +39,30 @@ export const FreeRouletteCard = ({
 
           {/* Status Checkbox */}
           <div className="flex items-center gap-2">
-            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF775E] via-[#FF4D61] to-[#E83ABC]">
-              <Check size={12} className="stroke-[3] text-white" />
+            <div
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                hasChances
+                  ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
+                  : "bg-[#E5E5E5]"
+              }`}
+            >
+              <Check
+                size={12}
+                className={`stroke-[2] ${
+                  hasChances ? "text-white" : "text-[#B3B3B3]"
+                }`}
+              />
             </div>
             <span className="typo-14-500 leading-[20px] text-[#858585]">
               오늘 남은 횟수
               <br />
-              <span className="text-color-brand-primary-flame">
+              <span
+                className={
+                  hasChances
+                    ? "text-color-brand-primary-flame"
+                    : "text-[#858585]"
+                }
+              >
                 {remainingChances}회
               </span>
             </span>
@@ -61,12 +85,24 @@ export const FreeRouletteCard = ({
       </div>
 
       {/* Button */}
-      <Link
-        href="/roulette/free"
-        className="flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 bg-[#FF4D61] transition-transform hover:opacity-95 active:scale-[0.98]"
+      <button
+        type="button"
+        disabled={!hasChances}
+        onClick={() => router.push("/roulette/free")}
+        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+          hasChances
+            ? "bg-color-flame-700 hover:opacity-95 active:scale-[0.98]"
+            : "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
+        }`}
       >
-        <span className="typo-20-600 text-white">무료 룰렛 입장</span>
-      </Link>
+        <span
+          className={`typo-20-600 ${
+            hasChances ? "text-white" : "text-[#B3B3B3]"
+          }`}
+        >
+          {hasChances ? "무료 룰렛 입장" : "오늘은 이미 참여했어요"}
+        </span>
+      </button>
     </div>
   );
 };
@@ -77,14 +113,24 @@ export const FreeRouletteCard = ({
 type SpecialRouletteCardProps = {
   currentAmount?: number;
   targetAmount?: number;
+  isSpecialParticipated?: boolean;
 };
 
 export const SpecialRouletteCard = ({
-  currentAmount = 2000,
-  targetAmount = 3000,
+  currentAmount = 0,
+  targetAmount = 3500,
+  isSpecialParticipated = false,
 }: SpecialRouletteCardProps) => {
+  const router = useRouter();
+  const hasChances = !isSpecialParticipated && currentAmount >= targetAmount;
+  const isDisabled = !hasChances;
+
   return (
-    <div className="relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px]">
+    <div
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+        isDisabled ? "opacity-50" : ""
+      }`}
+    >
       {/* Upper Content */}
       <div className="flex w-full items-center justify-between gap-2">
         {/* Left Info */}
@@ -100,13 +146,30 @@ export const SpecialRouletteCard = ({
 
           {/* Status Checkbox */}
           <div className="flex items-center gap-2">
-            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E5E5E5]">
-              <Check size={12} className="stroke-[3] text-[#B3B3B3]" />
+            <div
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                hasChances
+                  ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
+                  : "bg-[#E5E5E5]"
+              }`}
+            >
+              <Check
+                size={12}
+                className={`stroke-[2] ${
+                  hasChances ? "text-white" : "text-[#B3B3B3]"
+                }`}
+              />
             </div>
             <span className="typo-14-500 leading-[20px] text-[#858585]">
               현재 누적
               <br />
-              <span className="text-color-brand-primary-flame">
+              <span
+                className={
+                  hasChances
+                    ? "text-color-brand-primary-flame"
+                    : "text-[#858585]"
+                }
+              >
                 {currentAmount.toLocaleString()}원
               </span>{" "}
               / {targetAmount.toLocaleString()}원
@@ -130,12 +193,24 @@ export const SpecialRouletteCard = ({
       </div>
 
       {/* Button */}
-      <Link
-        href="/roulette/special"
-        className="flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 bg-gradient-to-r from-[#FB5E53] to-[#E53BAE] transition-transform hover:opacity-95 active:scale-[0.98]"
+      <button
+        type="button"
+        disabled={isDisabled}
+        onClick={() => router.push("/roulette/special")}
+        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+          isDisabled
+            ? "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
+            : "bg-button-primary hover:opacity-95 active:scale-[0.98]"
+        }`}
       >
-        <span className="typo-20-600 text-white">스페셜 룰렛 입장</span>
-      </Link>
+        <span
+          className={`typo-20-600 ${
+            isDisabled ? "text-[#B3B3B3]" : "text-white"
+          }`}
+        >
+          {isDisabled ? "오늘은 이미 참여했어요" : "스페셜 룰렛 입장"}
+        </span>
+      </button>
     </div>
   );
 };

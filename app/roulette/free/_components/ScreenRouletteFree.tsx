@@ -10,14 +10,16 @@ import Roulette, {
 } from "../../_components/Roulette";
 import RouletteProbabilityBottomSheet from "../../_components/RouletteProbabilityBottomSheet";
 import RouletteResultModal from "../../_components/RouletteResultModal";
-
-// TODO: 실제 API 연동 시 대체
-const MOCK_REMAINING_CHANCES = 1;
+import { useRouletteStatus } from "@/hooks/useRouletteStatus";
+import { useSpinRoulette } from "@/hooks/useSpinRoulette";
 
 const ScreenRouletteFree = () => {
   const router = useRouter();
-  const remainingChances = MOCK_REMAINING_CHANCES;
-  const hasChances = remainingChances > 0;
+  const { data: rouletteStatus, isLoading } = useRouletteStatus();
+
+  // isFreeParticipated: true = 아직 참여 안 함(1회 남음), false = 이미 참여함(0회)
+  const hasChances = rouletteStatus?.isFreeParticipated ?? false;
+  const remainingChances = hasChances ? 1 : 0;
 
   const rouletteRef = useRef<RouletteHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -25,9 +27,17 @@ const ScreenRouletteFree = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProbabilityOpen, setIsProbabilityOpen] = useState(false);
 
+  const { mutate: spinRoulette, isPending } = useSpinRoulette("FREE");
+
   const handleSpin = () => {
-    if (!hasChances || isSpinning) return;
-    rouletteRef.current?.spin();
+    if (!hasChances || isSpinning || isPending) return;
+
+    spinRoulette(undefined, {
+      onSuccess: (res) => {
+        // 서버에서 성공 응답이 오면 반환된 rewardName을 타겟으로 룰렛 회전 시작
+        rouletteRef.current?.spin(res.rewardName);
+      },
+    });
   };
 
   return (
@@ -89,11 +99,17 @@ const ScreenRouletteFree = () => {
       {/* Bottom Group: Spin Button + Notice */}
       <div className="flex w-full flex-col items-center gap-3">
         <Button
-          disabled={!hasChances || isSpinning}
+          disabled={isLoading || !hasChances || isSpinning || isPending}
           onClick={handleSpin}
           className="typo-20-600 bg-button-primary w-full py-4"
         >
-          {isSpinning ? "돌아가는 중..." : "무료로 룰렛 돌리기"}
+          {isLoading || isPending
+            ? "확인 중..."
+            : isSpinning
+              ? "돌아가는 중..."
+              : hasChances
+                ? "무료로 룰렛 돌리기"
+                : "오늘은 이미 참여했어요"}
         </Button>
 
         {/* Participation notice */}
