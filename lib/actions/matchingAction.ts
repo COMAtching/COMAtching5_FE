@@ -31,7 +31,6 @@ export async function postMatchingAction(
   );
 
   // ✅ 런타임 입력값 검증
-  const parsed = MatchingRequestSchema.safeParse(payload);
   const parsed = MatchingRequestSchema.safeParse(sanitizedPayload);
   if (!parsed.success) {
     console.error(
