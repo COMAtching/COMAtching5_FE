@@ -20,10 +20,21 @@ export const firebaseConfig = {
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Analytics (브라우저에서만 실행)
+// Analytics (브라우저에서만 실행, 유효한 설정이 있을 때만)
 let analytics;
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+if (
+  typeof window !== "undefined" &&
+  firebaseConfig.projectId &&
+  !firebaseConfig.projectId.includes("your_")
+) {
+  try {
+    analytics = getAnalytics(app);
+  } catch (e) {
+    console.warn(
+      "[Firebase] Analytics 초기화 실패 (로컬 환경에서는 무시됩니다):",
+      e,
+    );
+  }
 }
 
 // 서비스 워커 등록 및 FCM 토큰 가져오기 (토큰만 반환, 리스너 등록 안 함)
