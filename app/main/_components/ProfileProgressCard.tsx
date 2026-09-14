@@ -12,7 +12,7 @@ export default function ProfileProgressCard() {
 
   if (isLoading || isError || !profileResponse) {
     return (
-      <div className="rounded-5 h-[88px] w-full animate-pulse border border-white/30 bg-white/30" />
+      <div className="h-[88px] w-full animate-pulse rounded-[20px] border border-white/30 bg-white/30" />
     );
   }
 
@@ -57,7 +57,7 @@ export default function ProfileProgressCard() {
   return (
     <div
       onClick={() => router.push("/mypage")}
-      className="rounded-5 w-full cursor-pointer border border-white/30 bg-white/50 p-4.5 shadow-sm backdrop-blur-[50px] transition-all duration-300 hover:border-pink-300 hover:bg-white/70 active:scale-[0.99]"
+      className="w-full cursor-pointer rounded-[20px] border border-white/30 bg-white/50 p-4.5 shadow-sm backdrop-blur-[50px] transition-all duration-300 hover:border-pink-300 hover:bg-white/70 active:scale-[0.99]"
     >
       <div className="flex flex-col gap-2.5">
         {/* 상단 타이틀 영역 */}

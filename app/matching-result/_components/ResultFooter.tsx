@@ -169,7 +169,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
       >
         {!isHolding && !isTriggered && !isPending && (
           <div
-            className="rounded-9 flex h-6 flex-row items-center gap-2.5 px-2 py-1 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
+            className="flex h-6 flex-row items-center gap-2.5 rounded-[36px] px-2 py-1 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
             style={{
               background:
                 "radial-gradient(100% 99.65% at 0% -4.11%, #FFFFFF 0%, rgba(255, 255, 255, 0.85) 100%)",

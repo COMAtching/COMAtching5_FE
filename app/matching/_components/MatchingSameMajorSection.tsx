@@ -66,7 +66,7 @@ export default function MatchingSameMajorSection({
       {/* 옵션 전용 가격 뱃지 / 선택 완료 */}
       {isExcluded ? (
         <button
-          className="bg-pink-gradient border-color-pink-700 rounded-8 relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border transition-transform active:scale-95 disabled:opacity-50"
+          className="bg-pink-gradient border-color-pink-700 relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border transition-transform active:scale-95 disabled:opacity-50"
           onClick={handleDelete}
           disabled={showCheck}
           aria-label="같은과 제외 선택 취소"
@@ -95,7 +95,7 @@ export default function MatchingSameMajorSection({
           </div>
         </button>
       ) : (
-        <div className="border-color-gray-100 rounded-9 flex h-9 w-[86px] items-center justify-center gap-[5px] border bg-white px-2">
+        <div className="border-color-gray-100 flex h-9 w-[86px] items-center justify-center gap-[5px] rounded-[36px] border bg-white px-2">
           <Image
             src="/main/option.png"
             alt="bulb"

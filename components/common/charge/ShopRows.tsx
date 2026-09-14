@@ -67,7 +67,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         </div>
 
         {/* 두 번째 줄: 리워드 목록 상세 */}
-        <span className="text-2.5 leading-[12px] font-semibold text-[#808080]">
+        <span className="text-[10px] leading-[12px] font-semibold text-[#808080]">
           {description}
         </span>
 

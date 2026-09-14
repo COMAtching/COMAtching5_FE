@@ -87,7 +87,7 @@ export default function SpecialRouletteChanceCard({
         </div>
 
         {/* Amount text */}
-        <span className="text-2 shrink-0 leading-[10px] font-semibold text-[#B3B3B3]">
+        <span className="shrink-0 text-[8px] leading-[10px] font-semibold text-[#B3B3B3]">
           {displayTarget}
         </span>
       </div>

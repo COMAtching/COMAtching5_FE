@@ -60,7 +60,7 @@ export default function SpecialAmountPage({
         </h1>
 
         {/* 당첨 금액 */}
-        <h2 className="text-color-text-black text-10 mt-5 text-center leading-[140%] font-bold">
+        <h2 className="text-color-text-black mt-5 text-center text-[40px] leading-[140%] font-bold">
           {displayAmount}원
         </h2>
 

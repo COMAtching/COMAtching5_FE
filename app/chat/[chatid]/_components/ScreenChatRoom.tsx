@@ -87,7 +87,7 @@ const IncomingMessage = ({
           <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
             {message.text}
           </div>
-          <div className="text-2.5 flex items-center gap-2 leading-[130%] font-medium">
+          <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
             <span className="text-[#B3B3B3]">{message.time}</span>
             {message.readCount === 1 && (
               <span className="text-[#999999]">1</span>
@@ -102,7 +102,7 @@ const IncomingMessage = ({
 const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
   return (
     <div className="flex w-full items-end justify-end gap-2">
-      <div className="text-2.5 flex items-center gap-2 leading-[130%] font-medium">
+      <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
         {message.readCount === 1 && <span className="text-[#999999]">1</span>}
         <span className="text-[#B3B3B3]">{message.time}</span>
       </div>

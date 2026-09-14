@@ -80,7 +80,7 @@ const FloatingButton = ({ fixed = false }: FloatingButtonProps) => {
         {/* 배지 영역을 항상 렌더링하고 너비/스케일/투명도를 동시 트랜지션 처리하여 좌우 흔들림 완벽 제거 */}
         <div
           className={cn(
-            "text-2.5 flex h-4 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FF4D61] leading-[110%] font-semibold text-white transition-all duration-300",
+            "flex h-4 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FF4D61] text-[10px] leading-[110%] font-semibold text-white transition-all duration-300",
             isMounted && hasUnread
               ? "ml-0.5 max-w-7 min-w-4 scale-100 px-1 opacity-100"
               : "ml-0 max-w-0 min-w-0 scale-0 px-0 opacity-0",
