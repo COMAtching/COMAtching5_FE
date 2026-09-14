@@ -148,7 +148,7 @@ export default function RouletteResultModal({
                   // TODO: 마이페이지/아이템 확인 페이지로 이동 로직 추가
                 }}
               >
-                내 아이템 확인하기
+                충전내역에서 확인할 수 있어요.
               </button>
             )}
           </div>
