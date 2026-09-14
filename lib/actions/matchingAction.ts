@@ -22,9 +22,22 @@ export type MatchingActionResult = {
 export async function postMatchingAction(
   payload: MatchingRequest,
 ): Promise<MatchingActionResult> {
+  // Next.js Server Action의 undefined 직렬화("$undefined") 및 빈 값 정제
+  const sanitizedPayload = Object.fromEntries(
+    Object.entries(payload).map(([k, v]) => [
+      k,
+      v === "$undefined" ? undefined : v,
+    ]),
+  );
+
   // ✅ 런타임 입력값 검증
   const parsed = MatchingRequestSchema.safeParse(payload);
+  const parsed = MatchingRequestSchema.safeParse(sanitizedPayload);
   if (!parsed.success) {
+    console.error(
+      "[postMatchingAction] Validation failed:",
+      parsed.error.format(),
+    );
     return { success: false, message: "매칭 요청 값이 올바르지 않습니다" };
   }
 

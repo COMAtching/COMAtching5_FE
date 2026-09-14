@@ -18,6 +18,9 @@ export const MatchingRequestSchema = z.object({
   importantOption: z.enum(["MBTI", "HOBBY", "CONTACT"]).optional(),
   minAgeOffset: z.number().int().min(0).max(20).nullable().optional(),
   maxAgeOffset: z.number().int().min(0).max(20).nullable().optional(),
+  importantOption: z.enum(["MBTI", "HOBBY", "CONTACT"]).nullable().optional(),
+  minAgeOffset: z.number().int().min(0).max(100).nullable().optional(),
+  maxAgeOffset: z.number().int().min(0).max(100).nullable().optional(),
 });
 
 // --- 프로필 제출 ---
