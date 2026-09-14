@@ -9,15 +9,16 @@ export const LoginSchema = z.object({
 // --- 매칭 ---
 export const MatchingRequestSchema = z.object({
   ageOption: z.enum(["OLDER", "YOUNGER", "EQUAL"]).nullable().optional(),
-  mbtiOption: z.string().max(4).optional(),
+  mbtiOption: z.string().max(4).nullable().optional(),
   hobbyOption: z
     .enum(["SPORTS", "CULTURE", "MUSIC", "LEISURE", "DAILY", "GAME"])
+    .nullable()
     .optional(),
-  contactFrequency: z.enum(["FREQUENT", "NORMAL", "RARE"]).optional(),
+  contactFrequency: z
+    .enum(["FREQUENT", "NORMAL", "RARE"])
+    .nullable()
+    .optional(),
   sameMajorOption: z.boolean(),
-  importantOption: z.enum(["MBTI", "HOBBY", "CONTACT"]).optional(),
-  minAgeOffset: z.number().int().min(0).max(20).nullable().optional(),
-  maxAgeOffset: z.number().int().min(0).max(20).nullable().optional(),
   importantOption: z.enum(["MBTI", "HOBBY", "CONTACT"]).nullable().optional(),
   minAgeOffset: z.number().int().min(0).max(100).nullable().optional(),
   maxAgeOffset: z.number().int().min(0).max(100).nullable().optional(),

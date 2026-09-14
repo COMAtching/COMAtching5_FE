@@ -180,18 +180,18 @@ const ScreenMatching = () => {
     }
 
     const payload: MatchingRequest = {
-      ageOption: isAgeRangeActive ? null : ageInfo.option || null,
+      ageOption: isAgeRangeActive ? null : (ageInfo.option ?? null),
       minAgeOffset: finalMinAge,
       maxAgeOffset: finalMaxAge,
-      mbtiOption: selectedMBTI || undefined,
+      mbtiOption: selectedMBTI || null,
       hobbyOption: selectedHobbyCategory
         ? hobbyMapping[selectedHobbyCategory]
-        : undefined,
+        : null,
       contactFrequency: selectedFrequency
         ? frequencyMapping[selectedFrequency]
-        : undefined,
+        : null,
       sameMajorOption: isSameMajorExclude,
-      importantOption: importantOption || undefined,
+      importantOption: importantOption ?? null,
     };
 
     match(payload, {

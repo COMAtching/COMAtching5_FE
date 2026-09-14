@@ -14,11 +14,11 @@ export type ImportantOption = "MBTI" | "HOBBY" | "CONTACT";
 
 export interface MatchingRequest {
   ageOption?: AgeOption | null;
-  mbtiOption?: string; // e.g., "IS", "EN"
-  hobbyOption?: HobbyOption;
-  contactFrequency?: ContactFrequency;
+  mbtiOption?: string | null; // e.g., "IS", "EN"
+  hobbyOption?: HobbyOption | null;
+  contactFrequency?: ContactFrequency | null;
   sameMajorOption: boolean;
-  importantOption?: ImportantOption;
+  importantOption?: ImportantOption | null;
   minAgeOffset?: number | null;
   maxAgeOffset?: number | null;
 }
