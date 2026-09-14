@@ -1,8 +1,11 @@
 import axios from "axios";
 
 // 1. 공통 설정 (URL, 헤더 등)
+// 개발 환경에서는 프록시(rewrites)를 타도록 빈 문자열 지정 (브라우저가 알아서 localhost:3000으로 보냄)
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://srv.comatching.site";
+  process.env.NODE_ENV === "development"
+    ? ""
+    : process.env.NEXT_PUBLIC_API_URL || "https://srv.comatching.site";
 
 const axiosConfig = {
   baseURL: API_URL,
