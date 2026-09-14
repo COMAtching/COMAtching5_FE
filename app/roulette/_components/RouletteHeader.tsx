@@ -1,7 +1,7 @@
 "use client";
 
 import { BackButton } from "@/components/ui/BackButton";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 type RouletteHeaderProps = {
@@ -20,13 +20,9 @@ const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
       return;
     }
 
-    // 메인 허브 화면(/roulette)에서는 이전 방문 페이지로 이동
-    if (pathname === "/roulette") {
-      router.back();
-    } else {
-      // 무료/스페셜 등 하위 룰렛 화면에서는 룰렛 메인 허브로 이동
-      router.push("/roulette");
-    }
+    // 어느 경로에서든 항상 이전 페이지로 이동
+    // (push 대신 back을 사용해야 히스토리 스택에 /roulette가 중복으로 쌓이지 않음)
+    router.back();
   };
 
   return (
