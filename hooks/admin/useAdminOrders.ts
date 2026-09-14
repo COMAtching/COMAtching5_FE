@@ -6,6 +6,8 @@ import { AxiosError } from "axios";
 export interface AdminOrder {
   requestId: number;
   memberId: number;
+  productId: number;
+  productCode: string;
   requestedItemName: string;
   requesterRealName: string;
   requesterUsername: string;
@@ -18,7 +20,18 @@ export interface AdminOrder {
   expiresAt: string;
 }
 
-interface ApiResponse<T> {
+/* ── 페이징 응답 구조 ── */
+export interface PaginatedResponse<T> {
+  content: T[];
+  currentPage: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface ApiResponse<T> {
   code: string;
   status: number;
   message: string;
@@ -26,11 +39,22 @@ interface ApiResponse<T> {
 }
 
 /* ── 대기 주문 목록 조회 ── */
-const fetchAdminOrders = async (): Promise<ApiResponse<AdminOrder[]>> => {
-  const { data } = await api.get<ApiResponse<AdminOrder[]>>(
-    "/api/v1/admin/payment/requests",
-  );
-  return data;
+const fetchAdminOrders = async (): Promise<AdminOrder[]> => {
+  let allOrders: AdminOrder[] = [];
+  let page = 0;
+  let hasNext = true;
+
+  while (hasNext) {
+    const { data } = await api.get<ApiResponse<PaginatedResponse<AdminOrder>>>(
+      "/api/v1/admin/payment/requests",
+      { params: { page, size: 100, sort: "requestedAt,desc" } },
+    );
+    allOrders = [...allOrders, ...data.data.content];
+    hasNext = data.data.hasNext;
+    page += 1;
+  }
+
+  return allOrders;
 };
 
 /* ── 승인 ── */

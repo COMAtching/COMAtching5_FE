@@ -25,7 +25,7 @@ export default function ChargeInventoryCard() {
   };
 
   return (
-    <div className="bg-color-gray-50 flex flex-col gap-2 rounded-[16px] p-4">
+    <div className="bg-color-gray-50 flex flex-col gap-2 rounded-2xl p-4">
       {/* 보유 수량 */}
       <div className="border-color-gray-100 flex flex-col gap-2 border-b pb-3">
         {INVENTORY_ROWS.map((row) => {

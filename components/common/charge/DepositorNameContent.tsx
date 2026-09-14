@@ -47,7 +47,7 @@ export default function DepositorNameContent() {
       <div className="flex flex-col gap-2">
         <span className="typo-14-500 text-[#666666]">입금자명</span>
         <div
-          className="flex h-[48px] items-center border-b border-[#B3B3B3] px-2"
+          className="flex h-12 items-center border-b border-[#B3B3B3] px-2"
           style={{
             background:
               "linear-gradient(180deg, rgba(245, 245, 245, 0.03) 0%, rgba(245, 245, 245, 0.24) 100%)",
@@ -65,7 +65,7 @@ export default function DepositorNameContent() {
       </div>
 
       {/* ── 안내 가이드 (Frame 2612440) ── */}
-      <div className="bg-color-gray-50 flex flex-col gap-6 rounded-[16px] p-4">
+      <div className="bg-color-gray-50 flex flex-col gap-6 rounded-2xl p-4">
         {/* 유의사항 */}
         <div className="flex flex-col gap-2">
           <span className="typo-14-600 text-[#808080]">유의사항</span>

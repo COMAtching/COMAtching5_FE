@@ -12,6 +12,10 @@ export const metadata = {
   description: "이벤트 룰렛 진행",
 };
 
+// 페이지 이동 시마다 서버에서 항상 최신 데이터를 가져와 HydrationBoundary로 주입
+// useEffect + refetch 없이도 신선한 상태를 보장
+export const dynamic = "force-dynamic";
+
 interface RoulettePageApiResponse {
   code: string;
   status: number;

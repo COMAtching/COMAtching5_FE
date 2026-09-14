@@ -21,7 +21,7 @@ export default function QuickBundleCard({
     .join("+");
 
   return (
-    <div className="border-color-gray-64 bg-color-gray-50 flex flex-1 flex-col items-center justify-between rounded-[16px] border p-2 pt-4">
+    <div className="border-color-gray-64 bg-color-gray-50 flex flex-1 flex-col items-center justify-between rounded-2xl border p-2 pt-4">
       <div className="flex flex-col items-center gap-2">
         <Image
           src={imageUrl}
@@ -70,7 +70,7 @@ export default function QuickBundleCard({
           <button
             type="button"
             disabled={product.remainingPurchaseCount === 0}
-            className={`typo-16-600 mt-4 flex h-10 w-full items-center justify-center rounded-[8px] text-white transition-colors ${
+            className={`typo-16-600 mt-4 flex h-10 w-full items-center justify-center rounded-lg text-white transition-colors ${
               product.remainingPurchaseCount === 0
                 ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
                 : "bg-color-flame-700"

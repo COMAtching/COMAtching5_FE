@@ -133,7 +133,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
   return (
     <div className="mt-6 flex w-full flex-col gap-3">
       {/* Top Row: Home & Mail Buttons */}
-      <div className="flex w-full flex-row gap-[10px]">
+      <div className="flex w-full flex-row gap-2.5">
         {/* Home Button */}
         <button
           onClick={handleHome}
@@ -169,7 +169,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
       >
         {!isHolding && !isTriggered && !isPending && (
           <div
-            className="flex h-6 flex-row items-center gap-[10px] rounded-[36px] px-2 py-1 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
+            className="flex h-6 flex-row items-center gap-2.5 rounded-[36px] px-2 py-1 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] backdrop-blur-[50px]"
             style={{
               background:
                 "radial-gradient(100% 99.65% at 0% -4.11%, #FFFFFF 0%, rgba(255, 255, 255, 0.85) 100%)",

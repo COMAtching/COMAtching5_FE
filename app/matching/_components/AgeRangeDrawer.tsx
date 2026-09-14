@@ -69,14 +69,14 @@ export default function AgeRangeDrawer({
         <div className="flex flex-col px-6">
           <DrawerHeader className="gap-4 px-0 pt-6 pb-0">
             <div className="relative flex items-center justify-between">
-              <div className="w-[40px]" />
+              <div className="w-10" />
               <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
                 나이 구간 설정
               </DrawerTitle>
               <DrawerClose asChild>
                 <button
                   type="button"
-                  className="typo-16-500 text-color-text-caption3 w-[40px] text-right"
+                  className="typo-16-500 text-color-text-caption3 w-10 text-right"
                 >
                   닫기
                 </button>

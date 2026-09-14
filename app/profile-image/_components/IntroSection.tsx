@@ -15,7 +15,7 @@ const IntroSection = ({ intro, onIntroChange }: IntroSectionProps) => {
         자기소개
       </label>
 
-      <div className="relative box-border flex h-30 w-full items-start rounded-[16px] border border-[#0E1013]/10 bg-white p-4">
+      <div className="relative box-border flex h-30 w-full items-start rounded-2xl border border-[#0E1013]/10 bg-white p-4">
         <textarea
           id="intro"
           name="intro"

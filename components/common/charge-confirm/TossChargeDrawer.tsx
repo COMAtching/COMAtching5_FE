@@ -49,6 +49,7 @@ export default function TossChargeDrawer({
 
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [nameInput, setNameInput] = React.useState("");
+  const [quantity, setQuantity] = React.useState(1);
 
   // 실명이 로드되면 이름 업데이트
   React.useEffect(() => {
@@ -63,6 +64,7 @@ export default function TossChargeDrawer({
     if (open) {
       setIsEditingName(false);
       setNameInput(name || realNameData?.data?.realName || "");
+      setQuantity(1);
     }
   }, [open, name, realNameData]);
 
@@ -125,39 +127,46 @@ export default function TossChargeDrawer({
       return;
     }
 
-    purchase(productId, {
-      onSuccess: () => {
-        alert(
-          "충전 요청이 완료되었습니다! 토스가 설치되어 있다면 토스로 바로 이동합니다.",
-        );
-        onOpenChange(false);
-        queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-
-        // 토스 송금 앱으로 즉시 자동 연동
-        handleTossTransfer(customAmount);
-      },
-      onError: (error: AxiosError<{ code?: string; message?: string }>) => {
-        const errorData = error.response?.data;
-        if (errorData?.code === "PAY-003") {
-          alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
-          onOpenChange(false);
-        } else if (
-          errorData?.code === "PAY-004" ||
-          errorData?.message?.includes("사용자명") ||
-          errorData?.message?.includes("입금자명")
-        ) {
-          alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
-          onOpenChange(false);
-          drawerContext?.setActiveTab(2);
-        } else {
+    purchase(
+      { productId, quantity },
+      {
+        onSuccess: () => {
           alert(
-            errorData?.message ||
-              "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
+            "충전 요청이 완료되었습니다! 토스가 설치되어 있다면 토스로 바로 이동합니다.",
           );
-        }
+          onOpenChange(false);
+          queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+
+          // 토스 송금 앱으로 즉시 자동 연동
+          handleTossTransfer(customAmount);
+        },
+        onError: (error: AxiosError<{ code?: string; message?: string }>) => {
+          const errorData = error.response?.data;
+          if (errorData?.code === "PAY-003") {
+            alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
+            onOpenChange(false);
+          } else if (
+            errorData?.code === "PAY-004" ||
+            errorData?.message?.includes("사용자명") ||
+            errorData?.message?.includes("입금자명")
+          ) {
+            alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
+            onOpenChange(false);
+            drawerContext?.setActiveTab(2);
+          } else {
+            alert(
+              errorData?.message ||
+                "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
+            );
+          }
+        },
       },
-    });
+    );
   };
+
+  const isQuantityItem =
+    productName?.includes("옵션권") || productName?.includes("뽑기권");
+  const totalAmount = amount * quantity;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -169,7 +178,7 @@ export default function TossChargeDrawer({
         <div className="mx-auto flex w-full max-w-md flex-col items-center gap-8 px-4 pt-6 pb-10 outline-none">
           {/* ── Header (CONTENTS) ── */}
           <div className="flex h-6 w-full items-center justify-between">
-            <DrawerTitle className="font-sans text-[20px] leading-[24px] font-bold text-black">
+            <DrawerTitle className="font-sans text-xl leading-[24px] font-bold text-black">
               결제하기
             </DrawerTitle>
             <DrawerClose
@@ -183,22 +192,52 @@ export default function TossChargeDrawer({
           {/* ── Content (Frame 2612290) ── */}
           <div className="flex w-full flex-col items-center gap-6">
             {/* ── Product Card (Frame 2612294) ── */}
-            <div className="flex w-full flex-col items-start gap-4 rounded-[16px] bg-[#F5F5F5] p-4">
+            <div className="flex w-full flex-col items-start gap-4 rounded-2xl bg-[#F5F5F5] p-4">
               {/* Row 1 (Product Name & Price) */}
               <div className="flex w-full flex-row items-center justify-between border-b border-[#EAEAEA] pb-3">
-                <span className="text-[16px] font-semibold text-[#1A1A1A]">
+                <span className="text-base font-semibold text-[#1A1A1A]">
                   {productName || "뽑기권"}
                 </span>
-                <span className="text-[16px] font-semibold text-[#808080]">
+                <span className="text-base font-semibold text-[#808080]">
                   {amount.toLocaleString()}원
                 </span>
               </div>
 
               {/* Row 2 (Pricing/Depositor) */}
               <div className="flex w-full flex-col gap-3">
+                {/* 구매 수량 (조건부) */}
+                {isQuantityItem && (
+                  <div className="flex w-full flex-row items-center justify-start gap-4">
+                    <span className="text-base leading-[19px] font-semibold text-[#999999]">
+                      구매 수량
+                    </span>
+                    <div className="flex items-center gap-3 rounded-md border border-[#E5E5E5] bg-white px-2 py-1">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        disabled={quantity <= 1}
+                        className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
+                      >
+                        -
+                      </button>
+                      <span className="typo-16-700 text-color-gray-900 w-4 text-center">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.min(3, q + 1))}
+                        disabled={quantity >= 3}
+                        className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Depositor Name (Frame 2612281) */}
                 <div className="flex w-full flex-row items-center justify-end gap-2">
-                  <span className="text-[16px] leading-[19px] font-semibold text-[#999999]">
+                  <span className="text-base leading-[19px] font-semibold text-[#999999]">
                     입금자명
                   </span>
                   <div
@@ -220,11 +259,11 @@ export default function TossChargeDrawer({
                         }}
                         autoFocus
                         maxLength={6}
-                        className="w-16 border-none bg-transparent text-right text-[16px] font-bold text-[#1A1A1A] outline-none"
+                        className="w-16 border-none bg-transparent text-right text-base font-bold text-[#1A1A1A] outline-none"
                       />
                     ) : (
                       <>
-                        <span className="text-[16px] leading-[19px] font-bold text-[#1A1A1A]">
+                        <span className="text-base leading-[19px] font-bold text-[#1A1A1A]">
                           {name || "미지정"}
                         </span>
                         <Pencil size={12} className="text-[#B3B3B3]" />
@@ -235,14 +274,14 @@ export default function TossChargeDrawer({
 
                 {/* Total Price (Frame 2612282) */}
                 <div className="flex w-full flex-row items-center justify-end gap-2">
-                  <span className="text-[16px] leading-[19px] font-semibold text-[#999999]">
-                    결제 금액
+                  <span className="text-base leading-[19px] font-semibold text-[#999999]">
+                    총 결제 금액
                   </span>
                   <div className="flex flex-row items-center justify-center gap-1">
-                    <span className="text-[16px] leading-[19px] font-bold text-[#1A1A1A]">
-                      {amount.toLocaleString()}
+                    <span className="text-base leading-[19px] font-bold text-[#1A1A1A]">
+                      {totalAmount.toLocaleString()}
                     </span>
-                    <span className="text-[16px] leading-[19px] font-bold text-[#1A1A1A]">
+                    <span className="text-base leading-[19px] font-bold text-[#1A1A1A]">
                       원
                     </span>
                   </div>
@@ -257,8 +296,8 @@ export default function TossChargeDrawer({
             <button
               type="button"
               disabled={isPending}
-              onClick={() => handleConfirmAction(amount)}
-              className="flex h-12 w-full max-w-[345px] flex-row items-center justify-center gap-[10px] rounded-[8px] bg-[#1A1A1A] px-[18px] py-[3px] transition-colors hover:bg-black"
+              onClick={() => handleConfirmAction(totalAmount)}
+              className="flex h-12 w-full max-w-[345px] flex-row items-center justify-center gap-2.5 rounded-lg bg-[#1A1A1A] px-[18px] py-[3px] transition-colors hover:bg-black"
             >
               <Image
                 src="/charge/toss.png"
@@ -267,22 +306,22 @@ export default function TossChargeDrawer({
                 height={26}
                 className="order-0 h-[26px] w-[26px] flex-none flex-grow-0 object-contain"
               />
-              <span className="order-1 flex h-[24px] w-auto flex-none flex-grow-0 items-center justify-center text-center font-sans text-[20px] leading-[24px] font-semibold text-white">
+              <span className="order-1 flex h-6 w-auto flex-none flex-grow-0 items-center justify-center text-center font-sans text-xl leading-[24px] font-semibold text-white">
                 {isPending
                   ? "요청 중..."
-                  : `Toss로 ${amount.toLocaleString()}원 결제하기`}
+                  : `Toss로 ${totalAmount.toLocaleString()}원 결제하기`}
               </span>
             </button>
 
             {/* Manual Transfer Link */}
             <div className="flex flex-col items-center gap-1">
-              <span className="text-center text-[12px] leading-[160%] font-medium text-[#999999]">
+              <span className="text-center text-xs leading-[160%] font-medium text-[#999999]">
                 토스앱을 설치하지 않으셨나요?
               </span>
               <button
                 type="button"
                 onClick={onSwitchToDirect}
-                className="text-center text-[12px] leading-[160%] font-medium text-[#999999] underline underline-offset-4 transition-colors hover:text-[#666666]"
+                className="text-center text-xs leading-[160%] font-medium text-[#999999] underline underline-offset-4 transition-colors hover:text-[#666666]"
               >
                 수동으로 계좌이체하기
               </button>

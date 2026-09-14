@@ -87,7 +87,7 @@ const IncomingMessage = ({
           <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
             {message.text}
           </div>
-          <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
+          <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
             <span className="text-[#B3B3B3]">{message.time}</span>
             {message.readCount === 1 && (
               <span className="text-[#999999]">1</span>
@@ -102,7 +102,7 @@ const IncomingMessage = ({
 const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
   return (
     <div className="flex w-full items-end justify-end gap-2">
-      <div className="flex items-center gap-2 text-[10px] leading-[130%] font-medium">
+      <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
         {message.readCount === 1 && <span className="text-[#999999]">1</span>}
         <span className="text-[#B3B3B3]">{message.time}</span>
       </div>
@@ -391,7 +391,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-[24px] border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
+          <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-3xl border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
             <div className="flex h-[92.32px] w-[116px] flex-col items-center justify-center gap-3">
               <Image
                 src="/chat/heart.png"
@@ -463,7 +463,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         className="fixed right-0 bottom-5 left-0 z-20 pb-2"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-[24px] border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
+        <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
             ref={inputRef}
             type="text"
@@ -483,7 +483,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             disabled={!isSendEnabled}
             onClick={handleSendMessage}
             className={cn(
-              "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-[24px] border border-white/30 transition-colors",
+              "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-3xl border border-white/30 transition-colors",
               isSendEnabled
                 ? "bg-button-primary text-button-primary-text-default"
                 : "bg-[#E5E5E5] text-[#CCCCCC]",

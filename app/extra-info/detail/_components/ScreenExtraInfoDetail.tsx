@@ -89,7 +89,7 @@ const ScreenExtraInfoDetail = () => {
         <div className="flex flex-row items-center justify-between gap-2">
           <div className="flex flex-col">
             <label className="typo-16-600 text-black">제 장점은요...</label>
-            <p className="typo-14-500 flex h-[32px] items-center text-gray-400">
+            <p className="typo-14-500 flex h-8 items-center text-gray-400">
               내가 생각하는 나의 장점을 골라주세요
             </p>
           </div>
@@ -111,7 +111,7 @@ const ScreenExtraInfoDetail = () => {
             {advantages.map((adv) => (
               <div
                 key={adv}
-                className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B3]/15 px-3 py-2 backdrop-blur-[50px]"
+                className="flex h-8 items-center justify-center gap-2.5 rounded-full border border-[#DFDFDF] bg-[#B3B3B3]/15 px-3 py-2 backdrop-blur-[50px]"
               >
                 <span className="typo-14-500 text-black">{adv}</span>
               </div>
@@ -128,7 +128,7 @@ const ScreenExtraInfoDetail = () => {
                 key={opt.key}
                 type="button"
                 className={cn(
-                  "flex h-[48px] min-w-0 flex-1 flex-col items-center justify-center rounded-[16px] border px-0 transition-colors",
+                  "flex h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-2xl border px-0 transition-colors",
                   contactType === opt.key
                     ? "border-gray-100 bg-[#FFFFFF]"
                     : "border-[#E8E8E8]",

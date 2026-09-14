@@ -32,12 +32,12 @@ export default function SpecialAmountPage({
     >
       {/* Decorative Vectors (별/빛 모양 등) */}
       <div className="pointer-events-none absolute top-[102px] left-[69px] h-[32.5px] w-[22.5px]">
-        <div className="absolute top-0 left-[10px] h-[14.5px] w-[12.5px] bg-[#FFB6D2]" />
+        <div className="absolute top-0 left-2.5 h-[14.5px] w-[12.5px] bg-[#FFB6D2]" />
         <div className="absolute top-[23.5px] left-0 h-[9px] w-[8.16px] bg-[#FFB6D2]" />
       </div>
       <div className="pointer-events-none absolute top-[132px] left-[283px] h-[43.5px] w-[41.5px]">
         <div className="absolute top-0 left-0 h-[10.5px] w-[10.5px] bg-[#FFB7D3]" />
-        <div className="absolute top-[34px] left-[32px] h-[9.5px] w-[9.5px] bg-[#FFDAE6]" />
+        <div className="absolute top-[34px] left-8 h-[9.5px] w-[9.5px] bg-[#FFDAE6]" />
       </div>
 
       {/* 닫기 버튼 */}
@@ -60,21 +60,21 @@ export default function SpecialAmountPage({
         </h1>
 
         {/* 당첨 금액 */}
-        <h2 className="text-color-text-black mt-[20px] text-center text-[40px] leading-[140%] font-bold">
+        <h2 className="text-color-text-black mt-5 text-center text-[40px] leading-[140%] font-bold">
           {displayAmount}원
         </h2>
 
         {/* 바우처 라벨 구분선 (Voucher container) */}
-        <div className="mt-[20px] flex w-[218px] items-center gap-[16px]">
+        <div className="mt-5 flex w-[218px] items-center gap-4">
           <div className="h-0 flex-1 border border-[#FF4D61]" />
-          <div className="flex h-[30px] shrink-0 items-center justify-center rounded-full bg-[#FF4D61] px-[12px] py-[4px]">
+          <div className="flex h-[30px] shrink-0 items-center justify-center rounded-full bg-[#FF4D61] px-3 py-1">
             <span className="typo-16-600 text-white">상품권</span>
           </div>
           <div className="h-0 flex-1 border border-[#FF4D61]" />
         </div>
 
         {/* 바우처 이미지 */}
-        <div className="relative mt-6 h-[92px] w-[256px]">
+        <div className="relative mt-6 h-[92px] w-64">
           <Image
             src={`/roulette/item/gift_card_${amount}.png`}
             alt={`${displayAmount}원 상품권`}
@@ -84,11 +84,11 @@ export default function SpecialAmountPage({
         </div>
 
         {/* 사용 방법 안내 (Redemption instructions container) */}
-        <div className="mt-[60px] flex w-full flex-col gap-[32px]">
+        <div className="mt-[60px] flex w-full flex-col gap-8">
           {/* Way 1 */}
-          <div className="flex w-full flex-col gap-[16px]">
-            <div className="flex items-center gap-[8px]">
-              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
+          <div className="flex w-full flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-3 py-1">
                 <span className="typo-12-600 text-color-gray-400">
                   수령 방법 1
                 </span>
@@ -103,9 +103,9 @@ export default function SpecialAmountPage({
           </div>
 
           {/* Way 2 */}
-          <div className="flex w-full flex-col gap-[16px]">
-            <div className="flex items-center gap-[8px]">
-              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-[12px] py-[4px]">
+          <div className="flex w-full flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center rounded-full bg-[#999999]/30 px-3 py-1">
                 <span className="typo-12-600 text-color-gray-400">
                   수령 방법 2
                 </span>

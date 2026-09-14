@@ -73,14 +73,14 @@ export const PasswordStep = ({
                 type="button"
                 aria-label="입력 초기화"
                 onClick={() => onPasswordChange("")}
-                className="flex h-[20px] w-[20px] items-center justify-center rounded-full border border-(--inputfield-close-stroke) bg-(--inputfield-close-fill) text-gray-400"
+                className="flex h-5 w-5 items-center justify-center rounded-full border border-(--inputfield-close-stroke) bg-(--inputfield-close-fill) text-gray-400"
               >
                 <X width={12} height={12} strokeWidth={2.5} />
               </button>
             )}
           </div>
         </div>
-        <div className="typo-14-400 flex flex-col gap-[8px]">
+        <div className="typo-14-400 flex flex-col gap-2">
           <span
             className={`flex items-center gap-1 ${password && isLengthValid ? "text-color-text-highlight" : "text-color-text-caption2"}`}
           >

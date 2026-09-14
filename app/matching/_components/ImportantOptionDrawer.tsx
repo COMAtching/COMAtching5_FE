@@ -208,11 +208,11 @@ export default function ImportantOptionDrawer({
         <div className="relative flex h-full flex-col px-6 select-none">
           <DrawerHeader className="gap-4 px-0 pt-6 pb-0">
             <div className="relative flex items-center justify-between">
-              <div className="w-[40px]" />
+              <div className="w-10" />
               <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
                 중요한 옵션 선택
               </DrawerTitle>
-              <DrawerClose className="typo-16-500 text-color-text-caption3 w-[40px] text-right">
+              <DrawerClose className="typo-16-500 text-color-text-caption3 w-10 text-right">
                 닫기
               </DrawerClose>
             </div>
@@ -233,7 +233,7 @@ export default function ImportantOptionDrawer({
               )}
             >
               {!selectedOption ? (
-                <div className="pointer-events-none flex flex-col items-center gap-[12px]">
+                <div className="pointer-events-none flex flex-col items-center gap-3">
                   <ArrowUpToLine
                     className="text-color-text-disabled h-6 w-6"
                     strokeWidth={2}
@@ -245,7 +245,7 @@ export default function ImportantOptionDrawer({
               ) : (
                 <div className="relative mx-auto flex w-[calc(100%-12px)] flex-col items-end gap-1 pt-3">
                   {typingStep >= 1 && (
-                    <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-[12px] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
+                    <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-3 shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
                       <span className="typo-14-500 text-right text-white">
                         <TypingText
                           key={selectedOption}
@@ -272,7 +272,7 @@ export default function ImportantOptionDrawer({
                   {typingStep >= 2 && (
                     <button
                       onClick={() => onSelect(null)}
-                      className="animate-in fade-in bg-color-gray-100 typo-12-700 text-color-text-caption2 mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] px-3 py-[6px] transition-colors duration-500 active:bg-gray-300"
+                      className="animate-in fade-in bg-color-gray-100 typo-12-700 text-color-text-caption2 mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] px-3 py-1.5 transition-colors duration-500 active:bg-gray-300"
                     >
                       선택 취소
                     </button>
@@ -299,7 +299,7 @@ export default function ImportantOptionDrawer({
 
           <div className="touch-pan-y">
             <DrawerClose asChild>
-              <button className="bg-color-main-900 typo-20-700 flex h-[48px] w-full items-center justify-center rounded-[16px] border-[0.8px] border-white/30 text-white transition-transform active:scale-[0.98]">
+              <button className="bg-color-main-900 typo-20-700 flex h-12 w-full items-center justify-center rounded-2xl border-[0.8px] border-white/30 text-white transition-transform active:scale-[0.98]">
                 NEXT
               </button>
             </DrawerClose>
@@ -331,10 +331,10 @@ export default function ImportantOptionDrawer({
                         }
                       </span>
                     </div>
-                    <div className="flex flex-col gap-[2px]">
-                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
-                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
-                      <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
+                    <div className="flex flex-col gap-0.5">
+                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
                     </div>
                   </div>
                 </div>

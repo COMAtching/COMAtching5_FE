@@ -49,7 +49,7 @@ export default function Button({
       disabled={disabled}
       className={cn(
         // 기본 스타일
-        "flex h-12 w-full shrink-0 items-center justify-center rounded-[16px] transition-colors duration-100",
+        "flex h-12 w-full shrink-0 items-center justify-center rounded-2xl transition-colors duration-100",
         // typo- 클래스가 명시되지 않은 경우에만 기본 typo-20-600 적용
         !className?.includes("typo-") && "typo-20-600",
         fixed && "fixed z-50 mx-auto",

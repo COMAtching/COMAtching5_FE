@@ -44,10 +44,10 @@ export default function MatchingOptionCard({
         </span>
       </div>
       {/* 드래그 핸들 아이콘 (Hamburger 형태) */}
-      <div className="flex flex-col gap-[2px]" aria-hidden="true">
-        <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
-        <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
-        <div className="bg-color-gray-200 h-[2px] w-4 rounded-[1px]" />
+      <div className="flex flex-col gap-0.5" aria-hidden="true">
+        <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+        <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+        <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
       </div>
     </button>
   );

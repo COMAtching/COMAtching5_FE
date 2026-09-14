@@ -20,13 +20,13 @@ const InfoCard = ({
   const CardContent = (
     <div
       className={cn(
-        "box-border flex w-full flex-col items-start gap-4 rounded-[16px] p-6 transition-all",
+        "box-border flex w-full flex-col items-start gap-4 rounded-2xl p-6 transition-all",
         disabled
           ? "border border-[#E9E9E9] bg-[#F1F1F1]"
           : "border border-[rgba(255,255,255,0.3)] bg-[rgba(255,255,255,0.5)] shadow-[0px_2px_8px_rgba(0,0,0,0.12)] backdrop-blur-sm",
       )}
     >
-      <div className="flex flex-col items-start gap-[16px] p-0">
+      <div className="flex flex-col items-start gap-4 p-0">
         <h3
           className={cn(
             "typo-20-700 flex items-center",

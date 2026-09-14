@@ -79,7 +79,7 @@ export default function MatchingImportantOptionSection({
                 )}
               >
                 <Check
-                  className="text-color-pink-700 h-[14px] w-[14px]"
+                  className="text-color-pink-700 h-3.5 w-3.5"
                   strokeWidth={3}
                 />
               </div>
@@ -92,7 +92,7 @@ export default function MatchingImportantOptionSection({
                 )}
               >
                 <Delete
-                  className="text-color-pink-700 h-[20px] w-[20px]"
+                  className="text-color-pink-700 h-5 w-5"
                   strokeWidth={2}
                 />
               </div>

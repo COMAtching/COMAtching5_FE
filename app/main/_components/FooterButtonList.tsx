@@ -12,7 +12,7 @@ const MatchingButton = () => {
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
       }}
-      className="flex h-[13.11vh] w-full flex-col items-center justify-center gap-1 rounded-[24px] border border-transparent backdrop-blur-[50px]"
+      className="flex h-[13.11vh] w-full flex-col items-center justify-center gap-1 rounded-3xl border border-transparent backdrop-blur-[50px]"
     >
       <div className="flex items-center gap-2">
         <span className="typo-24-600 text-gray-900">AI 매칭하기</span>
@@ -41,7 +41,7 @@ const SearchMyListButton = () => {
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
       }}
-      className="flex h-[56px] flex-1 items-center justify-center rounded-[16px] border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
+      className="flex h-14 flex-1 items-center justify-center rounded-2xl border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
     >
       <div className="flex items-center gap-3">
         <span className="typo-18-600 text-color-gray-700">🔍</span>
@@ -60,7 +60,7 @@ const QAButton = () => {
         background:
           "radial-gradient(100% 99.65% at 0% -4.11%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)",
       }}
-      className="flex h-[56px] flex-1 items-center justify-center rounded-[16px] border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
+      className="flex h-14 flex-1 items-center justify-center rounded-2xl border-[1.5px] border-white/30 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
     >
       <div className="flex items-center gap-3">
         <span className="typo-18-600 text-color-gray-700">📖</span>

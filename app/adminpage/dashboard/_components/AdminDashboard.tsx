@@ -24,7 +24,8 @@ export default function AdminDashboard() {
   } = useAdminOrders();
   const { status: socketStatus } = useAdminOrderSocket();
 
-  const orders = ordersData?.data ?? [];
+  // useAdminOrders가 이미 content 배열만 추출하여 반환하므로 바로 사용
+  const orders = ordersData ?? [];
 
   // PENDING 주문을 먼저, 나머지는 뒤에
   const sortedOrders = [...orders].sort((a, b) => {

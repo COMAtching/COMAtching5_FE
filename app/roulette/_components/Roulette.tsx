@@ -28,7 +28,7 @@ const ROULETTE_CONFIG: Record<
   { imageSrc: string; items: RouletteItem[] }
 > = {
   free: {
-    imageSrc: "/roulette/roulette3.png",
+    imageSrc: "/roulette/free_roulette.png",
     items: [
       { id: 1, label: "옵션권 1장" },
       { id: 2, label: "옵션권 2장" },

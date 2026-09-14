@@ -20,7 +20,7 @@ export const FreeRouletteCard = ({
 
   return (
     <div
-      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-3xl border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
         !hasChances ? "opacity-50" : ""
       }`}
     >
@@ -40,11 +40,15 @@ export const FreeRouletteCard = ({
           {/* Status Checkbox */}
           <div className="flex items-center gap-2">
             <div
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+              style={
                 hasChances
-                  ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
-                  : "bg-[#E5E5E5]"
-              }`}
+                  ? {
+                      background:
+                        "linear-gradient(135deg, #FF9B40, #FF4D61, #FF8CB3)",
+                    }
+                  : { background: "#E5E5E5" }
+              }
             >
               <Check
                 size={12}
@@ -72,7 +76,7 @@ export const FreeRouletteCard = ({
         {/* Right Image Area */}
         <div className="relative flex h-[130px] w-[130px] shrink-0 items-center justify-center">
           {/* Shadow Ellipse */}
-          <div className="absolute bottom-1 h-[11px] w-[112px] rounded-full bg-black/30 blur-[6px]" />
+          <div className="absolute bottom-1 h-[11px] w-28 rounded-full bg-black/30 blur-[6px]" />
           {/* Free Roulette Graphic */}
           <Image
             src="/roulette/free.png"
@@ -89,7 +93,7 @@ export const FreeRouletteCard = ({
         type="button"
         disabled={!hasChances}
         onClick={() => router.push("/roulette/free")}
-        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+        className={`flex h-14 w-full items-center justify-center rounded-2xl border border-white/30 transition-transform ${
           hasChances
             ? "bg-color-flame-700 hover:opacity-95 active:scale-[0.98]"
             : "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
@@ -122,12 +126,13 @@ export const SpecialRouletteCard = ({
   isSpecialParticipated = false,
 }: SpecialRouletteCardProps) => {
   const router = useRouter();
-  const hasChances = !isSpecialParticipated && currentAmount >= targetAmount;
+  const isAmountSatisfied = currentAmount >= targetAmount;
+  const hasChances = !isSpecialParticipated && isAmountSatisfied;
   const isDisabled = !hasChances;
 
   return (
     <div
-      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-3xl border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
         isDisabled ? "opacity-50" : ""
       }`}
     >
@@ -148,7 +153,7 @@ export const SpecialRouletteCard = ({
           <div className="flex items-center gap-2">
             <div
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                hasChances
+                isAmountSatisfied
                   ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
                   : "bg-[#E5E5E5]"
               }`}
@@ -156,7 +161,7 @@ export const SpecialRouletteCard = ({
               <Check
                 size={12}
                 className={`stroke-[2] ${
-                  hasChances ? "text-white" : "text-[#B3B3B3]"
+                  isAmountSatisfied ? "text-white" : "text-[#B3B3B3]"
                 }`}
               />
             </div>
@@ -165,7 +170,7 @@ export const SpecialRouletteCard = ({
               <br />
               <span
                 className={
-                  hasChances
+                  isAmountSatisfied
                     ? "text-color-brand-primary-flame"
                     : "text-[#858585]"
                 }
@@ -180,7 +185,7 @@ export const SpecialRouletteCard = ({
         {/* Right Image Area */}
         <div className="relative flex h-[130px] w-[130px] shrink-0 items-center justify-center">
           {/* Shadow Ellipse */}
-          <div className="absolute bottom-1 h-[11px] w-[112px] rounded-full bg-black/30 blur-[6px]" />
+          <div className="absolute bottom-1 h-[11px] w-28 rounded-full bg-black/30 blur-[6px]" />
           {/* Special Roulette Graphic */}
           <Image
             src="/roulette/special.png"
@@ -197,7 +202,7 @@ export const SpecialRouletteCard = ({
         type="button"
         disabled={isDisabled}
         onClick={() => router.push("/roulette/special")}
-        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+        className={`flex h-14 w-full items-center justify-center rounded-2xl border border-white/30 transition-transform ${
           isDisabled
             ? "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
             : "bg-button-primary hover:opacity-95 active:scale-[0.98]"
@@ -208,7 +213,11 @@ export const SpecialRouletteCard = ({
             isDisabled ? "text-[#B3B3B3]" : "text-white"
           }`}
         >
-          {isDisabled ? "오늘은 이미 참여했어요" : "스페셜 룰렛 입장"}
+          {isSpecialParticipated
+            ? "오늘은 이미 참여했어요"
+            : !hasChances
+              ? `${(targetAmount - currentAmount).toLocaleString()}원 더 결제 시 입장`
+              : "스페셜 룰렛 입장"}
         </span>
       </button>
     </div>
