@@ -32,10 +32,20 @@ export default function SpecialRouletteChanceCard({
     Math.max(0, Math.round((currentAmount / targetAmount) * 100)),
   );
 
+  const isTargetReached = currentAmount >= targetAmount;
+
   const displayAccumulated =
-    accumulatedText ?? `누적 결제 ${currentAmount.toLocaleString()}원`;
+    accumulatedText ??
+    (isTargetReached
+      ? "오늘 1회 참여 가능"
+      : `누적 결제 ${currentAmount.toLocaleString()}원`);
+
   const displayAdditional =
-    additionalText ?? `${diff.toLocaleString()}원 추가 결제 시 1회`;
+    additionalText ??
+    (isTargetReached
+      ? `누적 결제 ${targetAmount.toLocaleString()}원 달성`
+      : `${diff.toLocaleString()}원 추가 결제 시 1회`);
+
   const displayTarget = targetText ?? `${targetAmount.toLocaleString()}원`;
 
   return (

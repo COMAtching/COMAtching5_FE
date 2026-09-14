@@ -18,31 +18,17 @@ const ITEM_IMAGE_MAP: Record<string, string> = {
   "옵션권 1장": "/roulette/item/option_ticket_1.png",
   "옵션권 2장": "/roulette/item/option_ticket_2.png",
   "옵션권 5장": "/roulette/item/option_ticket_5.png",
-  꽝: "/roulette/item/miss.png", // TODO: 꽝 이미지 추가 필요
+  꽝: "/roulette/item/no-luck.png",
   "뽑기권 1장": "/roulette/item/draw_ticket_1.png",
   "뽑기권 5장": "/roulette/item/draw_ticket_5.png",
   "뽑기권 10장": "/roulette/item/draw_ticket_10.png",
   풀세트: "/roulette/item/full_set.png",
-  "1만원권 상품권": "/roulette/item/gift_card_10000.png", // TODO: 상품권 이미지 추가 필요
-  "2만원권 상품권": "/roulette/item/gift_card_20000.png", // TODO: 상품권 이미지 추가 필요
-};
-
-// 아이템 설명 텍스트
-const ITEM_DESCRIPTION_MAP: Record<string, string> = {
-  "옵션권 1장": "매칭 시 옵션 1개를 선택할 수 있어요",
-  "옵션권 2장": "매칭 시 옵션 2개를 선택할 수 있어요",
-  "옵션권 5장": "매칭 시 옵션 5개를 선택할 수 있어요",
-  꽝: "아쉽지만 다음 기회에!",
-  "뽑기권 1장": "새로운 매칭 기회가 생겼어요",
-  "뽑기권 5장": "새로운 매칭 기회 5번이 생겼어요",
-  "뽑기권 10장": "새로운 매칭 기회 10번이 생겼어요",
-  풀세트: "뽑기권 1장 + 옵션권 3장 획득!",
-  "1만원권 상품권": "1만원 상품권이 지급됩니다",
-  "2만원권 상품권": "2만원 상품권이 지급됩니다",
+  "1만원권 상품권": "/roulette/item/gift_card_10000.png",
+  "2만원권 상품권": "/roulette/item/gift_card_20000.png",
 };
 
 // ==========================================
-// 컨페티 조각 (좌/우)
+// 컨페티 조각 (장식용)
 // ==========================================
 const ConfettiLeft = () => (
   <div className="pointer-events-none absolute top-[59px] left-[25px] h-[153px] w-[70.87px]">
@@ -84,8 +70,7 @@ export default function RouletteResultModal({
 }: RouletteResultModalProps) {
   if (!item) return null;
 
-  const imageSrc = ITEM_IMAGE_MAP[item.label] ?? "/roulette/prizes/miss.png";
-  const description = ITEM_DESCRIPTION_MAP[item.label] ?? "";
+  const imageSrc = ITEM_IMAGE_MAP[item.label] ?? "/roulette/item/no-luck.png";
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -95,19 +80,23 @@ export default function RouletteResultModal({
       >
         <DialogTitle className="sr-only">룰렛 당첨 결과</DialogTitle>
         <DialogDescription className="sr-only">
-          당첨된 보상을 확인하세요.
+          당첨된 보상을 확인하세요
         </DialogDescription>
 
-        {/* 찐 모달 본체 */}
+        {/* 모달 본체 */}
         <div className="relative flex w-full max-w-[343px] flex-col items-center overflow-hidden rounded-2xl bg-white px-4 pt-10 pb-6 shadow-[0px_8px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)]">
-          {/* 컨페티 (장식용이므로 얘네만 absolute 유지) */}
-          <ConfettiLeft />
-          <ConfettiRight />
+          {/* 컨페티 (장식이므로 부모는 absolute 아님) */}
+          {item.label !== "꽝" && (
+            <>
+              <ConfettiLeft />
+              <ConfettiRight />
+            </>
+          )}
 
           {/* 상단 텍스트 영역 */}
           <div className="flex w-full flex-col items-center justify-center">
             <span className="typo-24-600 text-color-text-highlight">
-              축하해요!
+              {item.label === "꽝" ? "아쉬워요!" : "축하해요!"}
             </span>
           </div>
 
@@ -129,10 +118,12 @@ export default function RouletteResultModal({
           {/* 하단 텍스트 영역 */}
           <div className="mt-4 flex w-full flex-col items-center gap-2">
             <span className="typo-24-600 text-color-text-black">
-              {item.label}
+              {item.label === "꽝" ? "이번엔 꽝이에요" : `${item.label} 당첨`}
             </span>
             <span className="typo-14-500 text-color-gray-400">
-              {item.label === "꽝" ? description : "보상이 바로 지급되었어요."}
+              {item.label === "꽝"
+                ? "내일 다시 도전해 보세요!"
+                : "보상이 바로 지급되었어요."}
             </span>
           </div>
 
