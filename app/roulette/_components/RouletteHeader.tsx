@@ -1,7 +1,7 @@
 "use client";
 
 import { BackButton } from "@/components/ui/BackButton";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { safeBack } from "@/lib/safeBack";
 import React from "react";
 
@@ -13,6 +13,7 @@ type RouletteHeaderProps = {
 
 const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleBack = () => {
     if (onBack) {
@@ -20,8 +21,12 @@ const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
       return;
     }
 
-    // 직접 접근(URL 직타, 외부 링크)으로 히스토리가 없을 경우 /roulette로 fallback
-    safeBack(router, "/roulette");
+    // 메인 허브 화면(/roulette)의 fallback은 홈("/")
+    // 그 외 하위 룰렛 화면의 fallback은 룰렛 메인("/roulette")
+    const fallback = pathname === "/roulette" ? "/" : "/roulette";
+
+    // 직접 접근(URL 직타, 외부 링크)으로 내부 히스토리가 없을 경우 fallback으로 이동
+    safeBack(router, fallback);
   };
 
   return (

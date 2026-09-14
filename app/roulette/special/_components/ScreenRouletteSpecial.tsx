@@ -14,8 +14,8 @@ import RouletteResultModal from "../../_components/RouletteResultModal";
 import { useRouletteStatus } from "@/hooks/useRouletteStatus";
 import { useSpinRoulette } from "@/hooks/useSpinRoulette";
 
-// 스페셜 룰렛 참여 기준 금액 (누적 결제 3,500원 이상)
-const SPECIAL_TARGET_AMOUNT = 3500;
+// 스페셜 룰렛 참여 기준 금액 (누적 결제 3,000원 이상)
+const SPECIAL_TARGET_AMOUNT = 3000;
 
 const ScreenRouletteSpecial = () => {
   const router = useRouter();

@@ -49,7 +49,7 @@ const ScreenRouletteMain = () => {
           />
           <SpecialRouletteCard
             currentAmount={rouletteStatus?.totalPay ?? 0}
-            targetAmount={3500}
+            targetAmount={3000}
             isSpecialParticipated={
               rouletteStatus?.isSpecialParticipated ?? false
             }

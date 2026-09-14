@@ -118,7 +118,7 @@ type SpecialRouletteCardProps = {
 
 export const SpecialRouletteCard = ({
   currentAmount = 0,
-  targetAmount = 3500,
+  targetAmount = 3000,
   isSpecialParticipated = false,
 }: SpecialRouletteCardProps) => {
   const router = useRouter();
