@@ -40,13 +40,13 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // Next.js 내부 + Firebase + 백엔드 API
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com",
+              // Next.js 내부 + Firebase + 백엔드 API + Google Analytics/GTM
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
               "style-src 'self' 'unsafe-inline'",
-              // 이미지: S3, NCP, 백엔드 도메인 허용
-              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com",
-              // API, WebSocket, 스토리지(S3/NCP) 직접 업로드 허용 도메인
-              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com",
+              // 이미지: S3, NCP, 백엔드, Google Analytics 도메인 허용
+              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.googletagmanager.com",
+              // API, WebSocket, 스토리지(S3/NCP), Google Analytics 직접 통신 허용 도메인
+              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
               // Firebase FCM
               "worker-src 'self' blob:",
               "frame-ancestors 'none'",
