@@ -9,8 +9,11 @@ import { RoulettePageResponse } from "@/hooks/useRouletteStatus";
 
 export const metadata = {
   title: "스페셜 룰렛",
-  description: "스페셜 룰렛 진행",
+  description: "스페셜 이벤트 룰렛 진행",
 };
+
+// 페이지 이동 시마다 서버에서 항상 최신 데이터를 가져와 HydrationBoundary로 주입
+export const dynamic = "force-dynamic";
 
 interface RoulettePageApiResponse {
   code: string;

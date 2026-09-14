@@ -6,6 +6,8 @@ import { AxiosError } from "axios";
 export interface AdminOrder {
   requestId: number;
   memberId: number;
+  productId: number;
+  productCode: string;
   requestedItemName: string;
   requesterRealName: string;
   requesterUsername: string;
@@ -18,6 +20,17 @@ export interface AdminOrder {
   expiresAt: string;
 }
 
+/* ── 페이징 응답 구조 ── */
+interface PaginatedResponse<T> {
+  content: T[];
+  currentPage: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 interface ApiResponse<T> {
   code: string;
   status: number;
@@ -26,11 +39,13 @@ interface ApiResponse<T> {
 }
 
 /* ── 대기 주문 목록 조회 ── */
-const fetchAdminOrders = async (): Promise<ApiResponse<AdminOrder[]>> => {
-  const { data } = await api.get<ApiResponse<AdminOrder[]>>(
+const fetchAdminOrders = async (): Promise<AdminOrder[]> => {
+  const { data } = await api.get<ApiResponse<PaginatedResponse<AdminOrder>>>(
     "/api/v1/admin/payment/requests",
+    { params: { size: 100, sort: "requestedAt,desc" } },
   );
-  return data;
+  // 응답 구조 변경: data.data가 페이징 객체이고, 실제 목록은 data.data.content
+  return data.data.content;
 };
 
 /* ── 승인 ── */

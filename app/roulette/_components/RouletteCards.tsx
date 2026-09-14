@@ -40,11 +40,15 @@ export const FreeRouletteCard = ({
           {/* Status Checkbox */}
           <div className="flex items-center gap-2">
             <div
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+              style={
                 hasChances
-                  ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
-                  : "bg-[#E5E5E5]"
-              }`}
+                  ? {
+                      background:
+                        "linear-gradient(135deg, #FF9B40, #FF4D61, #FF8CB3)",
+                    }
+                  : { background: "#E5E5E5" }
+              }
             >
               <Check
                 size={12}

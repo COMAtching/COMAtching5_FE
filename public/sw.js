@@ -49,11 +49,14 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
-          // 네트워크 성공 시 캐시 업데이트
-          const clonedResponse = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, clonedResponse);
-          });
+          // 2xx 성공 응답일 때만 캐시 갱신
+          // 4xx·5xx 오류 응답으로 정상 캐시를 덮어쓰지 않도록 방지
+          if (networkResponse.ok) {
+            const clonedResponse = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, clonedResponse);
+            });
+          }
           return networkResponse;
         })
         .catch(() => {

@@ -1,6 +1,5 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { CircleAlert } from "lucide-react";
 import RouletteHeader from "../../_components/RouletteHeader";
 import Button from "@/components/ui/Button";
@@ -14,7 +13,6 @@ import { useRouletteStatus } from "@/hooks/useRouletteStatus";
 import { useSpinRoulette } from "@/hooks/useSpinRoulette";
 
 const ScreenRouletteFree = () => {
-  const router = useRouter();
   const { data: rouletteStatus, isLoading } = useRouletteStatus();
 
   // isFreeParticipated: false = 아직 참여 안 함(1회 남음), true = 이미 참여함(0회)

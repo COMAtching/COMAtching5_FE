@@ -45,13 +45,18 @@ const ScreenRouletteMain = () => {
         {/* Cards */}
         <div className="mt-6 flex w-full flex-col items-center gap-4">
           <FreeRouletteCard
-            remainingChances={rouletteStatus?.isFreeParticipated ? 0 : 1}
+            remainingChances={
+              // 데이터가 아직 없거나(로딩 중), 이미 참여한 경우 → 0회
+              // 참여하지 않았음이 명확히 확인된 경우에만 → 1회
+              rouletteStatus && !rouletteStatus.isFreeParticipated ? 1 : 0
+            }
           />
           <SpecialRouletteCard
             currentAmount={rouletteStatus?.totalPay ?? 0}
             targetAmount={3000}
             isSpecialParticipated={
-              rouletteStatus?.isSpecialParticipated ?? false
+              // 데이터가 없을 때는 참여 완료로 간주(true) → 버튼 비활성화
+              rouletteStatus?.isSpecialParticipated ?? true
             }
           />
         </div>

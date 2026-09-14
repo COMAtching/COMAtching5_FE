@@ -12,7 +12,7 @@ const RouletteEntrySection = () => {
     >
       <div className="flex w-15 shrink-0 flex-col items-center justify-center gap-1.5">
         <Image
-          src="/main/main-roulette.png"
+          src="/roulette/special.png"
           alt=""
           width={60}
           height={60}
