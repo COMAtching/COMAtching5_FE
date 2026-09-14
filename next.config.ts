@@ -43,10 +43,10 @@ const nextConfig: NextConfig = {
               // Next.js 내부 + Firebase + 백엔드 API
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com",
               "style-src 'self' 'unsafe-inline'",
-              // 이미지: S3, 백엔드 도메인 허용
-              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com",
-              // API, WebSocket 연결 허용 도메인
-              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com",
+              // 이미지: S3, NCP, 백엔드 도메인 허용
+              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com",
+              // API, WebSocket, 스토리지(S3/NCP) 직접 업로드 허용 도메인
+              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com",
               // Firebase FCM
               "worker-src 'self' blob:",
               "frame-ancestors 'none'",
@@ -91,6 +91,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "comatching5.s3.ap-northeast-2.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.ncloudstorage.com",
       },
     ],
   },
