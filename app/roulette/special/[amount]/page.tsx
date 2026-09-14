@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, redirect } from "next/navigation";
 import { X, Info } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { safeBack } from "@/lib/safeBack";
 
 export default function SpecialAmountPage({
   params,
@@ -42,7 +43,7 @@ export default function SpecialAmountPage({
       {/* 닫기 버튼 */}
       <button
         type="button"
-        onClick={() => router.back()}
+        onClick={() => safeBack(router, "/roulette/special")}
         aria-label="닫기"
         className="mt-[60px] mr-5 mb-4 flex h-8 w-8 cursor-pointer items-center justify-center self-end rounded-md transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
       >

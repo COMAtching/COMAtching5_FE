@@ -2,6 +2,7 @@
 
 import { BackButton } from "@/components/ui/BackButton";
 import { useRouter } from "next/navigation";
+import { safeBack } from "@/lib/safeBack";
 import React from "react";
 
 type RouletteHeaderProps = {
@@ -19,9 +20,8 @@ const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
       return;
     }
 
-    // 어느 경로에서든 항상 이전 페이지로 이동
-    // (push 대신 back을 사용해야 히스토리 스택에 /roulette가 중복으로 쌓이지 않음)
-    router.back();
+    // 직접 접근(URL 직타, 외부 링크)으로 히스토리가 없을 경우 /roulette로 fallback
+    safeBack(router, "/roulette");
   };
 
   return (
