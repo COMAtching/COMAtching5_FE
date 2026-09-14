@@ -81,17 +81,24 @@ const ProfileImageSelection = ({
 
       if (targetFile.type.startsWith("image/")) {
         onFileChange?.(targetFile);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          onCustomImageChange(reader.result as string);
-        };
-        reader.readAsDataURL(targetFile);
+
+        // 기존 브라우저 메모리에 캐싱된 Blob URL이 있다면 해제 (메모리 누수 방지)
+        if (customImage && customImage.startsWith("blob:")) {
+          URL.revokeObjectURL(customImage);
+        }
+
+        // FileReader 대신 createObjectURL을 사용하여 빠르고 가볍게 미리보기 생성
+        const objectUrl = URL.createObjectURL(targetFile);
+        onCustomImageChange(objectUrl);
       }
     } catch (error) {
       console.error("Image processing failed:", error);
       alert(
         "이미지 처리 중 오류가 발생했습니다. 다른 이미지 형식을 사용해 주세요.",
       );
+    } finally {
+      // 동일한 파일을 다시 선택해도 onChange가 트리거되도록 값 초기화
+      e.target.value = "";
     }
   };
 

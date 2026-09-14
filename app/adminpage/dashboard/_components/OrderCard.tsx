@@ -143,26 +143,43 @@ export default function OrderCard({ order }: OrderCardProps) {
           </div>
         </div>
 
-        {/* 티켓 수량 + 가격 */}
+        {/* 구매 수량 (조건부) + 가격 */}
         <div className="flex gap-4">
-          <div className="flex items-start gap-2.5">
-            <Ticket size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
-            <div>
-              <p className="text-[11px] text-[#4a4e69]">티켓</p>
-              <div className="flex gap-2">
-                {order.matchingTicketQty > 0 && (
-                  <span className="rounded-md bg-[#ff4d61]/10 px-1.5 py-0.5 text-xs font-medium text-[#ff4d61]">
-                    매칭 {order.matchingTicketQty}
-                  </span>
-                )}
-                {order.optionTicketQty > 0 && (
-                  <span className="rounded-md bg-[#6366f1]/10 px-1.5 py-0.5 text-xs font-medium text-[#818cf8]">
-                    옵션 {order.optionTicketQty}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+          {(() => {
+            // STOMP 실시간 데이터는 productCode가 "UNKNOWN"이므로 수량 필드로 단품 여부 유추
+            const isMatchingSingle =
+              order.productCode === "MATCHING_TICKET_1" ||
+              (order.productCode === "UNKNOWN" &&
+                order.matchingTicketQty > 0 &&
+                order.optionTicketQty === 0);
+
+            const isOptionSingle =
+              order.productCode === "OPTION_TICKET_1" ||
+              (order.productCode === "UNKNOWN" &&
+                order.optionTicketQty > 0 &&
+                order.matchingTicketQty === 0);
+
+            if (isMatchingSingle || isOptionSingle) {
+              return (
+                <div className="flex items-start gap-2.5">
+                  <Ticket
+                    size={15}
+                    className="mt-0.5 shrink-0 text-[#6b7094]"
+                  />
+                  <div>
+                    <p className="text-[11px] text-[#4a4e69]">구매 수량</p>
+                    <p className="text-sm font-semibold text-white">
+                      {isMatchingSingle
+                        ? order.matchingTicketQty
+                        : order.optionTicketQty}
+                      개
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           <div className="flex items-start gap-2.5">
             <Coins size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />

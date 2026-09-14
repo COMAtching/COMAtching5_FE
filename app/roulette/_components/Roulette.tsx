@@ -41,9 +41,9 @@ const ROULETTE_CONFIG: Record<
     imageSrc: "/roulette/special_roulette.png",
     items: [
       { id: 1, label: "옵션권 2장" },
-      { id: 2, label: "옵션권 5장" },
-      { id: 3, label: "뽑기권 1장" },
-      { id: 4, label: "풀세트" },
+      { id: 2, label: "뽑기권 1장" },
+      { id: 3, label: "풀세트" },
+      { id: 4, label: "옵션권 5장" },
       { id: 5, label: "뽑기권 5장" },
       { id: 6, label: "뽑기권 10장" },
       { id: 7, label: "1만원권 상품권" },

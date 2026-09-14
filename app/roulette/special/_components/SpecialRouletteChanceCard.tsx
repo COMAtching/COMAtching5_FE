@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface SpecialRouletteChanceCardProps {
@@ -9,11 +10,13 @@ export interface SpecialRouletteChanceCardProps {
   currentAmount?: number;
   /** 다음 룰렛 기회까지의 목표/토탈 금액 (기본값: 3000) */
   targetAmount?: number;
-  /** 상단 누적 결제 정보 텍스트 (옵션, 기본값: "누적 결제 {currentAmount}원") */
+  /** 오늘 이미 룰렛에 참여했는지 여부 */
+  isParticipated?: boolean;
+  /** 상단 누적 결제 정보 텍스트 (옵션) */
   accumulatedText?: string;
-  /** 상단 추가 결제 안내 텍스트 (옵션, 기본값: "{남은금액}원 추가 결제 시 1회") */
+  /** 상단 추가 결제 안내 텍스트 (옵션) */
   additionalText?: string;
-  /** 우측 하단 목표 금액 텍스트 (옵션, 기본값: "{targetAmount}원") */
+  /** 우측 하단 목표 금액 텍스트 (옵션) */
   targetText?: string;
   className?: string;
 }
@@ -21,6 +24,7 @@ export interface SpecialRouletteChanceCardProps {
 export default function SpecialRouletteChanceCard({
   currentAmount = 1000,
   targetAmount = 3000,
+  isParticipated = false,
   accumulatedText,
   additionalText,
   targetText,
@@ -32,10 +36,28 @@ export default function SpecialRouletteChanceCard({
     Math.max(0, Math.round((currentAmount / targetAmount) * 100)),
   );
 
-  const displayAccumulated =
-    accumulatedText ?? `누적 결제 ${currentAmount.toLocaleString()}원`;
-  const displayAdditional =
-    additionalText ?? `${diff.toLocaleString()}원 추가 결제 시 1회`;
+  const isTargetReached = currentAmount >= targetAmount;
+
+  let displayAccumulated = "";
+  let displayAdditional = "";
+
+  if (isParticipated) {
+    displayAccumulated = accumulatedText ?? "오늘 참여 완료";
+    displayAdditional = additionalText ?? "내일 또 도전해보세요!";
+  } else {
+    displayAccumulated =
+      accumulatedText ??
+      (isTargetReached
+        ? "오늘 1회 참여 가능"
+        : `누적 결제 ${currentAmount.toLocaleString()}원`);
+
+    displayAdditional =
+      additionalText ??
+      (isTargetReached
+        ? `누적 결제 ${targetAmount.toLocaleString()}원 달성`
+        : `${diff.toLocaleString()}원 추가 결제 시 1회`);
+  }
+
   const displayTarget = targetText ?? `${targetAmount.toLocaleString()}원`;
 
   return (
@@ -45,23 +67,42 @@ export default function SpecialRouletteChanceCard({
         className,
       )}
     >
-      {/* Chances container (상단 티켓 아이콘 + 결제 정보) */}
+      {/* Chances container (상단 아이콘 + 텍스트 정보) */}
       <div className="flex h-10 w-full flex-row items-center gap-3">
-        {/* Ticket Image */}
+        {/* Icon (Ticket or Check) */}
         <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-          <Image
-            src="/roulette/ticket.png"
-            alt="ticket"
-            width={40}
-            height={40}
-            priority
-            className="h-10 w-10 object-contain"
-          />
+          {isParticipated ? (
+            <div
+              className="flex h-[28px] w-[28px] items-center justify-center rounded-full border-2 border-white"
+              style={{
+                background:
+                  "linear-gradient(102.05deg, #F57DB2 18.65%, #FF8A9B 90.53%)",
+                boxShadow:
+                  "0px 0px 8px rgba(0, 0, 0, 0.1), 0px 2px 4px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Check size={16} strokeWidth={3} className="text-white" />
+            </div>
+          ) : (
+            <Image
+              src="/roulette/ticket.png"
+              alt="ticket"
+              width={40}
+              height={40}
+              priority
+              className="h-10 w-10 object-contain"
+            />
+          )}
         </div>
 
         {/* Info container */}
         <div className="flex flex-1 flex-col justify-center gap-1">
-          <span className="typo-12-600 leading-[14px] text-[#FF4D61]">
+          <span
+            className={cn(
+              "typo-12-600 leading-[14px]",
+              isParticipated ? "text-[#808080]" : "text-[#FF4D61]",
+            )}
+          >
             {displayAccumulated}
           </span>
           <span className="typo-16-600 leading-[19px] text-[#1A1A1A]">
