@@ -22,7 +22,7 @@ export interface SpecialRouletteChanceCardProps {
 }
 
 export default function SpecialRouletteChanceCard({
-  currentAmount = 1000,
+  currentAmount = 0,
   targetAmount = 3000,
   isParticipated = false,
   accumulatedText,
@@ -54,7 +54,7 @@ export default function SpecialRouletteChanceCard({
     displayAdditional =
       additionalText ??
       (isTargetReached
-        ? `누적 결제 ${targetAmount.toLocaleString()}원 달성`
+        ? `누적 결제 ${currentAmount.toLocaleString()}원 달성`
         : `${diff.toLocaleString()}원 추가 결제 시 1회`);
   }
 

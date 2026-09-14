@@ -74,6 +74,7 @@ const ScreenRouletteSpecial = () => {
           <SpecialRouletteChanceCard
             currentAmount={totalPay}
             targetAmount={SPECIAL_TARGET_AMOUNT}
+            isParticipated={isSpecialParticipated}
           />
         </div>
       </div>
