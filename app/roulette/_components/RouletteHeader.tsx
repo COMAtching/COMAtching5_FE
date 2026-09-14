@@ -12,7 +12,6 @@ type RouletteHeaderProps = {
 
 const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleBack = () => {
     if (onBack) {
