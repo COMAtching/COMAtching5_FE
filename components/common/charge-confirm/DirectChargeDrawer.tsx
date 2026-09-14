@@ -46,6 +46,7 @@ export default function DirectChargeDrawer({
     depositorName || realNameData?.data?.realName || "",
   );
   const [agreed, setAgreed] = React.useState(false);
+  const [quantity, setQuantity] = React.useState(1);
 
   // 실명이 로드되면 이름 업데이트
   React.useEffect(() => {
@@ -55,10 +56,11 @@ export default function DirectChargeDrawer({
     }
   }, [realNameData, depositorName, name]);
 
-  // Drawer가 닫힐 때 동의 상태 리셋
+  // Drawer가 닫힐 때 상태 리셋
   React.useEffect(() => {
     if (!open) {
       setAgreed(false);
+      setQuantity(1);
     }
   }, [open]);
 
@@ -75,7 +77,7 @@ export default function DirectChargeDrawer({
   };
 
   /* 충전 완료 알림 */
-  const handleConfirmAction = (customAmount: number) => {
+  const handleConfirmAction = () => {
     if (!name) {
       alert("먼저 입금자명을 설정해 주세요.");
       onOpenChange(false);
@@ -83,39 +85,46 @@ export default function DirectChargeDrawer({
       return;
     }
 
-    purchase(productId, {
-      onSuccess: async () => {
-        try {
-          await navigator.clipboard.writeText(BANK_INFO.account);
-        } catch (err) {
-          console.error("Failed to copy account number: ", err);
-        }
-        alert("계좌번호가 복사되었습니다.");
-        onOpenChange(false);
-        queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-      },
-      onError: (error: AxiosError<{ code?: string; message?: string }>) => {
-        const errorData = error.response?.data;
-        if (errorData?.code === "PAY-003") {
-          alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
+    purchase(
+      { productId, quantity },
+      {
+        onSuccess: async () => {
+          try {
+            await navigator.clipboard.writeText(BANK_INFO.account);
+          } catch (err) {
+            console.error("Failed to copy account number: ", err);
+          }
+          alert("계좌번호가 복사되었습니다.");
           onOpenChange(false);
-        } else if (
-          errorData?.code === "PAY-004" ||
-          errorData?.message?.includes("사용자명") ||
-          errorData?.message?.includes("입금자명")
-        ) {
-          alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
-          onOpenChange(false);
-          drawerContext?.setActiveTab(2);
-        } else {
-          alert(
-            errorData?.message ||
-              "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
-          );
-        }
+          queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+        },
+        onError: (error: AxiosError<{ code?: string; message?: string }>) => {
+          const errorData = error.response?.data;
+          if (errorData?.code === "PAY-003") {
+            alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
+            onOpenChange(false);
+          } else if (
+            errorData?.code === "PAY-004" ||
+            errorData?.message?.includes("사용자명") ||
+            errorData?.message?.includes("입금자명")
+          ) {
+            alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
+            onOpenChange(false);
+            drawerContext?.setActiveTab(2);
+          } else {
+            alert(
+              errorData?.message ||
+                "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
+            );
+          }
+        },
       },
-    });
+    );
   };
+
+  const isQuantityItem =
+    productName?.includes("옵션권") || productName?.includes("뽑기권");
+  const totalAmount = amount * quantity;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -168,28 +177,62 @@ export default function DirectChargeDrawer({
                   </div>
                 </div>
 
-                {/* 입금자명 */}
-                <div className="flex items-center gap-2">
-                  <span className="typo-16-600 pb-[2px] text-[#777777]">
-                    입금자명
-                  </span>
-                  <div className="flex items-center gap-1 border-b border-[#6A6A6A] pb-[2px]">
-                    <span className="typo-16-700 text-color-gray-900 leading-none">
-                      {name || "미지정"}
+                {/* 구매 수량 (조건부) */}
+                {isQuantityItem && (
+                  <div className="mt-2 flex items-center justify-start gap-4">
+                    <span className="typo-16-600 text-[#777777]">
+                      구매 수량
                     </span>
+                    <div className="flex items-center gap-3 rounded-md border border-[#E5E5E5] bg-white px-2 py-1">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        disabled={quantity <= 1}
+                        className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
+                      >
+                        -
+                      </button>
+                      <span className="typo-16-700 text-color-gray-900 w-4 text-center">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.min(3, q + 1))}
+                        disabled={quantity >= 3}
+                        className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* 입금액 */}
-                <div className="flex items-center gap-2">
-                  <span className="typo-16-600 pb-[2px] text-[#777777]">
-                    입금액
-                  </span>
-                  <div className="flex items-center gap-1 pb-[2px]">
-                    <span className="typo-16-700 text-color-gray-900">
-                      {amount.toLocaleString()}
+                <div className="mt-2 flex flex-col gap-2">
+                  {/* 입금자명 */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="typo-16-600 pb-[2px] text-[#777777]">
+                      입금자명
                     </span>
-                    <span className="typo-16-700 text-color-gray-900">원</span>
+                    <div className="flex items-center gap-1 border-b border-[#6A6A6A] pb-[2px]">
+                      <span className="typo-16-700 text-color-gray-900 leading-none">
+                        {name || "미지정"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 입금액 */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="typo-16-600 pb-[2px] text-[#777777]">
+                      총 입금액
+                    </span>
+                    <div className="flex items-center gap-1 pb-[2px]">
+                      <span className="typo-16-700 text-color-gray-900">
+                        {totalAmount.toLocaleString()}
+                      </span>
+                      <span className="typo-16-700 text-color-gray-900">
+                        원
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

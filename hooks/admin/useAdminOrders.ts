@@ -21,7 +21,7 @@ export interface AdminOrder {
 }
 
 /* ── 페이징 응답 구조 ── */
-interface PaginatedResponse<T> {
+export interface PaginatedResponse<T> {
   content: T[];
   currentPage: number;
   size: number;
@@ -31,7 +31,7 @@ interface PaginatedResponse<T> {
   hasPrevious: boolean;
 }
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   code: string;
   status: number;
   message: string;
@@ -40,12 +40,21 @@ interface ApiResponse<T> {
 
 /* ── 대기 주문 목록 조회 ── */
 const fetchAdminOrders = async (): Promise<AdminOrder[]> => {
-  const { data } = await api.get<ApiResponse<PaginatedResponse<AdminOrder>>>(
-    "/api/v1/admin/payment/requests",
-    { params: { size: 100, sort: "requestedAt,desc" } },
-  );
-  // 응답 구조 변경: data.data가 페이징 객체이고, 실제 목록은 data.data.content
-  return data.data.content;
+  let allOrders: AdminOrder[] = [];
+  let page = 0;
+  let hasNext = true;
+
+  while (hasNext) {
+    const { data } = await api.get<ApiResponse<PaginatedResponse<AdminOrder>>>(
+      "/api/v1/admin/payment/requests",
+      { params: { page, size: 100, sort: "requestedAt,desc" } },
+    );
+    allOrders = [...allOrders, ...data.data.content];
+    hasNext = data.data.hasNext;
+    page += 1;
+  }
+
+  return allOrders;
 };
 
 /* ── 승인 ── */

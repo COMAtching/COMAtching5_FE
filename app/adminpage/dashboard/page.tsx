@@ -5,6 +5,11 @@ import {
 } from "@tanstack/react-query";
 import { serverApi } from "@/lib/server-api";
 import AdminDashboard from "./_components/AdminDashboard";
+import {
+  AdminOrder,
+  ApiResponse,
+  PaginatedResponse,
+} from "@/hooks/admin/useAdminOrders";
 
 export default async function AdminDashboardPage() {
   const queryClient = new QueryClient();
@@ -13,10 +18,25 @@ export default async function AdminDashboardPage() {
   await queryClient.prefetchQuery({
     queryKey: ["adminOrders"],
     queryFn: async () => {
-      const res = await serverApi.get({
-        path: "/api/v1/admin/payment/requests",
-      });
-      return res.data;
+      let allOrders: AdminOrder[] = [];
+      let page = 0;
+      let hasNext = true;
+
+      while (hasNext) {
+        const res = await serverApi.get<
+          ApiResponse<PaginatedResponse<AdminOrder>>
+        >({
+          path: `/api/v1/admin/payment/requests?page=${page}&size=100&sort=requestedAt,desc`,
+        });
+        const responseData = res.data?.data;
+        if (!responseData) break;
+
+        allOrders = [...allOrders, ...(responseData.content || [])];
+        hasNext = responseData.hasNext;
+        page += 1;
+      }
+
+      return allOrders;
     },
   });
 

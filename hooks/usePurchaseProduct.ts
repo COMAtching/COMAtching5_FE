@@ -12,11 +12,15 @@ interface PurchaseResponse {
 /**
  * 상품 구매(주문 생성) API 호출 함수
  */
-export const postPurchaseProduct = async (
-  productId: number,
-): Promise<PurchaseResponse> => {
+export const postPurchaseProduct = async ({
+  productId,
+  quantity = 1,
+}: {
+  productId: number;
+  quantity?: number;
+}): Promise<PurchaseResponse> => {
   const { data } = await api.post<PurchaseResponse>(
-    `/api/v1/shop/purchase/${productId}`,
+    `/api/v1/shop/purchase/${productId}?quantity=${quantity}`,
     {},
   );
   return data;
@@ -29,7 +33,13 @@ export const usePurchaseProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (productId: number) => postPurchaseProduct(productId),
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: number;
+      quantity?: number;
+    }) => postPurchaseProduct({ productId, quantity }),
     onSuccess: (data) => {
       console.log("✅ 주문 생성 성공:", data);
       queryClient.invalidateQueries({ queryKey: ["requestStatus"] });
