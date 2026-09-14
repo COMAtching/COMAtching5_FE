@@ -95,7 +95,13 @@ export default function RouletteResultModal({
 
           {/* 상단 텍스트 영역 */}
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="typo-24-600 text-color-text-highlight">
+            <span
+              className={`typo-24-600 ${
+                item.label === "꽝"
+                  ? "text-color-gray-600"
+                  : "text-color-text-highlight"
+              }`}
+            >
               {item.label === "꽝" ? "아쉬워요!" : "축하해요!"}
             </span>
           </div>
@@ -131,16 +137,9 @@ export default function RouletteResultModal({
           <div className="mt-6 flex w-full flex-col items-center gap-6">
             <Button onClick={onClose}>확인</Button>
             {item.label !== "꽝" && (
-              <button
-                type="button"
-                className="typo-14-500 text-color-gray-400 cursor-pointer text-center transition-opacity hover:opacity-80"
-                onClick={() => {
-                  onClose();
-                  // TODO: 마이페이지/아이템 확인 페이지로 이동 로직 추가
-                }}
-              >
+              <span className="typo-14-500 text-color-gray-400 text-center select-none">
                 충전내역에서 확인할 수 있어요.
-              </button>
+              </span>
             )}
           </div>
         </div>
