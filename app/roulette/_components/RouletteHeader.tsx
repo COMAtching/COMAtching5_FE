@@ -21,12 +21,15 @@ const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
       return;
     }
 
-    // 메인 허브 화면(/roulette)의 fallback은 홈("/")
-    // 그 외 하위 룰렛 화면의 fallback은 룰렛 메인("/roulette")
-    const fallback = pathname === "/roulette" ? "/" : "/roulette";
-
-    // 직접 접근(URL 직타, 외부 링크)으로 내부 히스토리가 없을 경우 fallback으로 이동
-    safeBack(router, fallback);
+    if (pathname === "/roulette") {
+      // 메인 허브 화면(/roulette)의 fallback은 홈("/")
+      // 허브는 기대되는 단일 부모 경로가 없으므로 (어디서든 진입 가능), expectedParentPath를 생략합니다.
+      safeBack(router, "/");
+    } else {
+      // 하위 룰렛 화면(/roulette/free 등)의 fallback은 룰렛 메인("/roulette")
+      // 뒤로가기를 눌렀을 때 직전 목적지가 "/roulette"일 때만 브라우저 back()을 실행하고, 아니면 replace() 시킵니다.
+      safeBack(router, "/roulette", "/roulette");
+    }
   };
 
   return (
