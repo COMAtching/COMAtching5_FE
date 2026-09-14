@@ -165,7 +165,7 @@ function NoticeForm({
             placeholder="공지사항 제목을 입력하세요"
             className="rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 py-3 text-sm text-white placeholder:text-[#4a4e69] focus:border-[#10b981] focus:outline-none"
           />
-          <span className="text-right text-[10px] text-[#4a4e69]">
+          <span className="typo-10-500 text-right text-[#4a4e69]">
             {title.length}/200
           </span>
         </div>
@@ -396,7 +396,7 @@ export default function AdminNotices() {
                       {notice.title}
                     </h3>
                     <span
-                      className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${status.bg} ${status.color}`}
+                      className={`typo-10-700 flex items-center gap-1 rounded-full px-2 py-0.5 ${status.bg} ${status.color}`}
                     >
                       {status.label}
                     </span>

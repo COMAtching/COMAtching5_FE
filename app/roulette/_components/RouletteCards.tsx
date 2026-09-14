@@ -30,7 +30,7 @@ export const FreeRouletteCard = ({
         <div className="flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-2">
             <h3 className="typo-20-600 text-[#373737]">무료 룰렛</h3>
-            <p className="typo-14-500 h-9 leading-[17px] text-[#858585]">
+            <p className="typo-14-500 h-[34px] leading-[17px] text-[#858585]">
               매일 1회 참여 가능
               <br />
               행운을 확인해 보세요!
@@ -142,7 +142,7 @@ export const SpecialRouletteCard = ({
         <div className="flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-2">
             <h3 className="typo-20-600 text-[#373737]">스페셜 룰렛</h3>
-            <p className="typo-14-500 h-9 leading-[17px] text-[#858585]">
+            <p className="typo-14-500 h-[34px] leading-[17px] text-[#858585]">
               누적 {targetAmount.toLocaleString()}원 이상
               <br />
               결제 시 참여 가능

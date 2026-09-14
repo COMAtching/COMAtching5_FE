@@ -328,7 +328,7 @@ export default function AdminStats() {
 
                   {/* 중앙 성비 요약 라벨 */}
                   <div className="absolute flex flex-col items-center justify-center text-center">
-                    <span className="text-[10px] font-bold tracking-wider text-[#6b7094] uppercase">
+                    <span className="typo-10-700 tracking-wider text-[#6b7094] uppercase">
                       Dominant
                     </span>
                     <span className="text-xl font-extrabold text-white">
@@ -429,7 +429,7 @@ export default function AdminStats() {
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-4">
                       <div>
-                        <span className="block text-[10px] text-[#6b7094]">
+                        <span className="typo-10-500 block text-[#6b7094]">
                           남성 평균
                         </span>
                         <span className="text-sm font-extrabold text-blue-400">
@@ -437,7 +437,7 @@ export default function AdminStats() {
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] text-[#6b7094]">
+                        <span className="typo-10-500 block text-[#6b7094]">
                           여성 평균
                         </span>
                         <span className="text-sm font-extrabold text-rose-400">
@@ -462,7 +462,7 @@ export default function AdminStats() {
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-4">
                       <div>
-                        <span className="block text-[10px] text-[#6b7094]">
+                        <span className="typo-10-500 block text-[#6b7094]">
                           남성 평균
                         </span>
                         <span className="text-sm font-extrabold text-blue-400">
@@ -470,7 +470,7 @@ export default function AdminStats() {
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] text-[#6b7094]">
+                        <span className="typo-10-500 block text-[#6b7094]">
                           여성 평균
                         </span>
                         <span className="text-sm font-extrabold text-rose-400">
