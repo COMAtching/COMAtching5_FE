@@ -25,6 +25,15 @@ const ScreenProfileImage = () => {
     null,
   );
 
+  // Blob URL 메모리 누수 방지 (컴포넌트 언마운트 또는 사진 변경 시 기존 URL 해제)
+  useEffect(() => {
+    return () => {
+      if (customImagePreview && customImagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(customImagePreview);
+      }
+    };
+  }, [customImagePreview]);
+
   const availableDefaultProfiles = useMemo(
     () => getDefaultProfilesByGender(profile.gender),
     [profile.gender],

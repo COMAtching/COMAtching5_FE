@@ -82,11 +82,6 @@ const ProfileImageSelection = ({
       if (targetFile.type.startsWith("image/")) {
         onFileChange?.(targetFile);
 
-        // 기존 브라우저 메모리에 캐싱된 Blob URL이 있다면 해제 (메모리 누수 방지)
-        if (customImage && customImage.startsWith("blob:")) {
-          URL.revokeObjectURL(customImage);
-        }
-
         // FileReader 대신 createObjectURL을 사용하여 빠르고 가볍게 미리보기 생성
         const objectUrl = URL.createObjectURL(targetFile);
         onCustomImageChange(objectUrl);
