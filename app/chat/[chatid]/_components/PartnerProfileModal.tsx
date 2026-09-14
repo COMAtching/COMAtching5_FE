@@ -63,12 +63,12 @@ const PartnerProfileModal = ({
           {/* 카드 + 닫기 버튼 그룹 */}
           <div className="relative flex max-h-[calc(100vh-32px)] w-[calc(100vw-32px)] flex-col items-center gap-4">
             {/* 모달 컨테이너 (MatchingListCard 스타일 계승) */}
-            <div className="flex w-full flex-col overflow-hidden rounded-[24px] shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
+            <div className="flex w-full flex-col overflow-hidden rounded-3xl shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
               {/* 카드 본체 (내부 내용에 따라 높이 조절, 최대 높이시 스크롤) */}
               <div className="scrollbar-hide flex w-full flex-col overflow-y-auto border border-b-0 border-white/30 bg-white px-4 pt-6 pb-4">
                 {/* 헤더 */}
                 <div className="flex w-full items-center gap-4">
-                  <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
+                  <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
                     <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
                       <Image
                         src={getProfileImageUrl(
@@ -104,7 +104,7 @@ const PartnerProfileModal = ({
                         )}
                       />
                     </button>
-                    <div className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]">
+                    <div className="flex h-4 w-4 flex-col items-center justify-center gap-0.5">
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
                       <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />

@@ -207,7 +207,7 @@ const ScreenVerificationPage = () => {
           </div>
 
           <div className="mt-auto flex w-full flex-col gap-4">
-            <div className="bg-color-gray-50-a80 w-full rounded-[16px] border-[#b3b3b34d] p-4">
+            <div className="bg-color-gray-50-a80 w-full rounded-2xl border-[#b3b3b34d] p-4">
               <span className="typo-12-500 text-color-text-caption3 block text-left">
                 인증번호가 오지 않았나요?
                 <br /> 이전 단계에서 이메일을 재확인하거나, 스팸함을 확인해

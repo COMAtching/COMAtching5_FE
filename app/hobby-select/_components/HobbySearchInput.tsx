@@ -19,7 +19,7 @@ const HobbySearchInput = ({ onSearch }: HobbySearchInputProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-9 w-full items-center rounded-[12px] border border-[#C2C2C2] bg-[#B3B3B31A]"
+      className="flex h-9 w-full items-center rounded-xl border border-[#C2C2C2] bg-[#B3B3B31A]"
     >
       <input
         ref={inputRef}

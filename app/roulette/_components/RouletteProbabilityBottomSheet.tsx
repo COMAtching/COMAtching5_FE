@@ -124,7 +124,7 @@ export default function RouletteProbabilityBottomSheet({
               {/* Header - Frame 1171276915 */}
               <div className="flex w-full flex-row items-center justify-between border-b-[2px] border-[#1A1A1A] py-2">
                 <span className="typo-14-600 text-[#1A1A1A]">보상</span>
-                <span className="typo-14-600 w-[44px] text-center text-[#1A1A1A]">
+                <span className="typo-14-600 w-11 text-center text-[#1A1A1A]">
                   확률
                 </span>
               </div>
@@ -139,7 +139,7 @@ export default function RouletteProbabilityBottomSheet({
                     <span className="typo-14-500 text-[#808080]">
                       {item.reward}
                     </span>
-                    <span className="typo-14-500 w-[44px] text-center text-[#808080]">
+                    <span className="typo-14-500 w-11 text-center text-[#808080]">
                       {item.probability}
                     </span>
                   </div>

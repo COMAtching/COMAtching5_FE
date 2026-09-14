@@ -58,7 +58,7 @@ function ChatListRow({ item }: { item: ChatListItem }) {
         {item.unread &&
         item.unreadCount !== undefined &&
         item.unreadCount > 0 ? (
-          <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#FF4D61] px-1.5 text-[11px] leading-none font-bold text-white shadow-sm">
+          <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF4D61] px-1.5 text-[11px] leading-none font-bold text-white shadow-sm">
             {item.unreadCount > 99 ? "99+" : item.unreadCount}
           </div>
         ) : (

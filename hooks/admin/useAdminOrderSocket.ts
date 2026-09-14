@@ -58,17 +58,17 @@ export function useAdminOrderSocket() {
 
   const handleOrderCreated = useCallback(
     (payload: OrderCreatedPayload) => {
-      queryClient.setQueryData<AdminOrdersResponse>(["adminOrders"], (old) => {
+      queryClient.setQueryData<AdminOrder[]>(["adminOrders"], (old) => {
         if (!old) return old;
 
-        const exists = old.data.some(
-          (order) => order.requestId === payload.orderId,
-        );
+        const exists = old.some((order) => order.requestId === payload.orderId);
         if (exists) return old;
 
         const newOrder: AdminOrder = {
           requestId: payload.orderId,
           memberId: payload.memberId,
+          productId: -1, // Web Socket 페이로드에 없는 경우 기본값
+          productCode: "UNKNOWN",
           requestedItemName: payload.requestedItemName,
           requesterRealName: payload.requesterRealName,
           requesterUsername: payload.requesterUsername,
@@ -81,10 +81,7 @@ export function useAdminOrderSocket() {
           expiresAt: payload.expiresAt,
         };
 
-        return {
-          ...old,
-          data: [newOrder, ...old.data],
-        };
+        return [newOrder, ...old];
       });
     },
     [queryClient],
@@ -92,20 +89,17 @@ export function useAdminOrderSocket() {
 
   const handleOrderStatusChanged = useCallback(
     (payload: OrderStatusChangedPayload) => {
-      queryClient.setQueryData<AdminOrdersResponse>(["adminOrders"], (old) => {
+      queryClient.setQueryData<AdminOrder[]>(["adminOrders"], (old) => {
         if (!old) return old;
 
-        return {
-          ...old,
-          data: old.data.map((order) =>
-            order.requestId === payload.orderId
-              ? {
-                  ...order,
-                  status: payload.toStatus as AdminOrder["status"],
-                }
-              : order,
-          ),
-        };
+        return old.map((order) =>
+          order.requestId === payload.orderId
+            ? {
+                ...order,
+                status: payload.toStatus as AdminOrder["status"],
+              }
+            : order,
+        );
       });
     },
     [queryClient],

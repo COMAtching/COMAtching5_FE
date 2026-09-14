@@ -41,7 +41,7 @@ export default function SpecialRouletteChanceCard({
   return (
     <div
       className={cn(
-        "mt-2 box-border flex h-[76px] w-[278px] flex-col justify-center gap-2 rounded-[16px] border border-white/30 bg-white/30 p-2 shadow-[0px_0px_8px_rgba(0,0,0,0.04),0px_4px_8px_rgba(0,0,0,0.1)] backdrop-blur-[15px]",
+        "mt-2 box-border flex h-[76px] w-[278px] flex-col justify-center gap-2 rounded-2xl border border-white/30 bg-white/30 p-2 shadow-[0px_0px_8px_rgba(0,0,0,0.04),0px_4px_8px_rgba(0,0,0,0.1)] backdrop-blur-[15px]",
         className,
       )}
     >
@@ -81,13 +81,13 @@ export default function SpecialRouletteChanceCard({
           >
             {/* Progress indicator bar */}
             {percent > 0 && percent < 100 && (
-              <div className="absolute -top-[1px] -right-[1px] -bottom-[1px] w-[2px] rounded-[1px] bg-white shadow-[0px_0px_4px_rgba(255,77,97,0.5)]" />
+              <div className="absolute -top-[1px] -right-[1px] -bottom-[1px] w-0.5 rounded-[1px] bg-white shadow-[0px_0px_4px_rgba(255,77,97,0.5)]" />
             )}
           </div>
         </div>
 
         {/* Amount text */}
-        <span className="shrink-0 text-[8px] leading-[10px] font-semibold text-[#B3B3B3]">
+        <span className="text-2 shrink-0 leading-[10px] font-semibold text-[#B3B3B3]">
           {displayTarget}
         </span>
       </div>

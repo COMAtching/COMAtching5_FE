@@ -20,7 +20,7 @@ export const FreeRouletteCard = ({
 
   return (
     <div
-      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-3xl border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
         !hasChances ? "opacity-50" : ""
       }`}
     >
@@ -30,7 +30,7 @@ export const FreeRouletteCard = ({
         <div className="flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-2">
             <h3 className="typo-20-600 text-[#373737]">무료 룰렛</h3>
-            <p className="typo-14-500 h-[34px] leading-[17px] text-[#858585]">
+            <p className="typo-14-500 h-9 leading-[17px] text-[#858585]">
               매일 1회 참여 가능
               <br />
               행운을 확인해 보세요!
@@ -76,7 +76,7 @@ export const FreeRouletteCard = ({
         {/* Right Image Area */}
         <div className="relative flex h-[130px] w-[130px] shrink-0 items-center justify-center">
           {/* Shadow Ellipse */}
-          <div className="absolute bottom-1 h-[11px] w-[112px] rounded-full bg-black/30 blur-[6px]" />
+          <div className="absolute bottom-1 h-[11px] w-28 rounded-full bg-black/30 blur-[6px]" />
           {/* Free Roulette Graphic */}
           <Image
             src="/roulette/free.png"
@@ -93,7 +93,7 @@ export const FreeRouletteCard = ({
         type="button"
         disabled={!hasChances}
         onClick={() => router.push("/roulette/free")}
-        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+        className={`flex h-14 w-full items-center justify-center rounded-2xl border border-white/30 transition-transform ${
           hasChances
             ? "bg-color-flame-700 hover:opacity-95 active:scale-[0.98]"
             : "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
@@ -132,7 +132,7 @@ export const SpecialRouletteCard = ({
 
   return (
     <div
-      className={`relative flex w-full flex-col justify-between gap-4 rounded-[24px] border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
+      className={`relative flex w-full flex-col justify-between gap-4 rounded-3xl border border-white/30 bg-white/80 p-6 shadow-sm backdrop-blur-[15px] transition-opacity ${
         isDisabled ? "opacity-50" : ""
       }`}
     >
@@ -142,7 +142,7 @@ export const SpecialRouletteCard = ({
         <div className="flex flex-col justify-between gap-6">
           <div className="flex flex-col gap-2">
             <h3 className="typo-20-600 text-[#373737]">스페셜 룰렛</h3>
-            <p className="typo-14-500 h-[34px] leading-[17px] text-[#858585]">
+            <p className="typo-14-500 h-9 leading-[17px] text-[#858585]">
               누적 {targetAmount.toLocaleString()}원 이상
               <br />
               결제 시 참여 가능
@@ -185,7 +185,7 @@ export const SpecialRouletteCard = ({
         {/* Right Image Area */}
         <div className="relative flex h-[130px] w-[130px] shrink-0 items-center justify-center">
           {/* Shadow Ellipse */}
-          <div className="absolute bottom-1 h-[11px] w-[112px] rounded-full bg-black/30 blur-[6px]" />
+          <div className="absolute bottom-1 h-[11px] w-28 rounded-full bg-black/30 blur-[6px]" />
           {/* Special Roulette Graphic */}
           <Image
             src="/roulette/special.png"
@@ -202,7 +202,7 @@ export const SpecialRouletteCard = ({
         type="button"
         disabled={isDisabled}
         onClick={() => router.push("/roulette/special")}
-        className={`flex h-14 w-full items-center justify-center rounded-[16px] border border-white/30 transition-transform ${
+        className={`flex h-14 w-full items-center justify-center rounded-2xl border border-white/30 transition-transform ${
           isDisabled
             ? "cursor-not-allowed bg-[rgba(179,179,179,0.4)] backdrop-blur-[15px]"
             : "bg-button-primary hover:opacity-95 active:scale-[0.98]"

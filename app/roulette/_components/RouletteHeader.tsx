@@ -33,7 +33,7 @@ const RouletteHeader = ({ title, sidebar, onBack }: RouletteHeaderProps) => {
   };
 
   return (
-    <header className="flex h-[64px] w-full items-center justify-between py-2">
+    <header className="flex h-16 w-full items-center justify-between py-2">
       <BackButton className="shrink-0" onClick={handleBack} />
 
       {title && (

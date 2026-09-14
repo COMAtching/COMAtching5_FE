@@ -7,7 +7,7 @@ const ChargeRequestWaiting = () => {
   const { refetch, isFetching } = useRequestStatus();
 
   return (
-    <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-[24px] border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
+    <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-3xl border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
       <div className="flex h-[72px] w-full items-center gap-4">
         {/* 커스텀 7도트 로더 영역 */}
         <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
@@ -34,7 +34,7 @@ const ChargeRequestWaiting = () => {
         {/* 텍스트 영역 */}
         <div className="flex flex-1 flex-col items-start gap-2">
           {/* 타이틀 행 */}
-          <div className="flex w-full items-center justify-between gap-[10px]">
+          <div className="flex w-full items-center justify-between gap-2.5">
             <span className="typo-20-600 text-color-text-black leading-6">
               대기중
             </span>

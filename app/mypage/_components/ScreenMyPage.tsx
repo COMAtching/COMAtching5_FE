@@ -691,7 +691,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
                   setEditableBirthYear(val);
                 }}
                 placeholder="출생연도"
-                className="typo-16-600 w-[64px] bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
+                className="typo-16-600 w-16 bg-transparent text-right text-[#999999] underline outline-none placeholder:text-[#B3B3B3]"
               />
               {editableBirthYear && (
                 <span className="typo-16-600 text-[#999999]">년생</span>

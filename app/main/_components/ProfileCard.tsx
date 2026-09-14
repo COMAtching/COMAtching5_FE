@@ -46,7 +46,7 @@ const ProfileHeader = ({
 }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
-    <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
+    <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
           src={profile.profileImageUrl || "/default-profile.png"}
@@ -97,7 +97,7 @@ const ProfileHeader = ({
       <button
         type="button"
         aria-label="더 보기"
-        className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]"
+        className="flex h-4 w-4 flex-col items-center justify-center gap-0.5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
@@ -290,7 +290,7 @@ const ProfileCard = ({
   };
 
   return (
-    <div className="flex w-full flex-col overflow-hidden rounded-[24px] border border-b-0 border-white/30 bg-white/50 backdrop-blur-[50px]">
+    <div className="flex w-full flex-col overflow-hidden rounded-3xl border border-b-0 border-white/30 bg-white/50 backdrop-blur-[50px]">
       {/* 카드 본체 */}
       <div
         role="button"

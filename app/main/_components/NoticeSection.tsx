@@ -16,9 +16,7 @@ const NoticeSection = ({ title, detail }: NoticeSectionProps) => {
   return (
     <section
       className={`flex w-full flex-col justify-center border border-white/30 bg-white/50 shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px] transition-all duration-300 ease-in-out ${
-        isExpanded
-          ? "gap-4 rounded-[24px] p-6"
-          : "gap-0 rounded-[16px] px-5 py-3"
+        isExpanded ? "gap-4 rounded-3xl p-6" : "gap-0 rounded-2xl px-5 py-3"
       }`}
     >
       {/* Header: 클릭 시 접힘/펼침 토글 */}

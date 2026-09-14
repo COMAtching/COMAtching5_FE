@@ -149,10 +149,10 @@ export default function DirectChargeDrawer({
             {/* ── Content ── */}
             <div className="flex w-full flex-col gap-6">
               {/* ── 입금 정보 카드 ── */}
-              <div className="bg-color-gray-50 flex flex-col gap-4 rounded-[16px] p-4">
+              <div className="bg-color-gray-50 flex flex-col gap-4 rounded-2xl p-4">
                 {/* 입금계좌 라벨 + 복사 */}
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-[10px]">
+                  <div className="flex items-center gap-2.5">
                     <span className="typo-16-600 text-[#777777]">입금계좌</span>
                     <button
                       type="button"
@@ -164,7 +164,7 @@ export default function DirectChargeDrawer({
                   </div>
 
                   {/* 계좌 정보 박스 */}
-                  <div className="flex flex-col items-center gap-2 rounded-[8px] bg-white py-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+                  <div className="flex flex-col items-center gap-2 rounded-lg bg-white py-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
                     <span className="typo-16-500 text-color-gray-900 text-center">
                       {BANK_INFO.bank}
                     </span>
@@ -210,10 +210,10 @@ export default function DirectChargeDrawer({
                 <div className="mt-2 flex flex-col gap-2">
                   {/* 입금자명 */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="typo-16-600 pb-[2px] text-[#777777]">
+                    <span className="typo-16-600 pb-0.5 text-[#777777]">
                       입금자명
                     </span>
-                    <div className="flex items-center gap-1 border-b border-[#6A6A6A] pb-[2px]">
+                    <div className="flex items-center gap-1 border-b border-[#6A6A6A] pb-0.5">
                       <span className="typo-16-700 text-color-gray-900 leading-none">
                         {name || "미지정"}
                       </span>
@@ -222,10 +222,10 @@ export default function DirectChargeDrawer({
 
                   {/* 입금액 */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="typo-16-600 pb-[2px] text-[#777777]">
+                    <span className="typo-16-600 pb-0.5 text-[#777777]">
                       총 입금액
                     </span>
-                    <div className="flex items-center gap-1 pb-[2px]">
+                    <div className="flex items-center gap-1 pb-0.5">
                       <span className="typo-16-700 text-color-gray-900">
                         {totalAmount.toLocaleString()}
                       </span>
@@ -263,7 +263,7 @@ export default function DirectChargeDrawer({
             <div className="flex w-full flex-col items-center gap-4">
               <Button
                 disabled={!agreed || isPending}
-                onClick={() => handleConfirmAction(amount)}
+                onClick={handleConfirmAction}
               >
                 {isPending ? "요청 중..." : "충전 확인 요청하기"}
               </Button>
@@ -271,7 +271,7 @@ export default function DirectChargeDrawer({
                 <button
                   type="button"
                   onClick={onSwitchToToss}
-                  className="text-center text-[12px] font-medium text-[#999999] transition-colors hover:text-[#666666]"
+                  className="text-center text-xs font-medium text-[#999999] transition-colors hover:text-[#666666]"
                 >
                   혹은 Toss로 계좌이체하기
                 </button>

@@ -36,7 +36,7 @@ export default function MenuCard({ item }: MenuCardProps) {
             <h3 className="text-base font-semibold text-[#6b7094]">
               {item.title}
             </h3>
-            <span className="rounded-md bg-[#1e2030] px-2 py-0.5 text-[10px] font-bold tracking-wider text-[#4a4e69] uppercase">
+            <span className="text-2.5 rounded-md bg-[#1e2030] px-2 py-0.5 font-bold tracking-wider text-[#4a4e69] uppercase">
               준비 중
             </span>
           </div>
@@ -70,7 +70,7 @@ export default function MenuCard({ item }: MenuCardProps) {
         </div>
 
         {item.badge && (
-          <span className="flex items-center gap-1 rounded-full bg-[#ff4d61]/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-[#ff4d61] uppercase">
+          <span className="text-2.5 flex items-center gap-1 rounded-full bg-[#ff4d61]/10 px-2.5 py-1 font-bold tracking-wider text-[#ff4d61] uppercase">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff4d61]" />
             {item.badge}
           </span>

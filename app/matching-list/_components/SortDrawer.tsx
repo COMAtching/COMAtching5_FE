@@ -42,7 +42,7 @@ export default function SortDrawer({
         className="rounded-t-[32px] bg-white outline-none"
         showHandle={false}
       >
-        <div className="flex flex-col items-center gap-[10px] px-6 pt-6 pb-12">
+        <div className="flex flex-col items-center gap-2.5 px-6 pt-6 pb-12">
           {/* 옵션 리스트 */}
           <div className="flex w-full flex-col gap-2">
             {SORT_OPTIONS.map((option) => {
@@ -52,12 +52,12 @@ export default function SortDrawer({
                   key={option.value}
                   type="button"
                   onClick={() => setSelected(option.value)}
-                  className={`flex w-full items-center justify-between rounded-[16px] px-4 py-[14px] transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-2xl px-4 py-3.5 transition-colors ${
                     isActive ? "bg-[#F2F2F2]" : "bg-transparent"
                   }`}
                 >
                   <span
-                    className={`text-[16px] leading-[19px] font-medium ${
+                    className={`text-base leading-[19px] font-medium ${
                       isActive ? "text-[#1A1A1A]" : "text-[#999999]"
                     }`}
                   >
@@ -74,9 +74,9 @@ export default function SortDrawer({
             <button
               type="button"
               onClick={() => onSortChange(selected)}
-              className="flex w-full items-center justify-center rounded-[16px] bg-[#F2F2F2] px-4 py-4"
+              className="flex w-full items-center justify-center rounded-2xl bg-[#F2F2F2] px-4 py-4"
             >
-              <span className="text-[16px] leading-[19px] font-medium text-[#1A1A1A]">
+              <span className="text-base leading-[19px] font-medium text-[#1A1A1A]">
                 확인
               </span>
             </button>

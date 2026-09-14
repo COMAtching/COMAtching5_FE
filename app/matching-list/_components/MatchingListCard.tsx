@@ -21,7 +21,7 @@ import {
 
 /* ── 태그 컴포넌트 ── */
 const Tag = ({ text }: { text: string }) => (
-  <div className="flex h-8 items-center justify-center gap-[10px] rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]">
+  <div className="flex h-8 items-center justify-center gap-2.5 rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]">
     <span className="typo-14-500 text-color-text-black whitespace-nowrap">
       {text}
     </span>
@@ -42,7 +42,7 @@ const CardHeader = ({
 }) => (
   <div className="flex w-full items-center gap-4">
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
-    <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
+    <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
         <Image
           src={getProfileImageUrl(partner.profileImageUrl, partner.gender)}
@@ -92,7 +92,7 @@ const CardHeader = ({
       <button
         type="button"
         aria-label="더 보기"
-        className="flex h-4 w-4 flex-col items-center justify-center gap-[2px]"
+        className="flex h-4 w-4 flex-col items-center justify-center gap-0.5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
@@ -262,7 +262,7 @@ const MatchingListCard = ({
   };
 
   return (
-    <div className="flex w-full flex-col overflow-hidden rounded-[24px] shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
+    <div className="flex w-full flex-col overflow-hidden rounded-3xl shadow-[0_0_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
       {/* 카드 본체 */}
       <div
         role="button"
@@ -318,7 +318,7 @@ const MatchingListCard = ({
             e.stopPropagation();
             setIsExpanded((prev) => !prev);
           }}
-          className="ml-auto flex items-center gap-1 rounded-full border border-white/20 bg-[linear-gradient(111.41deg,rgba(255,255,255,0.3)_5.28%,rgba(255,255,255,0.5)_101.41%)] px-[6px] py-[2px] backdrop-blur-[50px]"
+          className="ml-auto flex items-center gap-1 rounded-full border border-white/20 bg-[linear-gradient(111.41deg,rgba(255,255,255,0.3)_5.28%,rgba(255,255,255,0.5)_101.41%)] px-1.5 py-0.5 backdrop-blur-[50px]"
         >
           <span className="typo-10-500 text-white">
             {isExpanded ? "접기" : "펼치기"}

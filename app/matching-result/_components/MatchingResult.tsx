@@ -82,11 +82,11 @@ const MatchingResult = ({ data }: MatchingResultProps) => {
   const socialLabel = data.socialType === "KAKAO" ? "KakaoTalk" : "Instagram";
 
   return (
-    <div className="mt-6 flex w-full flex-col gap-6 rounded-[24px] border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
+    <div className="mt-6 flex w-full flex-col gap-6 rounded-3xl border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
       <div className="flex w-full flex-col gap-4">
         {/* Header Section */}
         <div className="flex w-full flex-row items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-white bg-white/0 p-[2px] shadow-[0px_1px_3px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-white bg-white/0 p-0.5 shadow-[0px_1px_3px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
             <div className="relative h-11 w-11 overflow-hidden rounded-full">
               <Image
                 src={data.profileImageUrl || "/animal/cat_female 1.png"}

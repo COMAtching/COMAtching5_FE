@@ -174,18 +174,18 @@ export default function AdminProducts() {
                   {/* 상태 배지 */}
                   <div className="flex items-center gap-1.5">
                     {product.isActive ? (
-                      <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                      <span className="text-2.5 flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 font-bold text-emerald-400">
                         <ToggleRight size={10} />
                         판매 중
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-400">
+                      <span className="text-2.5 flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 font-bold text-red-400">
                         <ToggleLeft size={10} />
                         판매 중지
                       </span>
                     )}
                     {product.isBundle && (
-                      <span className="rounded-full bg-[#6366f1]/10 px-2 py-0.5 text-[10px] font-bold text-[#818cf8]">
+                      <span className="text-2.5 rounded-full bg-[#6366f1]/10 px-2 py-0.5 font-bold text-[#818cf8]">
                         번들
                       </span>
                     )}
@@ -222,7 +222,7 @@ export default function AdminProducts() {
                   <p className="text-sm font-bold text-white">
                     {formatPrice(product.price)}
                   </p>
-                  <p className="text-[10px] text-[#4a4e69]">
+                  <p className="text-2.5 text-[#4a4e69]">
                     순서: {product.displayOrder}
                   </p>
                 </div>

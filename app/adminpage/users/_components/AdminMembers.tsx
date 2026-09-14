@@ -312,7 +312,7 @@ export default function AdminMembers() {
                       {member.nickname}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      className={`text-2.5 rounded-full px-2 py-0.5 font-bold ${
                         member.gender === "FEMALE"
                           ? "bg-rose-500/10 text-rose-400"
                           : "bg-blue-500/10 text-blue-400"
@@ -339,7 +339,7 @@ export default function AdminMembers() {
                       height={18}
                     />
                     <div className="flex flex-col">
-                      <span className="text-[10px] text-[#6b7094]">매칭권</span>
+                      <span className="text-2.5 text-[#6b7094]">매칭권</span>
                       <span className="text-xs font-bold text-white">
                         {member.matchingTicketCount}개
                       </span>
@@ -354,7 +354,7 @@ export default function AdminMembers() {
                       height={18}
                     />
                     <div className="flex flex-col">
-                      <span className="text-[10px] text-[#6b7094]">옵션권</span>
+                      <span className="text-2.5 text-[#6b7094]">옵션권</span>
                       <span className="text-xs font-bold text-white">
                         {member.optionTicketCount}개
                       </span>
@@ -453,7 +453,7 @@ export default function AdminMembers() {
                     {editingMember.nickname}
                   </span>
                   <span
-                    className={`rounded-full px-1.5 py-0.5 text-[8px] font-bold ${
+                    className={`text-2 rounded-full px-1.5 py-0.5 font-bold ${
                       editingMember.gender === "FEMALE"
                         ? "bg-rose-500/10 text-rose-400"
                         : "bg-blue-500/10 text-blue-400"
@@ -480,7 +480,7 @@ export default function AdminMembers() {
                     height={20}
                   />
                   <span className="text-xs font-bold text-white">매칭권</span>
-                  <span className="text-[10px] text-[#6b7094]">
+                  <span className="text-2.5 text-[#6b7094]">
                     (보유: {editingMember.matchingTicketCount}개)
                   </span>
                 </div>
@@ -572,7 +572,7 @@ export default function AdminMembers() {
                     height={20}
                   />
                   <span className="text-xs font-bold text-white">옵션권</span>
-                  <span className="text-[10px] text-[#6b7094]">
+                  <span className="text-2.5 text-[#6b7094]">
                     (보유: {editingMember.optionTicketCount}개)
                   </span>
                 </div>
@@ -670,7 +670,7 @@ export default function AdminMembers() {
 
             {/* 실시간 계산결과 미리보기 */}
             <div className="mt-5 space-y-2 rounded-xl border border-[#1e2030] bg-[#1e2030]/30 p-3 text-xs">
-              <div className="mb-1 text-[10px] font-bold tracking-wider text-[#8b8fa3] uppercase">
+              <div className="text-2.5 mb-1 font-bold tracking-wider text-[#8b8fa3] uppercase">
                 최종 수량 변동 예상
               </div>
 

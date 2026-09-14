@@ -108,7 +108,7 @@ const YesMatchingList = ({
   return (
     <div className="flex w-full flex-col items-center gap-4 pb-10">
       {/* 검색 바 */}
-      <div className="flex h-9 w-full items-center justify-between rounded-[12px] bg-[#B3B3B31A] px-4 py-[11px]">
+      <div className="flex h-9 w-full items-center justify-between rounded-xl bg-[#B3B3B31A] px-4 py-[11px]">
         <input
           type="text"
           placeholder="닉네임, 나이, 전공, MBTI 등을 입력하세요"

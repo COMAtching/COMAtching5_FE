@@ -36,7 +36,7 @@ const ScreenRouletteMain = () => {
       {/* Content */}
       <div className="relative z-10 mt-2 flex w-full flex-col items-center">
         {/* Title */}
-        <p className="typo-14-500 text-color-gray-500 h-[34px] text-center leading-[17px] tracking-[-0.025em]">
+        <p className="typo-14-500 text-color-gray-500 h-9 text-center leading-[17px] tracking-[-0.025em]">
           오늘의 행운을 확인해보세요!
           <br />
           매일 1회 무료로 돌릴 수 있어요

@@ -16,7 +16,7 @@ export function ShopItemRow({ product }: ShopItemRowProps) {
         trigger={
           <button
             type="button"
-            className="typo-16-600 bg-color-flame-700 flex h-10 w-24 items-center justify-center rounded-[8px] text-white"
+            className="typo-16-600 bg-color-flame-700 flex h-10 w-24 items-center justify-center rounded-lg text-white"
           >
             {product.price.toLocaleString()}원
           </button>
@@ -67,7 +67,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         </div>
 
         {/* 두 번째 줄: 리워드 목록 상세 */}
-        <span className="text-[10px] leading-[12px] font-semibold text-[#808080]">
+        <span className="text-2.5 leading-[12px] font-semibold text-[#808080]">
           {description}
         </span>
 
@@ -85,7 +85,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
           <button
             type="button"
             disabled={product.remainingPurchaseCount === 0}
-            className={`typo-16-600 flex h-10 w-24 shrink-0 items-center justify-center rounded-[8px] text-white transition-colors ${
+            className={`typo-16-600 flex h-10 w-24 shrink-0 items-center justify-center rounded-lg text-white transition-colors ${
               product.remainingPurchaseCount === 0
                 ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
                 : "bg-color-flame-700"

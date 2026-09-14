@@ -125,7 +125,7 @@ export const VerificationStep = ({
               type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0 || isSending}
-              className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-[48px] w-[120px] shrink-0"
+              className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-12 w-[120px] shrink-0"
               shadow={false}
             >
               {isSending
@@ -143,7 +143,7 @@ export const VerificationStep = ({
         </div>
 
         <div className="mt-auto flex w-full flex-col gap-4">
-          <div className="bg-color-gray-50-a80 w-full rounded-[16px] border-[#b3b3b34d] p-4 leading-normal">
+          <div className="bg-color-gray-50-a80 w-full rounded-2xl border-[#b3b3b34d] p-4 leading-normal">
             <span className="typo-12-500 text-color-text-caption3">
               인증번호가 오지 않았나요?
               <br /> 이전 단계에서 이메일을 재확인하거나, 스팸함을 확인해

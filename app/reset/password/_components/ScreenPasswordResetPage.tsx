@@ -75,7 +75,7 @@ const ScreenPasswordResetPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <p className="typo-14-500 text-color-flame-500 mt-1 min-h-[20px]">
+            <p className="typo-14-500 text-color-flame-500 mt-1 min-h-5">
               {message.text ? `*${message.text}` : ""}
             </p>
           </div>

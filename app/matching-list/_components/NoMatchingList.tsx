@@ -23,7 +23,7 @@ const NoMatchingList = ({
   return (
     <div className="flex w-[345px] flex-col items-center gap-4">
       {/* her image */}
-      <div className="relative h-[48px] w-[78.96px]">
+      <div className="relative h-12 w-[78.96px]">
         <Image
           src="/main/no-contact.png"
           alt="her"
