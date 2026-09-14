@@ -1,4 +1,4 @@
-const CACHE_NAME = "comatching-cache-v1";
+const CACHE_NAME = "comatching-cache-v2";
 const ASSETS_TO_CACHE = ["/", "/logo/icon.png", "/logo/comatching-logo.svg"];
 
 // Install Event
@@ -31,11 +31,14 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  // Do not intercept FCM route or API calls
+  // Do not intercept Next.js internal requests, API calls, or WebSockets
   if (
     event.request.url.includes("/api/") ||
     event.request.url.includes("firebase") ||
-    event.request.url.includes("/ws/")
+    event.request.url.includes("/ws/") ||
+    event.request.url.includes("/_next/") ||
+    event.request.headers.get("RSC") === "1" ||
+    event.request.headers.get("Next-Router-Prefetch") === "1"
   ) {
     return;
   }
