@@ -23,6 +23,7 @@ import {
 } from "@/lib/types/matching";
 
 import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
+import { alertIfBlocked } from "@/lib/constants/date";
 
 const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
@@ -72,6 +73,13 @@ const ScreenMatching = () => {
       return 0;
     }
   }, [myProfile]);
+
+  // 테스트 모드(IS_TESTING) 차단 검사
+  React.useEffect(() => {
+    if (alertIfBlocked()) {
+      router.replace("/main");
+    }
+  }, [router]);
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
   const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
@@ -158,6 +166,8 @@ const ScreenMatching = () => {
   };
 
   const handleMatchingSubmit = () => {
+    if (alertIfBlocked()) return;
+
     if (!canSubmit) {
       alert("모든 조건을 선택해 주세요!");
       return;

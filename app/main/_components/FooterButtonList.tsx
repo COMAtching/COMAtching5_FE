@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
+import { alertIfBlocked } from "@/lib/constants/date";
 
 const MatchingButton = () => {
   const { data: participantsCount } = useParticipantsCount();
@@ -8,6 +9,11 @@ const MatchingButton = () => {
     <Link
       href="/matching"
       prefetch={true}
+      onClick={(e) => {
+        if (alertIfBlocked()) {
+          e.preventDefault();
+        }
+      }}
       style={{
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
