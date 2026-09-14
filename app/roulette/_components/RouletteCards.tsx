@@ -122,7 +122,8 @@ export const SpecialRouletteCard = ({
   isSpecialParticipated = false,
 }: SpecialRouletteCardProps) => {
   const router = useRouter();
-  const hasChances = !isSpecialParticipated && currentAmount >= targetAmount;
+  const isAmountSatisfied = currentAmount >= targetAmount;
+  const hasChances = !isSpecialParticipated && isAmountSatisfied;
   const isDisabled = !hasChances;
 
   return (
@@ -148,7 +149,7 @@ export const SpecialRouletteCard = ({
           <div className="flex items-center gap-2">
             <div
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                hasChances
+                isAmountSatisfied
                   ? "from-color-brand-primary-orange via-color-brand-primary-flame to-color-brand-primary-pink bg-gradient-to-br"
                   : "bg-[#E5E5E5]"
               }`}
@@ -156,7 +157,7 @@ export const SpecialRouletteCard = ({
               <Check
                 size={12}
                 className={`stroke-[2] ${
-                  hasChances ? "text-white" : "text-[#B3B3B3]"
+                  isAmountSatisfied ? "text-white" : "text-[#B3B3B3]"
                 }`}
               />
             </div>
@@ -165,7 +166,7 @@ export const SpecialRouletteCard = ({
               <br />
               <span
                 className={
-                  hasChances
+                  isAmountSatisfied
                     ? "text-color-brand-primary-flame"
                     : "text-[#858585]"
                 }
@@ -208,7 +209,11 @@ export const SpecialRouletteCard = ({
             isDisabled ? "text-[#B3B3B3]" : "text-white"
           }`}
         >
-          {isDisabled ? "오늘은 이미 참여했어요" : "스페셜 룰렛 입장"}
+          {isSpecialParticipated
+            ? "오늘은 이미 참여했어요"
+            : !hasChances
+              ? `${(targetAmount - currentAmount).toLocaleString()}원 더 결제 시 입장`
+              : "스페셜 룰렛 입장"}
         </span>
       </button>
     </div>

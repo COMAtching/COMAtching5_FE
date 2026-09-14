@@ -17,8 +17,9 @@ const ScreenRouletteFree = () => {
   const router = useRouter();
   const { data: rouletteStatus, isLoading } = useRouletteStatus();
 
-  // isFreeParticipated: true = 아직 참여 안 함(1회 남음), false = 이미 참여함(0회)
-  const hasChances = rouletteStatus?.isFreeParticipated ?? false;
+  // isFreeParticipated: false = 아직 참여 안 함(1회 남음), true = 이미 참여함(0회)
+  const isFreeParticipated = rouletteStatus?.isFreeParticipated ?? true;
+  const hasChances = !isFreeParticipated;
   const remainingChances = hasChances ? 1 : 0;
 
   const rouletteRef = useRef<RouletteHandle>(null);

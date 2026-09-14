@@ -45,7 +45,7 @@ const ScreenRouletteMain = () => {
         {/* Cards */}
         <div className="mt-6 flex w-full flex-col items-center gap-4">
           <FreeRouletteCard
-            remainingChances={rouletteStatus?.isFreeParticipated ? 1 : 0}
+            remainingChances={rouletteStatus?.isFreeParticipated ? 0 : 1}
           />
           <SpecialRouletteCard
             currentAmount={rouletteStatus?.totalPay ?? 0}
