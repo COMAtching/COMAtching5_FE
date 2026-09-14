@@ -28,9 +28,7 @@ const NoticeSection = ({ title, detail }: NoticeSectionProps) => {
       >
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Megaphone className="h-4 w-4 shrink-0 text-[#E83ABC]" />
-          <span className="typo-16-600 truncate font-semibold text-[#373737]">
-            {title}
-          </span>
+          <span className="typo-16-600 truncate text-[#373737]">{title}</span>
         </div>
         <ChevronDown
           className={`h-4 w-4 shrink-0 text-[#858585] transition-transform duration-300 ${

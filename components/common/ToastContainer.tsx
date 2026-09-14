@@ -39,7 +39,7 @@ export default function ToastContainer() {
 
         {/* 텍스트 내용 */}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5 pr-4">
-          <span className="typo-14-700 truncate font-bold text-[#1A1A1A]">
+          <span className="typo-14-700 truncate text-[#1A1A1A]">
             {toast.title}
           </span>
           <span className="typo-12-500 line-clamp-2 leading-[1.4] text-gray-500">
