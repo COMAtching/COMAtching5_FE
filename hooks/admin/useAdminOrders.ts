@@ -93,6 +93,8 @@ export const useApproveOrder = () => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       // 관리자가 승인했을 때 관련 룰렛 캐시(누적 결제금액 등)도 초기화
       queryClient.invalidateQueries({ queryKey: ["rouletteStatus"] });
+      // 상품 목록(구매 제한 횟수 등) 캐시 초기화
+      queryClient.invalidateQueries({ queryKey: ["shopProducts"] });
     },
     onError: (error: AxiosError<{ code: string; message: string }>) => {
       const errorData = error.response?.data;
@@ -112,6 +114,8 @@ export const useRejectOrder = () => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       // 관리자가 거절(또는 취소)했을 때도 관련 룰렛 캐시 초기화
       queryClient.invalidateQueries({ queryKey: ["rouletteStatus"] });
+      // 상품 목록(구매 제한 횟수 등) 캐시 초기화
+      queryClient.invalidateQueries({ queryKey: ["shopProducts"] });
     },
     onError: (error: AxiosError<{ code: string; message: string }>) => {
       const errorData = error.response?.data;

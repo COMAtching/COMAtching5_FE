@@ -117,7 +117,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -361,55 +360,48 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const isSendEnabled = messageText.trim().length > 0;
 
   return (
-    <main
-      className={cn(
-        "flex h-dvh w-full flex-col items-center overflow-hidden px-4",
-        isKeyboardOpen ? "pt-0" : "pt-10",
-      )}
-    >
-      {!isKeyboardOpen && (
-        <header className="fixed top-0 right-0 left-0 z-20 px-4 py-2">
-          <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
-          <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
-          <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
-            <button
-              type="button"
-              aria-label="뒤로 가기"
-              onClick={() => router.back()}
-              className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/60 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
-            >
-              <ChevronLeft className="h-5 w-5 text-[#1A1A1A]" />
-            </button>
+    <main className="flex h-dvh w-full flex-col items-center overflow-hidden px-4 pt-10">
+      <header className="fixed top-0 right-0 left-0 z-20 px-4 py-2">
+        <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
+        <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
+        <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
+          <button
+            type="button"
+            aria-label="뒤로 가기"
+            onClick={() => router.back()}
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/60 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
+          >
+            <ChevronLeft className="h-5 w-5 text-[#1A1A1A]" />
+          </button>
 
-            <div className="flex flex-1 flex-col justify-center">
-              <span className="typo-14-600 text-[#1A1A1A]">
-                {opponentProfile?.nickname ||
-                  currentRoom?.otherUser.nickname ||
+          <div className="flex flex-1 flex-col justify-center">
+            <span className="typo-14-600 text-[#1A1A1A]">
+              {opponentProfile?.nickname ||
+                currentRoom?.otherUser.nickname ||
+                "..."}
+            </span>
+            <div className="flex items-center gap-1 text-xs text-[#999999]">
+              <span>{currentRoom?.otherUser.age || "??"}세</span>
+              <span>,</span>
+              <span className="max-w-40 truncate">
+                {opponentProfile?.major ||
+                  currentRoom?.otherUser.major ||
                   "..."}
               </span>
-              <div className="flex items-center gap-1 text-xs text-[#999999]">
-                <span>{currentRoom?.otherUser.age || "??"}세</span>
-                <span>,</span>
-                <span className="max-w-40 truncate">
-                  {opponentProfile?.major ||
-                    currentRoom?.otherUser.major ||
-                    "..."}
-                </span>
-              </div>
             </div>
-
-            <button
-              type="button"
-              aria-label="상대 사용자 정보 열기"
-              onClick={() => setIsProfileModalOpen(true)}
-              className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
-            >
-              <UserRound size={20} />
-              <MoreVertical className="h-5 w-5" />
-            </button>
           </div>
-        </header>
-      )}
+
+          <button
+            type="button"
+            aria-label="상대 사용자 정보 열기"
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
+          >
+            <UserRound size={20} />
+            <MoreVertical className="h-5 w-5" />
+          </button>
+        </div>
+      </header>
 
       {isFetchingNextPage && (
         <div className="absolute top-[72px] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
@@ -421,10 +413,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className={cn(
-          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto px-4",
-          isKeyboardOpen ? "mt-2 pt-2 pb-[80px]" : "mt-10 pt-5 pb-[100px]",
-        )}
+        className="scrollbar-hide relative z-0 mt-10 flex w-full flex-1 flex-col gap-4 overflow-y-auto px-4 pt-5 pb-[100px]"
       >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
@@ -511,8 +500,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             placeholder="메세지를 입력하세요.."
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
-            onFocus={() => setIsKeyboardOpen(true)}
-            onBlur={() => setIsKeyboardOpen(false)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && isSendEnabled) {
                 handleSendMessage();
