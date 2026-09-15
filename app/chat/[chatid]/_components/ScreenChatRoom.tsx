@@ -117,6 +117,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -142,8 +143,17 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         const heightDifference = previousHeight - currentHeight;
 
         if (heightDifference !== 0) {
-          // 높이가 변한 만큼 스크롤 위치를 조정하여 하단 기준 시야 유지
-          container.scrollTop += heightDifference;
+          // 크기가 변하기 직전에 스크롤이 맨 밑에 있었는지 확인 (넉넉하게 오차 50px 허용)
+          const isAtBottom =
+            container.scrollHeight - container.scrollTop - previousHeight <= 50;
+
+          if (isAtBottom) {
+            // 맨 밑을 보고 있었다면, 키보드가 열리든 닫히든 무조건 하단에 딱 붙여서 최신 메시지 유지
+            container.scrollTop = container.scrollHeight - currentHeight;
+          }
+          // 맨 밑이 아니라 과거 대화를 보고 있었다면?
+          // -> 아무것도 안 함! 브라우저 기본 동작(상단 고정)에 의해 보던 화면이 자연스럽게 유지됨.
+
           previousHeight = currentHeight;
         }
       }
@@ -359,48 +369,55 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const isSendEnabled = messageText.trim().length > 0;
 
   return (
-    <main className="flex h-dvh w-full flex-col items-center overflow-hidden px-4 pt-10">
-      <header className="fixed top-0 right-0 left-0 z-20 px-4 py-2">
-        <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
-        <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
-        <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
-          <button
-            type="button"
-            aria-label="뒤로 가기"
-            onClick={() => router.back()}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/60 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
-          >
-            <ChevronLeft className="h-5 w-5 text-[#1A1A1A]" />
-          </button>
+    <main
+      className={cn(
+        "flex h-dvh w-full flex-col items-center overflow-hidden px-4 transition-all duration-300",
+        isKeyboardOpen ? "pt-2" : "pt-10",
+      )}
+    >
+      {!isKeyboardOpen && (
+        <header className="animate-in fade-in slide-in-from-top-4 fixed top-0 right-0 left-0 z-20 px-4 py-2 duration-300">
+          <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
+          <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
+          <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
+            <button
+              type="button"
+              aria-label="뒤로 가기"
+              onClick={() => router.back()}
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/60 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
+            >
+              <ChevronLeft className="h-5 w-5 text-[#1A1A1A]" />
+            </button>
 
-          <div className="flex flex-1 flex-col justify-center">
-            <span className="typo-14-600 text-[#1A1A1A]">
-              {opponentProfile?.nickname ||
-                currentRoom?.otherUser.nickname ||
-                "..."}
-            </span>
-            <div className="flex items-center gap-1 text-xs text-[#999999]">
-              <span>{currentRoom?.otherUser.age || "??"}세</span>
-              <span>,</span>
-              <span className="max-w-40 truncate">
-                {opponentProfile?.major ||
-                  currentRoom?.otherUser.major ||
+            <div className="flex flex-1 flex-col justify-center">
+              <span className="typo-14-600 text-[#1A1A1A]">
+                {opponentProfile?.nickname ||
+                  currentRoom?.otherUser.nickname ||
                   "..."}
               </span>
+              <div className="flex items-center gap-1 text-xs text-[#999999]">
+                <span>{currentRoom?.otherUser.age || "??"}세</span>
+                <span>,</span>
+                <span className="max-w-40 truncate">
+                  {opponentProfile?.major ||
+                    currentRoom?.otherUser.major ||
+                    "..."}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            aria-label="상대 사용자 정보 열기"
-            onClick={() => setIsProfileModalOpen(true)}
-            className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
-          >
-            <UserRound size={20} />
-            <MoreVertical className="h-5 w-5" />
-          </button>
-        </div>
-      </header>
+            <button
+              type="button"
+              aria-label="상대 사용자 정보 열기"
+              onClick={() => setIsProfileModalOpen(true)}
+              className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
+            >
+              <UserRound size={20} />
+              <MoreVertical className="h-5 w-5" />
+            </button>
+          </div>
+        </header>
+      )}
 
       {isFetchingNextPage && (
         <div className="absolute top-[72px] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
@@ -412,7 +429,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className="scrollbar-hide relative z-0 mt-10 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-4"
+        className={cn(
+          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto pb-4 transition-all duration-300",
+          isKeyboardOpen ? "mt-2 pt-2" : "mt-10 pt-5",
+        )}
       >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
@@ -489,7 +509,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
       {/* 하단 입력창을 fixed 대신 flex flow의 가장 아래에 자연스럽게 배치 */}
       <div
-        className="relative z-20 w-full shrink-0 px-4 pb-5"
+        className="relative z-20 w-full shrink-0 pb-5"
         style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
       >
         <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
@@ -499,6 +519,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             placeholder="메세지를 입력하세요.."
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
+            onFocus={() => setIsKeyboardOpen(true)}
+            onBlur={() => setIsKeyboardOpen(false)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && isSendEnabled) {
                 handleSendMessage();
