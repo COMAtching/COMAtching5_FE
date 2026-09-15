@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Download, Share, PlusSquare } from "lucide-react";
+import { Download, PlusSquare, Share } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -114,11 +114,28 @@ export default function PwaInstallCard() {
           <div className="flex w-full flex-col gap-5 text-gray-700">
             <div className="flex items-center gap-4 rounded-xl bg-gray-50 p-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
-                <Share className="text-blue-500" size={20} />
+                {/* Safari 공유 아이콘과 가장 비슷한 텍스트 또는 아이콘으로 대체 */}
+                <span className="text-xl text-blue-500">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" y1="2" x2="12" y2="15" />
+                  </svg>
+                </span>
               </div>
-              <p className="typo-14-500 flex-1">
-                아래의 <span className="font-bold text-blue-500">공유하기</span>{" "}
-                버튼을 누르세요.
+              <p className="typo-14-500 flex-1 leading-relaxed">
+                화면 맨 아래 사파리 메뉴에서 정중앙에 있는{" "}
+                <span className="font-bold text-blue-500">공유 아이콘</span>을
+                누르세요.
               </p>
             </div>
 
