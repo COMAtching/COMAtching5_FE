@@ -143,16 +143,9 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         const heightDifference = previousHeight - currentHeight;
 
         if (heightDifference !== 0) {
-          // 오차 범위를 넉넉히(150px) 잡아서, 사용자가 메시지를 보내고 스크롤이 내려가는 도중에 키보드를 닫아도
-          // '맨 밑에 있는 상태'로 인식하여 끝까지 완벽하게 스냅되도록 처리합니다.
-          const isAtBottom =
-            container.scrollHeight - container.scrollTop - previousHeight <=
-            150;
-
-          if (isAtBottom) {
-            container.scrollTop = container.scrollHeight - currentHeight;
-          }
-
+          // 카카오톡 방식: 키보드가 올라오든 내려오든, 변한 높이만큼 스크롤을 똑같이 이동시킨다.
+          // 이것 하나로 바닥이든 중간이든 어디서든 완벽하게 동기화됨.
+          container.scrollTop += heightDifference;
           previousHeight = currentHeight;
         }
       }
