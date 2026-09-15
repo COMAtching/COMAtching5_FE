@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
   output: "standalone", // Docker 최적화를 위한 standalone 모드
   devIndicators: false,
   agentRules: false,
-  // compiler: {
-  //   removeConsole:
-  //     process.env.NODE_ENV === "production"
-  //       ? { exclude: ["error", "warn"] }
-  //       : false,
-  // },
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
 
   // 🔒 보안 헤더
   async headers() {

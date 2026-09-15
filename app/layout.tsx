@@ -70,6 +70,9 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#fff",
+  // 채팅창 등에서 키보드가 올라올 때 전체 화면이 위로 밀리지 않고,
+  // 뷰포트 내부 크기만 줄어들게 하여 채팅 내역만 스크롤되도록 설정
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({

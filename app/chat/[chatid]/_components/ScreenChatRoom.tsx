@@ -481,6 +481,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             type="button"
             aria-label="메시지 보내기"
             disabled={!isSendEnabled}
+            onPointerDown={(e) => {
+              // 버튼 클릭 시 input에서 포커스가 빠져나가 키보드가 닫히는 현상 방지
+              e.preventDefault();
+            }}
             onClick={handleSendMessage}
             className={cn(
               "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-3xl border border-white/30 transition-colors",

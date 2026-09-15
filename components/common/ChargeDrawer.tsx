@@ -53,7 +53,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
         className="rounded-t-[16px] bg-white outline-none"
         showHandle={false}
       >
-        <div className="flex h-[90dvh] flex-col overflow-hidden">
+        <div className="flex h-[90vh] flex-col overflow-hidden">
           {/* ... */}
           <ChargeDrawerContext.Provider value={{ setActiveTab }}>
             <DrawerHeader className="shrink-0 gap-0 px-6 pt-6 pb-0">
