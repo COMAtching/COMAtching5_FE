@@ -30,6 +30,8 @@ export const useSpinRoulette = (rouletteType: RouletteType) => {
     onSuccess: () => {
       // 참여 이력 및 결제 금액 상태 동기화를 위해 무효화
       queryClient.invalidateQueries({ queryKey: ["rouletteStatus"] });
+      // 룰렛 보상(매칭권/옵션권) 획득 즉시 반영을 위해 보유 아이템 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     },
     onError: (error) => {
       if (isAxiosError(error) && error.response) {

@@ -1,6 +1,7 @@
 import { api } from "@/lib/axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+export type { ApiResponse } from "./useAdminOrders";
 import { ApiResponse } from "./useAdminOrders";
 import { useToastStore } from "@/stores/toast-store";
 
