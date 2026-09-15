@@ -5,10 +5,8 @@ import {
 } from "@tanstack/react-query";
 import { serverApi } from "@/lib/server-api";
 import GiftCardsDashboard from "./_components/GiftCardsDashboard";
-import {
-  AdminGiftCardWinner,
-  ApiResponse,
-} from "@/hooks/admin/useAdminGiftCards";
+import { AdminGiftCardWinner } from "@/hooks/admin/useAdminGiftCards";
+import { ApiResponse } from "@/hooks/admin/useAdminOrders";
 
 export default async function AdminGiftCardsPage() {
   const queryClient = new QueryClient();
