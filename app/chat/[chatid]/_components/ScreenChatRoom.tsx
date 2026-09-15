@@ -124,47 +124,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const lastMessageIdRef = React.useRef<string | null>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
-  // 채팅방이 바뀌면 즉시 스크롤 초기화
+  // 채팅방이 바뀌면 즉시 스크롤 초기화 (flex-col-reverse에서는 스크롤이 자동으로 0, 즉 맨 밑으로 갑니다)
   useEffect(() => {
-    hasInitiallyScrolledRef.current = false;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
   }, [chatId]);
-
-  // 키보드가 올라오거나 내려가서 컨테이너 높이가 변할 때,
-  // 원래 보던 화면(하단 기준)이 그대로 유지되도록 scrollTop을 보정해주는 로직
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    let previousHeight = container.clientHeight;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const currentHeight = entry.contentRect.height;
-        const heightDifference = previousHeight - currentHeight;
-
-        if (heightDifference !== 0) {
-          // 크기가 변하기 직전에 스크롤이 맨 밑에 있었는지 확인 (넉넉하게 오차 50px 허용)
-          const isAtBottom =
-            container.scrollHeight - container.scrollTop - previousHeight <= 50;
-
-          if (isAtBottom) {
-            // 맨 밑을 보고 있었다면, 키보드가 열리든 닫히든 무조건 하단에 딱 붙여서 최신 메시지 유지
-            container.scrollTop = container.scrollHeight - currentHeight;
-          }
-          // 맨 밑이 아니라 과거 대화를 보고 있었다면?
-          // -> 아무것도 안 함! 브라우저 기본 동작(상단 고정)에 의해 보던 화면이 자연스럽게 유지됨.
-
-          previousHeight = currentHeight;
-        }
-      }
-    });
-
-    resizeObserver.observe(container);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
@@ -315,44 +280,18 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     })) as ChatMessage[];
   }, [historyData, socketMessages, currentUserId]);
 
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    const lastMsg = messages[messages.length - 1];
-    const lastId = lastMsg ? lastMsg.id : null;
-
-    if (!hasInitiallyScrolledRef.current) {
-      // 처음 진입했을 때는 즉시 가장 아래로 이동 (빠른 속도감)
-      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-      hasInitiallyScrolledRef.current = true;
-      lastMessageIdRef.current = lastId;
-      return;
-    }
-
-    // 마지막 메시지 ID가 변경되었을 때만 (실시간 새 메시지 송수신 시) 하단으로 부드럽게 스크롤
-    if (lastId !== lastMessageIdRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      lastMessageIdRef.current = lastId;
-    }
-  }, [messages]);
-
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
-    // 첫 진입 시 자동으로 맨 아래로 가기 전에는 작동하지 않도록 방어
-    if (!hasInitiallyScrolledRef.current) return;
 
-    // 맨 위에서 300px 이내로 들어오면 선제적으로 다음 페이지(더 오래된 메시지)를 미리 가져옵니다.
-    if (container.scrollTop < 300 && hasNextPage && !isFetchingNextPage) {
-      // 1. 스크롤 위치 보존을 위한 높이 저장
-      const previousScrollHeight = container.scrollHeight;
+    // flex-col-reverse에서는 스크롤이 시각적 맨 밑일 때 0이고, 위로 올라갈수록 증가합니다 (일부 브라우저에선 음수).
+    const maxScroll = container.scrollHeight - container.clientHeight;
+    const currentScroll = Math.abs(container.scrollTop);
 
-      // 2. 다음 페이지 불러오기
-      fetchNextPage().then(() => {
-        // 3. 데이터를 불러온 후 스크롤 위치 복정
-        requestAnimationFrame(() => {
-          container.scrollTop = container.scrollHeight - previousScrollHeight;
-        });
-      });
+    // 시각적 상단(DOM 기준 맨 아래)에서 300px 이내로 들어오면 선제적으로 다음 페이지(더 오래된 메시지)를 미리 가져옵니다.
+    if (maxScroll - currentScroll < 300 && hasNextPage && !isFetchingNextPage) {
+      // flex-col-reverse는 요소가 DOM 끝에 추가되어도(시각적 상단에 렌더링) 현재 보고 있는 위치를 브라우저가 알아서 고정합니다!
+      // requestAnimationFrame나 scroll 복원 로직이 전혀 필요 없습니다.
+      fetchNextPage();
     }
   };
 
@@ -428,18 +367,25 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       <section
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        style={{ overflowAnchor: "none" }}
         className={cn(
-          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto",
-          isKeyboardOpen ? "mt-2 pt-2 pb-[80px]" : "mt-10 pt-5 pb-[100px]",
+          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col-reverse gap-4 overflow-y-auto px-4",
         )}
       >
+        {/* flex-col-reverse 환경이므로 요소의 첫 시작(DOM의 맨 위)이 시각적으로 맨 아래에 표시됩니다. 
+            따라서 하단 fixed 인풋바와 겹치지 않게 하려면 패딩을 상단(pt)에 줘야 시각적으로 하단에 여백이 생깁니다! */}
+        <div
+          className={cn(
+            "w-full shrink-0",
+            isKeyboardOpen ? "h-[80px]" : "h-[100px]",
+          )}
+        />
+
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-3xl border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
+          <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-[24px] border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
             <div className="flex h-[92.32px] w-[116px] flex-col items-center justify-center gap-3">
               <Image
                 src="/chat/heart.png"
@@ -464,8 +410,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           </div>
         ) : (
           <>
-            {messages.map((message, index) => {
-              const prevMessage = index > 0 ? messages[index - 1] : null;
+            {[...messages].reverse().map((message, index, arr) => {
+              // flex-col-reverse 환경에서는 배열이 역순(최신->과거)으로 렌더링됨
+              const nextMessageInDom =
+                index < arr.length - 1 ? arr[index + 1] : null;
 
               // YYYY년 MM월 DD일 형식으로 변환
               const getFormattedDate = (isoString: string) => {
@@ -475,14 +423,15 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
               };
 
               const currentDateStr = getFormattedDate(message.createdAt);
-              const prevDateStr = prevMessage
-                ? getFormattedDate(prevMessage.createdAt)
+              // 시각적으로 현재 메시지보다 '위(과거)'에 위치하게 될 다음 렌더링 메시지의 날짜
+              const nextDateStr = nextMessageInDom
+                ? getFormattedDate(nextMessageInDom.createdAt)
                 : "";
-              const showDivider = currentDateStr !== prevDateStr;
+
+              const showDivider = currentDateStr !== nextDateStr;
 
               return (
                 <React.Fragment key={message.id}>
-                  {showDivider && <ChatDateDivider label={currentDateStr} />}
                   {message.sender === "me" ? (
                     <OutgoingMessage message={message} />
                   ) : (
@@ -499,12 +448,13 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                       onProfileClick={() => setIsProfileModalOpen(true)}
                     />
                   )}
+                  {/* flex-col-reverse 이므로 메시지를 먼저 렌더링하고, 그 뒤(시각적으로 위)에 구분선을 렌더링해야 함 */}
+                  {showDivider && <ChatDateDivider label={currentDateStr} />}
                 </React.Fragment>
               );
             })}
           </>
         )}
-        <div ref={messagesEndRef} />
       </section>
 
       {/* 하단 입력창을 다시 fixed로 복구하여 레이아웃 계산 부하를 줄임 */}
