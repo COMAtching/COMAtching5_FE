@@ -60,6 +60,13 @@ export default function DepositorNameContent() {
             placeholder="이름을 입력해주세요"
             className="typo-16-500 w-full bg-transparent text-left text-[#1A1A1A] outline-none placeholder:text-[#B3B3B3]"
             maxLength={6}
+            onFocus={(e) => {
+              // 키보드가 올라올 때 브라우저가 화면을 자동 스크롤하지 않도록 방지
+              e.target.scrollIntoView({
+                block: "nearest",
+                behavior: "instant",
+              });
+            }}
           />
         </div>
       </div>
