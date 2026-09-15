@@ -70,8 +70,6 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#fff",
-  // 뷰포트 크기를 건드리지 않고 가상 키보드가 콘텐츠 위에 덮이도록(overlay) 설정
-  interactiveWidget: "overlays-content",
 };
 
 export default async function RootLayout({
