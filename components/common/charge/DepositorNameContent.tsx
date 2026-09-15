@@ -42,7 +42,7 @@ export default function DepositorNameContent() {
   };
 
   return (
-    <div className="flex flex-col gap-[23px] pt-8 pb-[100px]">
+    <div className="flex flex-col gap-[23px] pt-8 pb-20">
       {/* ── 입금자명 입력 ── */}
       <div className="flex flex-col gap-2">
         <span className="typo-14-500 text-[#666666]">입금자명</span>
@@ -90,9 +90,8 @@ export default function DepositorNameContent() {
         </div>
       </div>
 
+      {/* fixed 대신 인라인 배치: 키보드가 올라와도 버튼이 드로어 스크롤 영역 안에 고정 */}
       <Button
-        fixed
-        bottom={32}
         disabled={!name || name.length < 2 || isPending}
         onClick={handleSave}
       >

@@ -44,8 +44,8 @@ export const useMatching = () => {
       // 4. 매칭 히스토리 캐시도 무효화
       queryClient.invalidateQueries({ queryKey: ["matchingHistory"] });
 
-      // 5. 결과 페이지로 이동
-      router.push("/matching-result");
+      // 5. 결과 페이지로 이동 (push 대신 replace: 뒤로가기로 matching-result가 다시 나오는 것 방지)
+      router.replace("/matching-result");
     },
     onError: (error) => {
       setIsMatching(false);
