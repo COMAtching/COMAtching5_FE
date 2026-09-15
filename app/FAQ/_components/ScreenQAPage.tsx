@@ -6,6 +6,7 @@ import { QA_LIST } from "@/lib/constants/qa";
 import { useRouter } from "next/navigation";
 import { withdrawAction } from "@/lib/actions/authAction";
 import { useUpdateMyProfile } from "@/hooks/useProfile";
+import PwaInstallCard from "@/components/common/PwaInstallCard";
 
 const ScreenQAPage = () => {
   const router = useRouter();
@@ -19,6 +20,9 @@ const ScreenQAPage = () => {
       </header>
 
       <main className="mt-4 flex flex-col gap-4">
+        {/* PWA 설치 유도 카드 */}
+        <PwaInstallCard />
+
         {QA_LIST.map((item) => (
           <div
             key={item.question}
