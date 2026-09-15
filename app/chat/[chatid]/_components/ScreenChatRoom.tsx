@@ -128,6 +128,34 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     hasInitiallyScrolledRef.current = false;
   }, [chatId]);
 
+  // 키보드가 올라오거나 내려가서 컨테이너 높이가 변할 때,
+  // 원래 보던 화면(하단 기준)이 그대로 유지되도록 scrollTop을 보정해주는 로직
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let previousHeight = container.clientHeight;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const currentHeight = entry.contentRect.height;
+        const heightDifference = previousHeight - currentHeight;
+
+        if (heightDifference !== 0) {
+          // 높이가 변한 만큼 스크롤 위치를 조정하여 하단 기준 시야 유지
+          container.scrollTop += heightDifference;
+          previousHeight = currentHeight;
+        }
+      }
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
   const { data: myProfile } = useMyProfile();
   const currentUserId = myProfile?.data.memberId;
@@ -474,12 +502,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
               if (e.key === "Enter" && isSendEnabled) {
                 handleSendMessage();
               }
-            }}
-            onFocus={() => {
-              // 키보드가 올라오면서 컨테이너가 줄어들 때 마지막 메시지가 보이도록 스크롤
-              setTimeout(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-              }, 300);
             }}
             className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
           />
