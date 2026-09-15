@@ -11,6 +11,7 @@ import {
   LogOut,
   Shield,
   Bell,
+  Gift,
 } from "lucide-react";
 
 const MENU_ITEMS = [
@@ -59,6 +60,16 @@ const MENU_ITEMS = [
     href: "/adminpage/stats",
     active: true,
     gradient: "from-[#f59e0b] to-[#ef4444]",
+  },
+  {
+    id: "gift-cards",
+    title: "상품권 지급 관리",
+    description:
+      "룰렛 이벤트에 당첨된 사용자에게 상품권을 지급하고 내역을 관리합니다",
+    icon: Gift,
+    href: "/adminpage/gift-cards",
+    active: true,
+    gradient: "from-[#ec4899] to-[#be185d]",
   },
 ];
 

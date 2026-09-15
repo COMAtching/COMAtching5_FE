@@ -44,10 +44,8 @@ export async function registerServiceWorkerAndGetToken() {
   }
 
   try {
-    // 서비스 워커 등록
-    const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js",
-    );
+    // 서비스 워커 등록 (PWA와 FCM을 통합한 sw.js로 등록)
+    const registration = await navigator.serviceWorker.register("/sw.js");
 
     // 서비스 워커가 준비될 때까지 대기 (no active Service Worker 에러 방지)
     await navigator.serviceWorker.ready;
