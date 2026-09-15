@@ -142,19 +142,9 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         const heightDifference = previousHeight - currentHeight;
 
         if (heightDifference !== 0) {
-          // 크기가 변하기 직전에 스크롤이 맨 밑에 있었는지 확인 (오차 10px 허용)
-          const isAtBottom =
-            container.scrollHeight - container.scrollTop - previousHeight <= 10;
-
           // 높이가 변한 만큼 스크롤 위치를 조정하여 하단 기준 시야 유지
           container.scrollTop += heightDifference;
           previousHeight = currentHeight;
-
-          // 만약 원래 맨 밑에 있었다면, 키보드가 닫힐 때 생기는 미세한 오차(safe-area 등)를 무시하고
-          // 강제로 완벽하게 맨 밑으로 스냅시켜서 최신 메시지가 잘리지 않게 방어
-          if (isAtBottom) {
-            container.scrollTop = container.scrollHeight - currentHeight;
-          }
         }
       }
     });
@@ -422,7 +412,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className="scrollbar-hide relative z-0 mt-10 mb-18 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-8"
+        className="scrollbar-hide relative z-0 mt-10 flex w-full flex-1 flex-col gap-4 overflow-y-auto pt-5 pb-4"
       >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
@@ -497,9 +487,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         <div ref={messagesEndRef} />
       </section>
 
+      {/* 하단 입력창을 fixed 대신 flex flow의 가장 아래에 자연스럽게 배치 */}
       <div
-        className="fixed right-0 bottom-5 left-0 z-20 pb-2"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="relative z-20 w-full shrink-0 px-4 pb-5"
+        style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
       >
         <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
