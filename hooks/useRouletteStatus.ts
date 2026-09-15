@@ -31,6 +31,6 @@ export const useRouletteStatus = () => {
     queryFn: fetchRouletteStatus,
     // 오늘 참여 여부는 하루 단위로 초기화되므로, 페이지 진입 시 항상 최신값을 가져옴
     staleTime: 0,
-    gcTime: 1000 * 60 * 5, // 5분
+    gcTime: Infinity, // 기존 데이터를 메모리에 유지하여 로딩 스피너 방지
   });
 };

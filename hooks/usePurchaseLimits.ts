@@ -39,6 +39,7 @@ export const usePurchaseLimits = () => {
   return useQuery({
     queryKey: ["purchaseLimits"],
     queryFn: getPurchaseLimits,
-    staleTime: 1000 * 60, // 1분 유지
+    staleTime: 0, // 1분 대기 없이 항상 서버에서 최신 한도를 백그라운드 갱신
+    gcTime: Infinity, // 메모리에 남겨둬서 화면 깜빡임/로딩바 방지
   });
 };

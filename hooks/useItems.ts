@@ -36,7 +36,7 @@ export const useItems = () => {
   return useQuery({
     queryKey: ["items"],
     queryFn: fetchItems,
-    staleTime: Infinity, // 충전/소모 전까지는 데이터가 변하지 않으므로 무한정 캐싱
-    gcTime: Infinity, // 메모리에서 삭제하지 않음 → 로딩바 없음
+    staleTime: 0, // 관리자 승인 등으로 잔여권 개수가 언제 바뀔지 모르므로 화면 전환 시 항상 백그라운드에서 최신화
+    gcTime: Infinity, // 메모리에서 삭제하지 않음 → 화면 로딩바 방지
   });
 };
