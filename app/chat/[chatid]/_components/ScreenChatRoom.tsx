@@ -142,9 +142,19 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         const heightDifference = previousHeight - currentHeight;
 
         if (heightDifference !== 0) {
+          // 크기가 변하기 직전에 스크롤이 맨 밑에 있었는지 확인 (오차 10px 허용)
+          const isAtBottom =
+            container.scrollHeight - container.scrollTop - previousHeight <= 10;
+
           // 높이가 변한 만큼 스크롤 위치를 조정하여 하단 기준 시야 유지
           container.scrollTop += heightDifference;
           previousHeight = currentHeight;
+
+          // 만약 원래 맨 밑에 있었다면, 키보드가 닫힐 때 생기는 미세한 오차(safe-area 등)를 무시하고
+          // 강제로 완벽하게 맨 밑으로 스냅시켜서 최신 메시지가 잘리지 않게 방어
+          if (isAtBottom) {
+            container.scrollTop = container.scrollHeight - currentHeight;
+          }
         }
       }
     });
