@@ -53,9 +53,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
         className="rounded-t-[16px] bg-white outline-none"
         showHandle={false}
       >
-        {/* 키보드가 올라왔을 때 드로어가 뷰포트 안에서 자연스럽게 줄어들도록
-            고정 높이(h-[90dvh]) 대신 max-h + 유연한 flex 구조를 사용합니다. */}
-        <div className="flex max-h-[90dvh] flex-col overflow-hidden">
+        <div className="flex h-[90dvh] flex-col overflow-hidden">
           {/* ... */}
           <ChargeDrawerContext.Provider value={{ setActiveTab }}>
             <DrawerHeader className="shrink-0 gap-0 px-6 pt-6 pb-0">

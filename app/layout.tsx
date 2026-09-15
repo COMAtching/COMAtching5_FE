@@ -70,9 +70,8 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#fff",
-  // 키보드가 올라올 때 뷰포트를 위로 밀지 않고 콘텐츠를 압축시킵니다.
-  // 이를 통해 모달/드로어가 키보드 위로 튀어오르는 현상을 방지합니다.
-  interactiveWidget: "resizes-content",
+  // 뷰포트 크기를 건드리지 않고 가상 키보드가 콘텐츠 위에 덮이도록(overlay) 설정
+  interactiveWidget: "overlays-content",
 };
 
 export default async function RootLayout({
