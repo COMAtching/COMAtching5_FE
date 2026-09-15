@@ -475,6 +475,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 handleSendMessage();
               }
             }}
+            onFocus={() => {
+              // 키보드가 올라오면서 컨테이너가 줄어들 때 마지막 메시지가 보이도록 스크롤
+              setTimeout(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+              }, 300);
+            }}
             className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
           />
           <button
