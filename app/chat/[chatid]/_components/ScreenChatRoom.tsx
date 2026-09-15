@@ -371,12 +371,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   return (
     <main
       className={cn(
-        "flex h-dvh w-full flex-col items-center overflow-hidden px-4 transition-all duration-300",
-        isKeyboardOpen ? "pt-2" : "pt-10",
+        "flex h-dvh w-full flex-col items-center overflow-hidden px-4",
+        isKeyboardOpen ? "pt-0" : "pt-10",
       )}
     >
       {!isKeyboardOpen && (
-        <header className="animate-in fade-in slide-in-from-top-4 fixed top-0 right-0 left-0 z-20 px-4 py-2 duration-300">
+        <header className="fixed top-0 right-0 left-0 z-20 px-4 py-2">
           <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
           <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
           <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
@@ -430,8 +430,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
         className={cn(
-          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto pb-4 transition-all duration-300",
-          isKeyboardOpen ? "mt-2 pt-2" : "mt-10 pt-5",
+          "scrollbar-hide relative z-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto",
+          isKeyboardOpen ? "mt-2 pt-2 pb-[80px]" : "mt-10 pt-5 pb-[100px]",
         )}
       >
         {isLoading ? (
@@ -507,10 +507,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         <div ref={messagesEndRef} />
       </section>
 
-      {/* 하단 입력창을 fixed 대신 flex flow의 가장 아래에 자연스럽게 배치 */}
+      {/* 하단 입력창을 다시 fixed로 복구하여 레이아웃 계산 부하를 줄임 */}
       <div
-        className="relative z-20 w-full shrink-0 pb-5"
-        style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+        className="fixed right-0 bottom-5 left-0 z-20 pb-2"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
