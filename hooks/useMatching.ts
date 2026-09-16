@@ -26,6 +26,7 @@ export const useMatching = () => {
         setIsMatching(false);
         console.error("❌ 매칭 실패:", response.message);
         alert(response.message || "매칭 중 오류가 발생했습니다.");
+        router.push("/matching");
         return;
       }
 
