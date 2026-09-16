@@ -195,3 +195,10 @@
     background: #0f1117 !important;
   }
 }
+
+/* 오직 아이폰(iOS Safari)에서만 적용되는 전역 스크롤 바운스 방지 */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    overscroll-behavior-y: none;
+  }
+}
