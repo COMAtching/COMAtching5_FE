@@ -1,6 +1,6 @@
 importScripts("/firebase-messaging-sw.js");
 
-const CACHE_NAME = "comatching-cache-v2";
+const CACHE_NAME = "comatching-cache-v3";
 const ASSETS_TO_CACHE = ["/", "/logo/icon.png", "/logo/comatching-logo.svg"];
 
 // Install Event
