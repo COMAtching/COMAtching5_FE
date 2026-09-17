@@ -5,7 +5,7 @@ import { MatchingRequest } from "@/lib/types/matching";
 import { useRouter } from "next/navigation";
 import { useItems } from "@/hooks/useItems";
 import { useMatchingStore } from "@/stores/matching-store";
-import { alertIfBlocked } from "@/lib/constants/date";
+import { alertIfMatchingBlocked } from "@/lib/constants/date";
 
 interface ResultFooterProps {
   lastPayload: MatchingRequest | null;
@@ -39,7 +39,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
     : 0;
 
   const handleHoldStart = (e: React.MouseEvent | React.TouchEvent) => {
-    if (alertIfBlocked()) {
+    if (alertIfMatchingBlocked()) {
       router.push("/main");
       return;
     }
@@ -89,7 +89,7 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
 
               // 같은 조건으로 재매칭 실행
               if (lastPayload) {
-                if (alertIfBlocked()) {
+                if (alertIfMatchingBlocked()) {
                   router.push("/main");
                   setIsHolding(false);
                   return true;

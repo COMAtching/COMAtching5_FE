@@ -23,7 +23,7 @@ import {
 } from "@/lib/types/matching";
 
 import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
-import { alertIfBlocked } from "@/lib/constants/date";
+import { alertIfMatchingBlocked } from "@/lib/constants/date";
 
 const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
   스포츠: "SPORTS",
@@ -76,7 +76,7 @@ const ScreenMatching = () => {
 
   // 테스트 모드(IS_TESTING) 차단 검사
   React.useEffect(() => {
-    if (alertIfBlocked()) {
+    if (alertIfMatchingBlocked()) {
       router.replace("/main");
     }
   }, [router]);
@@ -166,7 +166,7 @@ const ScreenMatching = () => {
   };
 
   const handleMatchingSubmit = () => {
-    if (alertIfBlocked()) return;
+    if (alertIfMatchingBlocked()) return;
 
     if (!canSubmit) {
       alert("모든 조건을 선택해 주세요!");

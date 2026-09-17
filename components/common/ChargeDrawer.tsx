@@ -15,7 +15,7 @@ import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryConten
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
 import ChargeTabs from "@/components/common/charge/ChargeTabs";
 import { TABS } from "@/lib/constants/charge";
-import { alertIfBlocked } from "@/lib/constants/date";
+import { alertIfChargeBlocked } from "@/lib/constants/date";
 
 /* ── Context ── */
 interface ChargeDrawerContextType {
@@ -40,7 +40,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
   const ActiveContent = TAB_CONTENT[activeTab];
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen && alertIfBlocked()) {
+    if (newOpen && alertIfChargeBlocked()) {
       return;
     }
     setOpen(newOpen);

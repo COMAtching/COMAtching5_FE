@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
-import { alertIfBlocked } from "@/lib/constants/date";
+import { alertIfMatchingBlocked } from "@/lib/constants/date";
 
 const MatchingButton = () => {
   const { data: participantsCount } = useParticipantsCount();
@@ -10,7 +10,7 @@ const MatchingButton = () => {
       href="/matching"
       prefetch={true}
       onClick={(e) => {
-        if (alertIfBlocked()) {
+        if (alertIfMatchingBlocked()) {
           e.preventDefault();
         }
       }}
