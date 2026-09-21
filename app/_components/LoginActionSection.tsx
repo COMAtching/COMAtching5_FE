@@ -2,9 +2,11 @@
 import BubbleDiv from "@/app/_components/BubbleDiv";
 import { KakaoLoginButton } from "./SocialButtonList";
 import Link from "next/link";
+import { alertIfLoginBlocked } from "@/lib/constants/date";
 
 export default function ScreenLoginActionSection() {
   const handleKakaoLogin = () => {
+    if (alertIfLoginBlocked()) return;
     const url = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
     console.log("🟡 카카오 로그인 URL:", url);
     // 외부 OAuth 엔드포인트로 리다이렉트 (Next.js 내부 경로 아님)
@@ -26,6 +28,9 @@ export default function ScreenLoginActionSection() {
       <Link
         href="/login"
         className="all-[unset] typo-14-500 text-color-text-caption2 cursor-pointer underline transition-colors"
+        onClick={(e) => {
+          if (alertIfLoginBlocked()) e.preventDefault();
+        }}
       >
         이메일로 로그인
       </Link>

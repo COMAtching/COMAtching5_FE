@@ -6,6 +6,7 @@ import { User } from "lucide-react";
 import React, { useActionState, useState } from "react";
 import Link from "next/link";
 import { loginAction } from "@/lib/actions/loginAction";
+import { alertIfLoginBlocked } from "@/lib/constants/date";
 
 export const LoginForm = () => {
   // React 19: useActionState로 폼 상태 및 팬딩 처리 관리
@@ -18,7 +19,13 @@ export const LoginForm = () => {
 
   return (
     <section className="mt-10 flex w-full flex-1 flex-col items-start gap-6">
-      <form className="flex w-full flex-col gap-4" action={formAction}>
+      <form
+        className="flex w-full flex-col gap-4"
+        action={formAction}
+        onSubmit={(e) => {
+          if (alertIfLoginBlocked()) e.preventDefault();
+        }}
+      >
         <div className="flex w-full flex-col gap-2">
           <label htmlFor="email" className="typo-14-500 text-gray-700">
             아이디(이메일)
