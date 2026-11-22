@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {
   type AdminOrder,
+  type OrderRefund,
   useApproveOrder,
   useRejectOrder,
 } from "@/hooks/admin/useAdminOrders";
@@ -126,6 +127,7 @@ export default function OrderCard({ order }: OrderCardProps) {
             <p className="text-sm font-semibold text-white">
               {order.requestedItemName}
             </p>
+            <p className="text-xs text-[#aaaac8]">주문 #{order.requestId}</p>
           </div>
         </div>
 
@@ -229,5 +231,92 @@ export default function OrderCard({ order }: OrderCardProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export function RefundOrderCard({
+  refund,
+  busy,
+  needsReview,
+  onComplete,
+}: {
+  refund: OrderRefund;
+  busy: boolean;
+  needsReview: boolean;
+  onComplete: (orderId: number) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const { orderId, amount, refundStatus } = refund;
+  const completed = refundStatus === "COMPLETED";
+  const total = amount.toLocaleString("ko-KR") + "원";
+  return (
+    <article className="space-y-3 rounded-2xl border border-[#2a2d42] bg-[#161827] p-5">
+      <p className="text-xs text-[#a4a8bc]">
+        주문 #{orderId} · {completed ? "환불 완료" : "환불 진행 중"}
+      </p>
+      <h3 className="font-semibold text-white">{refund.requestedItemName}</h3>
+      <p className="text-lg font-bold">환불액 {total}</p>
+      <div className="space-y-1 text-sm text-[#b7bbcb]">
+        <p>
+          시작 · 관리자 #{refund.startedBy} ·{" "}
+          <time dateTime={refund.startedAt}>
+            {refund.startedAt.replace("T", " ").slice(0, 19)}
+          </time>
+        </p>
+        {completed && refund.completedAt && (
+          <p>
+            완료 · 관리자 #{refund.completedBy} ·{" "}
+            <time dateTime={refund.completedAt}>
+              {refund.completedAt.replace("T", " ").slice(0, 19)}
+            </time>
+          </p>
+        )}
+      </div>
+      {needsReview && !completed && (
+        <p role="alert">기존 지급 이력 확인 필요 · 송금을 중단해 주세요.</p>
+      )}
+      {!completed &&
+        !needsReview &&
+        (confirming ? (
+          <div className="space-y-3 rounded-xl border border-amber-500/40 p-3">
+            <p>
+              주문 #{orderId}의 환불액 {total} 전액을 고객에게 이체한 내역을
+              확인했나요?
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                className="rounded-lg border px-3 py-2 text-sm"
+                disabled={busy}
+                onClick={() => setConfirming(false)}
+              >
+                취소
+              </button>
+              <button
+                className="rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold disabled:opacity-50"
+                disabled={busy}
+                onClick={() => {
+                  setConfirming(false);
+                  onComplete(orderId);
+                }}
+              >
+                이체 내역 확인 · 완료 기록
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-[#b7bbcb]">
+              시작 담당자와 은행 이체 내역을 대조한 뒤 완료해 주세요.
+            </p>
+            <button
+              className="rounded-lg border border-emerald-500/40 px-3 py-2 text-sm font-semibold text-emerald-300 disabled:opacity-50"
+              disabled={busy}
+              onClick={() => setConfirming(true)}
+            >
+              이체 확인 · 환불 완료
+            </button>
+          </>
+        ))}
+    </article>
   );
 }

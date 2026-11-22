@@ -4,7 +4,9 @@ import { RotateCw } from "lucide-react";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
 
 const ChargeRequestWaiting = () => {
-  const { refetch, isFetching } = useRequestStatus();
+  const { isPurchasePending, refetch, isFetching } = useRequestStatus();
+
+  if (!isPurchasePending) return null;
 
   return (
     <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-3xl border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">

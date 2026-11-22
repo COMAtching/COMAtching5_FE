@@ -123,3 +123,189 @@ export const useRejectOrder = () => {
     },
   });
 };
+
+export interface OrderGrant {
+  orderId: number;
+  status: AdminOrder["status"];
+  grantStatus:
+    | "PENDING"
+    | "GRANTED"
+    | "FAILED"
+    | "REVIEW_REQUIRED"
+    | "NOT_REQUESTED";
+  attempt: number;
+  refundStatus: "NONE" | RefundListStatus;
+}
+
+export interface FailedGrant extends Omit<OrderGrant, "refundStatus"> {
+  requestedItemName: string;
+}
+
+const paymentPath = "/api/v1/admin/payment";
+const failedGrantsKey = ["adminFailedGrants"] as const;
+const grantKey = (orderId: number) => ["adminOrderGrant", orderId] as const;
+
+export function useFailedGrants(page: number, isGrantsTab: boolean) {
+  return useQuery({
+    queryKey: [...failedGrantsKey, page],
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<
+        ApiResponse<PaginatedResponse<FailedGrant>>
+      >(`${paymentPath}/grants`, {
+        params: { grantStatus: "FAILED", page, size: 20 },
+        signal,
+      });
+      return data.data;
+    },
+    // 다른 탭에서도 상단의 지급 실패 알림은 갱신한다.
+    refetchInterval: isGrantsTab ? 5_000 : 30_000,
+  });
+}
+
+function orderGrantQuery(orderId: number) {
+  return {
+    queryKey: grantKey(orderId),
+    queryFn: async ({ signal }: { signal: AbortSignal }) => {
+      const { data } = await api.get<ApiResponse<OrderGrant>>(
+        `${paymentPath}/requests/${orderId}/grant`,
+        { signal },
+      );
+      return data.data;
+    },
+  };
+}
+
+export function useOrderGrant(orderId: number, enabled: boolean) {
+  return useQuery({
+    ...orderGrantQuery(orderId),
+    enabled,
+    refetchInterval: (query) =>
+      query.state.status !== "error" &&
+      query.state.data?.grantStatus === "PENDING"
+        ? 3000
+        : false,
+  });
+}
+
+export function useRetryGrant(orderId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      try {
+        await api.post(`${paymentPath}/requests/${orderId}/grant/retry`);
+        return "accepted" as const;
+      } catch (error) {
+        if (
+          error instanceof AxiosError &&
+          error.response?.status === 409 &&
+          error.response.data?.code === "PAY-015"
+        ) {
+          return "conflict" as const;
+        }
+        throw error;
+      }
+    },
+    retry: false,
+    onSettled: (outcome) => {
+      if (outcome === "conflict")
+        void queryClient.invalidateQueries({ queryKey: refundListsKey });
+      void queryClient.invalidateQueries({ queryKey: failedGrantsKey });
+      void queryClient.resetQueries({
+        queryKey: grantKey(orderId),
+        exact: true,
+      });
+    },
+  });
+}
+
+export type RefundListStatus = "IN_PROGRESS" | "COMPLETED";
+export interface OrderRefund {
+  orderId: number;
+  requestedItemName: string;
+  amount: number;
+  refundStatus: RefundListStatus;
+  startedAt: string;
+  startedBy: number;
+  completedAt: string | null;
+  completedBy: number | null;
+}
+
+const refundListsKey = ["adminRefunds"] as const;
+export function useAdminRefunds(
+  status: RefundListStatus,
+  page: number,
+  enabled: boolean,
+) {
+  return useQuery({
+    queryKey: [...refundListsKey, status, page],
+    enabled,
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<
+        ApiResponse<PaginatedResponse<OrderRefund>>
+      >(`${paymentPath}/refunds`, {
+        params: { status, page, size: 20 },
+        signal,
+      });
+      return data.data;
+    },
+    refetchInterval: 30_000,
+  });
+}
+
+type RefundRequest = { orderId: number; action: "start" | "complete" };
+export type RefundResult =
+  | { kind: "recorded"; refund: OrderRefund }
+  | { kind: "review"; orderId: number }
+  | {
+      kind: "check";
+      orderId: number;
+      action: RefundRequest["action"];
+      current?: OrderGrant;
+    };
+
+export function useAdminRefundAction() {
+  const client = useQueryClient();
+  return useMutation({
+    retry: false,
+    mutationFn: async ({
+      orderId,
+      action,
+    }: RefundRequest): Promise<RefundResult> => {
+      try {
+        const { data } = await api.post<ApiResponse<OrderRefund>>(
+          `${paymentPath}/requests/${orderId}/refund/${action}`,
+        );
+        return { kind: "recorded", refund: data.data };
+      } catch (error) {
+        if (
+          error instanceof AxiosError &&
+          error.response?.status === 409 &&
+          error.response.data?.code === "PAY-016"
+        ) {
+          return { kind: "review", orderId };
+        }
+        // 응답 유실이나 상태 충돌은 POST를 반복하지 않고 서버의 현재 상태로 확인한다.
+        await client.cancelQueries({
+          queryKey: grantKey(orderId),
+          exact: true,
+        });
+        const current = await client
+          .fetchQuery({
+            ...orderGrantQuery(orderId),
+            staleTime: 0,
+            retry: false,
+          })
+          .catch(() => undefined);
+        return { kind: "check", orderId, action, current };
+      }
+    },
+    onSettled: async (_result, _error, { orderId }) => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: failedGrantsKey }),
+        client.invalidateQueries({ queryKey: refundListsKey }),
+        client.invalidateQueries({ queryKey: grantKey(orderId), exact: true }),
+      ]);
+    },
+  });
+}

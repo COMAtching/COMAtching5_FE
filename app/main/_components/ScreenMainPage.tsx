@@ -20,7 +20,6 @@ import {
   useMatchingHistory,
   MatchingHistoryItem,
 } from "@/hooks/useMatchingHistory";
-import { useRequestStatus } from "@/hooks/useRequestStatus";
 import { useActiveNotices } from "@/hooks/useActiveNotices";
 import { useQueryClient } from "@tanstack/react-query";
 import RouletteEntrySection from "./RouletteEntrySection";
@@ -29,7 +28,6 @@ const ScreenMainPage = () => {
   const queryClient = useQueryClient();
   const { data: noticesData } = useActiveNotices();
   const { data: historyData, isLoading } = useMatchingHistory();
-  const { isPurchasePending } = useRequestStatus();
 
   useEffect(() => {
     const handleFcmMessage = () => {
@@ -90,7 +88,7 @@ const ScreenMainPage = () => {
       <MainHeader />
       <MyCoinSection />
       <ProfileProgressCard />
-      {isPurchasePending && <ChargeRequestWaiting />}
+      <ChargeRequestWaiting />
       {activeNotice && (
         <NoticeSection
           title={activeNotice.title}
