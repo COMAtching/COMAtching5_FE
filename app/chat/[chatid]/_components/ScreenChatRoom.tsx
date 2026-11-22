@@ -158,14 +158,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, []);
 
   // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
-  const { data: myProfile } = useMyProfile();
-  const currentUserId = myProfile?.data.memberId;
+  const profile = useMyProfile({
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
+  });
+  const currentUserId =
+    profile.isFetchedAfterMount && profile.isSuccess
+      ? profile.data.data.memberId
+      : undefined;
 
   // 즐겨찾기 토글 mutation
   const updateFavorite = useUpdateFavorite();
 
   // 0-1. 현재 채팅방 정보 가져오기
-  const { data: chatRooms } = useChatRooms();
+  const { data: chatRooms } = useChatRooms(currentUserId);
   const currentRoom = chatRooms?.find((r) => r.id === chatId);
   const partnerMemberId = currentRoom?.otherUser.memberId;
 
@@ -228,14 +234,13 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   // 1. 과거 대화 내역 가져오기 (API)
   const {
     data: historyData,
-    refetch: refetchHistory,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
     isError,
     error,
-  } = useChatMessages(chatId);
+  } = useChatMessages(chatId, currentUserId);
 
   // 404 에러 발생 시 채팅방 목록으로 안전하게 리다이렉트
   useEffect(() => {
@@ -248,22 +253,33 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     }
   }, [isError, error, router]);
 
-  // 채팅방에 들어올 때마다(혹은 Next.js Router 캐시로 인해 컴포넌트가 재사용될 때마다) 과거 내역을 무조건 갱신
-  useEffect(() => {
-    refetchHistory();
-  }, [refetchHistory, chatId]);
-
   // 2. 소켓 연결 및 실시간 메시지 수신
+  const pendingText = React.useRef<string | null>(null);
+  const [sendState, setSendState] = useState<
+    "idle" | "sending" | "unconfirmed"
+  >("idle");
+  const onOwnMessage = React.useCallback((content: string) => {
+    if (pendingText.current !== content) return;
+    pendingText.current = null;
+    setMessageText((draft) => (draft === content ? "" : draft));
+    setSendState("idle");
+  }, []);
   const {
     messages: socketMessages,
     sendMessage,
-    sendReadReceipt,
-  } = useChatRoomSocket(chatId, currentUserId);
+    isConnected,
+    accountMismatch,
+  } = useChatRoomSocket(
+    chatId,
+    historyData && !isError ? currentUserId : undefined,
+    onOwnMessage,
+  );
 
-  // 2-1. 채팅방 진입 시 STOMP로 읽음(READ) 이벤트 전송
   useEffect(() => {
-    sendReadReceipt();
-  }, [chatId, sendReadReceipt]);
+    if (sendState !== "sending") return;
+    const timer = window.setTimeout(() => setSendState("unconfirmed"), 10000);
+    return () => window.clearTimeout(timer);
+  }, [sendState]);
 
   // DEBUG: 채팅방 데이터 로그
   useEffect(() => {
@@ -348,16 +364,15 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   };
 
   const handleSendMessage = () => {
-    if (!messageText.trim()) return;
-
-    // 소켓으로 전송 (senderId는 서버에서 자동 주입)
-    sendMessage(messageText);
-
-    // 입력창 초기화
-    setMessageText("");
+    if (!messageText.trim() || !isConnected || sendState === "sending") return;
+    pendingText.current = messageText;
+    setSendState(sendMessage(messageText) ? "sending" : "unconfirmed");
   };
 
-  const isSendEnabled = messageText.trim().length > 0;
+  const isSendEnabled =
+    isConnected && sendState !== "sending" && messageText.trim().length > 0;
+
+  if (isError && (error as AxiosError)?.response?.status === 404) return null;
 
   return (
     <main className="flex h-dvh w-full flex-col items-center overflow-hidden px-4 pt-10">
@@ -493,6 +508,17 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         className="fixed right-0 bottom-5 left-0 z-20 pb-2"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
+        {(!isConnected || sendState !== "idle") && (
+          <p role="status" className="mb-1 text-center text-xs text-gray-600">
+            {accountMismatch
+              ? "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
+              : sendState === "unconfirmed"
+                ? "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
+                : !isConnected
+                  ? "채팅 서버에 연결 중이에요."
+                  : "전송 확인 중…"}
+          </p>
+        )}
         <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
           <input
             ref={inputRef}
@@ -501,7 +527,11 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && isSendEnabled) {
+              if (
+                e.key === "Enter" &&
+                !e.nativeEvent.isComposing &&
+                isSendEnabled
+              ) {
                 handleSendMessage();
               }
             }}

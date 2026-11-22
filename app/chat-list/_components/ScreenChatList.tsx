@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
+import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
+import { useMyProfile } from "@/hooks/useProfile";
 import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
 import NoMatchingList from "@/app/matching-list/_components/NoMatchingList";
@@ -107,12 +109,16 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
-  const { data: rooms, refetch: refetchRooms } = useChatRooms();
-
-  // 컴포넌트 마운트 시 최신 데이터 호출
-  useEffect(() => {
-    refetchRooms();
-  }, [refetchRooms]);
+  const profile = useMyProfile({
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
+  });
+  const memberId =
+    profile.isFetchedAfterMount && profile.isSuccess
+      ? profile.data.data.memberId
+      : undefined;
+  useChatRoomSocket(null, memberId);
+  const { data: rooms, refetch: refetchRooms } = useChatRooms(memberId);
 
   // 데이터 변경 로그
   useEffect(() => {
@@ -127,13 +133,13 @@ export default function ScreenChatList() {
       console.log(
         "🔔 [FCM Chat Notification Received] Refreshing chat list...",
       );
-      refetchRooms();
+      if (memberId) void refetchRooms();
     };
     window.addEventListener("fcm-chat-received", handleFcmChat);
     return () => {
       window.removeEventListener("fcm-chat-received", handleFcmChat);
     };
-  }, [refetchRooms]);
+  }, [memberId, refetchRooms]);
 
   const chatItems = useMemo(() => {
     // 이제 SSR/CSR 모두 배열로 통일되었으므로 단순하게 처리합니다.
