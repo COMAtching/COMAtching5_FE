@@ -28,24 +28,22 @@ export const useRequestStatus = () => {
     queryKey: ["requestStatus"],
     queryFn: fetchRequestStatus,
     staleTime: 1000 * 60, // 1 minute
+    refetchInterval: ({ state }) =>
+      state.data?.data.status === "PENDING" ? 5_000 : false,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: "always",
   });
 
-  const isPurchasePending =
-    query.data?.data?.status === "PENDING" ||
-    query.error?.response?.data?.code === "GATEWAY-001" ||
-    query.error?.response?.data?.code === "GATEWAY-002";
-
-  // 상태가 PENDING에서 NONE으로 변했을 때를 감지하기 위한 ref
-  const prevPendingRef = useRef(isPurchasePending);
+  const status = query.data?.data.status;
+  const previousStatus = useRef(status);
 
   useEffect(() => {
-    // 이전엔 대기중(true)이었는데, 지금은 대기중이 아님(false) -> 충전 완료됨!
-    if (prevPendingRef.current === true && isPurchasePending === false) {
+    if (previousStatus.current === "PENDING" && status === "NONE") {
       queryClient.invalidateQueries({ queryKey: ["items"] });
       queryClient.invalidateQueries({ queryKey: ["itemHistory"] });
     }
-    prevPendingRef.current = isPurchasePending;
-  }, [isPurchasePending, queryClient]);
+    previousStatus.current = status;
+  }, [status, queryClient]);
 
-  return { ...query, isPurchasePending };
+  return { ...query, isPurchasePending: status === "PENDING" };
 };

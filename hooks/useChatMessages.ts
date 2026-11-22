@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import { api } from "@/lib/axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
@@ -6,7 +7,7 @@ export type ChatMessagePayload = {
   roomId: string;
   senderId: number;
   content: string;
-  type: "TALK" | "ENTER" | "LEAVE" | "READ";
+  type: "TALK" | "IMAGE" | "SYSTEM" | "READ";
   createdAt: string;
   readCount: number;
 };
@@ -35,9 +36,12 @@ export const fetchChatMessages = async (
   return data;
 };
 
-export const useChatMessages = (roomId: string) => {
+export const useChatMessages = (
+  roomId: string,
+  memberId: number | undefined,
+) => {
   return useInfiniteQuery({
-    queryKey: ["chatMessages", roomId],
+    queryKey: ["chatMessages", roomId, memberId],
     queryFn: ({ pageParam }) => {
       if (!pageParam) {
         return fetchChatMessages(roomId, 0, 20);
@@ -59,7 +63,10 @@ export const useChatMessages = (roomId: string) => {
         beforeMessageId: lastPage.data[0]?.id,
       };
     },
-    enabled: !!roomId,
+    enabled: !!roomId && !!memberId,
+    refetchOnWindowFocus: true,
+    retry: (count, error) =>
+      !(isAxiosError(error) && error.response?.status === 404) && count < 1,
     staleTime: 0,
     gcTime: 0, // 캐시를 남기지 않음
   });

@@ -1,6 +1,5 @@
 import { api } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
-import { MatchingPartner } from "./useMatchingHistory";
 
 export type ChatRoom = {
   id: string; // 채팅방 ID
@@ -45,10 +44,12 @@ export const fetchChatRooms = async (): Promise<ChatRoom[]> => {
   }
 };
 
-export const useChatRooms = () => {
+export const useChatRooms = (memberId: number | undefined) => {
   return useQuery({
-    queryKey: ["chatRooms"],
+    queryKey: ["chatRooms", memberId],
     queryFn: fetchChatRooms,
+    enabled: !!memberId,
+    refetchOnWindowFocus: true,
     staleTime: 0, // 항상 최신 데이터를 유지하도록 설정
     gcTime: 0, // 메모리 캐싱을 아예 하지 않고 컴포넌트가 꺼지면 즉시 캐시 소멸
   });
@@ -81,6 +82,7 @@ export const useUnreadCount = () => {
   return useQuery({
     queryKey: ["chatUnreadCount"],
     queryFn: fetchUnreadCount,
+    refetchOnWindowFocus: true,
     staleTime: 0,
     gcTime: 0,
   });

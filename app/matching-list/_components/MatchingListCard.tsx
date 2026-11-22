@@ -78,17 +78,19 @@ const CardHeader = ({
           }
         />
       </button>
-      <button
-        type="button"
-        aria-label="메시지 보내기"
-        className="flex h-4 w-4 items-center justify-center"
-        onClick={(e) => {
-          e.stopPropagation();
-          onChatClick?.();
-        }}
-      >
-        <Send size={16} className="text-color-gray-500" />
-      </button>
+      {onChatClick && (
+        <button
+          type="button"
+          aria-label="메시지 보내기"
+          className="flex h-4 w-4 items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            onChatClick?.();
+          }}
+        >
+          <Send size={16} className="text-color-gray-500" />
+        </button>
+      )}
       <button
         type="button"
         aria-label="더 보기"
@@ -284,7 +286,7 @@ const MatchingListCard = ({
           partner={item.partner}
           isFavorite={item.favorite}
           onFavoriteToggle={() => onFavoriteToggle?.(item.historyId)}
-          onChatClick={handleChatClick}
+          onChatClick={item.chatRoomId ? handleChatClick : undefined}
         />
         {/* Major Section */}
         <div className="mt-4 flex w-full flex-col items-start gap-1">

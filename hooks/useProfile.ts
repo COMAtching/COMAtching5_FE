@@ -27,12 +27,16 @@ export const updateMyProfile = async (
 };
 
 /** 프로필 조회 훅 */
-export const useMyProfile = () => {
+export const useMyProfile = (options?: {
+  refetchOnMount?: "always";
+  refetchOnWindowFocus?: "always";
+}) => {
   return useQuery({
     queryKey: ["myProfile"],
     queryFn: fetchMyProfile,
     staleTime: 1000 * 60 * 60, // 1시간 동안 신선한 상태 유지
     gcTime: 1000 * 60 * 60 * 24, // 24시간 동안 캐시 유지
+    ...options,
   });
 };
 
