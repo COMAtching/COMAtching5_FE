@@ -8,12 +8,14 @@ import { Check, Eye, EyeOff, X } from "lucide-react";
 import React, { useState } from "react";
 
 type PasswordStepProps = {
+  isSubmitting: boolean;
   password: string;
   onPasswordChange: (password: string) => void;
   onSubmit: (e: React.SyntheticEvent<HTMLFormElement>) => void;
 };
 
 export const PasswordStep = ({
+  isSubmitting,
   password,
   onPasswordChange,
   onSubmit,
@@ -114,7 +116,11 @@ export const PasswordStep = ({
         </div>
 
         <div className="mt-auto">
-          <Button shadow={true} type="submit" disabled={!isPasswordValid}>
+          <Button
+            shadow={true}
+            type="submit"
+            disabled={!isPasswordValid || isSubmitting}
+          >
             완료
           </Button>
         </div>
