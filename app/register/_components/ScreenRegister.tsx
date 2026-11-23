@@ -19,7 +19,7 @@ export const ScreenRegister = () => {
 
   const { mutate: sendEmail, isPending: isSendingEmail } = useSendEmail();
   const { verify, isPending: isVerifyingEmail } = useVerifyEmail();
-  const { mutate: signUp } = useSignUp();
+  const { mutate: signUp, isPending: isSigningUp } = useSignUp();
 
   const handleEmailSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,6 +50,7 @@ export const ScreenRegister = () => {
 
   const handlePasswordSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSigningUp) return;
     signUp(
       { email, password },
       {
@@ -66,8 +67,25 @@ export const ScreenRegister = () => {
             axios.isAxiosError(error) && error.response?.data?.message
               ? error.response.data.message
               : "회원가입에 실패했습니다. 다시 시도해주세요.";
+          if (
+            axios.isAxiosError(error) &&
+            (error.response?.data?.code === "AUTH-002" ||
+              !error.response ||
+              error.response.status >= 500)
+          ) {
+            setVerificationCode("");
+            setPassword("");
+            setStep(1);
+            alert("가입을 완료하지 못했습니다. 이메일을 다시 인증해주세요.");
+            return;
+          }
           alert(message);
-          router.replace("/login");
+          if (
+            axios.isAxiosError(error) &&
+            error.response?.data?.code === "MEM-002"
+          ) {
+            router.replace("/login");
+          }
         },
       },
     );
@@ -103,6 +121,7 @@ export const ScreenRegister = () => {
       )}
       {step === 3 && (
         <PasswordStep
+          isSubmitting={isSigningUp}
           password={password}
           onPasswordChange={setPassword}
           onSubmit={handlePasswordSubmit}

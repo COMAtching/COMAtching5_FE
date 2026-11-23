@@ -39,7 +39,8 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/reissue")
+      !originalRequest.url?.includes("/api/auth/reissue") &&
+      originalRequest.url !== "/api/auth/logout"
     ) {
       originalRequest._retry = true;
 

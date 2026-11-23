@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/axios";
 import MenuCard from "./MenuCard";
 import {
   CreditCard,
@@ -74,15 +75,21 @@ const MENU_ITEMS = [
 ];
 
 export default function AdminMainScreen() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [loggingOut, setLoggingOut] = React.useState(false);
+  const [logoutFailed, setLogoutFailed] = React.useState(false);
 
-  const handleLogout = () => {
-    // 쿠키 삭제 후 로그인 페이지로 이동
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/adminpage");
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    setLogoutFailed(false);
+    try {
+      await api.post("/api/auth/logout");
+      queryClient.clear();
+      window.location.replace("/adminpage");
+    } catch {
+      setLoggingOut(false);
+      setLogoutFailed(true);
+    }
   };
 
   return (
@@ -105,12 +112,22 @@ export default function AdminMainScreen() {
 
         <button
           onClick={handleLogout}
+          disabled={loggingOut}
+          aria-label="로그아웃"
           className="flex items-center gap-2 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2.5 text-sm font-medium text-[#8b8fa3] transition-all duration-200 hover:border-[#ff4d61]/40 hover:text-[#ff4d61]"
         >
           <LogOut size={16} />
-          <span className="hidden sm:inline">로그아웃</span>
+          <span className="hidden sm:inline">
+            {loggingOut ? "로그아웃 중" : "로그아웃"}
+          </span>
         </button>
       </header>
+
+      {logoutFailed && (
+        <p role="alert" className="mb-4 text-sm text-red-300">
+          로그아웃하지 못했습니다. 다시 시도해주세요.
+        </p>
+      )}
 
       {/* 메뉴 그리드 */}
       <section>
