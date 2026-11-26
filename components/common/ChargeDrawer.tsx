@@ -13,18 +13,21 @@ import {
 import ShopContent from "@/components/common/charge/ShopContent";
 import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryContent";
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
+import PendingOrderInfo from "./charge/PendingOrderInfo";
 import ChargeTabs from "@/components/common/charge/ChargeTabs";
 import { TABS } from "@/lib/constants/charge";
 import { useFeature } from "@/stores/features";
 
 /* ── Context ── */
 interface ChargeDrawerContextType {
+  showPendingOrder: () => void;
   setActiveTab: (index: number) => void;
 }
 export const ChargeDrawerContext =
   React.createContext<ChargeDrawerContextType | null>(null);
 
 interface ChargeDrawerProps {
+  initialTab?: number;
   trigger: React.ReactNode;
 }
 
@@ -33,18 +36,26 @@ const TAB_CONTENT = [ShopContent, ChargeHistoryContent, DepositorNameContent];
 
 /* ────────────────────────────────────── */
 
-export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
+export default function ChargeDrawer({
+  trigger,
+  initialTab = 0,
+}: ChargeDrawerProps) {
   const [open, setOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const pageScrollY = React.useRef(0);
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = React.useState(initialTab);
+  const [pendingInfo, setPendingInfo] = React.useState(false);
+  const selectTab = (tab: number) => {
+    setPendingInfo(false);
+    setActiveTab(tab);
+  };
 
   const shop = useFeature("SHOP_PAYMENT");
   const ActiveContent = TAB_CONTENT[activeTab];
 
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) pageScrollY.current = window.scrollY;
-    if (newOpen && shop && !shop.open) setActiveTab(0);
+    if (newOpen) selectTab(initialTab);
     setOpen(newOpen);
   };
 
@@ -68,7 +79,15 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
       >
         <div className="flex h-[90vh] flex-col overflow-hidden">
           {/* ... */}
-          <ChargeDrawerContext.Provider value={{ setActiveTab }}>
+          <ChargeDrawerContext.Provider
+            value={{
+              setActiveTab: selectTab,
+              showPendingOrder: () => {
+                setActiveTab(1);
+                setPendingInfo(true);
+              },
+            }}
+          >
             <DrawerHeader className="shrink-0 gap-0 px-6 pt-6 pb-0">
               <div className="relative flex items-center justify-between">
                 <div className="w-7" />
@@ -83,14 +102,16 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
 
             {/* ── 탭 칩 ── */}
             <div className="relative z-10 shrink-0 bg-white pb-2">
-              <ChargeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              <ChargeTabs activeTab={activeTab} setActiveTab={selectTab} />
               {/* 스크롤 시 뚝 끊기지 않도록 가려주는 그라데이션 */}
               <div className="pointer-events-none absolute top-full left-0 h-6 w-full bg-gradient-to-b from-white to-transparent" />
             </div>
 
             {/* ── Scrollable Content ── */}
             <div className="scrollbar-hide relative z-0 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-8">
-              {activeTab === 0 && shop && !shop.open ? (
+              {pendingInfo ? (
+                <PendingOrderInfo back={() => selectTab(1)} />
+              ) : activeTab === 0 && shop && !shop.open ? (
                 <section className="flex min-h-[200px] flex-col items-center justify-center gap-2 px-4 py-6 text-center">
                   <div role="status">
                     <h3 className="typo-16-600 text-[#373737]">

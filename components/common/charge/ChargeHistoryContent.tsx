@@ -2,20 +2,51 @@
 
 import React, { useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import OrderHistoryContent from "./OrderHistoryContent";
 import ChargeInventoryCard from "./ChargeInventoryCard";
 import ChargeHistoryListItem from "./ChargeHistoryListItem";
 import { BUSINESS_INFO, NOTICE_INFO } from "@/lib/constants/charge";
 import { useItemHistory } from "@/hooks/useItemHistory";
 
 export default function ChargeHistoryContent() {
+  const [view, setView] = useState<"orders" | "items">("orders");
+  return (
+    <div className="flex flex-col gap-[23px] pt-8">
+      <ChargeInventoryCard />
+      <div className="flex gap-2">
+        {(["orders", "items"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            aria-pressed={view === v}
+            onClick={() => setView(v)}
+            className={`typo-14-600 rounded-full px-3 py-1.5 ${view === v ? "bg-black text-white" : "bg-color-gray-100 text-color-gray-500"}`}
+          >
+            {v === "orders" ? "주문 내역" : "아이템 이용 내역"}
+          </button>
+        ))}
+      </div>
+      {view === "orders" ? <OrderHistoryContent /> : <ItemHistory />}
+      <div className="flex flex-col gap-2 pb-6">
+        <span className="typo-10-600 text-color-gray-400">유의사항</span>
+        <p className="typo-10-500 text-color-gray-400 leading-[180%] whitespace-pre-wrap">
+          {NOTICE_INFO}
+        </p>
+        <p className="typo-10-500 text-color-gray-400 leading-[140%] whitespace-pre-wrap">
+          {BUSINESS_INFO}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ItemHistory() {
   const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useItemHistory();
 
-  const allItems =
-    data?.pages.flatMap((page) => page?.data?.content || []) || [];
-
   const filteredItems = React.useMemo(() => {
+    const allItems = data?.pages.flatMap((page) => page.data.content) ?? [];
     if (!filterType) return allItems;
     if (filterType === "CHARGE") {
       // 충전/획득은 CHARGE와 EVENT 타입을 포함합니다.
@@ -24,13 +55,10 @@ export default function ChargeHistoryContent() {
       );
     }
     return allItems.filter((item) => item.historyType === filterType);
-  }, [allItems, filterType]);
+  }, [data, filterType]);
 
   return (
-    <div className="flex flex-col gap-[23px] pt-8">
-      {/* ── 보유현황 카드 ── */}
-      <ChargeInventoryCard />
-
+    <>
       {/* ── 필터 옵션 (선택 사항) ── */}
       <div className="flex gap-2">
         <button
@@ -84,19 +112,6 @@ export default function ChargeHistoryContent() {
           </button>
         )}
       </div>
-
-      {/* ── 유의사항 ── */}
-      <div className="flex flex-col gap-2 pb-6">
-        <span className="typo-10-600 text-color-gray-400">유의사항</span>
-        <div className="flex flex-col gap-2">
-          <p className="typo-10-500 text-color-gray-400 leading-[180%] whitespace-pre-wrap">
-            {NOTICE_INFO}
-          </p>
-          <p className="typo-10-500 text-color-gray-400 leading-[140%] whitespace-pre-wrap">
-            {BUSINESS_INFO}
-          </p>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

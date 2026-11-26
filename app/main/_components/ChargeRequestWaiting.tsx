@@ -1,68 +1,62 @@
 "use client";
 
 import { RotateCw } from "lucide-react";
-import { useRequestStatus } from "@/hooks/useRequestStatus";
+import ChargeDrawer from "@/components/common/ChargeDrawer";
+import { useActiveOrders } from "@/hooks/usePurchaseOrders";
+import PurchaseOrderRow, {
+  canShowDeposit,
+  useOrderClock,
+} from "@/components/common/charge/PurchaseOrderRow";
+import { OrderReadError } from "@/components/common/charge/OrderHistoryContent";
 
-const ChargeRequestWaiting = () => {
-  const { isPurchasePending, refetch, isFetching } = useRequestStatus();
-
-  if (!isPurchasePending) return null;
-
-  return (
-    <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-3xl border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
-      <div className="flex h-[72px] w-full items-center gap-4">
-        {/* 커스텀 7도트 로더 영역 */}
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-          <div className="relative h-8 w-8 motion-safe:animate-spin">
-            {[...Array(7)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute inset-0 flex justify-center"
-                style={{
-                  transform: `rotate(${i * (360 / 7)}deg)`,
-                }}
-              >
-                <div
-                  className="h-2 w-1 rounded-full bg-[#FCCD00]"
-                  style={{
-                    opacity: 1 - i * 0.12,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 텍스트 영역 */}
-        <div className="flex flex-1 flex-col items-start gap-2">
-          {/* 타이틀 행 */}
-          <div className="flex w-full items-center justify-between gap-2.5">
-            <span className="typo-20-600 text-color-text-black leading-6">
-              대기중
-            </span>
-            <button
-              type="button"
-              aria-label="입금 상태 새로고침"
-              onClick={() => refetch()}
-              disabled={isFetching}
-              className="flex cursor-pointer items-center justify-center p-1 transition-opacity disabled:opacity-50"
-            >
-              <RotateCw
-                className={`h-4 w-4 text-[#9E9E9E] ${isFetching ? "animate-spin" : ""}`}
-              />
-            </button>
-          </div>
-
-          {/* 설명 문구 */}
-          <p className="typo-14-500 text-color-gray-700 leading-[140%] tracking-[-0.03em]">
-            관리자가 입금 내역을 확인하고 있어요.
-            <br />
-            3분 이내로 완료되니 잠시만 기다려 주세요!
-          </p>
-        </div>
-      </div>
-    </div>
+export default function ChargeRequestWaiting() {
+  const query = useActiveOrders(true);
+  const rows = query.data?.content ?? [];
+  const now = useOrderClock(rows);
+  const visible = rows.filter(
+    (order) =>
+      order.status !== "AWAITING_DEPOSIT" || canShowDeposit(order, now),
   );
-};
-
-export default ChargeRequestWaiting;
+  const first = visible[0];
+  const count =
+    (query.data?.totalElements ?? 0) - (rows.length - visible.length);
+  return (
+    <section
+      hidden={!first && !query.isError}
+      aria-label="내 충전 요청"
+      className="w-full rounded-3xl border border-white/30 bg-white/50 px-5 py-4 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="typo-16-600">내 충전 요청</h2>
+        <button
+          type="button"
+          aria-label="입금 상태 새로고침"
+          onClick={query.retry}
+          disabled={query.isFetching}
+          className="text-color-gray-500 p-1"
+        >
+          <RotateCw
+            size={16}
+            className={query.isFetching ? "animate-spin" : ""}
+          />
+        </button>
+      </div>
+      {query.isError && (
+        <OrderReadError retry={query.retry} cached={!!query.data} />
+      )}
+      {first && <PurchaseOrderRow key={first.orderId} order={first} />}
+      <ChargeDrawer
+        initialTab={1}
+        trigger={
+          <button
+            type="button"
+            hidden={count < 2}
+            className="typo-14-600 text-color-gray-700 border-color-gray-100 w-full border-t pt-3 text-right underline underline-offset-4"
+          >
+            진행 중 {count}건 · 모두 보기
+          </button>
+        }
+      />
+    </section>
+  );
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePurchaseSessionBoundary } from "@/hooks/usePurchaseOrders";
 import { useState } from "react";
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       }),
   );
 
+  usePurchaseSessionBoundary(queryClient);
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );

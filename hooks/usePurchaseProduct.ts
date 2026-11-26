@@ -1,3 +1,4 @@
+import { orderKey } from "./usePurchaseOrders";
 import { api } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -42,6 +43,7 @@ export const usePurchaseProduct = () => {
     }) => postPurchaseProduct({ productId, quantity }),
     onSuccess: (data) => {
       console.log("✅ 주문 생성 성공:", data);
+      void queryClient.invalidateQueries({ queryKey: orderKey });
       queryClient.invalidateQueries({ queryKey: ["requestStatus"] });
       queryClient.invalidateQueries({ queryKey: ["shopProducts"] });
       queryClient.invalidateQueries({ queryKey: ["purchaseLimits"] });
