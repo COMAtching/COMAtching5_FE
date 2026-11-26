@@ -116,8 +116,8 @@ export const TABS = [
 
 /* ── 입금 계좌 정보 (상수) ── */
 export const BANK_INFO = {
-  bank: "토스뱅크",
-  account: "1002-4809-1716",
+  bank: "KB국민은행",
+  account: "665901-01-766433",
   holder: "천승환",
-  bankCode: "092",
+  bankCode: "004",
 } as const;
