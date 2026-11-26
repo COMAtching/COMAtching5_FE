@@ -202,6 +202,31 @@
   padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
 }
 
+/* Paint the two soft glows directly. Large CSS blurs stall mobile WebKit on navigation. */
+.app-backdrop::before,
+.app-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 435px 450px at var(--glow-x) calc(100% - 50px),
+    color-mix(in srgb, currentColor 18%, transparent),
+    color-mix(in srgb, currentColor 16%, transparent) 16%,
+    color-mix(in srgb, currentColor 11%, transparent) 33%,
+    color-mix(in srgb, currentColor 6%, transparent) 50%,
+    color-mix(in srgb, currentColor 2.5%, transparent) 67%,
+    transparent
+  );
+}
+.app-backdrop::before {
+  --glow-x: calc(100% - 25px);
+  color: var(--background-app-blur-bottom-right);
+}
+.app-backdrop::after {
+  --glow-x: 25px;
+  color: var(--background-app-blur-bottom-left);
+}
+
 /* The shell already reserves the top inset. Keep the login footer above the home indicator. */
 .login-start {
   min-height: calc(
