@@ -1,3 +1,4 @@
+import LoaderHeart from "./LoaderHeart";
 import styles from "./LoadingSpinner.module.css";
 
 const variants = {
@@ -18,7 +19,11 @@ export default function LoadingSpinner({
       <span
         className={`${styles.spinner} ${styles[variant]}`}
         aria-hidden="true"
-      />
+      >
+        <LoaderHeart />
+        <LoaderHeart />
+        <LoaderHeart />
+      </span>
       <span className="sr-only">{label}</span>
     </span>
   );

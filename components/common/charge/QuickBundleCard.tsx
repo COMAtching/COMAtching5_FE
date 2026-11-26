@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTicketUnits } from "@/lib/utils/ticket-units";
 import React from "react";
 import Image from "next/image";
 import { ICON_SIZE } from "@/lib/constants/charge";
@@ -17,7 +18,7 @@ export default function QuickBundleCard({
 }: QuickBundleCardProps) {
   // 메인 리워드 설명
   const description = product.rewards
-    .map((r) => `${r.itemName} ${r.quantity}개`)
+    .map((r) => `${r.itemName} ${r.quantity}장`)
     .join("+");
 
   return (
@@ -25,14 +26,14 @@ export default function QuickBundleCard({
       <div className="flex flex-col items-center gap-2">
         <Image
           src={imageUrl}
-          alt={product.name}
+          alt={formatTicketUnits(product.name)}
           width={ICON_SIZE.lg}
           height={ICON_SIZE.lg}
           className="object-contain"
         />
         <div className="flex flex-col items-center gap-2">
           <span className="typo-14-600 text-color-gray-800">
-            {product.name}
+            {formatTicketUnits(product.name)}
           </span>
           {product.purchaseLimitPerMember !== null &&
             product.purchaseLimitPerMember !== undefined && (
@@ -46,7 +47,7 @@ export default function QuickBundleCard({
               >
                 {product.remainingPurchaseCount === 0
                   ? "구매 완료"
-                  : `${product.remainingPurchaseCount}개 남음`}
+                  : `구매 가능 ${product.remainingPurchaseCount}회`}
               </span>
             )}
           <div className="flex flex-col items-center gap-1">
@@ -55,7 +56,7 @@ export default function QuickBundleCard({
             </span>
             {product.description ? (
               <span className="typo-12-600 text-color-flame-700 text-center">
-                {product.description}
+                {formatTicketUnits(product.description)}
               </span>
             ) : (
               <span className="typo-12-600 text-center opacity-0 select-none">
@@ -90,7 +91,7 @@ export default function QuickBundleCard({
           product.maxOrderQuantity ??
           Math.min(1, product.remainingPurchaseCount ?? 1)
         }
-        productName={product.name}
+        productName={formatTicketUnits(product.name)}
       />
     </div>
   );

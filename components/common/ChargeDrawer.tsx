@@ -35,20 +35,34 @@ const TAB_CONTENT = [ShopContent, ChargeHistoryContent, DepositorNameContent];
 
 export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
   const [open, setOpen] = React.useState(false);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const pageScrollY = React.useRef(0);
   const [activeTab, setActiveTab] = React.useState(0);
 
   const shop = useFeature("SHOP_PAYMENT");
   const ActiveContent = TAB_CONTENT[activeTab];
 
   const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) pageScrollY.current = window.scrollY;
     if (newOpen && shop && !shop.open) setActiveTab(0);
     setOpen(newOpen);
   };
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      <DrawerTrigger ref={triggerRef} asChild>
+        {trigger}
+      </DrawerTrigger>
       <DrawerContent
+        data-shop-sheet=""
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          requestAnimationFrame(() => {
+            if (!triggerRef.current?.isConnected) return;
+            triggerRef.current.focus({ preventScroll: true });
+            window.scrollTo({ top: pageScrollY.current, behavior: "instant" });
+          });
+        }}
         className="rounded-t-[16px] bg-white outline-none"
         showHandle={false}
       >
@@ -75,7 +89,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
             </div>
 
             {/* ── Scrollable Content ── */}
-            <div className="scrollbar-hide relative z-0 flex-1 overflow-y-auto px-4 pt-2 pb-8">
+            <div className="scrollbar-hide relative z-0 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-8">
               {activeTab === 0 && shop && !shop.open ? (
                 <section className="flex min-h-[200px] flex-col items-center justify-center gap-2 px-4 py-6 text-center">
                   <div role="status">

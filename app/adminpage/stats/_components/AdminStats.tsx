@@ -436,7 +436,7 @@ export default function AdminStats() {
                           남성 평균
                         </span>
                         <span className="text-admin-info text-sm font-extrabold">
-                          {stats.avgMaleMatchingTickets}개
+                          {stats.avgMaleMatchingTickets}장
                         </span>
                       </div>
                       <div>
@@ -444,7 +444,7 @@ export default function AdminStats() {
                           여성 평균
                         </span>
                         <span className="text-admin-danger text-sm font-extrabold">
-                          {stats.avgFemaleMatchingTickets}개
+                          {stats.avgFemaleMatchingTickets}장
                         </span>
                       </div>
                     </div>
@@ -469,7 +469,7 @@ export default function AdminStats() {
                           남성 평균
                         </span>
                         <span className="text-admin-info text-sm font-extrabold">
-                          {stats.avgMaleOptionTickets}개
+                          {stats.avgMaleOptionTickets}장
                         </span>
                       </div>
                       <div>
@@ -477,7 +477,7 @@ export default function AdminStats() {
                           여성 평균
                         </span>
                         <span className="text-admin-danger text-sm font-extrabold">
-                          {stats.avgFemaleOptionTickets}개
+                          {stats.avgFemaleOptionTickets}장
                         </span>
                       </div>
                     </div>
@@ -490,13 +490,13 @@ export default function AdminStats() {
                 <div>
                   총 유통 매칭권:{" "}
                   <span className="text-admin-ink font-bold">
-                    {stats.totalMatchingTickets}개
+                    {stats.totalMatchingTickets}장
                   </span>
                 </div>
                 <div>
                   총 유통 옵션권:{" "}
                   <span className="text-admin-ink font-bold">
-                    {stats.totalOptionTickets}개
+                    {stats.totalOptionTickets}장
                   </span>
                 </div>
               </div>

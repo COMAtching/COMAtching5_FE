@@ -16,7 +16,17 @@ export const useMatching = () => {
 
   return useMutation({
     mutationFn: async (payload: MatchingRequest) => {
-      return postMatchingAction(payload, await confirmBrowserSession());
+      const started = performance.now();
+      const response = await postMatchingAction(
+        payload,
+        await confirmBrowserSession(),
+      );
+      if (response.success) {
+        const remaining = 3000 - (performance.now() - started);
+        if (remaining > 0)
+          await new Promise<void>((done) => window.setTimeout(done, remaining));
+      }
+      return response;
     },
     onMutate: () => {
       setIsMatching(true);

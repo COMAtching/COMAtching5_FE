@@ -102,7 +102,7 @@ export default function AdminMembers() {
       (matchingAction !== "NONE" && (Number(matchingQuantity) || 0) > 10) ||
       (optionAction !== "NONE" && (Number(optionQuantity) || 0) > 10)
     ) {
-      alert("각 매칭권과 옵션권은 10개씩만 조정할 수 있습니다.");
+      alert("각 매칭권과 옵션권은 10장씩만 조정할 수 있습니다.");
       return;
     }
 
@@ -339,7 +339,7 @@ export default function AdminMembers() {
                         매칭권
                       </span>
                       <span className="text-admin-ink text-xs font-bold">
-                        {member.matchingTicketCount}개
+                        {member.matchingTicketCount}장
                       </span>
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export default function AdminMembers() {
                         옵션권
                       </span>
                       <span className="text-admin-ink text-xs font-bold">
-                        {member.optionTicketCount}개
+                        {member.optionTicketCount}장
                       </span>
                     </div>
                   </div>
@@ -483,7 +483,7 @@ export default function AdminMembers() {
                     매칭권
                   </span>
                   <span className="typo-10-500 text-admin-muted">
-                    (보유: {editingMember.matchingTicketCount}개)
+                    (보유: {editingMember.matchingTicketCount}장)
                   </span>
                 </div>
 
@@ -577,7 +577,7 @@ export default function AdminMembers() {
                     옵션권
                   </span>
                   <span className="typo-10-500 text-admin-muted">
-                    (보유: {editingMember.optionTicketCount}개)
+                    (보유: {editingMember.optionTicketCount}장)
                   </span>
                 </div>
 
@@ -691,13 +691,13 @@ export default function AdminMembers() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-admin-muted">
-                    {editingMember.matchingTicketCount}개
+                    {editingMember.matchingTicketCount}장
                   </span>
                   <span className="text-admin-muted">→</span>
                   <span
                     className={`font-bold ${matchingAction === "NONE" ? "text-admin-ink" : matchingAction === "ADD" ? "text-admin-success" : "text-admin-danger"}`}
                   >
-                    {getExpectedQuantity("MATCHING_TICKET")}개
+                    {getExpectedQuantity("MATCHING_TICKET")}장
                     {matchingAction !== "NONE" &&
                       ` (${matchingAction === "ADD" ? "+" : "-"}${matchingQuantity})`}
                   </span>
@@ -717,13 +717,13 @@ export default function AdminMembers() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-admin-muted">
-                    {editingMember.optionTicketCount}개
+                    {editingMember.optionTicketCount}장
                   </span>
                   <span className="text-admin-muted">→</span>
                   <span
                     className={`font-bold ${optionAction === "NONE" ? "text-admin-ink" : optionAction === "ADD" ? "text-admin-success" : "text-admin-danger"}`}
                   >
-                    {getExpectedQuantity("OPTION_TICKET")}개
+                    {getExpectedQuantity("OPTION_TICKET")}장
                     {optionAction !== "NONE" &&
                       ` (${optionAction === "ADD" ? "+" : "-"}${optionQuantity})`}
                   </span>

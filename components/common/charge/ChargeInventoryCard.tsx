@@ -36,7 +36,7 @@ export default function ChargeInventoryCard() {
                   {row.label}
                 </span>
                 <span className="typo-16-700 text-color-text-black">
-                  {count}개
+                  {count}장
                 </span>
               </div>
             </div>

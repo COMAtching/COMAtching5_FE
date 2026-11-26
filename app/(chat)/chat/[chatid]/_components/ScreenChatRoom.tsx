@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 import { featureMessage, useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
-import { useChatMessages } from "@/hooks/useChatMessages";
+import {
+  useChatMessages,
+  type ChatMessagePayload,
+} from "@/hooks/useChatMessages";
 import { useChatViewer } from "@/hooks/useChatViewer";
 import { getProfileImageUrl } from "@/lib/utils/profile";
 import {
@@ -27,6 +30,8 @@ import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
 import PartnerProfileModal from "./PartnerProfileModal";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
+import { sameChatMinute } from "@/lib/chat-message-group";
+import { isIosWebApp } from "@/lib/pwa-viewport";
 import { AxiosError } from "axios";
 
 type ScreenChatRoomProps = {
@@ -36,6 +41,8 @@ type ScreenChatRoomProps = {
 type ChatMessage = {
   id: string;
   sender: "me" | "other";
+  senderId: number;
+  type: ChatMessagePayload["type"];
   text: string;
   image: boolean;
   time: string;
@@ -82,33 +89,47 @@ const IncomingMessage = ({
   nickname,
   profileImageUrl,
   onProfileClick,
+  first,
+  last,
 }: {
   message: ChatMessage;
   nickname?: string;
   profileImageUrl?: string;
   onProfileClick?: () => void;
+  first: boolean;
+  last: boolean;
 }) => {
   return (
     <div className="flex w-full items-start gap-2">
-      <div
-        className="relative h-8 w-8 shrink-0 cursor-pointer overflow-hidden rounded-full bg-white transition-opacity hover:opacity-80"
-        onClick={onProfileClick}
-      >
-        <Image
-          src={getProfileImageUrl(profileImageUrl, "FEMALE")}
-          alt="프로필"
-          fill
-          className="object-cover"
-        />
-      </div>
+      {first ? (
+        <button
+          type="button"
+          aria-label="상대 프로필 열기"
+          className="relative h-8 w-8 shrink-0 cursor-pointer overflow-hidden rounded-full bg-white transition-opacity hover:opacity-80"
+          onClick={onProfileClick}
+        >
+          <Image
+            src={getProfileImageUrl(profileImageUrl, "FEMALE")}
+            alt="프로필"
+            fill
+            className="object-cover"
+          />
+        </button>
+      ) : (
+        <span aria-hidden="true" className="w-8 shrink-0" />
+      )}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <span className="typo-12-500 text-[#1A1A1A]">{nickname || "..."}</span>
+        {first && (
+          <span className="typo-12-500 text-[#1A1A1A]">
+            {nickname || "..."}
+          </span>
+        )}
         <div className="flex items-end gap-2">
           <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
             <MessageBody message={message} />
           </div>
           <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
-            <span className="text-[#B3B3B3]">{message.time}</span>
+            {last && <span className="text-[#B3B3B3]">{message.time}</span>}
             {message.readCount === 1 && (
               <span className="text-[#999999]">1</span>
             )}
@@ -119,12 +140,18 @@ const IncomingMessage = ({
   );
 };
 
-const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
+const OutgoingMessage = ({
+  message,
+  last,
+}: {
+  message: ChatMessage;
+  last: boolean;
+}) => {
   return (
     <div className="flex w-full items-end justify-end gap-2">
       <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
         {message.readCount === 1 && <span className="text-[#999999]">1</span>}
-        <span className="text-[#B3B3B3]">{message.time}</span>
+        {last && <span className="text-[#B3B3B3]">{message.time}</span>}
       </div>
       <div className="max-w-[244px] rounded-[16px_16px_8px_16px] bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] p-3 text-sm leading-[140%] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
         <MessageBody message={message} />
@@ -153,7 +180,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   useEffect(() => {
     const shell = viewportRef.current;
     const viewport = window.visualViewport;
-    if (!shell || !viewport) return;
+    if (!shell || !viewport || isIosWebApp()) return;
     const update = () => {
       shell.style.setProperty("--chat-viewport-height", viewport.height + "px");
       shell.style.setProperty("--chat-viewport-top", viewport.offsetTop + "px");
@@ -354,6 +381,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     // 화면 표시용 타입으로 변환
     return combined.map((m) => ({
       id: m.id,
+      senderId: m.senderId,
+      type: m.type,
       sender: m.senderId === currentUserId ? "me" : "other",
       text: m.content,
       image: m.type === "IMAGE",
@@ -455,8 +484,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       className="chat-viewport flex w-full flex-col overflow-hidden"
     >
       <header className="relative z-20 shrink-0 px-4 py-2">
-        <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
-        <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
         <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
           <button
             type="button"
@@ -508,7 +535,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 pt-5 pb-4"
+        className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-contain px-4 pt-5 pb-4"
       >
         {viewerFailed ||
         (isError &&
@@ -577,14 +604,25 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 ? getFormattedDate(prevMessage.createdAt)
                 : "";
               const showDivider = currentDateStr !== prevDateStr;
+              const first = !sameChatMinute(messages[index - 1], message);
+              const last = !sameChatMinute(message, messages[index + 1]);
 
               return (
-                <React.Fragment key={message.id}>
-                  {showDivider && <ChatDateDivider label={currentDateStr} />}
+                <div
+                  key={message.id}
+                  className={index === 0 ? undefined : first ? "mt-4" : "mt-1"}
+                >
+                  {showDivider && (
+                    <div className="mb-4">
+                      <ChatDateDivider label={currentDateStr} />
+                    </div>
+                  )}
                   {message.sender === "me" ? (
-                    <OutgoingMessage message={message} />
+                    <OutgoingMessage message={message} last={last} />
                   ) : (
                     <IncomingMessage
+                      first={first}
+                      last={last}
                       message={message}
                       nickname={
                         opponentProfile?.nickname ||
@@ -597,7 +635,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                       onProfileClick={() => setIsProfileModalOpen(true)}
                     />
                   )}
-                </React.Fragment>
+                </div>
               );
             })}
           </>
@@ -612,10 +650,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           <ChatReadOnlyNotice message={chat.message} />
         </footer>
       ) : (
-        <div
-          className="relative z-20 w-full shrink-0 pt-2"
-          style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
-        >
+        <div className="chat-composer relative z-20 w-full shrink-0 pt-2">
           {uploadError && (
             <p role="alert" className="mb-1 text-center text-xs text-red-600">
               {uploadError}
@@ -662,6 +697,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             <input
               ref={inputRef}
               type="text"
+              autoComplete="off"
               disabled={!chat?.open}
               placeholder={
                 chat?.open

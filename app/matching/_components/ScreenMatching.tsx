@@ -1,5 +1,6 @@
 "use client";
 
+import MatchingSearchLoader from "@/components/ui/MatchingSearchLoader";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
@@ -52,7 +53,7 @@ const ScreenMatching = () => {
   const chat = useFeature("CHAT");
   const { data: itemData, isLoading: isItemsLoading } = useItems();
   const { data: myProfile } = useMyProfile();
-  const { mutate: match, isPending } = useMatching();
+  const { mutate: match, isPending, data: matchResponse } = useMatching();
   const [selectedMBTI, setSelectedMBTI] = useState("");
   const [selectedAgeGroup, setSelectedAgeGroup] = useState("");
   const [minAge, setMinAge] = useState<number | undefined>(undefined);
@@ -111,7 +112,7 @@ const ScreenMatching = () => {
   ) : extraOptionCount === 0 ? (
     <Image
       src="/bubble/bubble.png"
-      alt="매칭권 1 소모"
+      alt="매칭권 1장 소모"
       width={226}
       height={42}
       className="pointer-events-none drop-shadow-md"
@@ -119,7 +120,7 @@ const ScreenMatching = () => {
   ) : (
     <div className="flex items-center gap-1">
       <Image src="/main/ticket.png" alt="coin" width={20} height={20} />
-      <span>매칭권 1</span>
+      <span>매칭권 1장</span>
       {extraOptionCount > 0 && (
         <>
           <Image
@@ -129,7 +130,7 @@ const ScreenMatching = () => {
             height={20}
             className="ml-1"
           />
-          <span>옵션권 {extraOptionCount}</span>
+          <span>옵션권 {extraOptionCount}장</span>
         </>
       )}
       <span>소모</span>
@@ -222,6 +223,8 @@ const ScreenMatching = () => {
       },
     });
   };
+
+  if (isPending || matchResponse?.success) return <MatchingSearchLoader />;
 
   return (
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-30">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import illustration from "@/public/roulette/special.png";
 import Link from "next/link";
 import React from "react";
 
@@ -12,7 +13,7 @@ const RouletteEntrySection = () => {
     >
       <div className="flex w-15 shrink-0 flex-col items-center justify-center gap-1.5">
         <Image
-          src="/roulette/special.png"
+          src={illustration}
           alt=""
           width={60}
           height={60}

@@ -140,7 +140,7 @@ export default function ProductCreateForm({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="매칭권 10개 (+옵션권 5개)"
+            placeholder="매칭권 10장 (+옵션권 5장)"
             required
             className={inputClass}
           />
@@ -275,7 +275,7 @@ export default function ProductCreateForm({
                 min={1}
                 className={inputClass + " !w-20"}
               />
-              <span className="text-admin-muted text-xs">개</span>
+              <span className="text-admin-muted text-xs">장</span>
               {rewards.length > 1 && (
                 <button
                   type="button"
@@ -345,7 +345,7 @@ export default function ProductCreateForm({
                   min={1}
                   className={inputClass + " !w-20"}
                 />
-                <span className="text-admin-muted text-xs">개</span>
+                <span className="text-admin-muted text-xs">장</span>
                 <button
                   type="button"
                   onClick={() =>

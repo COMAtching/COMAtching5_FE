@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTicketUnits } from "@/lib/utils/ticket-units";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { ItemHistoryItem } from "@/hooks/useItemHistory";
@@ -18,11 +19,9 @@ export default function ChargeHistoryListItem({
   const quantityPrefix = item.quantity > 0 ? "+" : "";
 
   const unit =
-    item.itemType === "MATCHING_TICKET"
+    item.itemType === "MATCHING_TICKET" || item.itemType === "OPTION_TICKET"
       ? "장"
-      : item.itemType === "OPTION_TICKET"
-        ? "개"
-        : "코인";
+      : "코인";
   const typeLabel =
     item.historyType === "CHARGE"
       ? "충전"
@@ -38,7 +37,7 @@ export default function ChargeHistoryListItem({
 
       <div className="flex items-center justify-between">
         <span className="typo-16-600 text-color-text-black">
-          {item.description}
+          {formatTicketUnits(item.description)}
         </span>
         <span
           className={cn(

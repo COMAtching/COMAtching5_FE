@@ -41,7 +41,7 @@ export default function ScreenLoginActionSection() {
       >
         이메일로 로그인
       </Link>
-      <span className="typo-12-600 text-footo-text-main mt-[6.75vh] mb-[6.15vh]">
+      <span className="typo-12-600 text-footo-text-main mt-[6.75vh]">
         Developed By Team Comatching, Catholic University of Korea
       </span>
     </section>

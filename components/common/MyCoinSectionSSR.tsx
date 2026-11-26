@@ -33,7 +33,7 @@ const MyCoinSectionSSR = async ({ className }: MyCoinSectionSSRProps) => {
           className="mr-2 ml-4"
         />
         <span className="typo-14-600 text-color-text-caption1">
-          {matchingTicketCount}개
+          {matchingTicketCount}장
         </span>
         <div className="mx-4 h-4 w-px bg-black/30" />
         <Image
@@ -44,7 +44,7 @@ const MyCoinSectionSSR = async ({ className }: MyCoinSectionSSRProps) => {
           height={20}
         />
         <span className="typo-14-600 text-color-text-caption1">
-          {optionTicketCount}개
+          {optionTicketCount}장
         </span>
       </div>
       <button className="bg-milky-pink typo-11-700 h-6.5 w-14.5 rounded-full text-white">
