@@ -70,10 +70,7 @@ export default function QuickBundleCard({
         trigger={
           <button
             type="button"
-            disabled={
-              product.maxOrderQuantity === 0 ||
-              product.remainingPurchaseCount === 0
-            }
+            disabled={product.remainingPurchaseCount === 0}
             className={`typo-16-600 mt-4 flex h-10 w-full items-center justify-center rounded-lg text-white transition-colors ${
               product.remainingPurchaseCount === 0
                 ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
@@ -88,8 +85,9 @@ export default function QuickBundleCard({
         amount={product.price}
         productId={product.id}
         maxOrderQuantity={
-          product.maxOrderQuantity ??
-          Math.min(1, product.remainingPurchaseCount ?? 1)
+          product.maxOrderQuantity && product.maxOrderQuantity > 0
+            ? product.maxOrderQuantity
+            : 1
         }
         productName={formatTicketUnits(product.name)}
       />

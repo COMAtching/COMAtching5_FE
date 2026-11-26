@@ -59,7 +59,7 @@ export default function ConfirmChargeDrawer({
             (
               trigger.props as { onClick?: (e: React.MouseEvent) => void }
             ).onClick?.(e);
-            if (shopOpen && maxOrderQuantity > 0) setOpenToss(true);
+            if (shopOpen) setOpenToss(true);
           },
         },
       )
@@ -71,7 +71,7 @@ export default function ConfirmChargeDrawer({
 
       {/* 1. Toss 결제 전용 Drawer */}
       <TossChargeDrawer
-        open={openToss && shopOpen && maxOrderQuantity > 0}
+        open={openToss && shopOpen}
         onOpenChange={setOpenToss}
         productId={productId}
         maxOrderQuantity={maxOrderQuantity}
@@ -83,7 +83,7 @@ export default function ConfirmChargeDrawer({
 
       {/* 2. 수동 계좌이체 전용 Drawer */}
       <DirectChargeDrawer
-        open={openDirect && shopOpen && maxOrderQuantity > 0}
+        open={openDirect && shopOpen}
         onOpenChange={setOpenDirect}
         productId={productId}
         maxOrderQuantity={maxOrderQuantity}
