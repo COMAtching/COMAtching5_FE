@@ -32,7 +32,8 @@ export const getProfileImageUrl = (
   url: string | null | undefined,
   gender?: Gender | string,
 ) => {
-  if (!url || url === "default") return "/default-profile.png";
+  if (!url || url === "default" || url === "/default-profile.png")
+    return "/profile/default-profile.svg";
 
   // 파일명 부분 추출 (URL인 경우 마지막 세그먼트)
   const filename = url.split("/").pop() || "";
@@ -62,7 +63,7 @@ export const getProfileImageUrl = (
         asset.fallbackImage ||
         asset.maleImage ||
         asset.femaleImage ||
-        "/default-profile.png"
+        "/profile/default-profile.svg"
       );
     }
   }

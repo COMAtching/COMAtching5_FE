@@ -195,6 +195,7 @@ export function forgetBrowserSession(owner: string) {
     documentGeneration++;
     documentOwner = undefined;
     observing = undefined;
+    window.dispatchEvent(new Event("comatching-session-ended"));
   }
   if (typeof BroadcastChannel !== "undefined") {
     const channel = new BroadcastChannel("comatching-auth-change");

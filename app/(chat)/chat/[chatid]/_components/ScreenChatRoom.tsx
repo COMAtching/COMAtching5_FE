@@ -15,7 +15,7 @@ import {
 import { featureMessage, useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
-import { useMyProfile } from "@/hooks/useProfile";
+import { useChatViewer } from "@/hooks/useChatViewer";
 import { getProfileImageUrl } from "@/lib/utils/profile";
 import {
   useUpdateFavorite,
@@ -182,21 +182,14 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     return () => observer.disconnect();
   }, []);
 
-  // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
-  const profile = useMyProfile({
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-  });
-  const currentUserId =
-    profile.isFetchedAfterMount && profile.isSuccess
-      ? profile.data.data.memberId
-      : undefined;
+  const { viewer, failed: viewerFailed, retry: retryViewer } = useChatViewer();
+  const currentUserId = viewer?.memberId;
 
   // 즐겨찾기 토글 mutation
   const updateFavorite = useUpdateFavorite();
 
   // 0-1. 현재 채팅방 정보 가져오기
-  const { data: chatRooms } = useChatRooms(currentUserId);
+  const { data: chatRooms } = useChatRooms({ refetchOnMount: false });
   const currentRoom = chatRooms?.find((r) => r.id === chatId);
   const partnerMemberId = currentRoom?.otherUser.memberId;
 
@@ -262,7 +255,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading,
+    isPending,
+    refetch: refetchHistory,
     isError,
     error,
   } = useChatMessages(chatId, currentUserId);
@@ -516,7 +510,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         style={{ overflowAnchor: "none" }}
         className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 pt-5 pb-4"
       >
-        {isLoading ? (
+        {viewerFailed ||
+        (isError &&
+          (!historyData || (error as AxiosError)?.response?.status === 403)) ? (
+          <div className="m-auto flex flex-col items-center gap-3 text-sm">
+            <p role="alert">대화를 불러오지 못했어요.</p>
+            <button
+              type="button"
+              className="underline"
+              onClick={() =>
+                viewerFailed ? retryViewer() : void refetchHistory()
+              }
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : !viewer || isPending ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <LoadingSpinner label="대화 불러오는 중" />
           </div>
