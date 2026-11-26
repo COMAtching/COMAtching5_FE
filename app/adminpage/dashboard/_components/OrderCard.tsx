@@ -178,7 +178,7 @@ export default function OrderCard({ order, onSelectDeposit }: OrderCardProps) {
                       {isMatchingSingle
                         ? order.matchingTicketQty
                         : order.optionTicketQty}
-                      개
+                      장
                     </p>
                   </div>
                 </div>

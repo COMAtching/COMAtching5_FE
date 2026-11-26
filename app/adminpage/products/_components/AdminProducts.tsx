@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTicketUnits } from "@/lib/utils/ticket-units";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 import React, { useState } from "react";
@@ -164,7 +165,7 @@ export default function AdminProducts() {
               <div className="flex flex-1 flex-col gap-2 p-5">
                 <div className="flex items-center gap-2.5">
                   <h3 className="text-admin-ink text-sm font-semibold">
-                    {product.name}
+                    {formatTicketUnits(product.name)}
                   </h3>
 
                   {/* 상태 배지 */}
@@ -189,7 +190,7 @@ export default function AdminProducts() {
                 </div>
 
                 <p className="text-admin-muted text-xs">
-                  {product.description}
+                  {formatTicketUnits(product.description)}
                 </p>
 
                 {/* 구성품 */}
@@ -199,7 +200,7 @@ export default function AdminProducts() {
                       key={r.itemType}
                       className="bg-admin-subtle text-admin-secondary rounded-md px-2 py-0.5 text-[11px] font-medium"
                     >
-                      {r.itemName} ×{r.quantity}
+                      {r.itemName} {r.quantity}장
                     </span>
                   ))}
                   {product.bonusRewards.map((r) => (
@@ -207,7 +208,7 @@ export default function AdminProducts() {
                       key={`bonus-${r.itemType}`}
                       className="text-admin-warning rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium"
                     >
-                      +{r.itemName} ×{r.quantity} (보너스)
+                      +{r.itemName} {r.quantity}장 (보너스)
                     </span>
                   ))}
                 </div>

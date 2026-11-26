@@ -1,4 +1,5 @@
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import matchingTicket from "@/public/main/ticket.png";
+import optionTicket from "@/public/main/option.png";
 import { useItems } from "@/hooks/useItems";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -15,27 +16,12 @@ const MyCoinSection = ({ className }: MyCoinSectionProps) => {
   const shop = useFeature("SHOP_PAYMENT");
   const closed = shop?.open === false;
 
-  if (isLoading) {
-    return (
-      <section
-        className={cn(
-          "grid h-9.5 w-full place-items-center rounded-full border border-white/30 bg-white/20",
-          className,
-        )}
-      >
-        <LoadingSpinner variant="inline" label="보유 티켓 불러오는 중" />
-      </section>
-    );
-  }
-
-  if (isError || !data) {
-    return null;
-  }
-
-  const { matchingTicketCount, optionTicketCount } = data.data;
+  if (isError && !data) return null;
+  const counts = data?.data;
 
   return (
     <section
+      aria-busy={isLoading}
       className={cn(
         "flex h-9.5 w-full items-center justify-between rounded-full border border-white/30 bg-white/50 pr-2 pl-4 backdrop-blur-[50px]",
         className,
@@ -44,25 +30,29 @@ const MyCoinSection = ({ className }: MyCoinSectionProps) => {
       <div className="flex items-center">
         <span className="typo-14-600 text-color-text-caption3">보유현황</span>
         <Image
-          src="/main/ticket.png"
-          alt="coin"
+          src={matchingTicket}
+          unoptimized
+          loading="eager"
+          alt="매칭권"
           width={20}
           height={20}
           className="mr-2 ml-4"
         />
         <span className="typo-14-600 text-color-text-caption1">
-          {matchingTicketCount}개
+          {counts ? counts.matchingTicketCount + "장" : "–"}
         </span>
         <div className="mx-4 h-4 w-px bg-black/30" />
         <Image
-          src="/main/option.png"
-          alt="electric bulb"
+          src={optionTicket}
+          unoptimized
+          loading="eager"
+          alt="옵션권"
           className="mr-2"
           width={20}
           height={20}
         />
         <span className="typo-14-600 text-color-text-caption1">
-          {optionTicketCount}개
+          {counts ? counts.optionTicketCount + "장" : "–"}
         </span>
       </div>
       <ChargeDrawer

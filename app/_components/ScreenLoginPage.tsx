@@ -3,7 +3,7 @@ import ScreenLoginActionSection from "./LoginActionSection";
 
 export default function ScreenLoginPage() {
   return (
-    <main className="flex h-full flex-col items-center justify-between px-4">
+    <main className="login-start flex flex-col items-center justify-between px-4">
       <ScreenLoginLogoSection />
       <ScreenLoginActionSection />
     </main>

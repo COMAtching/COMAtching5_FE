@@ -197,17 +197,52 @@
   }
 }
 
-/* 오직 아이폰(iOS Safari)에서만 적용되는 전역 스크롤 바운스 방지 */
-@supports (-webkit-touch-callout: none) {
-  html,
-  body {
-    overscroll-behavior-y: none;
-  }
-}
-
 .app-shell {
   padding-top: env(safe-area-inset-top, 0px);
   padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+
+/* The shell already reserves the top inset. Keep the login footer above the home indicator. */
+.login-start {
+  min-height: calc(
+    var(--app-viewport-height, 100dvh) - env(safe-area-inset-top, 0px)
+  );
+  padding-bottom: max(6.15dvh, env(safe-area-inset-bottom, 0px));
+}
+
+@media (display-mode: standalone) and (pointer: coarse) {
+  html,
+  body {
+    background-color: var(--background-app-base);
+  }
+
+  /* WebKit can keep dvh one status bar short after the keyboard closes. */
+  .app-shell {
+    --app-viewport-height: 100lvh;
+    min-height: var(--app-viewport-height);
+    overflow-x: clip;
+  }
+  .app-shell > :is(.min-h-screen, .min-h-dvh) {
+    min-height: calc(
+      var(--app-viewport-height) - env(safe-area-inset-top, 0px)
+    );
+  }
+  .app-backdrop {
+    inset-block: 0;
+    height: auto;
+    min-height: 100lvh;
+  }
+
+  /* The system paints the edges with the app base. Fade the chat glow into that same color. */
+  .app-shell:has(.chat-viewport) > .app-backdrop {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent env(safe-area-inset-top, 0px),
+      black calc(env(safe-area-inset-top, 0px) + 3rem),
+      black calc(100% - env(safe-area-inset-bottom, 0px) - 6rem),
+      transparent calc(100% - env(safe-area-inset-bottom, 0px))
+    );
+  }
 }
 
 html:has(.chat-viewport),
@@ -220,7 +255,7 @@ body:has(.chat-viewport) {
   position: fixed;
   inset-inline: 0;
   top: var(--chat-viewport-top, 0px);
-  height: var(--chat-viewport-height, 100dvh);
+  height: var(--chat-viewport-height, var(--app-viewport-height, 100dvh));
   margin-inline: auto;
   padding-top: env(safe-area-inset-top, 0px);
   padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
@@ -234,4 +269,19 @@ body:has(.chat-viewport) {
 
 .chat-messages > * {
   flex-shrink: 0;
+}
+
+.chat-composer {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+html[data-pwa-keyboard="open"] .chat-composer {
+  padding-bottom: 8px;
+}
+
+/* Keep the background page in place while the shop sheet scrolls. */
+html:has([data-shop-sheet][data-state="open"]),
+body:has([data-shop-sheet][data-state="open"]) {
+  overflow-y: hidden;
+  scrollbar-width: none;
 }

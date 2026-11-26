@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
+import { watchPwaKeyboard } from "@/lib/pwa-viewport";
 import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 
 export default function PwaInitializer() {
+  useEffect(() => {
+    const shell = document.querySelector<HTMLElement>(".app-shell");
+    if (shell) return watchPwaKeyboard(shell);
+  }, []);
+
   useEffect(() => {
     if ("caches" in window) {
       void caches

@@ -1,3 +1,4 @@
+import { formatTicketUnits } from "@/lib/utils/ticket-units";
 import React from "react";
 import ConfirmChargeDrawer from "@/components/common/charge-confirm/ConfirmChargeDrawer";
 import { ShopProduct } from "@/hooks/useShopProducts";
@@ -11,7 +12,9 @@ export interface ShopItemRowProps {
 export function ShopItemRow({ product }: ShopItemRowProps) {
   return (
     <div className="border-color-gray-100 flex items-center justify-between border-b py-4">
-      <span className="typo-16-600 text-color-text-black">{product.name}</span>
+      <span className="typo-16-600 text-color-text-black">
+        {formatTicketUnits(product.name)}
+      </span>
       <ConfirmChargeDrawer
         trigger={
           <button
@@ -28,7 +31,7 @@ export function ShopItemRow({ product }: ShopItemRowProps) {
           product.maxOrderQuantity ??
           Math.min(1, product.remainingPurchaseCount ?? 1)
         }
-        productName={product.name}
+        productName={formatTicketUnits(product.name)}
       />
     </div>
   );
@@ -43,7 +46,7 @@ export interface ShopBundleRowProps {
 export function ShopBundleRow({ product }: ShopBundleRowProps) {
   // 메인 리워드 텍스트
   const description = product.rewards
-    .map((r) => `${r.itemName} ${r.quantity}개`)
+    .map((r) => `${r.itemName} ${r.quantity}장`)
     .join("+");
 
   return (
@@ -52,7 +55,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         {/* 첫 번째 줄: 이름 + 남은 횟수 배지 */}
         <div className="flex items-center gap-1.5">
           <span className="typo-15-600 text-color-text-black">
-            {product.name}
+            {formatTicketUnits(product.name)}
           </span>
           {product.purchaseLimitPerMember !== null &&
             product.purchaseLimitPerMember !== undefined && (
@@ -66,7 +69,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
               >
                 {product.remainingPurchaseCount === 0
                   ? "구매 완료"
-                  : `${product.remainingPurchaseCount}개 남음`}
+                  : `구매 가능 ${product.remainingPurchaseCount}회`}
               </span>
             )}
         </div>
@@ -79,7 +82,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         {/* 세 번째 줄: 마케팅 문구 */}
         {product.description ? (
           <span className="typo-10-600 text-color-flame-700">
-            {product.description}
+            {formatTicketUnits(product.description)}
           </span>
         ) : (
           <span className="typo-10-600 opacity-0 select-none">&nbsp;</span>
@@ -110,7 +113,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
           product.maxOrderQuantity ??
           Math.min(1, product.remainingPurchaseCount ?? 1)
         }
-        productName={product.name}
+        productName={formatTicketUnits(product.name)}
       />
     </div>
   );

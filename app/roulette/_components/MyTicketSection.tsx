@@ -23,7 +23,7 @@ const MyTicketSection = ({ className }: MyTicketSectionProps) => {
         <Image src="/main/ticket.png" alt="ticket" width={20} height={20} />
         <span className="typo-12-600 text-color-text-caption3">보유뽑기권</span>
         <span className="typo-14-600 text-color-text-black">
-          {matchingTicketCount}개
+          {matchingTicketCount}장
         </span>
       </div>
       <div className="h-4 w-px bg-black/30" />
@@ -31,7 +31,7 @@ const MyTicketSection = ({ className }: MyTicketSectionProps) => {
         <Image src="/main/option.png" alt="option" width={20} height={20} />
         <span className="typo-12-600 text-color-text-caption3">옵션권</span>
         <span className="typo-14-600 text-color-text-black">
-          {optionTicketCount}개
+          {optionTicketCount}장
         </span>
       </div>
     </section>

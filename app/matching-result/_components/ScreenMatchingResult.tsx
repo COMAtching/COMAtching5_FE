@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import MatchingSearchLoader from "@/components/ui/MatchingSearchLoader";
 import Image from "next/image";
 import MatchingResult from "./MatchingResult";
 import ResultFooter from "./ResultFooter";
@@ -25,8 +25,7 @@ const ScreenMatchingResult = () => {
       router.replace(matchingClosed ? "/main" : "/matching");
   }, [result, router, isMatching, matchingClosed]);
 
-  if (isMatching)
-    return <LoadingSpinner variant="screen" label="매칭 상대 찾는 중" />;
+  if (isMatching) return <MatchingSearchLoader />;
   if (!result) return null;
 
   return (
