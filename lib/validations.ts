@@ -9,7 +9,18 @@ export const LoginSchema = z.object({
 // --- 매칭 ---
 export const MatchingRequestSchema = z.object({
   ageOption: z.enum(["OLDER", "YOUNGER", "EQUAL"]).nullable().optional(),
-  mbtiOption: z.string().max(4).nullable().optional(),
+  mbtiOption: z
+    .string()
+    .max(2)
+    .regex(/^[EISNTFJP]*$/)
+    .refine((value) => {
+      const axes = [...value].map((trait) =>
+        ["EI", "SN", "TF", "JP"].findIndex((axis) => axis.includes(trait)),
+      );
+      return new Set(axes).size === axes.length;
+    })
+    .nullable()
+    .optional(),
   hobbyOption: z
     .enum(["SPORTS", "CULTURE", "MUSIC", "LEISURE", "DAILY", "GAME"])
     .nullable()
@@ -83,12 +94,23 @@ export function safeRedirectUrl(
   fallback = "/main",
 ): string {
   if (!url) return fallback;
-  if (url.startsWith("/") && !url.startsWith("//")) return url;
+  if (url.startsWith("//") || url.includes("\\")) return fallback;
   try {
-    const parsed = new URL(url);
-    const allowed = ["comatching.site", "www.comatching.site"];
-    if (allowed.includes(parsed.hostname))
-      return parsed.pathname + parsed.search;
+    const siteOrigin = "https://comatching.site";
+    const parsed = url.startsWith("/")
+      ? new URL(url, siteOrigin)
+      : new URL(url);
+    const allowedOrigins = [siteOrigin, "https://www.comatching.site"];
+    if (process.env.NODE_ENV === "development") {
+      allowedOrigins.push("http://localhost:3000", "http://127.0.0.1:3000");
+    }
+    if (
+      allowedOrigins.includes(parsed.origin) &&
+      parsed.pathname.startsWith("/") &&
+      !parsed.pathname.startsWith("//")
+    ) {
+      return parsed.pathname + parsed.search + parsed.hash;
+    }
   } catch {
     // URL 파싱 실패 -> 폴백
   }

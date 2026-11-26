@@ -23,6 +23,7 @@ import {
 } from "@/lib/types/matching";
 
 import { MatchingInterestCategory } from "@/lib/constants/matchingInterests";
+import { featureMessage, useFeature } from "@/stores/features";
 import { alertIfMatchingBlocked } from "@/lib/constants/date";
 
 const hobbyMapping: Record<MatchingInterestCategory, HobbyOption> = {
@@ -46,6 +47,8 @@ import { useMyProfile } from "@/hooks/useProfile";
 
 const ScreenMatching = () => {
   const router = useRouter();
+  const matching = useFeature("MATCHING");
+  const chat = useFeature("CHAT");
   const { data: itemData, isLoading: isItemsLoading } = useItems();
   const { data: myProfile } = useMyProfile();
   const { mutate: match, isPending } = useMatching();
@@ -76,10 +79,11 @@ const ScreenMatching = () => {
 
   // 테스트 모드(IS_TESTING) 차단 검사
   React.useEffect(() => {
-    if (alertIfMatchingBlocked()) {
+    if (matching && !matching.open) {
+      alert(featureMessage("MATCHING", matching));
       router.replace("/main");
     }
-  }, [router]);
+  }, [router, matching]);
 
   const matchingTicketCount = itemData?.data.matchingTicketCount ?? 0;
   const isAgeRangeActive = minAge !== undefined && maxAge !== undefined;
@@ -220,6 +224,9 @@ const ScreenMatching = () => {
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-30">
       <BackButton text="매칭하기" onClick={() => router.push("/main")} />
       <MyCoinSection className="my-6" />
+      {chat && !chat.open && (
+        <p role="status">매칭은 가능하지만 새 메시지는 보낼 수 없어요.</p>
+      )}
 
       <div className="flex w-full flex-col gap-4">
         <MatchingMBTISection
@@ -269,7 +276,7 @@ const ScreenMatching = () => {
       <MatchingSliderButton
         key={resetKey}
         onConfirm={handleMatchingSubmit}
-        isActive={canSubmit && !isPending}
+        isActive={!!matching?.open && canSubmit && !isPending}
         isLoading={isPending}
         bubbleText={bubbleText}
         bubbleTextColor={bubbleTextColor}

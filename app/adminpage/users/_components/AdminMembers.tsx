@@ -211,7 +211,7 @@ export default function AdminMembers() {
         <div className="flex items-center gap-3">
           <Link
             href="/adminpage/main"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] transition-colors duration-200 hover:border-[#06b6d4]/40 hover:text-white"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200 hover:border-[#06b6d4]/40"
           >
             <ArrowLeft size={18} />
           </Link>
@@ -220,10 +220,10 @@ export default function AdminMembers() {
               <Users size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="font-sans text-lg font-bold text-white sm:text-xl">
+              <h1 className="text-admin-ink font-sans text-lg font-bold sm:text-xl">
                 사용자 관리
               </h1>
-              <p className="text-xs text-[#6b7094]">
+              <p className="text-admin-muted text-xs">
                 {searchKeyword ? `'${searchKeyword}' 검색 결과 ` : "전체 "}{" "}
                 {pagingInfo?.totalElements ?? 0}명 사용자
               </p>
@@ -237,20 +237,20 @@ export default function AdminMembers() {
         <div className="relative flex-1">
           <Search
             size={18}
-            className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[#4a4e69]"
+            className="text-admin-muted absolute top-1/2 left-3.5 -translate-y-1/2"
           />
           <input
             type="text"
             placeholder="사용자 닉네임 또는 이메일로 검색"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full rounded-xl border border-[#1e2030] bg-[#161827] py-2.5 pr-10 pl-10 text-sm text-white placeholder-[#4a4e69] transition-all duration-200 focus:border-[#06b6d4]/50 focus:bg-[#161827] focus:outline-none"
+            className="border-admin-edge bg-admin-panel text-admin-ink placeholder:text-admin-muted focus:bg-admin-panel w-full rounded-xl border py-2.5 pr-10 pl-10 text-sm transition-all duration-200 focus:border-[#06b6d4]/50 focus:outline-none"
           />
           {searchInput && (
             <button
               type="button"
               onClick={handleClearSearch}
-              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-[#4a4e69] transition-colors hover:text-white"
+              className="text-admin-muted hover:text-admin-ink absolute top-1/2 right-3.5 -translate-y-1/2 transition-colors"
             >
               <X size={16} />
             </button>
@@ -273,22 +273,22 @@ export default function AdminMembers() {
       {/* 사용자 목록 */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="animate-spin text-[#6b7094]" />
-          <p className="mt-4 text-sm text-[#6b7094]">
+          <Loader2 size={32} className="text-admin-muted animate-spin" />
+          <p className="text-admin-muted mt-4 text-sm">
             사용자 목록 불러오는 중...
           </p>
         </div>
       ) : members.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#161827]">
-            <Inbox size={28} className="text-[#4a4e69]" />
+          <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+            <Inbox size={28} className="text-admin-muted" />
           </div>
-          <p className="text-base font-medium text-[#6b7094]">
+          <p className="text-admin-muted text-base font-medium">
             {searchKeyword
               ? "검색 결과에 맞는 사용자가 없습니다"
               : "가입된 사용자가 없습니다"}
           </p>
-          <p className="mt-1 text-sm text-[#4a4e69]">
+          <p className="text-admin-muted mt-1 text-sm">
             {searchKeyword
               ? "다른 검색어로 다시 시도해보세요"
               : "사용자가 가입하면 목록에 나타납니다"}
@@ -299,39 +299,39 @@ export default function AdminMembers() {
           {members.map((member) => (
             <div
               key={member.id}
-              className="flex flex-col gap-4 rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-4 transition-all duration-200 hover:border-[#2a2d42] sm:flex-row sm:items-center sm:justify-between sm:p-5"
+              className="border-admin-edge bg-admin-panel/80 hover:border-admin-line flex flex-col gap-4 rounded-2xl border p-4 transition-all duration-200 sm:flex-row sm:items-center sm:justify-between sm:p-5"
             >
               {/* 사용자 기본 정보 */}
               <div className="flex flex-1 items-center gap-3.5">
-                <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#2a2d42] bg-[#22253a]">
-                  <User size={20} className="text-[#8b8fa3]" />
+                <div className="border-admin-line bg-admin-hover relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+                  <User size={20} className="text-admin-secondary" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white sm:text-base">
+                    <span className="text-admin-ink text-sm font-bold sm:text-base">
                       {member.nickname}
                     </span>
                     <span
                       className={`typo-10-700 rounded-full px-2 py-0.5 ${
                         member.gender === "FEMALE"
-                          ? "bg-rose-500/10 text-rose-400"
-                          : "bg-blue-500/10 text-blue-400"
+                          ? "text-admin-danger bg-rose-500/10"
+                          : "text-admin-info bg-blue-500/10"
                       }`}
                     >
                       {member.gender === "FEMALE" ? "여성" : "남성"}
                     </span>
                   </div>
-                  <span className="text-xs break-all text-[#6b7094]">
+                  <span className="text-admin-muted text-xs break-all">
                     {member.email}
                   </span>
                 </div>
               </div>
 
               {/* 보유 아이템 정보 및 수정 버튼 */}
-              <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#1e2030] pt-3 sm:border-t-0 sm:pt-0">
+              <div className="border-admin-edge flex flex-wrap items-center justify-between gap-4 border-t pt-3 sm:border-t-0 sm:pt-0">
                 <div className="flex gap-3">
                   {/* 매칭권 */}
-                  <div className="flex items-center gap-2 rounded-xl bg-[#1e2030] px-3.5 py-2">
+                  <div className="bg-admin-subtle flex items-center gap-2 rounded-xl px-3.5 py-2">
                     <Image
                       src="/main/ticket.png"
                       alt="매칭권"
@@ -339,14 +339,16 @@ export default function AdminMembers() {
                       height={18}
                     />
                     <div className="flex flex-col">
-                      <span className="typo-10-500 text-[#6b7094]">매칭권</span>
-                      <span className="text-xs font-bold text-white">
+                      <span className="typo-10-500 text-admin-muted">
+                        매칭권
+                      </span>
+                      <span className="text-admin-ink text-xs font-bold">
                         {member.matchingTicketCount}개
                       </span>
                     </div>
                   </div>
                   {/* 옵션권 */}
-                  <div className="flex items-center gap-2 rounded-xl bg-[#1e2030] px-3.5 py-2">
+                  <div className="bg-admin-subtle flex items-center gap-2 rounded-xl px-3.5 py-2">
                     <Image
                       src="/main/option.png"
                       alt="옵션권"
@@ -354,8 +356,10 @@ export default function AdminMembers() {
                       height={18}
                     />
                     <div className="flex flex-col">
-                      <span className="typo-10-500 text-[#6b7094]">옵션권</span>
-                      <span className="text-xs font-bold text-white">
+                      <span className="typo-10-500 text-admin-muted">
+                        옵션권
+                      </span>
+                      <span className="text-admin-ink text-xs font-bold">
                         {member.optionTicketCount}개
                       </span>
                     </div>
@@ -364,7 +368,7 @@ export default function AdminMembers() {
 
                 <button
                   onClick={() => openEditModal(member)}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#22253a]/50 px-3.5 py-2 text-xs font-semibold text-[#a0a3bd] transition-all duration-200 hover:border-[#06b6d4]/40 hover:bg-[#22253a] hover:text-white"
+                  className="border-admin-line bg-admin-hover/50 text-admin-secondary hover:bg-admin-hover hover:text-admin-ink flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200 hover:border-[#06b6d4]/40"
                 >
                   <Edit3 size={13} />
                   수량 조정
@@ -377,12 +381,12 @@ export default function AdminMembers() {
 
       {/* 페이지네이션 */}
       {pagingInfo && pagingInfo.totalPages >= 1 && (
-        <div className="mt-8 flex items-center justify-between border-t border-[#1e2030] pt-6">
+        <div className="border-admin-edge mt-8 flex items-center justify-between border-t pt-6">
           <button
             type="button"
             disabled={!pagingInfo.hasPrevious || isLoading || isRefetching}
             onClick={() => setPage((prev) => Math.max(0, prev - 1))}
-            className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#06b6d4]/40 hover:bg-[#22253a] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#2a2d42] disabled:hover:bg-[#161827] disabled:hover:text-[#8b8fa3]"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:bg-admin-hover hover:text-admin-ink disabled:hover:border-admin-line disabled:hover:bg-admin-panel disabled:hover:text-admin-secondary flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-all duration-200 hover:border-[#06b6d4]/40 disabled:cursor-not-allowed disabled:opacity-40"
           >
             이전
           </button>
@@ -399,7 +403,7 @@ export default function AdminMembers() {
                   className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold transition-all duration-200 ${
                     isActive
                       ? "bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] text-white shadow-lg shadow-[#06b6d4]/10"
-                      : "border border-[#1e2030] bg-[#161827]/40 text-[#8b8fa3] hover:border-[#2a2d42] hover:bg-[#22253a] hover:text-white"
+                      : "border-admin-edge bg-admin-panel/40 text-admin-secondary hover:border-admin-line hover:bg-admin-hover hover:text-admin-ink border"
                   }`}
                 >
                   {idx + 1}
@@ -408,7 +412,7 @@ export default function AdminMembers() {
             })}
           </div>
 
-          <div className="text-xs font-semibold text-[#6b7094] sm:hidden">
+          <div className="text-admin-muted text-xs font-semibold sm:hidden">
             {pagingInfo.currentPage + 1} / {pagingInfo.totalPages} 페이지
           </div>
 
@@ -418,7 +422,7 @@ export default function AdminMembers() {
             onClick={() =>
               setPage((prev) => Math.min(pagingInfo.totalPages - 1, prev + 1))
             }
-            className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#06b6d4]/40 hover:bg-[#22253a] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#2a2d42] disabled:hover:bg-[#161827] disabled:hover:text-[#8b8fa3]"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:bg-admin-hover hover:text-admin-ink disabled:hover:border-admin-line disabled:hover:bg-admin-panel disabled:hover:text-admin-secondary flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-all duration-200 hover:border-[#06b6d4]/40 disabled:cursor-not-allowed disabled:opacity-40"
           >
             다음
           </button>
@@ -428,41 +432,41 @@ export default function AdminMembers() {
       {/* 수량 조정 상세 모달 */}
       {editingMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm transition-all duration-300">
-          <div className="w-full max-w-md scale-100 rounded-2xl border border-[#2a2d42] bg-[#161827] p-6 shadow-2xl transition-all duration-300">
+          <div className="border-admin-line bg-admin-panel w-full max-w-md scale-100 rounded-2xl border p-6 shadow-2xl transition-all duration-300">
             {/* 모달 헤더 */}
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-base font-bold text-white sm:text-lg">
+              <h2 className="text-admin-ink text-base font-bold sm:text-lg">
                 아이템 수량 조정
               </h2>
               <button
                 onClick={closeEditModal}
-                className="rounded-lg p-1 text-[#6b7094] transition-colors hover:bg-[#1e2030] hover:text-white"
+                className="text-admin-muted hover:bg-admin-subtle hover:text-admin-ink rounded-lg p-1 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
             {/* 모달 대상 사용자 정보 */}
-            <div className="mb-6 flex items-center gap-3 rounded-xl bg-[#1e2030]/50 p-3.5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#2a2d42] bg-[#22253a]">
-                <User size={16} className="text-[#8b8fa3]" />
+            <div className="bg-admin-subtle/50 mb-6 flex items-center gap-3 rounded-xl p-3.5">
+              <div className="border-admin-line bg-admin-hover flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+                <User size={16} className="text-admin-secondary" />
               </div>
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-admin-ink text-sm font-bold">
                     {editingMember.nickname}
                   </span>
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[8px] font-bold ${
                       editingMember.gender === "FEMALE"
-                        ? "bg-rose-500/10 text-rose-400"
-                        : "bg-blue-500/10 text-blue-400"
+                        ? "text-admin-danger bg-rose-500/10"
+                        : "text-admin-info bg-blue-500/10"
                     }`}
                   >
                     {editingMember.gender === "FEMALE" ? "여성" : "남성"}
                   </span>
                 </div>
-                <span className="text-xs break-all text-[#6b7094]">
+                <span className="text-admin-muted text-xs break-all">
                   {editingMember.email}
                 </span>
               </div>
@@ -471,7 +475,7 @@ export default function AdminMembers() {
             {/* 아이템 설정 필드들 */}
             <div className="space-y-5">
               {/* ─── 1. 매칭권 설정 ─── */}
-              <div className="space-y-3 rounded-xl border border-[#1e2030] bg-[#1e2030]/20 p-4">
+              <div className="border-admin-edge bg-admin-subtle/20 space-y-3 rounded-xl border p-4">
                 <div className="flex items-center gap-2">
                   <Image
                     src="/main/ticket.png"
@@ -479,8 +483,10 @@ export default function AdminMembers() {
                     width={20}
                     height={20}
                   />
-                  <span className="text-xs font-bold text-white">매칭권</span>
-                  <span className="typo-10-500 text-[#6b7094]">
+                  <span className="text-admin-ink text-xs font-bold">
+                    매칭권
+                  </span>
+                  <span className="typo-10-500 text-admin-muted">
                     (보유: {editingMember.matchingTicketCount}개)
                   </span>
                 </div>
@@ -495,11 +501,11 @@ export default function AdminMembers() {
                       className={`flex-1 rounded-lg border py-1.5 text-[11px] font-bold transition-all duration-200 ${
                         matchingAction === act
                           ? act === "ADD"
-                            ? "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+                            ? "text-admin-success border-emerald-500 bg-emerald-500/10"
                             : act === "REMOVE"
-                              ? "border-red-500 bg-red-500/10 text-red-400"
-                              : "border-[#8b8fa3] bg-[#8b8fa3]/10 text-[#8b8fa3]"
-                          : "border-[#1e2030] bg-[#1e2030]/30 text-[#6b7094] hover:text-white"
+                              ? "text-admin-danger border-red-500 bg-red-500/10"
+                              : "text-admin-secondary border-[#8b8fa3] bg-[#8b8fa3]/10"
+                          : "border-admin-edge bg-admin-subtle/30 text-admin-muted hover:text-admin-ink"
                       }`}
                     >
                       {act === "NONE"
@@ -513,8 +519,8 @@ export default function AdminMembers() {
 
                 {/* 수량 설정 */}
                 {matchingAction !== "NONE" && (
-                  <div className="flex items-center justify-between rounded-lg border border-[#1e2030] bg-[#161827] p-1.5">
-                    <span className="pl-1.5 text-[11px] text-[#6b7094]">
+                  <div className="border-admin-edge bg-admin-panel flex items-center justify-between rounded-lg border p-1.5">
+                    <span className="text-admin-muted pl-1.5 text-[11px]">
                       조정 수량
                     </span>
                     <div className="flex items-center gap-2">
@@ -525,7 +531,7 @@ export default function AdminMembers() {
                             Math.max(1, (Number(matchingQuantity) || 0) - 1),
                           )
                         }
-                        className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
+                        className="bg-admin-subtle text-admin-secondary hover:text-admin-ink flex h-6 w-6 items-center justify-center rounded transition-colors"
                       >
                         <Minus size={11} />
                       </button>
@@ -544,7 +550,7 @@ export default function AdminMembers() {
                             );
                           }
                         }}
-                        className="h-6 w-10 [appearance:textfield] border-0 bg-[#161827] text-center text-xs font-bold text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        className="bg-admin-panel text-admin-ink h-6 w-10 [appearance:textfield] border-0 text-center text-xs font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <button
                         type="button"
@@ -553,7 +559,7 @@ export default function AdminMembers() {
                             (Number(matchingQuantity) || 0) + 1,
                           )
                         }
-                        className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
+                        className="bg-admin-subtle text-admin-secondary hover:text-admin-ink flex h-6 w-6 items-center justify-center rounded transition-colors"
                       >
                         <Plus size={11} />
                       </button>
@@ -563,7 +569,7 @@ export default function AdminMembers() {
               </div>
 
               {/* ─── 2. 옵션권 설정 ─── */}
-              <div className="space-y-3 rounded-xl border border-[#1e2030] bg-[#1e2030]/20 p-4">
+              <div className="border-admin-edge bg-admin-subtle/20 space-y-3 rounded-xl border p-4">
                 <div className="flex items-center gap-2">
                   <Image
                     src="/main/option.png"
@@ -571,8 +577,10 @@ export default function AdminMembers() {
                     width={20}
                     height={20}
                   />
-                  <span className="text-xs font-bold text-white">옵션권</span>
-                  <span className="typo-10-500 text-[#6b7094]">
+                  <span className="text-admin-ink text-xs font-bold">
+                    옵션권
+                  </span>
+                  <span className="typo-10-500 text-admin-muted">
                     (보유: {editingMember.optionTicketCount}개)
                   </span>
                 </div>
@@ -587,11 +595,11 @@ export default function AdminMembers() {
                       className={`flex-1 rounded-lg border py-1.5 text-[11px] font-bold transition-all duration-200 ${
                         optionAction === act
                           ? act === "ADD"
-                            ? "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+                            ? "text-admin-success border-emerald-500 bg-emerald-500/10"
                             : act === "REMOVE"
-                              ? "border-red-500 bg-red-500/10 text-red-400"
-                              : "border-[#8b8fa3] bg-[#8b8fa3]/10 text-[#8b8fa3]"
-                          : "border-[#1e2030] bg-[#1e2030]/30 text-[#6b7094] hover:text-white"
+                              ? "text-admin-danger border-red-500 bg-red-500/10"
+                              : "text-admin-secondary border-[#8b8fa3] bg-[#8b8fa3]/10"
+                          : "border-admin-edge bg-admin-subtle/30 text-admin-muted hover:text-admin-ink"
                       }`}
                     >
                       {act === "NONE"
@@ -605,8 +613,8 @@ export default function AdminMembers() {
 
                 {/* 수량 설정 */}
                 {optionAction !== "NONE" && (
-                  <div className="flex items-center justify-between rounded-lg border border-[#1e2030] bg-[#161827] p-1.5">
-                    <span className="pl-1.5 text-[11px] text-[#6b7094]">
+                  <div className="border-admin-edge bg-admin-panel flex items-center justify-between rounded-lg border p-1.5">
+                    <span className="text-admin-muted pl-1.5 text-[11px]">
                       조정 수량
                     </span>
                     <div className="flex items-center gap-2">
@@ -617,7 +625,7 @@ export default function AdminMembers() {
                             Math.max(1, (Number(optionQuantity) || 0) - 1),
                           )
                         }
-                        className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
+                        className="bg-admin-subtle text-admin-secondary hover:text-admin-ink flex h-6 w-6 items-center justify-center rounded transition-colors"
                       >
                         <Minus size={11} />
                       </button>
@@ -636,14 +644,14 @@ export default function AdminMembers() {
                             );
                           }
                         }}
-                        className="h-6 w-10 [appearance:textfield] border-0 bg-[#161827] text-center text-xs font-bold text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        className="bg-admin-panel text-admin-ink h-6 w-10 [appearance:textfield] border-0 text-center text-xs font-bold focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <button
                         type="button"
                         onClick={() =>
                           setOptionQuantity((Number(optionQuantity) || 0) + 1)
                         }
-                        className="flex h-6 w-6 items-center justify-center rounded bg-[#1e2030] text-[#a0a3bd] transition-colors hover:text-white"
+                        className="bg-admin-subtle text-admin-secondary hover:text-admin-ink flex h-6 w-6 items-center justify-center rounded transition-colors"
                       >
                         <Plus size={11} />
                       </button>
@@ -654,7 +662,7 @@ export default function AdminMembers() {
 
               {/* 3. 조정 사유 작성 */}
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-semibold text-[#8b8fa3]">
+                <span className="text-admin-secondary text-xs font-semibold">
                   조정 사유 (필수)
                 </span>
                 <input
@@ -663,19 +671,19 @@ export default function AdminMembers() {
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
                   maxLength={255}
-                  className="w-full rounded-xl border border-[#1e2030] bg-[#161827] px-3.5 py-2.5 text-xs text-white placeholder-[#4a4e69] transition-all duration-200 focus:border-[#06b6d4]/50 focus:outline-none"
+                  className="border-admin-edge bg-admin-panel text-admin-ink placeholder:text-admin-muted w-full rounded-xl border px-3.5 py-2.5 text-xs transition-all duration-200 focus:border-[#06b6d4]/50 focus:outline-none"
                 />
               </div>
             </div>
 
             {/* 실시간 계산결과 미리보기 */}
-            <div className="mt-5 space-y-2 rounded-xl border border-[#1e2030] bg-[#1e2030]/30 p-3 text-xs">
-              <div className="typo-10-700 mb-1 tracking-wider text-[#8b8fa3] uppercase">
+            <div className="border-admin-edge bg-admin-subtle/30 mt-5 space-y-2 rounded-xl border p-3 text-xs">
+              <div className="typo-10-700 text-admin-secondary mb-1 tracking-wider uppercase">
                 최종 수량 변동 예상
               </div>
 
               {/* 매칭권 */}
-              <div className="flex items-center justify-between border-b border-[#1e2030]/50 pb-1.5">
+              <div className="border-admin-edge/50 flex items-center justify-between border-b pb-1.5">
                 <div className="flex items-center gap-1.5">
                   <Image
                     src="/main/ticket.png"
@@ -683,15 +691,15 @@ export default function AdminMembers() {
                     width={14}
                     height={14}
                   />
-                  <span className="text-[#8b8fa3]">매칭권</span>
+                  <span className="text-admin-secondary">매칭권</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#6b7094]">
+                  <span className="text-admin-muted">
                     {editingMember.matchingTicketCount}개
                   </span>
-                  <span className="text-[#4a4e69]">→</span>
+                  <span className="text-admin-muted">→</span>
                   <span
-                    className={`font-bold ${matchingAction === "NONE" ? "text-white" : matchingAction === "ADD" ? "text-emerald-400" : "text-red-400"}`}
+                    className={`font-bold ${matchingAction === "NONE" ? "text-admin-ink" : matchingAction === "ADD" ? "text-admin-success" : "text-admin-danger"}`}
                   >
                     {getExpectedQuantity("MATCHING_TICKET")}개
                     {matchingAction !== "NONE" &&
@@ -709,15 +717,15 @@ export default function AdminMembers() {
                     width={14}
                     height={14}
                   />
-                  <span className="text-[#8b8fa3]">옵션권</span>
+                  <span className="text-admin-secondary">옵션권</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#6b7094]">
+                  <span className="text-admin-muted">
                     {editingMember.optionTicketCount}개
                   </span>
-                  <span className="text-[#4a4e69]">→</span>
+                  <span className="text-admin-muted">→</span>
                   <span
-                    className={`font-bold ${optionAction === "NONE" ? "text-white" : optionAction === "ADD" ? "text-emerald-400" : "text-red-400"}`}
+                    className={`font-bold ${optionAction === "NONE" ? "text-admin-ink" : optionAction === "ADD" ? "text-admin-success" : "text-admin-danger"}`}
                   >
                     {getExpectedQuantity("OPTION_TICKET")}개
                     {optionAction !== "NONE" &&
@@ -730,7 +738,7 @@ export default function AdminMembers() {
             {/* 경고 알림 (차감 가능량 초과 시) */}
             {(isInsufficient("MATCHING_TICKET") ||
               isInsufficient("OPTION_TICKET")) && (
-              <div className="mt-4 flex items-start gap-2 rounded-xl border border-red-800/20 bg-red-950/20 p-3 text-xs text-red-400">
+              <div className="text-admin-danger mt-4 flex items-start gap-2 rounded-xl border border-red-800/20 bg-red-950/20 p-3 text-xs">
                 <AlertTriangle
                   size={14}
                   className="mt-0.5 shrink-0 animate-pulse"
@@ -748,7 +756,7 @@ export default function AdminMembers() {
                 type="button"
                 onClick={closeEditModal}
                 disabled={isSubmitting}
-                className="flex-1 rounded-xl border border-[#2a2d42] bg-[#1e2030] py-2.5 text-sm font-semibold text-[#8b8fa3] transition-colors hover:text-white disabled:opacity-50"
+                className="border-admin-line bg-admin-subtle text-admin-secondary hover:text-admin-ink flex-1 rounded-xl border py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 취소
               </button>

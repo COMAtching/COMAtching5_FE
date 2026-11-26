@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import {
   dehydrate,
   HydrationBoundary,
@@ -10,15 +11,17 @@ export default async function AdminProductsPage() {
   const queryClient = new QueryClient();
 
   // 서버사이드에서 상품 목록을 미리 가져옵니다.
-  await queryClient.prefetchQuery({
-    queryKey: ["adminProducts", undefined], // 필터가 'all'일 때
-    queryFn: async () => {
-      const res = await serverApi.get({
-        path: "/api/v1/admin/shop/products",
-      });
-      return res.data;
-    },
-  });
+  await queryClient
+    .fetchQuery({
+      queryKey: ["adminProducts", undefined], // 필터가 'all'일 때
+      queryFn: async () => {
+        const res = await serverApi.get({
+          path: "/api/v1/admin/shop/products",
+        });
+        return res.data;
+      },
+    })
+    .catch(unstable_rethrow);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

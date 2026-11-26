@@ -1,13 +1,14 @@
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
-import React, { useEffect, useState } from "react";
+import { useVerificationMailTimer } from "@/hooks/useVerificationMailTimer";
+import React, { useState } from "react";
 
 type VerificationStepProps = {
   email: string;
   verificationCode: string;
   onVerificationCodeChange: (code: string) => void;
   onVerify: (code: string, onError: (msg?: string) => void) => void;
-  onResend: () => void;
+  onResend: () => Promise<unknown>;
   isSending?: boolean;
   isVerifying?: boolean;
 };
@@ -21,29 +22,9 @@ export const VerificationStep = ({
   isSending = false,
   isVerifying = false,
 }: VerificationStepProps) => {
-  const [timeLeft, setTimeLeft] = useState(300);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const { timeLeft, resendCooldown, markSent, onFailure } =
+    useVerificationMailTimer();
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-
-    const cooldownTimer = setInterval(() => {
-      setResendCooldown((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(cooldownTimer);
-  }, [resendCooldown]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -68,11 +49,16 @@ export const VerificationStep = ({
     );
   };
 
-  const handleResend = () => {
-    setTimeLeft(300);
-    setResendCooldown(180);
-    setErrorMessage("");
-    onResend();
+  const handleResend = async () => {
+    if (isSending || resendCooldown > 0) return;
+    try {
+      await onResend();
+      markSent();
+      onVerificationCodeChange("");
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(onFailure(error));
+    }
   };
 
   const maskEmail = (value: string) => {

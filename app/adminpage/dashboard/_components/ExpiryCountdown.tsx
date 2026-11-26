@@ -32,7 +32,7 @@ export default function ExpiryCountdown({
 
   if (remaining <= 0) {
     return (
-      <span className="flex items-center gap-1 text-xs font-medium text-[#4a4e69]">
+      <span className="text-admin-muted flex items-center gap-1 text-xs font-medium">
         <Timer size={12} />
         만료됨
       </span>
@@ -46,7 +46,9 @@ export default function ExpiryCountdown({
   return (
     <span
       className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold tabular-nums ${
-        isUrgent ? "bg-red-500/10 text-red-400" : "bg-[#1e2030] text-[#8b8fa3]"
+        isUrgent
+          ? "text-admin-danger bg-red-500/10"
+          : "bg-admin-subtle text-admin-secondary"
       }`}
     >
       <Timer size={12} className={isUrgent ? "animate-pulse" : ""} />

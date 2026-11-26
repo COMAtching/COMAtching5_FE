@@ -40,7 +40,7 @@ function getStatusInfo(startTime: string, endTime: string, active: boolean) {
   if (active) {
     return {
       label: "활성",
-      color: "text-emerald-400",
+      color: "text-admin-success",
       bg: "bg-emerald-500/10",
     };
   }
@@ -49,9 +49,13 @@ function getStatusInfo(startTime: string, endTime: string, active: boolean) {
   const start = new Date(startTime);
 
   if (now < start) {
-    return { label: "예정", color: "text-amber-400", bg: "bg-amber-500/10" };
+    return {
+      label: "예정",
+      color: "text-admin-warning",
+      bg: "bg-amber-500/10",
+    };
   } else {
-    return { label: "종료", color: "text-[#4a4e69]", bg: "bg-[#1e2030]" };
+    return { label: "종료", color: "text-admin-muted", bg: "bg-admin-subtle" };
   }
 }
 
@@ -141,9 +145,9 @@ function NoticeForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-6"
+      className="border-admin-edge bg-admin-panel/80 rounded-2xl border p-6"
     >
-      <h3 className="mb-5 text-sm font-semibold text-white">
+      <h3 className="text-admin-ink mb-5 text-sm font-semibold">
         {isEditMode ? "공지사항 수정" : "새 공지사항 등록"}
       </h3>
 
@@ -152,9 +156,9 @@ function NoticeForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={titleId}
-            className="text-xs font-medium text-[#8b8fa3]"
+            className="text-admin-secondary text-xs font-medium"
           >
-            제목 <span className="text-red-400">*</span>
+            제목 <span className="text-admin-danger">*</span>
           </label>
           <input
             id={titleId}
@@ -163,9 +167,9 @@ function NoticeForm({
             onChange={(e) => setTitle(e.target.value)}
             maxLength={200}
             placeholder="공지사항 제목을 입력하세요"
-            className="rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 py-3 text-sm text-white placeholder:text-[#4a4e69] focus:border-[#10b981] focus:outline-none"
+            className="border-admin-line bg-admin-canvas text-admin-ink placeholder:text-admin-muted rounded-xl border px-4 py-3 text-sm focus:border-[#10b981] focus:outline-none"
           />
-          <span className="typo-10-500 text-right text-[#4a4e69]">
+          <span className="typo-10-500 text-admin-muted text-right">
             {title.length}/200
           </span>
         </div>
@@ -174,9 +178,9 @@ function NoticeForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={contentId}
-            className="text-xs font-medium text-[#8b8fa3]"
+            className="text-admin-secondary text-xs font-medium"
           >
-            내용 <span className="text-red-400">*</span>
+            내용 <span className="text-admin-danger">*</span>
           </label>
           <textarea
             id={contentId}
@@ -184,7 +188,7 @@ function NoticeForm({
             onChange={(e) => setContent(e.target.value)}
             placeholder="공지사항 내용을 입력하세요"
             rows={4}
-            className="resize-none rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 py-3 text-sm text-white placeholder:text-[#4a4e69] focus:border-[#10b981] focus:outline-none"
+            className="border-admin-line bg-admin-canvas text-admin-ink placeholder:text-admin-muted resize-none rounded-xl border px-4 py-3 text-sm focus:border-[#10b981] focus:outline-none"
           />
         </div>
 
@@ -193,33 +197,33 @@ function NoticeForm({
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor={startTimeId}
-              className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]"
+              className="text-admin-secondary flex items-center gap-1.5 text-xs font-medium"
             >
               <Calendar size={12} />
-              시작 시간 <span className="text-red-400">*</span>
+              시작 시간 <span className="text-admin-danger">*</span>
             </label>
             <input
               id={startTimeId}
               type="datetime-local"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 py-3 text-sm text-white [color-scheme:dark] focus:border-[#10b981] focus:outline-none"
+              className="border-admin-line bg-admin-canvas text-admin-ink rounded-xl border px-4 py-3 text-sm focus:border-[#10b981] focus:outline-none"
             />
           </div>
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor={endTimeId}
-              className="flex items-center gap-1.5 text-xs font-medium text-[#8b8fa3]"
+              className="text-admin-secondary flex items-center gap-1.5 text-xs font-medium"
             >
               <Clock size={12} />
-              종료 시간 <span className="text-red-400">*</span>
+              종료 시간 <span className="text-admin-danger">*</span>
             </label>
             <input
               id={endTimeId}
               type="datetime-local"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
-              className="rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 py-3 text-sm text-white [color-scheme:dark] focus:border-[#10b981] focus:outline-none"
+              className="border-admin-line bg-admin-canvas text-admin-ink rounded-xl border px-4 py-3 text-sm focus:border-[#10b981] focus:outline-none"
             />
           </div>
         </div>
@@ -230,7 +234,7 @@ function NoticeForm({
             <button
               type="button"
               onClick={onCancelEdit}
-              className="flex items-center gap-2 rounded-xl border border-[#2a2d42] bg-[#161827] px-5 py-2.5 text-sm font-semibold text-[#8b8fa3] transition-all duration-200 hover:text-white"
+              className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-all duration-200"
             >
               취소
             </button>
@@ -291,7 +295,7 @@ export default function AdminNotices() {
         <div className="flex items-center gap-3">
           <Link
             href="/adminpage/main"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] transition-colors duration-200 hover:border-[#10b981]/40 hover:text-white"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200 hover:border-[#10b981]/40"
           >
             <ArrowLeft size={18} />
           </Link>
@@ -300,10 +304,10 @@ export default function AdminNotices() {
               <Bell size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white sm:text-xl">
+              <h1 className="text-admin-ink text-lg font-bold sm:text-xl">
                 공지사항 관리
               </h1>
-              <p className="text-xs text-[#6b7094]">
+              <p className="text-admin-muted text-xs">
                 전체 공지 {notices.length}건
               </p>
             </div>
@@ -317,7 +321,7 @@ export default function AdminNotices() {
           }}
           className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
             showCreateForm
-              ? "border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] hover:text-white"
+              ? "border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink border"
               : "bg-gradient-to-r from-[#10b981] to-[#059669] text-white shadow-lg shadow-emerald-500/20 hover:shadow-xl"
           }`}
         >
@@ -361,18 +365,20 @@ export default function AdminNotices() {
       {/* 공지사항 목록 */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="animate-spin text-[#6b7094]" />
-          <p className="mt-4 text-sm text-[#6b7094]">공지사항 불러오는 중...</p>
+          <Loader2 size={32} className="text-admin-muted animate-spin" />
+          <p className="text-admin-muted mt-4 text-sm">
+            공지사항 불러오는 중...
+          </p>
         </div>
       ) : notices.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#161827]">
-            <Inbox size={28} className="text-[#4a4e69]" />
+          <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+            <Inbox size={28} className="text-admin-muted" />
           </div>
-          <p className="text-base font-medium text-[#6b7094]">
+          <p className="text-admin-muted text-base font-medium">
             등록된 공지사항이 없습니다
           </p>
-          <p className="mt-1 text-sm text-[#4a4e69]">
+          <p className="text-admin-muted mt-1 text-sm">
             공지 등록 버튼을 눌러 새 공지사항을 추가하세요
           </p>
         </div>
@@ -387,12 +393,12 @@ export default function AdminNotices() {
             return (
               <div
                 key={notice.noticeId}
-                className="flex flex-col rounded-2xl border border-[#1e2030] bg-[#161827]/80 transition-all duration-200 hover:border-[#2a2d42] sm:flex-row sm:items-start sm:justify-between"
+                className="border-admin-edge bg-admin-panel/80 hover:border-admin-line flex flex-col rounded-2xl border transition-all duration-200 sm:flex-row sm:items-start sm:justify-between"
               >
                 {/* 공지 정보 */}
                 <div className="flex flex-1 flex-col gap-2 p-5">
                   <div className="flex items-center gap-2.5">
-                    <h3 className="text-sm font-semibold text-white">
+                    <h3 className="text-admin-ink text-sm font-semibold">
                       {notice.title}
                     </h3>
                     <span
@@ -402,12 +408,12 @@ export default function AdminNotices() {
                     </span>
                   </div>
 
-                  <p className="text-xs leading-relaxed whitespace-pre-wrap text-[#6b7094]">
+                  <p className="text-admin-muted text-xs leading-relaxed whitespace-pre-wrap">
                     {notice.content}
                   </p>
 
                   {/* 시간 정보 */}
-                  <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-[#4a4e69]">
+                  <div className="text-admin-muted mt-1 flex flex-wrap items-center gap-3 text-[11px]">
                     <span className="flex items-center gap-1">
                       <Calendar size={10} />
                       시작: {formatDateTime(notice.startTime)}
@@ -420,10 +426,10 @@ export default function AdminNotices() {
                 </div>
 
                 {/* 액션 버튼 */}
-                <div className="flex items-center gap-2 border-t border-[#1e2030] px-5 py-3 sm:border-t-0 sm:border-l sm:py-5">
+                <div className="border-admin-edge flex items-center gap-2 border-t px-5 py-3 sm:border-t-0 sm:border-l sm:py-5">
                   <button
                     onClick={() => handleEdit(notice)}
-                    className="flex items-center gap-1.5 rounded-xl border border-[#2a2d42] bg-[#161827] px-3 py-2 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#10b981]/40 hover:text-white"
+                    className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 hover:border-[#10b981]/40"
                   >
                     <Pencil size={13} />
                     수정
@@ -434,7 +440,7 @@ export default function AdminNotices() {
                     className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                       deleteConfirmId === notice.noticeId
                         ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                        : "border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                        : "text-admin-danger border border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
                     } disabled:cursor-not-allowed disabled:opacity-50`}
                   >
                     <Trash2 size={13} />

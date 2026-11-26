@@ -2,9 +2,15 @@
 
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import {
+  getMessaging,
+  getToken,
+  deleteToken,
+  onMessage,
+} from "firebase/messaging";
 import type { Unsubscribe } from "firebase/messaging";
 import { useToastStore } from "@/stores/toast-store";
+import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,18 +23,21 @@ export const firebaseConfig = {
 };
 
 // Initialize Firebase (중복 초기화 방지)
-const app =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const app = IS_FIREBASE_ENABLED
+  ? getApps().length === 0
+    ? initializeApp(firebaseConfig)
+    : getApps()[0]
+  : null;
 
 // Analytics (브라우저에서만 실행, 유효한 설정이 있을 때만)
-let analytics;
 if (
+  app &&
   typeof window !== "undefined" &&
   firebaseConfig.projectId &&
   !firebaseConfig.projectId.includes("your_")
 ) {
   try {
-    analytics = getAnalytics(app);
+    getAnalytics(app);
   } catch (e) {
     console.warn(
       "[Firebase] Analytics 초기화 실패 (로컬 환경에서는 무시됩니다):",
@@ -38,8 +47,12 @@ if (
 }
 
 // 서비스 워커 등록 및 FCM 토큰 가져오기 (토큰만 반환, 리스너 등록 안 함)
-export async function registerServiceWorkerAndGetToken() {
-  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+export async function registerServiceWorkerAndGetToken(rotate = false) {
+  if (
+    !app ||
+    typeof window === "undefined" ||
+    !("serviceWorker" in navigator)
+  ) {
     return null;
   }
 
@@ -75,12 +88,11 @@ export async function registerServiceWorkerAndGetToken() {
     const vapidKey = rawVapidKey.replace(/["']/g, "");
 
     console.log("[FCM] getToken 시도 중...");
+    if (rotate) await deleteToken(messaging);
     const token = await getToken(messaging, {
       vapidKey: vapidKey,
       serviceWorkerRegistration: registration,
     });
-
-    console.log("FCM Token:", token);
 
     return token;
   } catch (error) {
@@ -89,74 +101,26 @@ export async function registerServiceWorkerAndGetToken() {
   }
 }
 
-/**
- * 포그라운드 메시지 수신 리스너를 등록합니다.
- * ⚠️ 이 함수는 토큰 등록과 별도로, 컴포넌트 마운트 시 항상 호출되어야 합니다.
- * sessionStorage 가드 안에 넣으면 리스너가 등록되지 않아 알림을 못 받습니다!
- */
 export function setupForegroundMessageHandler(): Unsubscribe | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
+  if (!app || typeof window === "undefined") return null;
   try {
-    const messaging = getMessaging(app);
-
-    console.log("[FCM] onMessage 리스너 등록 중...");
-    const unsubscribe = onMessage(messaging, (payload) => {
-      console.log(
-        "%c🔔 [Firebase Cloud Messaging] 포그라운드 알림 수신!",
-        "background: #1e1b4b; color: #a855f7; font-size: 13px; font-weight: bold; padding: 4px 8px; border-radius: 4px;",
-      );
-      console.log(
-        "👉 수신된 알림 전체 구조:",
-        JSON.stringify(payload, null, 2),
-      );
-      console.dir(payload);
-
-      // FCM 메시지 수신 커스텀 이벤트 디스패치 (채팅방 목록 등에서 실시간 최신화에 활용)
-      if (payload.data?.roomId) {
-        window.dispatchEvent(
-          new CustomEvent("fcm-chat-received", { detail: payload }),
-        );
-      }
-
-      // 채팅 메시지 알림이고, 사용자가 현재 해당 채팅방 안에 있다면 토스트 알림을 띄우지 않습니다.
-      const pathname = window.location.pathname;
-      const chatRoomMatch = pathname.match(/^\/chat\/([^/]+)/);
-      const currentChatId = chatRoomMatch ? chatRoomMatch[1] : null;
-      const payloadRoomId = payload.data?.roomId;
-
-      if (payloadRoomId && currentChatId === payloadRoomId) {
-        console.log(
-          `[FCM] 현재 활성화된 채팅방(${payloadRoomId})의 메시지이므로 인앱 알림을 표시하지 않습니다.`,
-        );
+    return onMessage(getMessaging(app), (payload) => {
+      if (
+        String(payload.from) !== firebaseConfig.messagingSenderId ||
+        payload.notification ||
+        !["CHAT", "ITEMS_GRANTED"].includes(payload.data?.type ?? "")
+      )
         return;
-      }
-
-      // notification 이나 data 필드에서 어떻게든 정보를 추출합니다.
-      const title =
-        payload.notification?.title || payload.data?.title || "새로운 알림";
-      const body =
-        payload.notification?.body ||
-        payload.data?.body ||
-        payload.data?.message ||
-        "";
-
-      // 커스텀 인앱 토스트 알림 노출
+      const grant = payload.data?.type === "ITEMS_GRANTED";
+      if (!grant) window.dispatchEvent(new Event("fcm-chat-received"));
       useToastStore.getState().showToast({
-        title,
-        body,
-        link: payload.data?.roomId ? `/chat/${payload.data.roomId}` : undefined,
+        title: "코매칭",
+        body: grant ? "아이템 지급이 완료되었습니다." : "새 메시지가 있습니다.",
+        link: grant ? "/main" : "/chat-list",
       });
     });
-
-    console.log("[FCM] onMessage 리스너 등록 완료 ✅");
-    return unsubscribe;
   } catch (error) {
-    console.error("[FCM] 포그라운드 메시지 핸들러 설정 실패:", error);
+    console.error("[FCM] 포그라운드 리스너 등록 실패", error);
     return null;
   }
 }
-
-export { app, analytics };

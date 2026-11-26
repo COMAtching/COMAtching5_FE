@@ -1,7 +1,12 @@
 "use client";
 
+import { useFeature } from "@/stores/features";
 import { useEffect, useState } from "react";
 import { Client } from "@stomp/stompjs";
+import {
+  activateSessionSocket,
+  handleSessionClose,
+} from "@/lib/socket-session";
 import SockJS from "sockjs-client";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type {
@@ -12,7 +17,7 @@ import type {
 export function useChatRoomSocket(
   roomId: string | null,
   memberId: number | undefined,
-  onOwnMessage?: (content: string) => void,
+  onOwnMessage?: (content: string, type: "TALK" | "IMAGE") => void,
 ) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<{
@@ -20,11 +25,12 @@ export function useChatRoomSocket(
     memberId: number;
     client: Client;
   } | null>(null);
-  const [accountMismatch, setAccountMismatch] = useState(false);
+  const chatOpen = useFeature("CHAT")?.open === true;
+  const [endReason, setEndReason] = useState<"changed" | "ended" | null>(null);
   const [messages, setMessages] = useState<ChatMessagePayload[]>([]);
 
   useEffect(() => {
-    if (!memberId) return;
+    if (!memberId || !chatOpen) return;
     const origin =
       process.env.NODE_ENV === "development"
         ? window.location.origin
@@ -41,7 +47,7 @@ export function useChatRoomSocket(
         if (!active) return;
         const principal = frame.headers["user-name"];
         if (principal && principal !== String(memberId)) {
-          setAccountMismatch(true);
+          setEndReason("changed");
           void client.deactivate();
           return;
         }
@@ -69,9 +75,10 @@ export function useChatRoomSocket(
           if (!active) return;
           const event: ChatMessagePayload = JSON.parse(frame.body);
           if (event.roomId !== roomId) return;
-          if (event.type === "TALK") {
+          if (event.type === "TALK" || event.type === "IMAGE") {
             setMessages((prev) => [...prev, event]);
-            if (event.senderId === memberId) onOwnMessage?.(event.content);
+            if (event.senderId === memberId)
+              onOwnMessage?.(event.content, event.type);
             else sendRead();
           } else if (event.type === "READ") {
             const markRead = (msg: ChatMessagePayload) =>
@@ -93,29 +100,40 @@ export function useChatRoomSocket(
         sendRead();
         setSession({ client, memberId, roomId });
       },
-      onWebSocketClose: () => {
-        if (active) setSession(null);
+      onWebSocketClose: (event) => {
+        if (active) {
+          setSession(null);
+          if (handleSessionClose(client, event.code)) setEndReason("ended");
+        }
       },
     });
-    client.activate();
+    const stopWatching = activateSessionSocket(
+      client,
+      () => active,
+      (changed) => setEndReason(changed ? "changed" : "ended"),
+    );
     return () => {
       active = false;
+      stopWatching();
       void client.deactivate();
       setSession(null);
-      setAccountMismatch(false);
+      setEndReason(null);
       setMessages([]);
     };
-  }, [roomId, memberId, queryClient, onOwnMessage]);
+  }, [roomId, memberId, queryClient, onOwnMessage, chatOpen]);
 
   const isConnected =
-    !!session && session.roomId === roomId && session.memberId === memberId;
-  function sendMessage(content: string) {
+    chatOpen &&
+    !!session &&
+    session.roomId === roomId &&
+    session.memberId === memberId;
+  function sendMessage(content: string, type: "TALK" | "IMAGE" = "TALK") {
     if (!isConnected || !session.client.connected) return false;
     try {
       session.client.publish({
         destination: "/app/chat/message",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ roomId, content, type: "TALK" }),
+        body: JSON.stringify({ roomId, content, type }),
       });
       return true;
     } catch {
@@ -123,5 +141,5 @@ export function useChatRoomSocket(
     }
   }
 
-  return { messages, sendMessage, isConnected, accountMismatch };
+  return { messages, sendMessage, isConnected, endReason };
 }

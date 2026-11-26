@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useFeature } from "@/stores/features";
 import TossChargeDrawer from "./TossChargeDrawer";
 import DirectChargeDrawer from "./DirectChargeDrawer";
 
@@ -9,6 +10,7 @@ interface ConfirmChargeDrawerProps {
   trigger: React.ReactNode;
   /** 상품 ID */
   productId: number;
+  maxOrderQuantity: number;
   /** 입금액 (원 단위 숫자) */
   amount: number;
   /** 상품 이름 */
@@ -20,10 +22,12 @@ interface ConfirmChargeDrawerProps {
 export default function ConfirmChargeDrawer({
   trigger,
   productId,
+  maxOrderQuantity,
   amount,
   productName,
   depositorName,
 }: ConfirmChargeDrawerProps) {
+  const shopOpen = useFeature("SHOP_PAYMENT")?.open === true;
   const [openToss, setOpenToss] = React.useState(false);
   const [openDirect, setOpenDirect] = React.useState(false);
 
@@ -55,7 +59,7 @@ export default function ConfirmChargeDrawer({
             (
               trigger.props as { onClick?: (e: React.MouseEvent) => void }
             ).onClick?.(e);
-            setOpenToss(true);
+            if (shopOpen && maxOrderQuantity > 0) setOpenToss(true);
           },
         },
       )
@@ -67,9 +71,10 @@ export default function ConfirmChargeDrawer({
 
       {/* 1. Toss 결제 전용 Drawer */}
       <TossChargeDrawer
-        open={openToss}
+        open={openToss && shopOpen && maxOrderQuantity > 0}
         onOpenChange={setOpenToss}
         productId={productId}
+        maxOrderQuantity={maxOrderQuantity}
         amount={amount}
         productName={productName}
         depositorName={depositorName}
@@ -78,11 +83,11 @@ export default function ConfirmChargeDrawer({
 
       {/* 2. 수동 계좌이체 전용 Drawer */}
       <DirectChargeDrawer
-        open={openDirect}
+        open={openDirect && shopOpen && maxOrderQuantity > 0}
         onOpenChange={setOpenDirect}
         productId={productId}
+        maxOrderQuantity={maxOrderQuantity}
         amount={amount}
-        productName={productName}
         depositorName={depositorName}
         onSwitchToToss={handleSwitchToToss}
       />

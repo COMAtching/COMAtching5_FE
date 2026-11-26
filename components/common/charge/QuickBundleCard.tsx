@@ -46,7 +46,7 @@ export default function QuickBundleCard({
               >
                 {product.remainingPurchaseCount === 0
                   ? "구매 완료"
-                  : `${product.remainingPurchaseCount}회 남음`}
+                  : `${product.remainingPurchaseCount}개 남음`}
               </span>
             )}
           <div className="flex flex-col items-center gap-1">
@@ -69,7 +69,10 @@ export default function QuickBundleCard({
         trigger={
           <button
             type="button"
-            disabled={product.remainingPurchaseCount === 0}
+            disabled={
+              product.maxOrderQuantity === 0 ||
+              product.remainingPurchaseCount === 0
+            }
             className={`typo-16-600 mt-4 flex h-10 w-full items-center justify-center rounded-lg text-white transition-colors ${
               product.remainingPurchaseCount === 0
                 ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
@@ -83,6 +86,10 @@ export default function QuickBundleCard({
         }
         amount={product.price}
         productId={product.id}
+        maxOrderQuantity={
+          product.maxOrderQuantity ??
+          Math.min(1, product.remainingPurchaseCount ?? 1)
+        }
         productName={product.name}
       />
     </div>

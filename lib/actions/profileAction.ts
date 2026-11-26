@@ -13,6 +13,7 @@ export type ProfileSignUpState = {
 export async function profileSignUpAction(
   prevState: ProfileSignUpState | null,
   data: ProfileSubmitData,
+  owner: string,
 ): Promise<ProfileSignUpState> {
   // ✅ 런타임 입력값 검증
   const parsed = ProfileSubmitSchema.safeParse(data);
@@ -26,6 +27,7 @@ export async function profileSignUpAction(
   try {
     await serverApi.post({
       path: "/api/auth/signup/profile",
+      headers: { "X-Onboarding-Session": owner },
       body: parsed.data,
     });
 
@@ -44,14 +46,10 @@ export async function profileSignUpAction(
       console.error("[profileSignUpAction] API Error", {
         status,
         message,
-        requestBody: data,
       });
       return { success: false, message };
     }
-    console.error("[profileSignUpAction] Unexpected Error", {
-      error,
-      requestBody: data,
-    });
+    console.error("[profileSignUpAction] Unexpected error");
     return { success: false, message: "알 수 없는 오류가 발생했습니다." };
   }
 }

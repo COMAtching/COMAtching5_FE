@@ -77,8 +77,22 @@ async function saveCookies(setCookieHeaders: string[] | undefined) {
 // 2. [핵심] 요청 인터셉터: 인증에 필요한 쿠키만 선별하여 전달 (Public API는 제외)
 serverClient.interceptors.request.use(
   async (config) => {
-    // 🛡️ Public API라면 쿠키 조회 및 전송을 생략합니다.
+    // A successful login replaces this browser's previous session, including sessions predating installation cookies.
     if (isPublicPath(config.url)) {
+      if (config.url === "/api/auth/login") {
+        const jar = await cookies();
+        const previous = [
+          "pushInstallation",
+          "accessToken",
+          "refreshToken",
+        ].flatMap((name) => {
+          const value = jar.get(name)?.value;
+          return value && /^[A-Za-z0-9_.-]+$/.test(value)
+            ? [`${name}=${value}`]
+            : [];
+        });
+        if (previous.length) config.headers.Cookie = previous.join("; ");
+      }
       return config;
     }
 
@@ -134,8 +148,14 @@ serverClient.interceptors.response.use(
 
         // 원래 요청 재시도
         return serverClient(originalRequest);
-      } catch {
-        // 재발급 실패 → 로그인 페이지로
+      } catch (refreshError) {
+        if (originalRequest.url?.startsWith("/api/v1/admin/")) {
+          const status = isAxiosError(refreshError)
+            ? refreshError.response?.status
+            : undefined;
+          if (status === 401 || status === 403) redirect("/adminpage");
+          throw refreshError;
+        }
         redirect("/");
       }
     }

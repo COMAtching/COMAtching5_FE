@@ -3,6 +3,7 @@ import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
 import { postMatchingAction } from "@/lib/actions/matchingAction";
 import { MatchingRequest } from "@/lib/types/matching";
+import { confirmBrowserSession } from "@/lib/browser-session";
 
 /**
  * 매칭 실행 Mutation 훅
@@ -14,9 +15,8 @@ export const useMatching = () => {
   const { setResult, setLastPayload, setIsMatching } = useMatchingStore();
 
   return useMutation({
-    mutationFn: (payload: MatchingRequest) => {
-      console.log("🚀 [Matching Request] Sending payload:", payload);
-      return postMatchingAction(payload);
+    mutationFn: async (payload: MatchingRequest) => {
+      return postMatchingAction(payload, await confirmBrowserSession());
     },
     onMutate: () => {
       setIsMatching(true);

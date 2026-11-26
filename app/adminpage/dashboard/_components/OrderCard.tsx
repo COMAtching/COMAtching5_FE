@@ -12,42 +12,43 @@ import { Check, X, User, Ticket, Tag, Clock, Coins } from "lucide-react";
 
 interface OrderCardProps {
   order: AdminOrder;
+  onSelectDeposit?: () => void;
 }
 
 const STATUS_CONFIG = {
   PENDING: {
     badge: "대기 중",
-    badgeClass: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    badgeClass: "bg-amber-500/10 text-admin-warning border-amber-500/30",
     cardBorder: "border-amber-500/20",
     glow: "shadow-amber-500/5",
   },
   APPROVED: {
     badge: "승인 완료",
-    badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    badgeClass: "bg-emerald-500/10 text-admin-success border-emerald-500/30",
     cardBorder: "border-emerald-500/20",
     glow: "",
   },
   REJECTED: {
     badge: "거절됨",
-    badgeClass: "bg-red-500/10 text-red-400 border-red-500/30",
+    badgeClass: "bg-red-500/10 text-admin-danger border-red-500/30",
     cardBorder: "border-red-500/20",
     glow: "",
   },
   CANCELED: {
     badge: "취소됨",
-    badgeClass: "bg-gray-500/10 text-gray-400 border-gray-500/30",
-    cardBorder: "border-[#1e2030]",
+    badgeClass: "bg-gray-500/10 text-admin-muted border-gray-500/30",
+    cardBorder: "border-admin-edge",
     glow: "",
   },
   EXPIRED: {
     badge: "만료됨",
-    badgeClass: "bg-gray-500/10 text-gray-400 border-gray-500/30",
-    cardBorder: "border-[#1e2030]",
+    badgeClass: "bg-gray-500/10 text-admin-muted border-gray-500/30",
+    cardBorder: "border-admin-edge",
     glow: "",
   },
 } as const;
 
-export default function OrderCard({ order }: OrderCardProps) {
+export default function OrderCard({ order, onSelectDeposit }: OrderCardProps) {
   const approveMutation = useApproveOrder();
   const rejectMutation = useRejectOrder();
   const [confirmAction, setConfirmAction] = useState<
@@ -59,6 +60,7 @@ export default function OrderCard({ order }: OrderCardProps) {
   const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
 
   const handleApprove = () => {
+    if (onSelectDeposit) return onSelectDeposit();
     if (confirmAction === "approve") {
       approveMutation.mutate(order.requestId);
       setConfirmAction(null);
@@ -92,8 +94,8 @@ export default function OrderCard({ order }: OrderCardProps) {
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border bg-[#161827]/80 transition-all duration-300 ${config.cardBorder} ${config.glow} ${
-        !isPending ? "opacity-60" : "hover:bg-[#1a1d32]"
+      className={`bg-admin-panel/80 relative flex flex-col rounded-2xl border transition-all duration-300 ${config.cardBorder} ${config.glow} ${
+        !isPending ? "opacity-60" : "hover:bg-admin-hover"
       }`}
     >
       {/* 상단: 상태 배지 + 만료 시간 */}
@@ -121,24 +123,26 @@ export default function OrderCard({ order }: OrderCardProps) {
       <div className="flex flex-col gap-3 px-5 py-4">
         {/* 상품명 */}
         <div className="flex items-start gap-2.5">
-          <Tag size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+          <Tag size={15} className="text-admin-muted mt-0.5 shrink-0" />
           <div>
-            <p className="text-[11px] text-[#4a4e69]">상품</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-admin-muted text-[11px]">상품</p>
+            <p className="text-admin-ink text-sm font-semibold">
               {order.requestedItemName}
             </p>
-            <p className="text-xs text-[#aaaac8]">주문 #{order.requestId}</p>
+            <p className="text-admin-secondary text-xs">
+              주문 #{order.requestId}
+            </p>
           </div>
         </div>
 
         {/* 요청자 정보 */}
         <div className="flex items-start gap-2.5">
-          <User size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+          <User size={15} className="text-admin-muted mt-0.5 shrink-0" />
           <div>
-            <p className="text-[11px] text-[#4a4e69]">요청자</p>
-            <p className="text-sm font-medium text-white">
+            <p className="text-admin-muted text-[11px]">요청자</p>
+            <p className="text-admin-ink text-sm font-medium">
               {order.requesterRealName}
-              <span className="ml-1.5 text-xs text-[#6b7094]">
+              <span className="text-admin-muted ml-1.5 text-xs">
                 @{order.requesterUsername}
               </span>
             </p>
@@ -166,11 +170,11 @@ export default function OrderCard({ order }: OrderCardProps) {
                 <div className="flex items-start gap-2.5">
                   <Ticket
                     size={15}
-                    className="mt-0.5 shrink-0 text-[#6b7094]"
+                    className="text-admin-muted mt-0.5 shrink-0"
                   />
                   <div>
-                    <p className="text-[11px] text-[#4a4e69]">구매 수량</p>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-admin-muted text-[11px]">구매 수량</p>
+                    <p className="text-admin-ink text-sm font-semibold">
                       {isMatchingSingle
                         ? order.matchingTicketQty
                         : order.optionTicketQty}
@@ -184,10 +188,10 @@ export default function OrderCard({ order }: OrderCardProps) {
           })()}
 
           <div className="flex items-start gap-2.5">
-            <Coins size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+            <Coins size={15} className="text-admin-muted mt-0.5 shrink-0" />
             <div>
-              <p className="text-[11px] text-[#4a4e69]">금액</p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-admin-muted text-[11px]">금액</p>
+              <p className="text-admin-ink text-sm font-semibold">
                 {formatPrice(order.requestedPrice)}
               </p>
             </div>
@@ -195,7 +199,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         </div>
 
         {/* 요청 시간 */}
-        <div className="flex items-center gap-2.5 text-[11px] text-[#4a4e69]">
+        <div className="text-admin-muted flex items-center gap-2.5 text-[11px]">
           <Clock size={12} className="shrink-0" />
           <span>{formatDateTime(order.requestedAt)} 요청</span>
         </div>
@@ -203,14 +207,14 @@ export default function OrderCard({ order }: OrderCardProps) {
 
       {/* 액션 버튼 (PENDING에서만 표시) */}
       {isPending && (
-        <div className="flex gap-2 border-t border-[#1e2030] px-5 py-4">
+        <div className="border-admin-edge flex gap-2 border-t px-5 py-4">
           <button
             onClick={handleReject}
             disabled={isProcessing}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all duration-200 ${
               confirmAction === "reject"
                 ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                : "border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                : "text-admin-danger border border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             <X size={16} />
@@ -222,11 +226,15 @@ export default function OrderCard({ order }: OrderCardProps) {
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all duration-200 ${
               confirmAction === "approve"
                 ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                : "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                : "text-admin-success border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             <Check size={16} />
-            {confirmAction === "approve" ? "확인" : "승인"}
+            {onSelectDeposit
+              ? "입금 선택"
+              : confirmAction === "approve"
+                ? "확인"
+                : "승인"}
           </button>
         </div>
       )}
@@ -250,13 +258,15 @@ export function RefundOrderCard({
   const completed = refundStatus === "COMPLETED";
   const total = amount.toLocaleString("ko-KR") + "원";
   return (
-    <article className="space-y-3 rounded-2xl border border-[#2a2d42] bg-[#161827] p-5">
-      <p className="text-xs text-[#a4a8bc]">
+    <article className="border-admin-line bg-admin-panel space-y-3 rounded-2xl border p-5">
+      <p className="text-admin-secondary text-xs">
         주문 #{orderId} · {completed ? "환불 완료" : "환불 진행 중"}
       </p>
-      <h3 className="font-semibold text-white">{refund.requestedItemName}</h3>
+      <h3 className="text-admin-ink font-semibold">
+        {refund.requestedItemName}
+      </h3>
       <p className="text-lg font-bold">환불액 {total}</p>
-      <div className="space-y-1 text-sm text-[#b7bbcb]">
+      <div className="text-admin-secondary space-y-1 text-sm">
         <p>
           시작 · 관리자 #{refund.startedBy} ·{" "}
           <time dateTime={refund.startedAt}>
@@ -305,11 +315,11 @@ export function RefundOrderCard({
           </div>
         ) : (
           <>
-            <p className="text-sm text-[#b7bbcb]">
+            <p className="text-admin-secondary text-sm">
               시작 담당자와 은행 이체 내역을 대조한 뒤 완료해 주세요.
             </p>
             <button
-              className="rounded-lg border border-emerald-500/40 px-3 py-2 text-sm font-semibold text-emerald-300 disabled:opacity-50"
+              className="text-admin-success rounded-lg border border-emerald-500/40 px-3 py-2 text-sm font-semibold disabled:opacity-50"
               disabled={busy}
               onClick={() => setConfirming(true)}
             >

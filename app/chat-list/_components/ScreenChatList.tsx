@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
+import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
+import { useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useMyProfile } from "@/hooks/useProfile";
 import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
@@ -109,6 +111,7 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
+  const chat = useFeature("CHAT");
   const profile = useMyProfile({
     refetchOnMount: "always",
     refetchOnWindowFocus: "always",
@@ -185,11 +188,17 @@ export default function ScreenChatList() {
   return (
     <main className="flex min-h-screen flex-col items-center px-4 py-2 pb-30">
       <BackButton text="채팅하기" />
-      <span className="typo-14-500 mt-2 text-center leading-4.25 text-[#999999]">
-        매칭된 분들과 채팅을 해보세요!
-        <br />
-        가볍게 인사는 어떠신가요?
-      </span>
+      {chat?.open === false ? (
+        <div className="mt-3 w-full">
+          <ChatReadOnlyNotice message={chat.message} />
+        </div>
+      ) : (
+        <span className="typo-14-500 mt-2 text-center leading-4.25 text-[#999999]">
+          매칭된 분들과 채팅을 해보세요!
+          <br />
+          가볍게 인사는 어떠신가요?
+        </span>
+      )}
 
       {chatItems.length === 0 ? (
         <div className="flex w-full flex-1 flex-col items-center justify-center pt-20">

@@ -1,9 +1,33 @@
 import Link from "next/link";
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
+import { useFeature } from "@/stores/features";
 import { alertIfMatchingBlocked } from "@/lib/constants/date";
+
+const matchingCard =
+  "flex w-full flex-col items-center justify-center gap-1 rounded-3xl border backdrop-blur-[50px]";
 
 const MatchingButton = () => {
   const { data: participantsCount } = useParticipantsCount();
+  const matching = useFeature("MATCHING");
+  if (matching?.open === false) {
+    return (
+      <button
+        type="button"
+        onClick={() => alertIfMatchingBlocked()}
+        className={`${matchingCard} min-h-[13.11vh] border-gray-200 bg-white px-4 py-3 text-center`}
+      >
+        <strong className="typo-20-600 text-gray-600">AI 매칭 마감</strong>
+        {matching.message?.trim() && (
+          <span className="typo-14-500 max-w-full [overflow-wrap:anywhere] whitespace-pre-line text-gray-600">
+            {matching.message}
+          </span>
+        )}
+        <span className="typo-14-500 text-gray-600 underline underline-offset-4">
+          종료 안내 보기
+        </span>
+      </button>
+    );
+  }
 
   return (
     <Link
@@ -18,7 +42,7 @@ const MatchingButton = () => {
         background:
           "linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(90deg, #E83ABC 0%, #FF775E 100%) border-box",
       }}
-      className="flex h-[13.11vh] w-full flex-col items-center justify-center gap-1 rounded-3xl border border-transparent backdrop-blur-[50px]"
+      className={`${matchingCard} h-[13.11vh] border-transparent`}
     >
       <div className="flex items-center gap-2">
         <span className="typo-24-600 text-gray-900">AI 매칭하기</span>

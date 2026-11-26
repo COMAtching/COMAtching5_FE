@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { convertHeicToJpg } from "@/lib/utils/image";
+import { IMAGE_ACCEPT, IMAGE_MIB, prepareImage } from "@/lib/image-upload";
 import type { Gender } from "@/lib/types/profile";
 import DefaultProfileDrawer from "./DefaultProfileDrawer";
 import { getDefaultProfilesByGender } from "../../../lib/constants/defaultProfiles";
@@ -77,19 +77,16 @@ const ProfileImageSelection = ({
     if (!file) return;
 
     try {
-      const targetFile = await convertHeicToJpg(file);
+      const targetFile = await prepareImage(file, "profile");
 
-      if (targetFile.type.startsWith("image/")) {
-        onFileChange?.(targetFile);
-
-        // FileReader 대신 createObjectURL을 사용하여 빠르고 가볍게 미리보기 생성
-        const objectUrl = URL.createObjectURL(targetFile);
-        onCustomImageChange(objectUrl);
-      }
+      onFileChange?.(targetFile);
+      onCustomImageChange(URL.createObjectURL(targetFile));
     } catch (error) {
       console.error("Image processing failed:", error);
       alert(
-        "이미지 처리 중 오류가 발생했습니다. 다른 이미지 형식을 사용해 주세요.",
+        error instanceof Error
+          ? error.message
+          : "이미지를 처리하지 못했습니다.",
       );
     } finally {
       // 동일한 파일을 다시 선택해도 onChange가 트리거되도록 값 초기화
@@ -183,11 +180,11 @@ const ProfileImageSelection = ({
             htmlFor="profile-image-upload"
             className="typo-14-600 flex h-[33px] cursor-pointer items-center justify-center gap-2.5 rounded-[99px] bg-[#E5E5E5] px-4 py-2 leading-[17px] tracking-[-0.03em] text-[#4D4D4D]"
           >
-            {actionLabel}
+            {actionLabel} · 최대 {IMAGE_MIB.profile} MiB
             <input
               id="profile-image-upload"
               type="file"
-              accept="image/*"
+              accept={IMAGE_ACCEPT}
               onChange={handleImageUpload}
               className="hidden"
             />

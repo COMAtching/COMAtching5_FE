@@ -1,5 +1,6 @@
 "use server";
 
+import { unstable_rethrow } from "next/navigation";
 import { serverApi, isAxiosError } from "@/lib/server-api";
 import { type CreateProductBody } from "@/hooks/admin/useAdminProducts";
 
@@ -14,6 +15,7 @@ export async function createProductAction(body: CreateProductBody) {
     });
     return response.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (isAxiosError(error)) {
       throw error;
     }
@@ -31,6 +33,7 @@ export async function deleteProductAction(productId: number) {
     });
     return response.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (isAxiosError(error)) {
       throw error;
     }

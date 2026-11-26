@@ -8,8 +8,10 @@ import {
   ChevronLeft,
   Loader2,
   MoreVertical,
+  Paperclip,
   UserRound,
 } from "lucide-react";
+import { featureMessage, useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useMyProfile } from "@/hooks/useProfile";
@@ -19,6 +21,8 @@ import {
   type MatchingPartner,
 } from "@/hooks/useMatchingHistory";
 import { cn } from "@/lib/utils";
+import { IMAGE_ACCEPT, IMAGE_MIB, uploadChatImage } from "@/lib/image-upload";
+import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
 import PartnerProfileModal from "./PartnerProfileModal";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
@@ -32,6 +36,7 @@ type ChatMessage = {
   id: string;
   sender: "me" | "other";
   text: string;
+  image: boolean;
   time: string;
   readCount: number;
   createdAt: string;
@@ -56,6 +61,20 @@ const ChatDateDivider = ({ label }: { label: string }) => {
     </div>
   );
 };
+
+const MessageBody = ({ message }: { message: ChatMessage }) =>
+  message.image ? (
+    <Image
+      src={message.text}
+      alt="채팅 첨부 이미지"
+      width={240}
+      height={240}
+      unoptimized
+      className="h-auto max-h-64 max-w-full rounded-lg object-contain"
+    />
+  ) : (
+    message.text
+  );
 
 const IncomingMessage = ({
   message,
@@ -85,7 +104,7 @@ const IncomingMessage = ({
         <span className="typo-12-500 text-[#1A1A1A]">{nickname || "..."}</span>
         <div className="flex items-end gap-2">
           <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-            {message.text}
+            <MessageBody message={message} />
           </div>
           <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
             <span className="text-[#B3B3B3]">{message.time}</span>
@@ -107,13 +126,15 @@ const OutgoingMessage = ({ message }: { message: ChatMessage }) => {
         <span className="text-[#B3B3B3]">{message.time}</span>
       </div>
       <div className="max-w-[244px] rounded-[16px_16px_8px_16px] bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] p-3 text-sm leading-[140%] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-        {message.text}
+        <MessageBody message={message} />
       </div>
     </div>
   );
 };
 
 export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
+  const chat = useFeature("CHAT");
+  const readOnly = chat?.open === false;
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -254,21 +275,42 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, [isError, error, router]);
 
   // 2. 소켓 연결 및 실시간 메시지 수신
-  const pendingText = React.useRef<string | null>(null);
+  const pendingMessage = React.useRef<{
+    content: string;
+    type: "TALK" | "IMAGE";
+  } | null>(null);
+  const uploadAbort = React.useRef<AbortController | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  useEffect(
+    () => () => uploadAbort.current?.abort(),
+    [chatId, currentUserId, chat?.open],
+  );
   const [sendState, setSendState] = useState<
     "idle" | "sending" | "unconfirmed"
   >("idle");
-  const onOwnMessage = React.useCallback((content: string) => {
-    if (pendingText.current !== content) return;
-    pendingText.current = null;
-    setMessageText((draft) => (draft === content ? "" : draft));
-    setSendState("idle");
-  }, []);
+  const onOwnMessage = React.useCallback(
+    (content: string, type: "TALK" | "IMAGE") => {
+      const pending = pendingMessage.current;
+      if (!pending || pending.type !== type) return;
+      if (
+        type === "IMAGE"
+          ? !content.endsWith("/" + pending.content.split("/").pop())
+          : content !== pending.content
+      )
+        return;
+      pendingMessage.current = null;
+      if (type === "TALK")
+        setMessageText((draft) => (draft === content ? "" : draft));
+      setSendState("idle");
+    },
+    [],
+  );
   const {
     messages: socketMessages,
     sendMessage,
     isConnected,
-    accountMismatch,
+    endReason,
   } = useChatRoomSocket(
     chatId,
     historyData && !isError ? currentUserId : undefined,
@@ -316,6 +358,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       id: m.id,
       sender: m.senderId === currentUserId ? "me" : "other",
       text: m.content,
+      image: m.type === "IMAGE",
       time: formatMessageTime(m.createdAt),
       readCount: m.readCount,
       createdAt: m.createdAt,
@@ -364,13 +407,46 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   };
 
   const handleSendMessage = () => {
-    if (!messageText.trim() || !isConnected || sendState === "sending") return;
-    pendingText.current = messageText;
+    if (
+      !messageText.trim() ||
+      !isConnected ||
+      uploading ||
+      sendState === "sending"
+    )
+      return;
+    pendingMessage.current = { content: messageText, type: "TALK" };
     setSendState(sendMessage(messageText) ? "sending" : "unconfirmed");
   };
 
-  const isSendEnabled =
-    isConnected && sendState !== "sending" && messageText.trim().length > 0;
+  const canAttach =
+    isConnected && chat?.open === true && !uploading && sendState !== "sending";
+  const isSendEnabled = canAttach && messageText.trim().length > 0;
+
+  const attachImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !canAttach || uploadAbort.current) return;
+    const controller = new AbortController();
+    uploadAbort.current = controller;
+    setUploading(true);
+    setUploadError("");
+    try {
+      const key = await uploadChatImage(file, chatId, controller.signal);
+      if (controller.signal.aborted) return;
+      pendingMessage.current = { content: key, type: "IMAGE" };
+      setSendState(sendMessage(key, "IMAGE") ? "sending" : "unconfirmed");
+    } catch (error) {
+      if (!controller.signal.aborted)
+        setUploadError(
+          error instanceof Error
+            ? error.message
+            : "이미지를 첨부하지 못했습니다.",
+        );
+    } finally {
+      uploadAbort.current = null;
+      setUploading(false);
+    }
+  };
 
   if (isError && (error as AxiosError)?.response?.status === 404) return null;
 
@@ -428,14 +504,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className="scrollbar-hide relative z-0 mt-10 flex w-full flex-1 flex-col gap-4 overflow-y-auto px-4 pt-5 pb-[100px]"
+        className={cn(
+          "scrollbar-hide relative z-0 mt-10 flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto px-4 pt-5",
+          readOnly ? "pb-4" : "pb-[100px]",
+        )}
       >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="absolute top-1/2 left-1/2 flex h-[192.32px] w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-between gap-4 rounded-[24px] border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]">
+          <div
+            className={cn(
+              "absolute top-1/2 left-1/2 flex w-[285px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 rounded-[24px] border border-white/30 bg-white/50 px-6 py-8 shadow-[0px_4px_16px_rgba(0,0,0,0.05)] backdrop-blur-[15px]",
+              !readOnly && "h-[192.32px] justify-between",
+            )}
+          >
             <div className="flex h-[92.32px] w-[116px] flex-col items-center justify-center gap-3">
               <Image
                 src="/chat/heart.png"
@@ -445,18 +529,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 className="h-10 w-10"
               />
               <p className="typo-14-500 w-[116px] text-center leading-[140%] text-[#666666]">
-                대화를 시작해 보세요
+                {readOnly ? "아직 나눈 대화가 없어요" : "대화를 시작해 보세요"}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                setMessageText("안녕하세요! 코매칭에서 뽑고 연락드려요!")
-              }
-              className="typo-14-600 flex h-5 w-[237px] cursor-pointer items-center justify-center text-center leading-[140%] text-[#4D4D4D] transition-opacity hover:opacity-80"
-            >
-              “안녕하세요! 코매칭에서 뽑고 연락드려요!”
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() =>
+                  setMessageText("안녕하세요! 코매칭에서 뽑고 연락드려요!")
+                }
+                className="typo-14-600 flex h-5 w-[237px] cursor-pointer items-center justify-center text-center leading-[140%] text-[#4D4D4D] transition-opacity hover:opacity-80"
+              >
+                “안녕하세요! 코매칭에서 뽑고 연락드려요!”
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -503,61 +589,103 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         <div ref={messagesEndRef} />
       </section>
 
-      {/* 하단 입력창을 다시 fixed로 복구하여 레이아웃 계산 부하를 줄임 */}
-      <div
-        className="fixed right-0 bottom-5 left-0 z-20 pb-2"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        {(!isConnected || sendState !== "idle") && (
-          <p role="status" className="mb-1 text-center text-xs text-gray-600">
-            {accountMismatch
-              ? "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
-              : sendState === "unconfirmed"
-                ? "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
-                : !isConnected
-                  ? "채팅 서버에 연결 중이에요."
-                  : "전송 확인 중…"}
-          </p>
-        )}
-        <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="메세지를 입력하세요.."
-            value={messageText}
-            onChange={(event) => setMessageText(event.target.value)}
-            onKeyDown={(e) => {
-              if (
-                e.key === "Enter" &&
-                !e.nativeEvent.isComposing &&
-                isSendEnabled
-              ) {
-                handleSendMessage();
+      {readOnly ? (
+        <footer
+          className="max-h-[38dvh] w-full shrink-0 overflow-y-auto px-4 py-3"
+          style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+        >
+          <ChatReadOnlyNotice message={chat.message} />
+        </footer>
+      ) : (
+        <div
+          className="fixed right-0 bottom-5 left-0 z-20 pb-2"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
+          {uploadError && (
+            <p role="alert" className="mb-1 text-center text-xs text-red-600">
+              {uploadError}
+            </p>
+          )}
+          {uploading && (
+            <p role="status" className="mb-1 text-center text-xs text-gray-600">
+              이미지 업로드 중…
+            </p>
+          )}
+          {(!isConnected || sendState !== "idle") && (
+            <p role="status" className="mb-1 text-center text-xs text-gray-600">
+              {endReason === "changed"
+                ? "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
+                : endReason === "ended"
+                  ? "실시간 연결이 종료됐어요. 기존 대화 내역을 확인해 주세요."
+                  : sendState === "unconfirmed"
+                    ? "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
+                    : !isConnected
+                      ? "채팅 서버에 연결 중이에요."
+                      : "전송 확인 중…"}
+            </p>
+          )}
+          <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
+            <label
+              className={cn(
+                "mr-2 inline-flex items-center",
+                canAttach ? "cursor-pointer" : "opacity-40",
+              )}
+              title={`이미지 첨부 · 최대 ${IMAGE_MIB.chat} MiB`}
+            >
+              <Paperclip aria-hidden="true" size={18} />
+              <input
+                type="file"
+                className="sr-only"
+                accept={IMAGE_ACCEPT}
+                onChange={attachImage}
+                disabled={!canAttach}
+                aria-label={`채팅 이미지 첨부 · 최대 ${IMAGE_MIB.chat} MiB`}
+              />
+            </label>
+            <input
+              ref={inputRef}
+              type="text"
+              disabled={!chat?.open}
+              placeholder={
+                chat?.open
+                  ? "메시지를 입력하세요."
+                  : featureMessage("CHAT", chat)
               }
-            }}
-            className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
-          />
-          <button
-            type="button"
-            aria-label="메시지 보내기"
-            disabled={!isSendEnabled}
-            onPointerDown={(e) => {
-              // 버튼 클릭 시 input에서 포커스가 빠져나가 키보드가 닫히는 현상 방지
-              e.preventDefault();
-            }}
-            onClick={handleSendMessage}
-            className={cn(
-              "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-3xl border border-white/30 transition-colors",
-              isSendEnabled
-                ? "bg-button-primary text-button-primary-text-default"
-                : "bg-[#E5E5E5] text-[#CCCCCC]",
-            )}
-          >
-            <ArrowUp className="h-5 w-5" />
-          </button>
+              value={messageText}
+              onChange={(event) => setMessageText(event.target.value)}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "Enter" &&
+                  !e.nativeEvent.isComposing &&
+                  isSendEnabled
+                ) {
+                  handleSendMessage();
+                }
+              }}
+              className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
+            />
+            <button
+              type="button"
+              aria-label="메시지 보내기"
+              disabled={!isSendEnabled}
+              onPointerDown={(e) => {
+                // 버튼 클릭 시 input에서 포커스가 빠져나가 키보드가 닫히는 현상 방지
+                e.preventDefault();
+              }}
+              onClick={handleSendMessage}
+              className={cn(
+                "absolute top-1/2 right-1 flex h-10 w-12 shrink-0 -translate-y-1/2 items-center justify-center rounded-3xl border border-white/30 transition-colors",
+                isSendEnabled
+                  ? "bg-button-primary text-button-primary-text-default"
+                  : "bg-[#E5E5E5] text-[#CCCCCC]",
+              )}
+            >
+              <ArrowUp className="h-5 w-5" />
+            </button>
+          </div>
+          <span className="sr-only">chatId: {chatId}</span>
         </div>
-        <span className="sr-only">chatId: {chatId}</span>
-      </div>
+      )}
       {opponentProfile && (
         <PartnerProfileModal
           isOpen={isProfileModalOpen}

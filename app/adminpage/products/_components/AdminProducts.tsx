@@ -57,7 +57,7 @@ export default function AdminProducts() {
         <div className="flex items-center gap-3">
           <Link
             href="/adminpage/main"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] transition-colors duration-200 hover:border-[#8b5cf6]/40 hover:text-white"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200 hover:border-[#8b5cf6]/40"
           >
             <ArrowLeft size={18} />
           </Link>
@@ -66,10 +66,10 @@ export default function AdminProducts() {
               <Package size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white sm:text-xl">
+              <h1 className="text-admin-ink text-lg font-bold sm:text-xl">
                 상품 관리
               </h1>
-              <p className="text-xs text-[#6b7094]">
+              <p className="text-admin-muted text-xs">
                 전체 {products.length}개 상품
               </p>
             </div>
@@ -80,7 +80,7 @@ export default function AdminProducts() {
           onClick={() => setShowCreateForm(!showCreateForm)}
           className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
             showCreateForm
-              ? "border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] hover:text-white"
+              ? "border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink border"
               : "bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white shadow-lg shadow-[#6366f1]/20 hover:shadow-xl"
           }`}
         >
@@ -125,7 +125,7 @@ export default function AdminProducts() {
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
               filter === key
                 ? "bg-[#6366f1] text-white"
-                : "bg-[#161827] text-[#6b7094] hover:text-white"
+                : "bg-admin-panel text-admin-muted hover:text-admin-ink"
             }`}
           >
             {label}
@@ -136,20 +136,20 @@ export default function AdminProducts() {
       {/* 상품 목록 */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="animate-spin text-[#6b7094]" />
-          <p className="mt-4 text-sm text-[#6b7094]">
+          <Loader2 size={32} className="text-admin-muted animate-spin" />
+          <p className="text-admin-muted mt-4 text-sm">
             상품 목록 불러오는 중...
           </p>
         </div>
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#161827]">
-            <Inbox size={28} className="text-[#4a4e69]" />
+          <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+            <Inbox size={28} className="text-admin-muted" />
           </div>
-          <p className="text-base font-medium text-[#6b7094]">
+          <p className="text-admin-muted text-base font-medium">
             등록된 상품이 없습니다
           </p>
-          <p className="mt-1 text-sm text-[#4a4e69]">
+          <p className="text-admin-muted mt-1 text-sm">
             상품 등록 버튼을 눌러 새 상품을 추가하세요
           </p>
         </div>
@@ -158,48 +158,50 @@ export default function AdminProducts() {
           {products.map((product) => (
             <div
               key={product.id}
-              className={`flex flex-col rounded-2xl border bg-[#161827]/80 transition-all duration-200 sm:flex-row sm:items-center sm:justify-between ${
+              className={`bg-admin-panel/80 flex flex-col rounded-2xl border transition-all duration-200 sm:flex-row sm:items-center sm:justify-between ${
                 product.isActive
-                  ? "border-[#1e2030] hover:border-[#2a2d42]"
-                  : "border-[#1e2030] opacity-50"
+                  ? "border-admin-edge hover:border-admin-line"
+                  : "border-admin-edge opacity-50"
               }`}
             >
               {/* 상품 정보 */}
               <div className="flex flex-1 flex-col gap-2 p-5">
                 <div className="flex items-center gap-2.5">
-                  <h3 className="text-sm font-semibold text-white">
+                  <h3 className="text-admin-ink text-sm font-semibold">
                     {product.name}
                   </h3>
 
                   {/* 상태 배지 */}
                   <div className="flex items-center gap-1.5">
                     {product.isActive ? (
-                      <span className="typo-10-700 flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-400">
+                      <span className="typo-10-700 text-admin-success flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5">
                         <ToggleRight size={10} />
                         판매 중
                       </span>
                     ) : (
-                      <span className="typo-10-700 flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-red-400">
+                      <span className="typo-10-700 text-admin-danger flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5">
                         <ToggleLeft size={10} />
                         판매 중지
                       </span>
                     )}
                     {product.isBundle && (
-                      <span className="typo-10-700 rounded-full bg-[#6366f1]/10 px-2 py-0.5 text-[#818cf8]">
+                      <span className="typo-10-700 text-admin-violet rounded-full bg-[#6366f1]/10 px-2 py-0.5">
                         번들
                       </span>
                     )}
                   </div>
                 </div>
 
-                <p className="text-xs text-[#6b7094]">{product.description}</p>
+                <p className="text-admin-muted text-xs">
+                  {product.description}
+                </p>
 
                 {/* 구성품 */}
                 <div className="flex flex-wrap gap-1.5">
                   {product.rewards.map((r) => (
                     <span
                       key={r.itemType}
-                      className="rounded-md bg-[#1e2030] px-2 py-0.5 text-[11px] font-medium text-[#a0a3bd]"
+                      className="bg-admin-subtle text-admin-secondary rounded-md px-2 py-0.5 text-[11px] font-medium"
                     >
                       {r.itemName} ×{r.quantity}
                     </span>
@@ -207,7 +209,7 @@ export default function AdminProducts() {
                   {product.bonusRewards.map((r) => (
                     <span
                       key={`bonus-${r.itemType}`}
-                      className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-400"
+                      className="text-admin-warning rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium"
                     >
                       +{r.itemName} ×{r.quantity} (보너스)
                     </span>
@@ -216,13 +218,13 @@ export default function AdminProducts() {
               </div>
 
               {/* 가격 + 액션 */}
-              <div className="flex items-center gap-4 border-t border-[#1e2030] px-5 py-3 sm:border-t-0 sm:border-l sm:py-5">
+              <div className="border-admin-edge flex items-center gap-4 border-t px-5 py-3 sm:border-t-0 sm:border-l sm:py-5">
                 <div className="text-right">
-                  <p className="text-xs text-[#4a4e69]">가격</p>
-                  <p className="text-sm font-bold text-white">
+                  <p className="text-admin-muted text-xs">가격</p>
+                  <p className="text-admin-ink text-sm font-bold">
                     {formatPrice(product.price)}
                   </p>
-                  <p className="typo-10-500 text-[#4a4e69]">
+                  <p className="typo-10-500 text-admin-muted">
                     순서: {product.displayOrder}
                   </p>
                 </div>
@@ -234,7 +236,7 @@ export default function AdminProducts() {
                     className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                       deleteConfirmId === product.id
                         ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                        : "border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                        : "text-admin-danger border border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
                     } disabled:cursor-not-allowed disabled:opacity-50`}
                   >
                     <Trash2 size={13} />

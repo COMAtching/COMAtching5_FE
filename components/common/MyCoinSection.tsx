@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 import ChargeDrawer from "./ChargeDrawer";
+import { useFeature } from "@/stores/features";
 
 interface MyCoinSectionProps {
   className?: string;
@@ -10,6 +11,8 @@ interface MyCoinSectionProps {
 
 const MyCoinSection = ({ className }: MyCoinSectionProps) => {
   const { data, isLoading, isError } = useItems();
+  const shop = useFeature("SHOP_PAYMENT");
+  const closed = shop?.open === false;
 
   if (isLoading) {
     return (
@@ -71,8 +74,16 @@ const MyCoinSection = ({ className }: MyCoinSectionProps) => {
       </div>
       <ChargeDrawer
         trigger={
-          <button className="bg-milky-pink typo-11-700 h-6.5 w-14.5 rounded-full text-white">
-            충전하기
+          <button
+            aria-label={closed ? "종료된 상점 안내 열기" : "충전하기"}
+            className={cn(
+              "typo-11-700 h-6.5 rounded-full px-3",
+              closed
+                ? "bg-[#f1e7ea] text-[#744556]"
+                : "bg-milky-pink text-white",
+            )}
+          >
+            {closed ? "상점 종료" : "충전하기"}
           </button>
         }
       />

@@ -8,7 +8,7 @@ import ResultFooter from "./ResultFooter";
 import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
 import { m, LazyMotion, AnimatePresence } from "motion/react";
-import { IS_MATCHING_BLOCKED } from "@/lib/constants/date";
+import { useFeature } from "@/stores/features";
 
 // 애니메이션 엔진(domAnimation)을 비동기적으로 동적 임포트 (초기 번들 사이즈 최적화)
 const loadFeatures = () =>
@@ -20,6 +20,7 @@ const ScreenMatchingResult = () => {
   const isMatching = useMatchingStore((s) => s.isMatching);
   const lastPayload = useMatchingStore((s) => s.lastPayload);
   const router = useRouter();
+  const matchingClosed = !useFeature("MATCHING")?.open;
 
   // DEBUG: 매칭 결과 데이터 로그 출력
   useEffect(() => {
@@ -40,7 +41,7 @@ const ScreenMatchingResult = () => {
 
   useEffect(() => {
     if (!result && !isMatching) {
-      router.replace(IS_MATCHING_BLOCKED ? "/main" : "/matching");
+      router.replace(matchingClosed ? "/main" : "/matching");
       return;
     }
 
@@ -51,7 +52,7 @@ const ScreenMatchingResult = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [result, router, isMatching]);
+  }, [result, router, isMatching, matchingClosed]);
 
   if (!result) return null;
 
@@ -59,7 +60,7 @@ const ScreenMatchingResult = () => {
     <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-10">
       <BackButton
         onClick={() => {
-          if (IS_MATCHING_BLOCKED) {
+          if (matchingClosed) {
             router.push("/main");
           } else {
             router.push("/matching");

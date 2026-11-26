@@ -9,13 +9,12 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
 import ShopContent from "@/components/common/charge/ShopContent";
 import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryContent";
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
 import ChargeTabs from "@/components/common/charge/ChargeTabs";
 import { TABS } from "@/lib/constants/charge";
-import { alertIfChargeBlocked } from "@/lib/constants/date";
+import { useFeature, featureMessage } from "@/stores/features";
 
 /* ── Context ── */
 interface ChargeDrawerContextType {
@@ -37,12 +36,11 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
 
+  const shop = useFeature("SHOP_PAYMENT");
   const ActiveContent = TAB_CONTENT[activeTab];
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen && alertIfChargeBlocked()) {
-      return;
-    }
+    if (newOpen && shop && !shop.open) setActiveTab(0);
     setOpen(newOpen);
   };
 
@@ -77,7 +75,31 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
 
             {/* ── Scrollable Content ── */}
             <div className="scrollbar-hide relative z-0 flex-1 overflow-y-auto px-4 pt-2 pb-8">
-              <ActiveContent />
+              {activeTab === 0 && shop && !shop.open ? (
+                <section className="flex min-h-[200px] flex-col items-center justify-center gap-2 px-4 py-6 text-center">
+                  <div role="status">
+                    <h3 className="typo-16-600 text-[#373737]">
+                      상점 운영이 종료됐어요
+                    </h3>
+                    {shop.message?.trim() && (
+                      <p className="typo-14-500 mt-2 [overflow-wrap:anywhere] whitespace-pre-line text-gray-600">
+                        {shop.message}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="typo-14-500 px-2 py-2 text-gray-600 underline underline-offset-4"
+                    onClick={() => setActiveTab(1)}
+                  >
+                    충전내역 보기
+                  </button>
+                </section>
+              ) : activeTab === 0 && !shop ? (
+                <p role="status">{featureMessage("SHOP_PAYMENT")}</p>
+              ) : (
+                <ActiveContent />
+              )}
             </div>
           </ChargeDrawerContext.Provider>
         </div>
