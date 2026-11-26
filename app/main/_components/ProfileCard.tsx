@@ -1,7 +1,9 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
 import Image from "next/image";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import { Send, Star } from "lucide-react";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -48,11 +50,10 @@ const ProfileHeader = ({
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
     <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
-        <Image
-          src={profile.profileImageUrl || "/default-profile.png"}
+        <ProfileThumbnail
+          url={profile.profileImageUrl}
+          gender={profile.gender}
           alt={`${profile.nickname || "익명"}님의 프로필 사진`}
-          fill
-          className="object-cover"
         />
       </div>
     </div>
@@ -276,7 +277,7 @@ const ProfileCard = ({
     if (profile.chatRoomId) {
       router.push(`/chat/${profile.chatRoomId}`);
     } else {
-      alert("채팅방 정보를 찾을 수 없습니다.");
+      showAppAlert("채팅방 정보를 찾을 수 없습니다.");
     }
   };
 

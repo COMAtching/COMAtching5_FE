@@ -1,3 +1,20 @@
+import wolfFemale from "@/public/animal/Wolf_female 1.png";
+import wolfMale from "@/public/animal/Wolf_male 1.png";
+import bearFemale from "@/public/animal/bear_female 1.png";
+import bearMale from "@/public/animal/bear_male 1.png";
+import catFemale from "@/public/animal/cat_female 1.png";
+import catMale from "@/public/animal/cat_male 1.png";
+import dinosaur from "@/public/animal/dinosaur 1.png";
+import dogFemale from "@/public/animal/dog_female 1.png";
+import dogMale from "@/public/animal/dog_male 1.png";
+import foxFemale from "@/public/animal/fox_female 1.png";
+import foxMale from "@/public/animal/fox_male 1.png";
+import horseMale from "@/public/animal/horse_male.png";
+import otterFemale from "@/public/animal/otter_female 1.png";
+import otterMale from "@/public/animal/otter_male 1.png";
+import rabbitFemale from "@/public/animal/rabbit_female 1.png";
+import rabbitMale from "@/public/animal/rabbit_male 1.png";
+import snakeFemale from "@/public/animal/snake_female.png";
 import type { Gender } from "@/lib/types/profile";
 
 export interface DefaultProfileAsset {
@@ -22,61 +39,61 @@ export const DEFAULT_PROFILE_ASSETS: DefaultProfileAsset[] = [
   {
     id: "dog",
     name: "강아지",
-    maleImage: "/animal/dog_male%201.png",
-    femaleImage: "/animal/dog_female%201.png",
+    maleImage: dogMale.src,
+    femaleImage: dogFemale.src,
   },
   {
     id: "cat",
     name: "고양이",
-    maleImage: "/animal/cat_male%201.png",
-    femaleImage: "/animal/cat_female%201.png",
+    maleImage: catMale.src,
+    femaleImage: catFemale.src,
   },
   {
     id: "bear",
     name: "곰",
-    maleImage: "/animal/bear_male%201.png",
-    femaleImage: "/animal/bear_female%201.png",
+    maleImage: bearMale.src,
+    femaleImage: bearFemale.src,
   },
   {
     id: "fox",
     name: "여우",
-    maleImage: "/animal/fox_male%201.png",
-    femaleImage: "/animal/fox_female%201.png",
+    maleImage: foxMale.src,
+    femaleImage: foxFemale.src,
   },
   {
     id: "rabbit",
     name: "토끼",
-    maleImage: "/animal/rabbit_male%201.png",
-    femaleImage: "/animal/rabbit_female%201.png",
+    maleImage: rabbitMale.src,
+    femaleImage: rabbitFemale.src,
   },
   {
     id: "otter",
     name: "수달",
-    maleImage: "/animal/otter_male%201.png",
-    femaleImage: "/animal/otter_female%201.png",
+    maleImage: otterMale.src,
+    femaleImage: otterFemale.src,
   },
   {
     id: "wolf",
     name: "늑대",
-    maleImage: "/animal/Wolf_male%201.png",
-    femaleImage: "/animal/Wolf_female%201.png",
+    maleImage: wolfMale.src,
+    femaleImage: wolfFemale.src,
   },
   {
     id: "horse",
     name: "말",
-    maleImage: "/animal/horse_male.png",
+    maleImage: horseMale.src,
   },
   {
     id: "snake",
     name: "뱀",
-    femaleImage: "/animal/snake_female.png",
+    femaleImage: snakeFemale.src,
   },
   {
     id: "dinosaur",
     name: "공룡",
-    maleImage: "/animal/dinosaur%201.png",
-    femaleImage: "/animal/dinosaur%201.png",
-    fallbackImage: "/animal/dinosaur%201.png",
+    maleImage: dinosaur.src,
+    femaleImage: dinosaur.src,
+    fallbackImage: dinosaur.src,
   },
 ];
 

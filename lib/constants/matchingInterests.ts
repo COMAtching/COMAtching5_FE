@@ -1,3 +1,9 @@
+import games from "@/public/interest/게임.png";
+import growth from "@/public/interest/자기계발.png";
+import travel from "@/public/interest/여행.png";
+import music from "@/public/interest/예술.png";
+import culture from "@/public/interest/문화.png";
+import sports from "@/public/interest/스포츠.png";
 export const MATCHING_INTEREST_CATEGORIES = [
   "스포츠",
   "문화",
@@ -16,10 +22,10 @@ export interface MatchingInterestItem {
 }
 
 export const MATCHING_INTEREST_ITEMS: MatchingInterestItem[] = [
-  { category: "스포츠", imageSrc: "/interest/스포츠.png" },
-  { category: "문화", imageSrc: "/interest/문화.png" },
-  { category: "음악", imageSrc: "/interest/예술.png" },
-  { category: "여행", imageSrc: "/interest/여행.png" },
-  { category: "자기계발", imageSrc: "/interest/자기계발.png" },
-  { category: "게임", imageSrc: "/interest/게임.png" },
+  { category: "스포츠", imageSrc: sports.src },
+  { category: "문화", imageSrc: culture.src },
+  { category: "음악", imageSrc: music.src },
+  { category: "여행", imageSrc: travel.src },
+  { category: "자기계발", imageSrc: growth.src },
+  { category: "게임", imageSrc: games.src },
 ];

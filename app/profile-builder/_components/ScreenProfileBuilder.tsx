@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -149,7 +150,7 @@ export const ScreenProfileBuilder = () => {
   const handleComplete = () => {
     // 나이(출생연도) 검증 (2000년생~2007년생)
     if (!selectedBirthYear) {
-      alert("출생연도를 선택해 주세요.");
+      showAppAlert("출생연도를 선택해 주세요.");
       return;
     }
     const birthYearNum = parseInt(selectedBirthYear, 10);
@@ -158,7 +159,7 @@ export const ScreenProfileBuilder = () => {
       birthYearNum < 2000 ||
       birthYearNum > 2007
     ) {
-      alert("2000년생부터 2007년생까지만 가입 가능합니다.");
+      showAppAlert("2000년생부터 2007년생까지만 가입 가능합니다.");
       return;
     }
 

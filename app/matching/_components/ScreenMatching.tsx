@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import MatchingSearchLoader from "@/components/ui/MatchingSearchLoader";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -82,8 +83,9 @@ const ScreenMatching = () => {
   // 테스트 모드(IS_TESTING) 차단 검사
   React.useEffect(() => {
     if (matching && !matching.open) {
-      alert(featureMessage("MATCHING", matching));
-      router.replace("/main");
+      showAppAlert(featureMessage("MATCHING", matching), () =>
+        router.replace("/main"),
+      );
     }
   }, [router, matching]);
 
@@ -177,7 +179,7 @@ const ScreenMatching = () => {
     if (alertIfMatchingBlocked()) return;
 
     if (!canSubmit) {
-      alert("모든 조건을 선택해 주세요!");
+      showAppAlert("모든 조건을 선택해 주세요!");
       return;
     }
 

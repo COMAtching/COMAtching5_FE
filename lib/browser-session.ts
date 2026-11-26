@@ -1,3 +1,4 @@
+import { showAppAlert } from "./app-alert.js";
 export const BROWSER_API_URL =
   process.env.NODE_ENV === "development"
     ? ""
@@ -36,8 +37,9 @@ export function handleBrowserSessionEnd(error: unknown) {
   } else if (isAdminPage(path)) {
     window.location.replace("/adminpage");
   } else {
-    window.alert(error.message + " 다시 로그인해주세요.");
-    window.location.replace("/");
+    showAppAlert(error.message + " 다시 로그인해주세요.", () =>
+      window.location.replace("/"),
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -93,11 +94,13 @@ const ScreenQAPage = () => {
                   try {
                     await confirmBrowserSession(owner);
                     await updateProfile({ isMatchable: false });
-                    alert(
+                    showAppAlert(
                       "매칭 비활성화 설정이 완료되었습니다. 이제 다른 사람에게 더 이상 뽑히지 않습니다.",
                     );
                   } catch {
-                    alert("설정 중 오류가 발생했습니다. 다시 시도해 주세요.");
+                    showAppAlert(
+                      "설정 중 오류가 발생했습니다. 다시 시도해 주세요.",
+                    );
                   }
                 });
               } else {
@@ -107,10 +110,11 @@ const ScreenQAPage = () => {
                     await api.delete("/api/auth/withdraw", {
                       headers: { [EXPECTED_SESSION]: owner },
                     });
-                    alert("회원 탈퇴가 완료되었습니다.");
-                    router.replace("/");
+                    showAppAlert("회원 탈퇴가 완료되었습니다.", () =>
+                      router.replace("/"),
+                    );
                   } catch {
-                    alert(
+                    showAppAlert(
                       "탈퇴 요청을 완료하지 못했습니다. 로그인 계정을 다시 확인해주세요.",
                     );
                   }

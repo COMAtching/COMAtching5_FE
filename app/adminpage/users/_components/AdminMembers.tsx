@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -89,11 +90,11 @@ export default function AdminMembers() {
   const handleSave = async () => {
     if (!editingMember) return;
     if (matchingAction === "NONE" && optionAction === "NONE") {
-      alert("조정할 아이템 수량을 최소 하나 이상 설정해주세요.");
+      showAppAlert("조정할 아이템 수량을 최소 하나 이상 설정해주세요.");
       return;
     }
     if (!adjustReason.trim()) {
-      alert("조정 사유를 입력해주세요.");
+      showAppAlert("조정 사유를 입력해주세요.");
       return;
     }
 
@@ -102,7 +103,7 @@ export default function AdminMembers() {
       (matchingAction !== "NONE" && (Number(matchingQuantity) || 0) > 10) ||
       (optionAction !== "NONE" && (Number(optionQuantity) || 0) > 10)
     ) {
-      alert("각 매칭권과 옵션권은 10장씩만 조정할 수 있습니다.");
+      showAppAlert("각 매칭권과 옵션권은 10장씩만 조정할 수 있습니다.");
       return;
     }
 
@@ -139,7 +140,7 @@ export default function AdminMembers() {
 
     try {
       await Promise.all(promises);
-      alert(
+      showAppAlert(
         `${editingMember.nickname}님의 아이템이 정상적으로 조정되었습니다.`,
       );
       closeEditModal();
@@ -161,7 +162,7 @@ export default function AdminMembers() {
         bodyMsg = errorMessage;
       }
 
-      alert("조정 실패: " + bodyMsg);
+      showAppAlert("조정 실패: " + bodyMsg);
     } finally {
       setIsSubmitting(false);
     }

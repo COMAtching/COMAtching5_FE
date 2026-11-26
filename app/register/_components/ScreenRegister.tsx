@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 import { verificationMailError } from "@/hooks/useVerificationMailTimer";
 import { BackButton } from "@/components/ui/BackButton";
 import { useSendEmail } from "@/hooks/useSendEmail";
@@ -34,7 +35,7 @@ export const ScreenRegister = () => {
         setVerificationCode("");
         setStep(2);
       },
-      onError: (error) => alert(verificationMailError(error)),
+      onError: (error) => showAppAlert(verificationMailError(error)),
     });
   };
 
@@ -56,10 +57,9 @@ export const ScreenRegister = () => {
       {
         onSuccess: (data) => {
           if (data.status === 200) {
-            alert("가입이 완료되었습니다.");
-            router.push("/login");
+            showAppAlert("가입이 완료되었습니다.", () => router.push("/login"));
           } else {
-            alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+            showAppAlert("회원가입에 실패했습니다. 다시 시도해주세요.");
           }
         },
         onError: (error) => {
@@ -76,16 +76,19 @@ export const ScreenRegister = () => {
             setVerificationCode("");
             setPassword("");
             setStep(1);
-            alert("가입을 완료하지 못했습니다. 이메일을 다시 인증해주세요.");
+            showAppAlert(
+              "가입을 완료하지 못했습니다. 이메일을 다시 인증해주세요.",
+            );
             return;
           }
-          alert(message);
-          if (
-            axios.isAxiosError(error) &&
-            error.response?.data?.code === "MEM-002"
-          ) {
-            router.replace("/login");
-          }
+          showAppAlert(message, () => {
+            if (
+              axios.isAxiosError(error) &&
+              error.response?.data?.code === "MEM-002"
+            ) {
+              router.replace("/login");
+            }
+          });
         },
       },
     );

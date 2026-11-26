@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -95,13 +96,14 @@ function NoticeForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim()) return alert("제목을 입력해 주세요.");
-    if (title.length > 200) return alert("제목은 200자 이내로 입력해 주세요.");
-    if (!content.trim()) return alert("내용을 입력해 주세요.");
-    if (!startTime) return alert("시작 시간을 선택해 주세요.");
-    if (!endTime) return alert("종료 시간을 선택해 주세요.");
+    if (!title.trim()) return showAppAlert("제목을 입력해 주세요.");
+    if (title.length > 200)
+      return showAppAlert("제목은 200자 이내로 입력해 주세요.");
+    if (!content.trim()) return showAppAlert("내용을 입력해 주세요.");
+    if (!startTime) return showAppAlert("시작 시간을 선택해 주세요.");
+    if (!endTime) return showAppAlert("종료 시간을 선택해 주세요.");
     if (new Date(startTime) >= new Date(endTime))
-      return alert("시작 시간은 종료 시간보다 이전이어야 합니다.");
+      return showAppAlert("시작 시간은 종료 시간보다 이전이어야 합니다.");
 
     const body: CreateNoticeBody = {
       title: title.trim(),
@@ -119,7 +121,7 @@ function NoticeForm({
             onCancelEdit?.();
           },
           onError: (error) => {
-            alert(
+            showAppAlert(
               error.response?.data?.message || "공지사항 수정에 실패했습니다.",
             );
           },
@@ -135,7 +137,7 @@ function NoticeForm({
           onSuccess();
         },
         onError: (error) => {
-          alert(
+          showAppAlert(
             error.response?.data?.message || "공지사항 등록에 실패했습니다.",
           );
         },

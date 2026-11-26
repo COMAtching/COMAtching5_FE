@@ -1,3 +1,4 @@
+import { showAppAlert } from "@/lib/app-alert";
 import { create } from "zustand";
 
 export const FEATURE_NAMES = {
@@ -53,6 +54,6 @@ export function featureMessage(feature: Feature, current?: FeatureState) {
 export function alertIfClosed(feature: Feature) {
   const value = useFeatureStates.getState().states[feature];
   if (value?.open) return false;
-  window.alert(featureMessage(feature, value));
+  showAppAlert(featureMessage(feature, value));
   return true;
 }

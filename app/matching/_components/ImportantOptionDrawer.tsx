@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 import { ArrowUpToLine } from "lucide-react";
 import React from "react";
 import { createPortal } from "react-dom";
@@ -170,7 +171,7 @@ export default function ImportantOptionDrawer({
   const handlePointerDown = (e: React.PointerEvent, value: ImportantOption) => {
     const selection = selections[value];
     if (!selection || selection === "" || selection === "선택 전") {
-      alert(
+      showAppAlert(
         `${OPTIONS.find((o) => o.value === value)?.label} 옵션을 먼저 선택해 주세요!`,
       );
       return;

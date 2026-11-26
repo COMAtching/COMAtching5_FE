@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import React, { useState, useTransition } from "react";
@@ -159,12 +160,12 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
           clearProfile();
           window.location.replace("/main");
         } else {
-          alert(result.message);
+          showAppAlert(result.message);
         }
       });
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert("이미지 업로드에 실패했습니다.");
+      showAppAlert("이미지 업로드에 실패했습니다.");
     }
   };
 
@@ -176,7 +177,7 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
           const nickname = (profile.nickname || "").trim();
 
           if (!nickname) {
-            alert("닉네임을 입력해 주세요.");
+            showAppAlert("닉네임을 입력해 주세요.");
             return;
           }
 
@@ -190,7 +191,9 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
               if (isAvailable) {
                 setIsOpen(true);
               } else {
-                alert("중복된 닉네임입니다. 다른 닉네임을 입력해 주세요.");
+                showAppAlert(
+                  "중복된 닉네임입니다. 다른 닉네임을 입력해 주세요.",
+                );
               }
             }
           } catch (error: unknown) {
@@ -199,14 +202,14 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
 
               // 백엔드에서 400 등 에러 코드를 보낼 때 (MEM-009 등)
               if (res?.code === "MEM-009") {
-                alert("공백은 닉네임으로 사용할 수 없습니다.");
+                showAppAlert("공백은 닉네임으로 사용할 수 없습니다.");
                 return;
               }
             }
 
             // 그 외 진짜 예상치 못한 에러 (네트워크, 500 등)
             console.error("Failed to check nickname availability:", error);
-            alert(
+            showAppAlert(
               "닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
             );
           }

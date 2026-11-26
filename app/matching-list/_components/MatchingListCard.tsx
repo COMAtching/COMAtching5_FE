@@ -1,18 +1,17 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import {
   MatchingHistoryItem,
   MatchingPartner,
 } from "@/hooks/useMatchingHistory";
 import Image from "next/image";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAge } from "@/lib/utils/date";
-import {
-  getContactFrequencyLabel,
-  getProfileImageUrl,
-} from "@/lib/utils/profile";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import {
   findWithEmoji,
   ALL_HOBBIES,
@@ -44,11 +43,10 @@ const CardHeader = ({
     {/* 프로필 이미지 (48x48 container, 44x44 image) */}
     <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
       <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
-        <Image
-          src={getProfileImageUrl(partner.profileImageUrl, partner.gender)}
+        <ProfileThumbnail
+          url={partner.profileImageUrl}
+          gender={partner.gender}
           alt={`${partner.nickname || "익명"}님의 프로필 사진`}
-          fill
-          className="object-cover"
         />
       </div>
     </div>
@@ -259,7 +257,7 @@ const MatchingListCard = ({
     if (item.chatRoomId) {
       router.push(`/chat/${item.chatRoomId}`);
     } else {
-      alert("채팅방 정보를 찾을 수 없습니다.");
+      showAppAlert("채팅방 정보를 찾을 수 없습니다.");
     }
   };
 

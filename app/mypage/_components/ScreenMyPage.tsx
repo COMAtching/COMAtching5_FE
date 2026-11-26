@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import PushPreference from "@/components/common/PushPreference";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -396,19 +397,19 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
   const handleSubmit = async () => {
     const trimmedNickname = nickname.trim();
     if (!trimmedNickname) {
-      alert("닉네임을 입력해 주세요.");
+      showAppAlert("닉네임을 입력해 주세요.");
       return;
     }
 
     const trimmedIntro = intro.trim();
     if (!trimmedIntro) {
-      alert("자기소개는 공백으로 입력할 수 없어요.");
+      showAppAlert("자기소개는 공백으로 입력할 수 없어요.");
       return;
     }
 
     // 나이(출생연도) 검증 (2000년생~2007년생)
     if (!editableBirthYear) {
-      alert("출생연도를 입력해 주세요.");
+      showAppAlert("출생연도를 입력해 주세요.");
       return;
     }
     const birthYearNum = parseInt(editableBirthYear, 10);
@@ -417,7 +418,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
       birthYearNum < 2000 ||
       birthYearNum > 2007
     ) {
-      alert("2000년생부터 2007년생까지만 가입 가능합니다.");
+      showAppAlert("2000년생부터 2007년생까지만 가입 가능합니다.");
       return;
     }
 
@@ -431,7 +432,9 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
               ? res.data?.available || res.data?.isAvailable
               : res.data;
           if (!isAvailable) {
-            alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 사용해주세요.");
+            showAppAlert(
+              "이미 사용 중인 닉네임입니다. 다른 닉네임을 사용해주세요.",
+            );
             return;
           }
         }
@@ -439,11 +442,11 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         if (axios.isAxiosError(error)) {
           const res = error.response?.data as NicknameAvailabilityResponse;
           if (res?.code === "MEM-009") {
-            alert("공백은 닉네임으로 사용할 수 없습니다.");
+            showAppAlert("공백은 닉네임으로 사용할 수 없습니다.");
             return;
           }
         }
-        alert("닉네임 중복 확인 중 오류가 발생했습니다.");
+        showAppAlert("닉네임 중복 확인 중 오류가 발생했습니다.");
         return;
       }
     }
@@ -546,15 +549,15 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
 
       updateMyProfileMutate(payload, {
         onSuccess: () => {
-          alert("프로필이 성공적으로 수정되었습니다.");
+          showAppAlert("프로필이 성공적으로 수정되었습니다.");
         },
         onError: () => {
-          alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
+          showAppAlert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
         },
       });
     } catch (error) {
       console.error("Image upload failed:", error);
-      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+      showAppAlert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
     }
   };
 

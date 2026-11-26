@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import React from "react";
 import ProfileButton from "../../profile-builder/_components/ProfileButton";
@@ -58,7 +59,7 @@ export default function MatchingMBTISection({
           // 이미 2개여도 반대 성향 교체는 허용
           newSelection[oppositeIndex] = char;
         } else {
-          alert("MBTI는 2개만 선택할 수 있어요!");
+          showAppAlert("MBTI는 2개만 선택할 수 있어요!");
         }
       }
     }

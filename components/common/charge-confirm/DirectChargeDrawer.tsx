@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -74,7 +75,7 @@ export default function DirectChargeDrawer({
       await navigator.clipboard.writeText(
         `${BANK_INFO.bank} ${BANK_INFO.account}`,
       );
-      alert("계좌 정보가 복사되었습니다.");
+      showAppAlert("계좌 정보가 복사되었습니다.");
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
@@ -85,9 +86,10 @@ export default function DirectChargeDrawer({
     if (!useFeatureStates.getState().states.SHOP_PAYMENT?.open || quantity < 1)
       return;
     if (!name) {
-      alert("먼저 입금자명을 설정해 주세요.");
-      onOpenChange(false);
-      drawerContext?.setActiveTab(2);
+      showAppAlert("먼저 입금자명을 설정해 주세요.", () => {
+        onOpenChange(false);
+        drawerContext?.setActiveTab(2);
+      });
       return;
     }
 
@@ -100,25 +102,31 @@ export default function DirectChargeDrawer({
           } catch (err) {
             console.error("Failed to copy account number: ", err);
           }
-          alert("계좌번호가 복사되었습니다.");
-          onOpenChange(false);
-          queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+          showAppAlert("계좌번호가 복사되었습니다.", () => {
+            onOpenChange(false);
+            queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+          });
         },
         onError: (error: AxiosError<{ code?: string; message?: string }>) => {
           const errorData = error.response?.data;
           if (errorData?.code === "PAY-003") {
-            alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
-            onOpenChange(false);
+            showAppAlert("이미 입금 확인 대기 중인 주문이 존재합니다.", () => {
+              onOpenChange(false);
+            });
           } else if (
             errorData?.code === "PAY-004" ||
             errorData?.message?.includes("사용자명") ||
             errorData?.message?.includes("입금자명")
           ) {
-            alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
-            onOpenChange(false);
-            drawerContext?.setActiveTab(2);
+            showAppAlert(
+              errorData?.message || "먼저 입금자명을 설정해 주세요.",
+              () => {
+                onOpenChange(false);
+                drawerContext?.setActiveTab(2);
+              },
+            );
           } else {
-            alert(
+            showAppAlert(
               errorData?.message ||
                 "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
             );

@@ -1,3 +1,4 @@
+import { showAppAlert } from "@/lib/app-alert";
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import {
@@ -58,7 +59,7 @@ const AdvantageDrawer = ({
     }
 
     if (selected.length >= 5) {
-      alert("최대 5개까지 선택할 수 있어요.");
+      showAppAlert("최대 5개까지 선택할 수 있어요.");
       return;
     }
 

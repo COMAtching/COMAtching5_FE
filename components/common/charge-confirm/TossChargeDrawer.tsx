@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import { useFeatureStates } from "@/stores/features";
 import React from "react";
@@ -88,7 +89,7 @@ export default function TossChargeDrawer({
       a.click();
       document.body.removeChild(a);
     } else {
-      alert("모바일 기기에서 토스 앱을 통해 송금하실 수 있습니다.");
+      showAppAlert("모바일 기기에서 토스 앱을 통해 송금하실 수 있습니다.");
     }
   };
 
@@ -115,9 +116,10 @@ export default function TossChargeDrawer({
       onError: (error: AxiosError<{ message?: string }>) => {
         const errMsg =
           error.response?.data?.message || "입금자명 변경에 실패했습니다.";
-        alert(errMsg);
-        setNameInput(name);
-        setIsEditingName(false);
+        showAppAlert(errMsg, () => {
+          setNameInput(name);
+          setIsEditingName(false);
+        });
       },
     });
   };
@@ -127,9 +129,10 @@ export default function TossChargeDrawer({
     if (!useFeatureStates.getState().states.SHOP_PAYMENT?.open || quantity < 1)
       return;
     if (!name) {
-      alert("먼저 입금자명을 설정해 주세요.");
-      onOpenChange(false);
-      drawerContext?.setActiveTab(2);
+      showAppAlert("먼저 입금자명을 설정해 주세요.", () => {
+        onOpenChange(false);
+        drawerContext?.setActiveTab(2);
+      });
       return;
     }
 
@@ -137,30 +140,37 @@ export default function TossChargeDrawer({
       { productId, quantity },
       {
         onSuccess: () => {
-          alert(
+          showAppAlert(
             "충전 요청이 완료되었습니다! 토스가 설치되어 있다면 토스로 바로 이동합니다.",
-          );
-          onOpenChange(false);
-          queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+            () => {
+              onOpenChange(false);
+              queryClient.invalidateQueries({ queryKey: ["myProfile"] });
 
-          // 토스 송금 앱으로 즉시 자동 연동
-          handleTossTransfer(customAmount);
+              // 토스 송금 앱으로 즉시 자동 연동
+              handleTossTransfer(customAmount);
+            },
+          );
         },
         onError: (error: AxiosError<{ code?: string; message?: string }>) => {
           const errorData = error.response?.data;
           if (errorData?.code === "PAY-003") {
-            alert("이미 입금 확인 대기 중인 주문이 존재합니다.");
-            onOpenChange(false);
+            showAppAlert("이미 입금 확인 대기 중인 주문이 존재합니다.", () => {
+              onOpenChange(false);
+            });
           } else if (
             errorData?.code === "PAY-004" ||
             errorData?.message?.includes("사용자명") ||
             errorData?.message?.includes("입금자명")
           ) {
-            alert(errorData?.message || "먼저 입금자명을 설정해 주세요.");
-            onOpenChange(false);
-            drawerContext?.setActiveTab(2);
+            showAppAlert(
+              errorData?.message || "먼저 입금자명을 설정해 주세요.",
+              () => {
+                onOpenChange(false);
+                drawerContext?.setActiveTab(2);
+              },
+            );
           } else {
-            alert(
+            showAppAlert(
               errorData?.message ||
                 "충전 요청 중 오류가 발생했습니다. 다시 시도해 주세요.",
             );

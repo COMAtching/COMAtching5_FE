@@ -1,3 +1,4 @@
+import { showAppAlert } from "@/lib/app-alert";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMatchingStore } from "@/stores/matching-store";
 import { useRouter } from "next/navigation";
@@ -35,8 +36,9 @@ export const useMatching = () => {
       if (!response.success) {
         setIsMatching(false);
         console.error("❌ 매칭 실패:", response.message);
-        alert(response.message || "매칭 중 오류가 발생했습니다.");
-        router.push("/matching");
+        showAppAlert(response.message || "매칭 중 오류가 발생했습니다.", () =>
+          router.push("/matching"),
+        );
         return;
       }
 
@@ -64,7 +66,7 @@ export const useMatching = () => {
       const message =
         error instanceof Error ? error.message : "매칭 중 오류가 발생했습니다.";
       console.error("❌ 매칭 실패:", message);
-      alert(message);
+      showAppAlert(message);
     },
   });
 };

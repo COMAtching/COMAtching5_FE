@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 import React, { useEffect, useMemo, useState } from "react";
 import ProfileImageSelection from "./ProfileImageSelection";
 import NicknameSection from "./NicknameSection";
@@ -45,8 +46,9 @@ const ScreenProfileImage = () => {
     }
 
     if (!profile.gender) {
-      alert("성별을 선택해주세요");
-      router.replace("/profile-builder");
+      showAppAlert("성별을 선택해주세요", () =>
+        router.replace("/profile-builder"),
+      );
     }
   }, [isReady, profile.gender, router]);
 

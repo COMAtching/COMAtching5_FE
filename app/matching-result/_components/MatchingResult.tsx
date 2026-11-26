@@ -5,7 +5,7 @@ import {
   ALL_HOBBIES,
   findWithEmoji,
 } from "@/lib/utils/matching";
-import Image from "next/image";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import React, { useState } from "react";
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { MatchingResult as MatchingResultType } from "@/lib/types/matching";
@@ -88,11 +88,10 @@ const MatchingResult = ({ data }: MatchingResultProps) => {
         <div className="flex w-full flex-row items-center gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-white bg-white/0 p-0.5 shadow-[0px_1px_3px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
             <div className="relative h-11 w-11 overflow-hidden rounded-full">
-              <Image
-                src={data.profileImageUrl || "/animal/cat_female 1.png"}
+              <ProfileThumbnail
+                url={data.profileImageUrl}
+                gender={data.gender}
                 alt="Profile"
-                fill
-                className="object-cover"
               />
             </div>
           </div>

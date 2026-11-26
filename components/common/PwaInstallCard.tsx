@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import React, { useEffect, useState } from "react";
 import { Download, PlusSquare, Share } from "lucide-react";
@@ -71,7 +72,7 @@ export default function PwaInstallCard() {
       }
     } else {
       // 프롬프트가 안 잡힌 경우 (일반 브라우저/PC 등)
-      alert(
+      showAppAlert(
         "브라우저의 메뉴 옵션에서 '앱 설치' 또는 '홈 화면에 추가'를 이용해주세요.",
       );
     }
@@ -165,10 +166,12 @@ export default function PwaInstallCard() {
                     console.log("공유 시트 취소 또는 에러:", error);
                   }
                 } else {
-                  alert(
+                  showAppAlert(
                     "사파리 하단의 브라우저 기본 공유 아이콘(↑)을 눌러주세요.",
+                    () => {
+                      setShowIOSModal(false);
+                    },
                   );
-                  setShowIOSModal(false);
                 }
               }}
               className="typo-16-600 bg-color-brand-primary-flame flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-white transition-opacity hover:opacity-90"
