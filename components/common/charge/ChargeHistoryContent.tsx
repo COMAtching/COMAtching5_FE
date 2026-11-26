@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ChargeInventoryCard from "./ChargeInventoryCard";
 import ChargeHistoryListItem from "./ChargeHistoryListItem";
 import { BUSINESS_INFO, NOTICE_INFO } from "@/lib/constants/charge";
@@ -55,9 +56,7 @@ export default function ChargeHistoryContent() {
       {/* ── 충전 내역 리스트 ── */}
       <div className="flex min-h-[200px] flex-col">
         {isLoading ? (
-          <div className="text-color-gray-400 typo-14-500 flex items-center justify-center py-10">
-            불러오는 중...
-          </div>
+          <LoadingSpinner label="충전 내역 불러오는 중" />
         ) : filteredItems.length === 0 ? (
           <div className="text-color-gray-400 typo-14-500 flex items-center justify-center py-10">
             내역이 없습니다.
@@ -74,7 +73,14 @@ export default function ChargeHistoryContent() {
             disabled={isFetchingNextPage}
             className="typo-14-500 text-color-gray-500 bg-color-gray-50 mt-4 rounded-lg py-3"
           >
-            {isFetchingNextPage ? "불러오는 중..." : "더보기"}
+            {isFetchingNextPage ? (
+              <LoadingSpinner
+                variant="inline"
+                label="충전 내역 더 불러오는 중"
+              />
+            ) : (
+              "더보기"
+            )}
           </button>
         )}
       </div>

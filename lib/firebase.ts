@@ -10,6 +10,7 @@ import {
 } from "firebase/messaging";
 import type { Unsubscribe } from "firebase/messaging";
 import { useToastStore } from "@/stores/toast-store";
+import { chatPushPath } from "@/lib/push-routes";
 import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 
 export const firebaseConfig = {
@@ -116,7 +117,7 @@ export function setupForegroundMessageHandler(): Unsubscribe | null {
       useToastStore.getState().showToast({
         title: "코매칭",
         body: grant ? "아이템 지급이 완료되었습니다." : "새 메시지가 있습니다.",
-        link: grant ? "/main" : "/chat-list",
+        link: grant ? "/main" : chatPushPath(payload.data?.chatRef),
       });
     });
   } catch (error) {

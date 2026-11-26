@@ -1,4 +1,5 @@
 "use client";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -6,9 +7,12 @@ import { BackButton } from "@/components/ui/BackButton";
 import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
 import { useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
-import { useMyProfile } from "@/hooks/useProfile";
-import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
+import { useChatViewer } from "@/hooks/useChatViewer";
+import { getProfileImageUrl } from "@/lib/utils/profile";
+import { useChatRooms } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import ChatPushDestination from "./ChatPushDestination";
 import NoMatchingList from "@/app/matching-list/_components/NoMatchingList";
 
 type ChatListItem = {
@@ -111,24 +115,13 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
+  const router = useRouter();
   const chat = useFeature("CHAT");
-  const profile = useMyProfile({
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-  });
-  const memberId =
-    profile.isFetchedAfterMount && profile.isSuccess
-      ? profile.data.data.memberId
-      : undefined;
+  const { viewer, failed, retry } = useChatViewer();
+  const memberId = viewer?.memberId;
   useChatRoomSocket(null, memberId);
-  const { data: rooms, refetch: refetchRooms } = useChatRooms(memberId);
-
-  // 데이터 변경 로그
-  useEffect(() => {
-    if (rooms) {
-      console.log("📡 [Chat Rooms List Data]:", rooms);
-    }
-  }, [rooms]);
+  const roomQuery = useChatRooms();
+  const { data: rooms, refetch: refetchRooms } = roomQuery;
 
   // FCM 채팅 알림 수신 시 채팅방 목록 실시간 최신화
   useEffect(() => {
@@ -145,15 +138,10 @@ export default function ScreenChatList() {
   }, [memberId, refetchRooms]);
 
   const chatItems = useMemo(() => {
-    // 이제 SSR/CSR 모두 배열로 통일되었으므로 단순하게 처리합니다.
-    const roomsArray = (rooms || []) as ChatRoom[];
-
-    if (roomsArray.length === 0) {
-      return [];
-    }
+    if (!rooms?.length) return [];
 
     // 최신 메시지 순으로 정렬 (메시지가 없는 방은 아래로 보냄, 메시지 유무가 같으면 매칭 ID 최신순 정렬)
-    const sortedRooms = [...roomsArray].sort((a, b) => {
+    const sortedRooms = [...rooms].sort((a, b) => {
       const timeA = a.lastMessageTime
         ? new Date(a.lastMessageTime).getTime()
         : 0;
@@ -181,13 +169,24 @@ export default function ScreenChatList() {
         : "방금",
       unread: (room.unreadCount || 0) > 0,
       unreadCount: room.unreadCount || 0,
-      avatar: room.otherUser?.profileImageUrl || "/default-profile.png",
+      avatar: getProfileImageUrl(
+        room.otherUser?.profileImageUrl,
+        room.otherUser?.gender,
+      ),
     }));
   }, [rooms]);
 
   return (
     <main className="flex min-h-screen flex-col items-center px-4 py-2 pb-30">
-      <BackButton text="채팅하기" />
+      <BackButton
+        text="채팅하기"
+        onClick={() => {
+          if (history.state?.comatchingPushEntry || history.length < 2)
+            router.replace("/main");
+          else router.back();
+        }}
+      />
+      <ChatPushDestination />
       {chat?.open === false ? (
         <div className="mt-3 w-full">
           <ChatReadOnlyNotice message={chat.message} />
@@ -200,7 +199,22 @@ export default function ScreenChatList() {
         </span>
       )}
 
-      {chatItems.length === 0 ? (
+      {failed || roomQuery.isError ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
+          <p role="alert">채팅 목록을 불러오지 못했어요.</p>
+          <button
+            type="button"
+            className="underline"
+            onClick={() => void (failed ? retry() : refetchRooms())}
+          >
+            다시 시도
+          </button>
+        </div>
+      ) : !memberId ||
+        roomQuery.isPending ||
+        (!chatItems.length && roomQuery.isFetching) ? (
+        <LoadingSpinner label="채팅 목록 불러오는 중" />
+      ) : chatItems.length === 0 ? (
         <div className="flex w-full flex-1 flex-col items-center justify-center pt-20">
           <NoMatchingList type="chat" />
         </div>

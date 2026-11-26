@@ -53,7 +53,7 @@ export function useChatRoomSocket(
         }
         client.subscribe("/user/queue/chat.visibility", () => {
           if (!active) return;
-          void queryClient.invalidateQueries({ queryKey: ["chatRooms"] });
+          void queryClient.resetQueries({ queryKey: ["chatRooms"] });
           void queryClient.invalidateQueries({ queryKey: ["chatUnreadCount"] });
           void queryClient.invalidateQueries({ queryKey: ["matchingHistory"] });
           if (roomId) {

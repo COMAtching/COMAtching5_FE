@@ -1,0 +1,55 @@
+.spinner {
+  position: relative;
+  display: block;
+  flex: none;
+  aspect-ratio: 1;
+}
+
+.screen {
+  width: 3rem;
+}
+.section {
+  width: 2rem;
+}
+.inline {
+  width: 1.125rem;
+}
+
+.spinner::before {
+  content: "";
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -105deg,
+    var(--color-orange-100),
+    var(--color-brand-primary-orange) 54deg,
+    var(--color-brand-primary-flame) 105deg,
+    var(--color-flame-50) 106deg 359deg,
+    var(--color-orange-100)
+  );
+  mask: radial-gradient(closest-side, transparent 84%, black 88%);
+}
+
+.spinner::after {
+  content: "";
+  position: absolute;
+  width: 14%;
+  aspect-ratio: 1;
+  left: 43%;
+  top: 0;
+  border-radius: 50%;
+  background: var(--color-brand-primary-flame);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .spinner {
+    animation: turn 1.2s linear infinite;
+  }
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(1turn);
+  }
+}

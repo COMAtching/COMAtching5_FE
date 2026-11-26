@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import ProfileImageSelection from "./ProfileImageSelection";
 import NicknameSection from "./NicknameSection";
 import IntroSection from "./IntroSection";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import TermsDrawer from "./TermsDrawer";
@@ -110,13 +109,9 @@ const ScreenProfileImage = () => {
         onIntroChange={handleIntroChange}
       />
       <footer className="mt-auto flex flex-col items-center justify-center">
-        <Image
-          src="/profile/bubble-.svg"
-          alt="모든 정보가 맞나요? 이제 시작해요!"
-          width={270}
-          height={50}
-          priority
-        />
+        <p className="typo-16-500 relative mb-4 max-w-full rounded-full bg-white px-5 py-2 text-center text-black shadow-md after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-x-[6px] after:border-t-[9px] after:border-x-transparent after:border-t-white">
+          모든 정보가 맞나요? 이제 시작해요!
+        </p>
         <TermsDrawer>
           <Button shadow={true} disabled={!isReadyToStart}>
             코매칭 시작하기

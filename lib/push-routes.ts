@@ -23,3 +23,16 @@ export function isPushRoute(pathname: string) {
     (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 }
+
+const referencePattern = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
+
+export function chatPushPath(reference?: string) {
+  return reference && referencePattern.test(reference)
+    ? "/chat-list#push=" + reference
+    : "/chat-list";
+}
+
+export function chatPushReference(hash: string) {
+  const ref = new URLSearchParams(hash.slice(1)).get("push");
+  return ref && referencePattern.test(ref) ? ref : null;
+}

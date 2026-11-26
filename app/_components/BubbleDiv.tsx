@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { cn } from "@/lib/utils";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 import { useParticipantsCount } from "@/hooks/useParticipantsCount";
 
@@ -33,6 +34,7 @@ const BubbleDiv = ({
       className={cn(
         "relative flex items-center justify-center px-6",
         w === "fit" || !w ? "w-fit" : "",
+        !children && !w && "min-w-48",
         shadowClass,
         className,
       )}
@@ -52,7 +54,7 @@ const BubbleDiv = ({
         <div aria-live="polite" aria-busy={!children && isPending}>
           {children ||
             (isPending ? (
-              <span>참여 인원 불러오는 중...</span>
+              <LoadingSpinner variant="inline" label="참여 인원 불러오는 중" />
             ) : count != null ? (
               <>
                 현재{" "}

@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   BrowserSessionEnded,
   confirmBrowserSession,
@@ -64,11 +65,7 @@ export default function ServiceBoundary({ children }: { children: ReactNode }) {
 
   if (admin || open) return children;
   if (!master)
-    return (
-      <p role="status" className="p-6 text-gray-700">
-        운영 상태 확인 중…
-      </p>
-    );
+    return <LoadingSpinner variant="screen" label="운영 상태 확인 중" />;
   return (
     <main className="flex min-h-dvh flex-col justify-center px-7 py-12">
       <Image

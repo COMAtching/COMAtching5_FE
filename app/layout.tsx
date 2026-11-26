@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "코매칭",
   },
   openGraph: {
@@ -69,7 +69,8 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#fff",
+  themeColor: "#efefef",
+  viewportFit: "cover",
   // 채팅창 등에서 키보드가 올라올 때 전체 화면이 위로 밀리지 않고,
   // 뷰포트 내부 크기만 줄어들게 하여 채팅 내역만 스크롤되도록 설정
   interactiveWidget: "resizes-content",
@@ -83,10 +84,10 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
-        className={`${pretendard.className} flex justify-center bg-white antialiased`}
+        className={`${pretendard.className} flex justify-center bg-[#efefef] antialiased md:bg-white`}
       >
         <QueryProvider>
-          <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
+          <div className="app-shell bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
             <Blur />
             <ServiceStatusProvider />
             <PwaInitializer />

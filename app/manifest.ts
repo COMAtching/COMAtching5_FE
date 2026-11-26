@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "대학교 축제에서 운명의 인연을 만나보세요!",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#ea580c",
+    background_color: "#efefef",
+    theme_color: "#efefef",
     icons: [
       {
         src: "/logo/icon.png",

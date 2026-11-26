@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,7 +12,6 @@ import {
   ArrowLeft,
   Users,
   User,
-  Loader2,
   RefreshCw,
   Sparkles,
   TrendingUp,
@@ -172,22 +173,18 @@ export default function AdminStats() {
             disabled={isLoading || isRefetching}
             className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 hover:border-[#f59e0b]/40 disabled:opacity-50"
           >
-            <RefreshCw
-              size={14}
-              className={isRefetching ? "animate-spin" : ""}
-            />
+            {isRefetching ? (
+              <LoadingSpinner variant="inline" label="새로고침 중" />
+            ) : (
+              <RefreshCw size={14} aria-hidden="true" />
+            )}
             <span>새로고침</span>
           </button>
         </div>
       </header>
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-32">
-          <Loader2 size={40} className="text-admin-warning animate-spin" />
-          <p className="text-admin-secondary mt-4 text-sm">
-            실시간 전체 가입자 데이터를 가공 중입니다...
-          </p>
-        </div>
+        <LoadingSpinner label="실시간 전체 가입자 데이터를 가공 중입니다" />
       ) : (
         <div className="space-y-6">
           {/* 주요 지표 요약 (Key Metrics) */}

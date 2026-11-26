@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { verificationMailError } from "@/hooks/useVerificationMailTimer";
 import React, { useState } from "react";
 import { BackButton } from "@/components/ui/BackButton";
@@ -90,7 +92,11 @@ const ScreenPasswordResetPage = () => {
             className="bg-button-primary text-button-primary-text-default mt-4"
             disabled={isPending}
           >
-            {isPending ? "전송 중..." : "이메일 전송하기"}
+            {isPending ? (
+              <LoadingSpinner variant="inline" label="전송 중" />
+            ) : (
+              "이메일 전송하기"
+            )}
           </Button>
         </form>
       </main>

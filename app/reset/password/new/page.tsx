@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ScreenNewPasswordPage from "./_components/ScreenNewPasswordPage";
 
 export const metadata = {
@@ -8,7 +9,11 @@ export const metadata = {
 
 const NewPasswordPage = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <LoadingSpinner variant="screen" label="비밀번호 변경 화면 준비 중" />
+      }
+    >
       <ScreenNewPasswordPage />
     </Suspense>
   );

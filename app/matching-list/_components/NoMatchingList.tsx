@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -44,7 +45,7 @@ const NoMatchingList = ({ type = "matching" }: NoMatchingListProps) => {
               명이 참여중이에요.
             </>
           ) : isPending ? (
-            "참여 인원 불러오는 중..."
+            <LoadingSpinner variant="inline" label="참여 인원 불러오는 중" />
           ) : (
             "참여 인원을 불러오지 못했어요."
           )}

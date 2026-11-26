@@ -1,4 +1,5 @@
-﻿import Button from "@/components/ui/Button";
+﻿import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import {
   validatePasswordLength,
@@ -121,7 +122,11 @@ export const PasswordStep = ({
             type="submit"
             disabled={!isPasswordValid || isSubmitting}
           >
-            완료
+            {isSubmitting ? (
+              <LoadingSpinner variant="inline" label="가입 중" />
+            ) : (
+              "완료"
+            )}
           </Button>
         </div>
       </form>

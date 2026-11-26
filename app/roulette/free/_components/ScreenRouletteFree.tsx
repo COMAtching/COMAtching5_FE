@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import React, { useRef, useState } from "react";
 import { CircleAlert } from "lucide-react";
 import RouletteHeader from "../../_components/RouletteHeader";
@@ -102,13 +104,15 @@ const ScreenRouletteFree = () => {
           onClick={handleSpin}
           className="typo-20-600 bg-button-primary w-full py-4"
         >
-          {isLoading || isPending
-            ? "확인 중..."
-            : isSpinning
-              ? "돌아가는 중..."
-              : hasChances
-                ? "무료로 룰렛 돌리기"
-                : "오늘은 이미 참여했어요"}
+          {isLoading || isPending ? (
+            <LoadingSpinner variant="inline" label="확인 중" />
+          ) : isSpinning ? (
+            "돌아가는 중..."
+          ) : hasChances ? (
+            "무료로 룰렛 돌리기"
+          ) : (
+            "오늘은 이미 참여했어요"
+          )}
         </Button>
 
         {/* Participation notice */}

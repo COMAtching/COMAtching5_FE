@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useVerificationMailTimer } from "@/hooks/useVerificationMailTimer";
 
 import React, { useState, useEffect, startTransition } from "react";
@@ -146,9 +148,11 @@ const ScreenVerificationPage = () => {
             인증번호를 입력해 주세요
           </h1>
           <h2 className="typo-16-500 text-left text-gray-600">
-            {isSending
-              ? "인증번호를 보내는 중이에요"
-              : "등록된 이메일로 인증번호를 보냈어요"}
+            {isSending ? (
+              <LoadingSpinner variant="inline" label="인증번호 전송 중" />
+            ) : (
+              "등록된 이메일로 인증번호를 보냈어요"
+            )}
           </h2>
         </div>
 
@@ -181,11 +185,13 @@ const ScreenVerificationPage = () => {
                 shadow={false}
                 style={{ boxShadow: "none" }}
               >
-                {isSending
-                  ? "전송 중.."
-                  : resendCooldown > 0
-                    ? formatTime(resendCooldown)
-                    : "재전송"}
+                {isSending ? (
+                  <LoadingSpinner variant="inline" label="전송 중" />
+                ) : resendCooldown > 0 ? (
+                  formatTime(resendCooldown)
+                ) : (
+                  "재전송"
+                )}
               </Button>
             </div>
             {errorMessage && (
@@ -208,7 +214,11 @@ const ScreenVerificationPage = () => {
               disabled={verificationCode.length < 6 || isVerifying}
               className="mt-4"
             >
-              {isVerifying ? "확인 중..." : "인증하기"}
+              {isVerifying ? (
+                <LoadingSpinner variant="inline" label="확인 중" />
+              ) : (
+                "인증하기"
+              )}
             </Button>
           </div>
         </form>

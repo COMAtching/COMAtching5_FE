@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import { RotateCw } from "lucide-react";
 import { useRequestStatus } from "@/hooks/useRequestStatus";
 
@@ -11,28 +13,9 @@ const ChargeRequestWaiting = () => {
   return (
     <div className="flex h-[120px] w-full flex-col items-center justify-center gap-[11px] rounded-3xl border border-white/30 bg-white/50 p-6 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]">
       <div className="flex h-[72px] w-full items-center gap-4">
-        {/* 커스텀 7도트 로더 영역 */}
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-          <div className="relative h-8 w-8 animate-spin">
-            {[...Array(7)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute inset-0 flex justify-center"
-                style={{
-                  transform: `rotate(${i * (360 / 7)}deg)`,
-                }}
-              >
-                <div
-                  className="h-2 w-1 rounded-full bg-[#FCCD00]"
-                  style={{
-                    opacity: 1 - i * 0.12,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="grid size-10 shrink-0 place-items-center">
+          <LoadingSpinner variant="inline" label="입금 대기 중" />
         </div>
-
         {/* 텍스트 영역 */}
         <div className="flex flex-1 flex-col items-start gap-2">
           {/* 타이틀 행 */}
@@ -42,13 +25,16 @@ const ChargeRequestWaiting = () => {
             </span>
             <button
               type="button"
+              aria-label="입금 상태 새로고침"
               onClick={() => refetch()}
               disabled={isFetching}
               className="flex cursor-pointer items-center justify-center p-1 transition-opacity disabled:opacity-50"
             >
-              <RotateCw
-                className={`h-4 w-4 text-[#9E9E9E] ${isFetching ? "animate-spin" : ""}`}
-              />
+              {isFetching ? (
+                <LoadingSpinner variant="inline" label="입금 상태 확인 중" />
+              ) : (
+                <RotateCw className="size-4 text-[#9E9E9E]" />
+              )}
             </button>
           </div>
 

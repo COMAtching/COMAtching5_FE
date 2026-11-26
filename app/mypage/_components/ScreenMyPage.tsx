@@ -1,5 +1,8 @@
 "use client";
 
+import PushPreference from "@/components/common/PushPreference";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useEffect, useMemo, useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { useRouter } from "next/navigation";
@@ -22,7 +25,6 @@ import type {
 } from "@/lib/types/profile";
 import { useMyProfile, useUpdateMyProfile } from "@/hooks/useProfile";
 import { useImageUpload } from "@/hooks/useProfileSignUp";
-import { Loader2 } from "lucide-react";
 import HobbyEditDrawer from "./HobbyEditDrawer";
 import AdvantageEditDrawer from "./AdvantageEditDrawer";
 import { MenuRow } from "./MenuRow";
@@ -640,6 +642,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         연락처 등은 신중하게 기입 해주세요.
       </p>
 
+      <PushPreference />
+
       {/* ===== 프로필 이미지 영역 ===== */}
       <section className="mt-6 px-4">
         <ProfileImageSelection
@@ -987,10 +991,7 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         disabled={!hasChanged || isSubmitting}
       >
         {isSubmitting ? (
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>수정 중...</span>
-          </div>
+          <LoadingSpinner variant="inline" label="프로필 수정 중" />
         ) : (
           "수정하기"
         )}

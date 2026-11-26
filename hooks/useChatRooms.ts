@@ -1,4 +1,6 @@
 import { api } from "@/lib/axios";
+import { EXPECTED_SESSION } from "@/lib/browser-session";
+import { useChatViewer } from "@/hooks/useChatViewer";
 import { useQuery } from "@tanstack/react-query";
 
 export type ChatRoom = {
@@ -27,33 +29,31 @@ export type ChatRoomsResponse = {
   data: ChatRoom[];
 };
 
-export const fetchChatRooms = async (): Promise<ChatRoom[]> => {
-  console.log("📡 [fetchChatRooms] API 호출 시작...");
-  try {
-    const { data } = await api.get<ChatRoom[] | ChatRoomsResponse>(
-      "/api/chat/rooms",
-    );
-    console.log("📡 [fetchChatRooms] API 호출 성공:", data);
-
-    // 백엔드 응답이 { data: [...] } 형태인지 아니면 배열 그 자체인지 확인하여 처리
-    if (Array.isArray(data)) return data;
-    return data.data || [];
-  } catch (error) {
-    console.error("❌ [fetchChatRooms] API 호출 실패:", error);
-    throw error;
-  }
-};
-
-export const useChatRooms = (memberId: number | undefined) => {
+export function useChatRooms({ refetchOnMount = true } = {}) {
+  const { viewer } = useChatViewer();
   return useQuery({
-    queryKey: ["chatRooms", memberId],
-    queryFn: fetchChatRooms,
-    enabled: !!memberId,
+    queryKey: ["chatRooms", viewer?.owner, viewer?.memberId],
+    enabled: !!viewer,
+    queryFn: async ({ signal }) => {
+      if (!viewer) throw new Error("채팅 로그인 확인이 필요합니다.");
+      const { data } = await api.get<ChatRoomsResponse | ChatRoom[]>(
+        "/api/chat/rooms",
+        {
+          signal,
+          headers: { [EXPECTED_SESSION]: viewer.owner },
+        },
+      );
+      const rooms = Array.isArray(data) ? data : data?.data;
+      if (!Array.isArray(rooms))
+        throw new Error("채팅 목록을 확인할 수 없습니다.");
+      return rooms;
+    },
+    refetchOnMount,
     refetchOnWindowFocus: true,
-    staleTime: 0, // 항상 최신 데이터를 유지하도록 설정
-    gcTime: 0, // 메모리 캐싱을 아예 하지 않고 컴포넌트가 꺼지면 즉시 캐시 소멸
+    staleTime: 0,
+    gcTime: 60_000,
   });
-};
+}
 
 export type UnreadCountResponse = {
   code: string;

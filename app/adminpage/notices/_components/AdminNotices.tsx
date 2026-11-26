@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useId } from "react";
 import Link from "next/link";
 import {
@@ -13,7 +15,6 @@ import {
 import {
   ArrowLeft,
   Bell,
-  Loader2,
   Plus,
   Trash2,
   X,
@@ -245,10 +246,10 @@ function NoticeForm({
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#10b981] to-[#059669] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? (
-              <>
-                <Loader2 size={14} className="animate-spin" />
-                {isEditMode ? "수정 중..." : "등록 중..."}
-              </>
+              <LoadingSpinner
+                variant="inline"
+                label={isEditMode ? "공지 수정 중" : "공지 등록 중"}
+              />
             ) : (
               <>
                 <Check size={14} />
@@ -364,12 +365,7 @@ export default function AdminNotices() {
 
       {/* 공지사항 목록 */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="text-admin-muted animate-spin" />
-          <p className="text-admin-muted mt-4 text-sm">
-            공지사항 불러오는 중...
-          </p>
-        </div>
+        <LoadingSpinner label="공지사항 불러오는 중" />
       ) : notices.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">

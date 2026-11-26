@@ -1,10 +1,12 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React from "react";
 import Link from "next/link";
 import { useAdminGiftCards } from "@/hooks/admin/useAdminGiftCards";
 import GiftCardItem from "./GiftCardItem";
-import { ArrowLeft, Gift, Loader2, RefreshCw, Inbox } from "lucide-react";
+import { ArrowLeft, Gift, RefreshCw, Inbox } from "lucide-react";
 
 export default function GiftCardsDashboard() {
   const {
@@ -53,10 +55,11 @@ export default function GiftCardsDashboard() {
             disabled={isRefetching}
             className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium transition-all duration-200 hover:border-[#ec4899]/40 disabled:opacity-50 sm:px-4 sm:text-sm"
           >
-            <RefreshCw
-              size={14}
-              className={isRefetching ? "animate-spin" : ""}
-            />
+            {isRefetching ? (
+              <LoadingSpinner variant="inline" label="새로고침 중" />
+            ) : (
+              <RefreshCw size={14} aria-hidden="true" />
+            )}
             <span className="hidden sm:inline">새로고침</span>
           </button>
         </div>
@@ -64,12 +67,7 @@ export default function GiftCardsDashboard() {
 
       {/* 목록 */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="text-admin-muted animate-spin" />
-          <p className="text-admin-muted mt-4 text-sm">
-            미지급 내역을 불러오는 중...
-          </p>
-        </div>
+        <LoadingSpinner label="미지급 내역을 불러오는 중" />
       ) : unpaidCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">

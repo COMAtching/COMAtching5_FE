@@ -1,12 +1,13 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowUp,
   ChevronLeft,
-  Loader2,
   MoreVertical,
   Paperclip,
   UserRound,
@@ -14,7 +15,7 @@ import {
 import { featureMessage, useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatMessages } from "@/hooks/useChatMessages";
-import { useMyProfile } from "@/hooks/useProfile";
+import { useChatViewer } from "@/hooks/useChatViewer";
 import { getProfileImageUrl } from "@/lib/utils/profile";
 import {
   useUpdateFavorite,
@@ -138,7 +139,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const viewportRef = React.useRef<HTMLElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const lastMessageIdRef = React.useRef<string | null>(null);
@@ -149,50 +150,46 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     hasInitiallyScrolledRef.current = false;
   }, [chatId]);
 
-  // 키보드가 올라오거나 내려가서 컨테이너 높이가 변할 때,
-  // 하단 기준 시야 유지를 위한 보정 로직 (가운데를 볼 때는 브라우저 기본동작에 맡김)
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    let previousHeight = container.clientHeight;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const currentHeight = entry.contentRect.height;
-        const heightDifference = previousHeight - currentHeight;
-
-        if (heightDifference !== 0) {
-          // 카카오톡 방식: 키보드가 올라오든 내려오든, 변한 높이만큼 스크롤을 똑같이 이동시킨다.
-          // 이것 하나로 바닥이든 중간이든 어디서든 완벽하게 동기화됨.
-          container.scrollTop += heightDifference;
-          previousHeight = currentHeight;
-        }
-      }
-    });
-
-    resizeObserver.observe(container);
-
+    const shell = viewportRef.current;
+    const viewport = window.visualViewport;
+    if (!shell || !viewport) return;
+    const update = () => {
+      shell.style.setProperty("--chat-viewport-height", viewport.height + "px");
+      shell.style.setProperty("--chat-viewport-top", viewport.offsetTop + "px");
+    };
+    update();
+    viewport.addEventListener("resize", update);
+    viewport.addEventListener("scroll", update);
     return () => {
-      resizeObserver.disconnect();
+      viewport.removeEventListener("resize", update);
+      viewport.removeEventListener("scroll", update);
     };
   }, []);
 
-  // 0. 내 프로필 정보 가져오기 (현재 사용자 ID 확인용)
-  const profile = useMyProfile({
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-  });
-  const currentUserId =
-    profile.isFetchedAfterMount && profile.isSuccess
-      ? profile.data.data.memberId
-      : undefined;
+  useEffect(() => {
+    const list = scrollContainerRef.current;
+    if (!list) return;
+    let previousHeight = list.clientHeight;
+    const observer = new ResizeObserver(() => {
+      if (previousHeight === list.clientHeight) return;
+      const wasAtEnd =
+        list.scrollHeight - list.scrollTop - previousHeight <= 24;
+      previousHeight = list.clientHeight;
+      if (wasAtEnd) list.scrollTop = list.scrollHeight;
+    });
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, []);
+
+  const { viewer, failed: viewerFailed, retry: retryViewer } = useChatViewer();
+  const currentUserId = viewer?.memberId;
 
   // 즐겨찾기 토글 mutation
   const updateFavorite = useUpdateFavorite();
 
   // 0-1. 현재 채팅방 정보 가져오기
-  const { data: chatRooms } = useChatRooms(currentUserId);
+  const { data: chatRooms } = useChatRooms({ refetchOnMount: false });
   const currentRoom = chatRooms?.find((r) => r.id === chatId);
   const partnerMemberId = currentRoom?.otherUser.memberId;
 
@@ -258,7 +255,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading,
+    isPending,
+    refetch: refetchHistory,
     isError,
     error,
   } = useChatMessages(chatId, currentUserId);
@@ -366,14 +364,15 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   }, [historyData, socketMessages, currentUserId]);
 
   useEffect(() => {
-    if (messages.length === 0) return;
+    const list = scrollContainerRef.current;
+    if (!list || messages.length === 0) return;
 
     const lastMsg = messages[messages.length - 1];
     const lastId = lastMsg ? lastMsg.id : null;
 
     if (!hasInitiallyScrolledRef.current) {
       // 처음 진입했을 때는 즉시 가장 아래로 이동 (빠른 속도감)
-      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      list.scrollTop = list.scrollHeight;
       hasInitiallyScrolledRef.current = true;
       lastMessageIdRef.current = lastId;
       return;
@@ -381,7 +380,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     // 마지막 메시지 ID가 변경되었을 때만 (실시간 새 메시지 송수신 시) 하단으로 부드럽게 스크롤
     if (lastId !== lastMessageIdRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
       lastMessageIdRef.current = lastId;
     }
   }, [messages]);
@@ -451,15 +450,20 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   if (isError && (error as AxiosError)?.response?.status === 404) return null;
 
   return (
-    <main className="flex h-dvh w-full flex-col items-center overflow-hidden px-4 pt-10">
-      <header className="fixed top-0 right-0 left-0 z-20 px-4 py-2">
+    <main
+      ref={viewportRef}
+      className="chat-viewport flex w-full flex-col overflow-hidden"
+    >
+      <header className="relative z-20 shrink-0 px-4 py-2">
         <div className="absolute inset-0 -z-10 bg-[#F5F5F5]/80 backdrop-blur-[15px]" />
         <div className="pointer-events-none absolute top-full left-0 h-8 w-full bg-[#F5F5F5]/60 mask-[linear-gradient(to_bottom,black,transparent)] backdrop-blur-[10px]" />
         <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
           <button
             type="button"
             aria-label="뒤로 가기"
-            onClick={() => router.back()}
+            onClick={() =>
+              history.length > 1 ? router.back() : router.replace("/chat-list")
+            }
             className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/60 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
           >
             <ChevronLeft className="h-5 w-5 text-[#1A1A1A]" />
@@ -495,8 +499,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       </header>
 
       {isFetchingNextPage && (
-        <div className="absolute top-[72px] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
-          <Loader2 className="h-5 w-5 animate-spin text-[#FF4D61]" />
+        <div className="absolute top-[calc(env(safe-area-inset-top)+72px)] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
+          <LoadingSpinner variant="inline" label="이전 메시지 불러오는 중" />
         </div>
       )}
 
@@ -504,14 +508,26 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className={cn(
-          "scrollbar-hide relative z-0 mt-10 flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto px-4 pt-5",
-          readOnly ? "pb-4" : "pb-[100px]",
-        )}
+        className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 pt-5 pb-4"
       >
-        {isLoading ? (
+        {viewerFailed ||
+        (isError &&
+          (!historyData || (error as AxiosError)?.response?.status === 403)) ? (
+          <div className="m-auto flex flex-col items-center gap-3 text-sm">
+            <p role="alert">대화를 불러오지 못했어요.</p>
+            <button
+              type="button"
+              className="underline"
+              onClick={() =>
+                viewerFailed ? retryViewer() : void refetchHistory()
+              }
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : !viewer || isPending ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
+            <LoadingSpinner label="대화 불러오는 중" />
           </div>
         ) : messages.length === 0 ? (
           <div
@@ -586,7 +602,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             })}
           </>
         )}
-        <div ref={messagesEndRef} />
       </section>
 
       {readOnly ? (
@@ -598,8 +613,8 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         </footer>
       ) : (
         <div
-          className="fixed right-0 bottom-5 left-0 z-20 pb-2"
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          className="relative z-20 w-full shrink-0 pt-2"
+          style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
         >
           {uploadError && (
             <p role="alert" className="mb-1 text-center text-xs text-red-600">
@@ -608,20 +623,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           )}
           {uploading && (
             <p role="status" className="mb-1 text-center text-xs text-gray-600">
-              이미지 업로드 중…
+              <LoadingSpinner variant="inline" label="이미지 업로드 중" />
             </p>
           )}
           {(!isConnected || sendState !== "idle") && (
             <p role="status" className="mb-1 text-center text-xs text-gray-600">
-              {endReason === "changed"
-                ? "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
-                : endReason === "ended"
-                  ? "실시간 연결이 종료됐어요. 기존 대화 내역을 확인해 주세요."
-                  : sendState === "unconfirmed"
-                    ? "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
-                    : !isConnected
-                      ? "채팅 서버에 연결 중이에요."
-                      : "전송 확인 중…"}
+              {endReason === "changed" ? (
+                "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
+              ) : endReason === "ended" ? (
+                "실시간 연결이 종료됐어요. 기존 대화 내역을 확인해 주세요."
+              ) : sendState === "unconfirmed" ? (
+                "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
+              ) : !isConnected ? (
+                <LoadingSpinner variant="inline" label="채팅 서버에 연결 중" />
+              ) : (
+                <LoadingSpinner variant="inline" label="전송 확인 중" />
+              )}
             </p>
           )}
           <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">
@@ -662,7 +679,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                   handleSendMessage();
                 }
               }}
-              className="w-full bg-transparent text-sm text-[#1A1A1A] outline-none placeholder:text-[#999999]"
+              className="min-w-0 flex-1 bg-transparent text-base text-[#1A1A1A] outline-none placeholder:text-[#999999]"
             />
             <button
               type="button"

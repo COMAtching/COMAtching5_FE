@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useEffect, startTransition } from "react";
 
 import { useRouter } from "next/navigation";
@@ -249,7 +251,11 @@ const ScreenNewPasswordPage = () => {
                 fixed
                 bottom={16}
               >
-                {isPending ? "변경 중..." : "비밀번호 변경하기"}
+                {isPending ? (
+                  <LoadingSpinner variant="inline" label="변경 중" />
+                ) : (
+                  "비밀번호 변경하기"
+                )}
               </Button>
             </div>
           </form>

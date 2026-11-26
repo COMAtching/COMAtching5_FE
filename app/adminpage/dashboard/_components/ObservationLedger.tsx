@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import { type ReactNode, useState } from "react";
 import { ChevronDown, ListOrdered } from "lucide-react";
 
@@ -160,9 +162,11 @@ export default function ObservationLedger({
             role="status"
             className="border-admin-edge text-admin-muted border-t px-4 py-8 text-center text-sm"
           >
-            {loading
-              ? "원본 관측 내역을 조회하고 있습니다."
-              : "아직 수집한 입금 내역이 없습니다."}
+            {loading ? (
+              <LoadingSpinner variant="inline" label="원본 관측 내역 조회 중" />
+            ) : (
+              "아직 수집한 입금 내역이 없습니다."
+            )}
           </p>
         )
       )}

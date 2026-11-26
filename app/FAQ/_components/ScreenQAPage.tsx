@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useEffect, useState, useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { QA_LIST } from "@/lib/constants/qa";
@@ -117,7 +119,11 @@ const ScreenQAPage = () => {
             }
           }}
         >
-          {isSubmitting ? "처리 중..." : "탈퇴하기"}
+          {isSubmitting ? (
+            <LoadingSpinner variant="inline" label="처리 중" />
+          ) : (
+            "탈퇴하기"
+          )}
         </button>
       </footer>
     </div>

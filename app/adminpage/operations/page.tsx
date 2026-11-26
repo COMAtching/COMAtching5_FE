@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -229,7 +231,7 @@ export default function OperationsPage() {
         종료 안내 문구는 기능이 닫혔을 때 회원에게 보입니다. ‘문구 저장’은 운영
         상태를 유지하고 안내만 변경합니다.
       </p>
-      {isLoading && <p role="status">상태를 불러오는 중…</p>}
+      {isLoading && <LoadingSpinner label="상태를 불러오는 중" />}
       {isError && (
         <button onClick={() => refetch()}>운영 상태 다시 불러오기</button>
       )}

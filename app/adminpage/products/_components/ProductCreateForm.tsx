@@ -1,12 +1,14 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useId } from "react";
 import {
   useCreateProduct,
   type CreateProductBody,
   type CreateProductReward,
 } from "@/hooks/admin/useAdminProducts";
-import { Loader2, Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 
 interface ProductCreateFormProps {
   onSuccess: () => void;
@@ -371,7 +373,7 @@ export default function ProductCreateForm({
         className="mt-6 flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-sm font-semibold text-white shadow-lg shadow-[#6366f1]/20 transition-all duration-200 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
       >
         {createMutation.isPending ? (
-          <Loader2 size={18} className="animate-spin" />
+          <LoadingSpinner variant="inline" label="상품 등록 중" />
         ) : (
           "상품 등록"
         )}

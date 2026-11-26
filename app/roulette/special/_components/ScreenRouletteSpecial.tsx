@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleAlert } from "lucide-react";
@@ -105,15 +107,17 @@ const ScreenRouletteSpecial = () => {
           onClick={handleSpin}
           className="typo-20-600 bg-button-primary w-full py-4"
         >
-          {isLoading || isPending
-            ? "확인 중..."
-            : isSpinning
-              ? "돌아가는 중..."
-              : isSpecialParticipated
-                ? "오늘은 이미 참여했어요"
-                : !hasChances
-                  ? `${(SPECIAL_TARGET_AMOUNT - totalPay).toLocaleString()}원 더 결제하면 참여 가능`
-                  : "룰렛 돌리기"}
+          {isLoading || isPending ? (
+            <LoadingSpinner variant="inline" label="확인 중" />
+          ) : isSpinning ? (
+            "돌아가는 중..."
+          ) : isSpecialParticipated ? (
+            "오늘은 이미 참여했어요"
+          ) : !hasChances ? (
+            `${(SPECIAL_TARGET_AMOUNT - totalPay).toLocaleString()}원 더 결제하면 참여 가능`
+          ) : (
+            "룰렛 돌리기"
+          )}
         </Button>
 
         {/* Participation notice */}

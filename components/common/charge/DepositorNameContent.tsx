@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { cn } from "@/lib/utils";
@@ -102,7 +104,11 @@ export default function DepositorNameContent() {
         disabled={!name || name.length < 2 || isPending}
         onClick={handleSave}
       >
-        {isPending ? "설정 중..." : "입금자명 설정하기"}
+        {isPending ? (
+          <LoadingSpinner variant="inline" label="설정 중" />
+        ) : (
+          "입금자명 설정하기"
+        )}
       </Button>
     </div>
   );
