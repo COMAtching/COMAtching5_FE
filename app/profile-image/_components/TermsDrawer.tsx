@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import React, { useState, useTransition } from "react";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
@@ -296,8 +298,13 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
               type="button"
               className="bg-button-primary text-button-primary-text-default"
               onClick={handleComplete}
+              disabled={isSubmitting}
             >
-              모두 동의하고 시작하기
+              {isSubmitting ? (
+                <LoadingSpinner variant="inline" label="가입 완료 중" />
+              ) : (
+                "모두 동의하고 시작하기"
+              )}
             </Button>
           ) : (
             <Button

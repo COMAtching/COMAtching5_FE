@@ -1,4 +1,5 @@
 "use client";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -121,7 +122,8 @@ export default function ScreenChatList() {
       ? profile.data.data.memberId
       : undefined;
   useChatRoomSocket(null, memberId);
-  const { data: rooms, refetch: refetchRooms } = useChatRooms(memberId);
+  const roomQuery = useChatRooms(memberId);
+  const { data: rooms, refetch: refetchRooms } = roomQuery;
 
   // 데이터 변경 로그
   useEffect(() => {
@@ -200,7 +202,22 @@ export default function ScreenChatList() {
         </span>
       )}
 
-      {chatItems.length === 0 ? (
+      {profile.isError || roomQuery.isError ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
+          <p role="alert">채팅 목록을 불러오지 못했어요.</p>
+          <button
+            type="button"
+            className="underline"
+            onClick={() =>
+              void (profile.isError ? profile.refetch() : refetchRooms())
+            }
+          >
+            다시 시도
+          </button>
+        </div>
+      ) : !memberId || roomQuery.isPending ? (
+        <LoadingSpinner label="채팅 목록 불러오는 중" />
+      ) : chatItems.length === 0 ? (
         <div className="flex w-full flex-1 flex-col items-center justify-center pt-20">
           <NoMatchingList type="chat" />
         </div>

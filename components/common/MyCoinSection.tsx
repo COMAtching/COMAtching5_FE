@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useItems } from "@/hooks/useItems";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -18,19 +19,11 @@ const MyCoinSection = ({ className }: MyCoinSectionProps) => {
     return (
       <section
         className={cn(
-          "flex h-9.5 w-full animate-pulse items-center justify-between rounded-full border border-white/30 bg-white/20 pr-2 pl-4 backdrop-blur-[50px]",
+          "grid h-9.5 w-full place-items-center rounded-full border border-white/30 bg-white/20",
           className,
         )}
       >
-        <div className="flex items-center">
-          <div className="h-4 w-12 rounded bg-white/30" />
-          <div className="mr-2 ml-4 h-5 w-5 rounded-full bg-white/30" />
-          <div className="h-4 w-8 rounded bg-white/30" />
-          <div className="mx-4 h-4 w-px bg-black/10" />
-          <div className="mr-2 h-5 w-5 rounded-full bg-white/30" />
-          <div className="h-4 w-8 rounded bg-white/30" />
-        </div>
-        <div className="h-6.5 w-14.5 rounded-full bg-white/30" />
+        <LoadingSpinner variant="inline" label="보유 티켓 불러오는 중" />
       </section>
     );
   }

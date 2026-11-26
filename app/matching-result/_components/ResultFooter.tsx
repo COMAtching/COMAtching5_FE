@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import { useMatching } from "@/hooks/useMatching";
@@ -80,46 +81,24 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
   };
 
   useEffect(() => {
-    if (isHolding) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setIsTriggered((prevTriggered) => {
-              if (prevTriggered) return prevTriggered;
-
-              // 같은 조건으로 재매칭 실행
-              if (lastPayload) {
-                if (alertIfMatchingBlocked()) {
-                  router.push("/main");
-                  setIsHolding(false);
-                  return true;
-                }
-                match(lastPayload);
-              }
-
-              return true;
-            });
-            setIsHolding(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
+    if (!isHolding || !lastPayload) return;
+    let remaining = 3;
+    const timer = setInterval(() => {
+      remaining -= 1;
+      setTimeLeft(remaining);
+      if (remaining > 0) return;
+      clearInterval(timer);
+      setIsTriggered(true);
+      setIsHolding(false);
+      if (alertIfMatchingBlocked()) router.replace("/main");
+      else match(lastPayload);
+    }, 1000);
+    timerRef.current = timer;
+    return () => clearInterval(timer);
   }, [isHolding, lastPayload, match, router]);
 
   const handleHome = () => {
-    // 메인 홈으로 이동
-    router.push("/main");
+    router.replace("/main");
   };
 
   const handleMailClick = () => {
@@ -201,13 +180,15 @@ const ResultFooter = ({ lastPayload }: ResultFooterProps) => {
           </div>
         )}
         <span className="typo-16-700">
-          {isPending
-            ? "매칭 중..."
-            : isHolding
-              ? `${timeLeft}초간 길게 누르세요 ...`
-              : isTriggered
-                ? "처리 중..."
-                : "같은 조건으로 한번 더 뽑기"}
+          {isPending ? (
+            <LoadingSpinner variant="inline" label="매칭 중" />
+          ) : isHolding ? (
+            `${timeLeft}초간 길게 누르세요 ...`
+          ) : isTriggered ? (
+            <LoadingSpinner variant="inline" label="처리 중" />
+          ) : (
+            "같은 조건으로 한번 더 뽑기"
+          )}
         </span>
       </button>
     </div>

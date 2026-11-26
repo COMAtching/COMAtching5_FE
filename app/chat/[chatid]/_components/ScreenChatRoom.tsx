@@ -1,12 +1,13 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowUp,
   ChevronLeft,
-  Loader2,
   MoreVertical,
   Paperclip,
   UserRound,
@@ -496,7 +497,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
       {isFetchingNextPage && (
         <div className="absolute top-[72px] left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full bg-white/95 p-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
-          <Loader2 className="h-5 w-5 animate-spin text-[#FF4D61]" />
+          <LoadingSpinner variant="inline" label="이전 메시지 불러오는 중" />
         </div>
       )}
 
@@ -511,7 +512,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       >
         {isLoading ? (
           <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-[#FF4D61]" />
+            <LoadingSpinner label="대화 불러오는 중" />
           </div>
         ) : messages.length === 0 ? (
           <div
@@ -608,20 +609,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           )}
           {uploading && (
             <p role="status" className="mb-1 text-center text-xs text-gray-600">
-              이미지 업로드 중…
+              <LoadingSpinner variant="inline" label="이미지 업로드 중" />
             </p>
           )}
           {(!isConnected || sendState !== "idle") && (
             <p role="status" className="mb-1 text-center text-xs text-gray-600">
-              {endReason === "changed"
-                ? "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
-                : endReason === "ended"
-                  ? "실시간 연결이 종료됐어요. 기존 대화 내역을 확인해 주세요."
-                  : sendState === "unconfirmed"
-                    ? "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
-                    : !isConnected
-                      ? "채팅 서버에 연결 중이에요."
-                      : "전송 확인 중…"}
+              {endReason === "changed" ? (
+                "로그인 계정이 바뀌었어요. 채팅방을 새로고침해 주세요."
+              ) : endReason === "ended" ? (
+                "실시간 연결이 종료됐어요. 기존 대화 내역을 확인해 주세요."
+              ) : sendState === "unconfirmed" ? (
+                "전송을 확인하지 못했어요. 대화 내역을 확인해 주세요."
+              ) : !isConnected ? (
+                <LoadingSpinner variant="inline" label="채팅 서버에 연결 중" />
+              ) : (
+                <LoadingSpinner variant="inline" label="전송 확인 중" />
+              )}
             </p>
           )}
           <div className="relative mx-auto flex h-12 w-[calc(100%-32px)] max-w-93.75 items-center rounded-3xl border border-white/30 bg-white/70 pr-[52px] pl-4 shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]">

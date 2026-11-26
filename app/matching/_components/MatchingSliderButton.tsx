@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -152,11 +154,13 @@ export default function MatchingSliderButton({
                 : {}
             }
           >
-            {isLoading
-              ? "매칭 중..."
-              : isActive
-                ? "밀어서 커플되기"
-                : "조건을 선택해 주세요"}
+            {isLoading ? (
+              <LoadingSpinner variant="inline" label="매칭 중" />
+            ) : isActive ? (
+              "밀어서 커플되기"
+            ) : (
+              "조건을 선택해 주세요"
+            )}
           </span>
         </div>
 

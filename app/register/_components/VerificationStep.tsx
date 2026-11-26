@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import { useVerificationMailTimer } from "@/hooks/useVerificationMailTimer";
@@ -80,9 +81,14 @@ export const VerificationStep = ({
           인증번호를 입력해 주세요
         </h1>
         <h2 className="typo-16-500 text-gray-600">
-          {isSending
-            ? `${maskEmail(email)}로 인증번호를 보내는 중이에요`
-            : `${maskEmail(email)}로 인증번호를 보냈어요`}
+          {isSending ? (
+            <LoadingSpinner
+              variant="inline"
+              label={`${maskEmail(email)}로 인증번호 전송 중`}
+            />
+          ) : (
+            `${maskEmail(email)}로 인증번호를 보냈어요`
+          )}
         </h2>
       </div>
 
@@ -114,11 +120,13 @@ export const VerificationStep = ({
               className="bg-bubble-background-white text-color-text-caption1 typo-18-600 h-12 w-[120px] shrink-0"
               shadow={false}
             >
-              {isSending
-                ? "전송 중.."
-                : resendCooldown > 0
-                  ? formatTime(resendCooldown)
-                  : "재전송"}
+              {isSending ? (
+                <LoadingSpinner variant="inline" label="전송 중" />
+              ) : resendCooldown > 0 ? (
+                formatTime(resendCooldown)
+              ) : (
+                "재전송"
+              )}
             </Button>
           </div>
           {errorMessage && (
@@ -142,7 +150,11 @@ export const VerificationStep = ({
             type="submit"
             disabled={verificationCode.length < 6 || isVerifying || isSending}
           >
-            {isVerifying ? "확인 중.." : "인증확인"}
+            {isVerifying ? (
+              <LoadingSpinner variant="inline" label="확인 중" />
+            ) : (
+              "인증확인"
+            )}
           </Button>
         </div>
       </form>

@@ -1,4 +1,6 @@
 "use client";
+
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import BubbleDiv from "@/app/_components/BubbleDiv";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
@@ -70,7 +72,11 @@ export const LoginForm = () => {
           type="submit"
           disabled={isPending || !login?.open}
         >
-          {isPending ? "로그인 중..." : "로그인"}
+          {isPending ? (
+            <LoadingSpinner variant="inline" label="로그인 중" />
+          ) : (
+            "로그인"
+          )}
         </Button>
       </form>
       <div className="typo-14-500 text-color-text-caption2 flex w-full justify-center">

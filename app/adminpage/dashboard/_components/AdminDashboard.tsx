@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -20,7 +22,6 @@ import FailedGrantCard from "./FailedGrantCard";
 import {
   ArrowLeft,
   CreditCard,
-  Loader2,
   Wifi,
   WifiOff,
   RefreshCw,
@@ -181,7 +182,11 @@ export default function AdminDashboard() {
             disabled={refreshing}
             className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium transition-all duration-200 hover:border-[#ff4d61]/40 disabled:opacity-50 sm:px-4 sm:text-sm"
           >
-            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+            {refreshing ? (
+              <LoadingSpinner variant="inline" label="새로고침 중" />
+            ) : (
+              <RefreshCw size={14} aria-hidden="true" />
+            )}
             <span className="hidden sm:inline">새로고침</span>
           </button>
 
@@ -203,8 +208,7 @@ export default function AdminDashboard() {
               </>
             ) : socketStatus === "reconnecting" ? (
               <>
-                <RefreshCw size={14} className="animate-spin" />
-                <span className="hidden sm:inline">재연결 중</span>
+                <LoadingSpinner variant="inline" label="재연결 중" />
               </>
             ) : (
               <>
@@ -257,7 +261,7 @@ export default function AdminDashboard() {
       {notice && <RefundNotice result={notice} />}
       <section hidden={tab !== "bank"} aria-label="자동 승인">
         {bank.isPending && (
-          <p role="status">계좌 자동 승인 상태를 조회하고 있습니다.</p>
+          <LoadingSpinner label="계좌 자동 승인 상태를 조회하고 있습니다" />
         )}
         {bank.isError && (
           <div
@@ -272,11 +276,11 @@ export default function AdminDashboard() {
               disabled={bank.isFetching}
               onClick={() => void bank.refetch()}
             >
-              <RefreshCw
-                size={14}
-                aria-hidden="true"
-                className={bank.isFetching ? "animate-spin" : ""}
-              />
+              {bank.isFetching ? (
+                <LoadingSpinner variant="inline" label="새로고침 중" />
+              ) : (
+                <RefreshCw size={14} aria-hidden="true" />
+              )}
               다시 조회
             </button>
           </div>
@@ -309,12 +313,7 @@ export default function AdminDashboard() {
         <section aria-label="입금 승인 대기">
           {/* 주문 목록 */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <Loader2 size={32} className="text-admin-muted animate-spin" />
-              <p className="text-admin-muted mt-4 text-sm">
-                주문 목록 불러오는 중...
-              </p>
-            </div>
+            <LoadingSpinner label="주문 목록 불러오는 중" />
           ) : ordersError ? (
             <p role="alert">
               대기 주문을 불러오지 못했습니다.{" "}
@@ -360,7 +359,9 @@ export default function AdminDashboard() {
         </section>
       )}
       <section hidden={tab !== "grants"} aria-label="지급 실패 주문">
-        {failed.isPending && <p role="status">지급 실패 목록을 불러오는 중…</p>}
+        {failed.isPending && (
+          <LoadingSpinner label="지급 실패 목록을 불러오는 중" />
+        )}
         {failed.isError && (
           <p role="alert">
             지급 실패 목록을 불러오지 못했습니다. 새로고침으로 다시 조회해
@@ -405,7 +406,9 @@ export default function AdminDashboard() {
       </section>
       {refundTab && (
         <section aria-label={dashboardTabs[tab] + " 주문"}>
-          {refunds.isPending && <p role="status">환불 목록을 불러오는 중…</p>}
+          {refunds.isPending && (
+            <LoadingSpinner label="환불 목록을 불러오는 중" />
+          )}
           {refunds.isError && (
             <p role="alert">
               환불 목록을 불러오지 못했습니다. 새로고침으로 다시 조회해 주세요.

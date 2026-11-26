@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import { type ReactNode, useState } from "react";
 import {
   Activity,
@@ -94,11 +96,11 @@ function RefreshListButton({
       aria-busy={busy}
       onClick={onClick}
     >
-      <RefreshCw
-        size={14}
-        aria-hidden="true"
-        className={busy ? "animate-spin" : ""}
-      />
+      {busy ? (
+        <LoadingSpinner variant="inline" label="새로고침 중" />
+      ) : (
+        <RefreshCw size={14} aria-hidden="true" />
+      )}
       다시 조회
     </button>
   );
@@ -243,11 +245,13 @@ export default function BankApprovalPanel({
             }}
           >
             <Power size={16} aria-hidden="true" />
-            {toggle.isPending
-              ? "변경 중…"
-              : status.enabled
-                ? "자동 승인 끄기"
-                : "자동 승인 켜기"}
+            {toggle.isPending ? (
+              <LoadingSpinner variant="inline" label="변경 중" />
+            ) : status.enabled ? (
+              "자동 승인 끄기"
+            ) : (
+              "자동 승인 켜기"
+            )}
           </button>
         </div>
         <dl className="border-admin-edge bg-admin-subtle/40 grid grid-cols-2 gap-4 border-t px-5 py-4 sm:grid-cols-[2fr_1fr_1fr] sm:px-6">
@@ -345,7 +349,9 @@ export default function BankApprovalPanel({
             미연결 입금을 불러오지 못했습니다.
           </p>
         )}
-        {review.isPending && <p>입금을 조회하고 있습니다.</p>}
+        {review.isPending && (
+          <LoadingSpinner label="입금을 조회하고 있습니다" />
+        )}
         {review.isSuccess && !rows.length && (
           <p className="border-admin-edge bg-admin-subtle/40 text-admin-muted rounded-xl border border-dashed px-4 py-8 text-center">
             {pendingAmountsOnly

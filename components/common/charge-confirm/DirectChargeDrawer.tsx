@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import { useFeatureStates } from "@/stores/features";
 import React from "react";
 import { AxiosError } from "axios";
@@ -270,7 +272,11 @@ export default function DirectChargeDrawer({
                 disabled={!agreed || isPending}
                 onClick={handleConfirmAction}
               >
-                {isPending ? "요청 중..." : "충전 확인 요청하기"}
+                {isPending ? (
+                  <LoadingSpinner variant="inline" label="요청 중" />
+                ) : (
+                  "충전 확인 요청하기"
+                )}
               </Button>
               {onSwitchToToss && (
                 <button

@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useMyProfile } from "@/hooks/useProfile";
@@ -10,11 +12,13 @@ export default function ProfileProgressCard() {
   const router = useRouter();
   const { data: profileResponse, isLoading, isError } = useMyProfile();
 
-  if (isLoading || isError || !profileResponse) {
+  if (isLoading)
     return (
-      <div className="h-[88px] w-full animate-pulse rounded-[20px] border border-white/30 bg-white/30" />
+      <div className="grid h-[88px] w-full place-items-center">
+        <LoadingSpinner variant="inline" label="프로필 불러오는 중" />
+      </div>
     );
-  }
+  if (isError || !profileResponse) return null;
 
   const profile = profileResponse.data;
 

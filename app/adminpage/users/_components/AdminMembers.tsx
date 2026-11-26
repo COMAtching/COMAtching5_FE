@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,7 +14,6 @@ import { AxiosError } from "axios";
 import {
   ArrowLeft,
   Users,
-  Loader2,
   Search,
   Inbox,
   X,
@@ -262,7 +263,7 @@ export default function AdminMembers() {
           className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#06b6d4]/10 transition-all duration-200 hover:shadow-xl hover:shadow-[#06b6d4]/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isRefetching ? (
-            <Loader2 size={16} className="animate-spin" />
+            <LoadingSpinner variant="inline" label="사용자 검색 중" />
           ) : (
             <Search size={16} />
           )}
@@ -272,12 +273,7 @@ export default function AdminMembers() {
 
       {/* 사용자 목록 */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="text-admin-muted animate-spin" />
-          <p className="text-admin-muted mt-4 text-sm">
-            사용자 목록 불러오는 중...
-          </p>
-        </div>
+        <LoadingSpinner label="사용자 목록 불러오는 중" />
       ) : members.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
@@ -770,7 +766,9 @@ export default function AdminMembers() {
                 }
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#3b82f6] py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#06b6d4]/10 transition-all duration-200 hover:shadow-xl hover:shadow-[#06b6d4]/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isSubmitting && <Loader2 size={14} className="animate-spin" />}
+                {isSubmitting && (
+                  <LoadingSpinner variant="inline" label="조정 요청 중" />
+                )}
                 조정 완료
               </button>
             </div>

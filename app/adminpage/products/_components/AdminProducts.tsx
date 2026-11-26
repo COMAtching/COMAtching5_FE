@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -10,7 +12,6 @@ import ProductCreateForm from "./ProductCreateForm";
 import {
   ArrowLeft,
   Package,
-  Loader2,
   Plus,
   Trash2,
   X,
@@ -135,12 +136,7 @@ export default function AdminProducts() {
 
       {/* 상품 목록 */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 size={32} className="text-admin-muted animate-spin" />
-          <p className="text-admin-muted mt-4 text-sm">
-            상품 목록 불러오는 중...
-          </p>
-        </div>
+        <LoadingSpinner label="상품 목록 불러오는 중" />
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">

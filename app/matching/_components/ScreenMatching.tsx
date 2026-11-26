@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import MyCoinSection from "@/components/common/MyCoinSection";
 import { BackButton } from "@/components/ui/BackButton";
 import Image from "next/image";
@@ -103,7 +104,9 @@ const ScreenMatching = () => {
     optionTicketCountOwned >= extraOptionCount
   );
 
-  const bubbleText = isItemsLoading ? null : matchingTicketCount === 0 ? (
+  const bubbleText = isItemsLoading ? (
+    <LoadingSpinner variant="inline" label="보유 티켓 확인 중" />
+  ) : matchingTicketCount === 0 ? (
     "사용할 수 있는 매칭권이 없어요."
   ) : extraOptionCount === 0 ? (
     <Image

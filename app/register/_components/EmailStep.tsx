@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Button from "@/components/ui/Button";
 import FormInput from "@/components/ui/FormInput";
 import { validateEmail } from "@/lib/validators";
@@ -78,7 +79,11 @@ export const EmailStep = ({
 
         <div className="mt-auto">
           <Button shadow={true} type="submit" disabled={isSending}>
-            {isSending ? "전송 중..." : "다음"}
+            {isSending ? (
+              <LoadingSpinner variant="inline" label="전송 중" />
+            ) : (
+              "다음"
+            )}
           </Button>
         </div>
       </form>

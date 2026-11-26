@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import {
   type FailedGrant,
   useOrderGrant,
@@ -62,7 +64,9 @@ export default function FailedGrantCard({
         )}
         {refundStatus === "IN_PROGRESS" && <p>환불 진행 중</p>}
         {refundStatus === "COMPLETED" && <p>환불 완료</p>}
-        {tracking && grant.isPending && <p>현재 지급 상태 확인 중…</p>}
+        {tracking && grant.isPending && (
+          <LoadingSpinner variant="inline" label="현재 지급 상태 확인 중" />
+        )}
         {tracking && grant.isError && (
           <p role="alert">최신 지급 상태를 불러오지 못했습니다.</p>
         )}
@@ -86,7 +90,11 @@ export default function FailedGrantCard({
                 retry.mutate();
               }}
             >
-              {retry.isPending ? "재시도 요청 중…" : "지급 재시도"}
+              {retry.isPending ? (
+                <LoadingSpinner variant="inline" label="재시도 요청 중" />
+              ) : (
+                "지급 재시도"
+              )}
             </button>
             <button
               className="border-admin-line text-admin-ink mt-4 rounded-lg border px-3 py-2 text-sm font-semibold disabled:opacity-50"

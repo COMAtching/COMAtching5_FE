@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +15,7 @@ import ChargeHistoryContent from "@/components/common/charge/ChargeHistoryConten
 import DepositorNameContent from "@/components/common/charge/DepositorNameContent";
 import ChargeTabs from "@/components/common/charge/ChargeTabs";
 import { TABS } from "@/lib/constants/charge";
-import { useFeature, featureMessage } from "@/stores/features";
+import { useFeature } from "@/stores/features";
 
 /* ── Context ── */
 interface ChargeDrawerContextType {
@@ -96,7 +97,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
                   </button>
                 </section>
               ) : activeTab === 0 && !shop ? (
-                <p role="status">{featureMessage("SHOP_PAYMENT")}</p>
+                <LoadingSpinner label="상점 운영 상태 확인 중" />
               ) : (
                 <ActiveContent />
               )}

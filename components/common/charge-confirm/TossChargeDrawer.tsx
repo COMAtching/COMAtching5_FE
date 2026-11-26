@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+
 import { useFeatureStates } from "@/stores/features";
 import React from "react";
 import Image from "next/image";
@@ -314,9 +316,11 @@ export default function TossChargeDrawer({
                 className="order-0 h-[26px] w-[26px] flex-none flex-grow-0 object-contain"
               />
               <span className="order-1 flex h-6 w-auto flex-none flex-grow-0 items-center justify-center text-center font-sans text-xl leading-[24px] font-semibold text-white">
-                {isPending
-                  ? "요청 중..."
-                  : `Toss로 ${totalAmount.toLocaleString()}원 결제하기`}
+                {isPending ? (
+                  <LoadingSpinner variant="inline" label="요청 중" />
+                ) : (
+                  `Toss로 ${totalAmount.toLocaleString()}원 결제하기`
+                )}
               </span>
             </button>
 
