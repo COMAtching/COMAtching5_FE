@@ -40,7 +40,6 @@ import {
   NicknameAvailabilityResponse,
 } from "@/hooks/useNicknameAvailability";
 import axios from "axios";
-import { withdrawAction } from "@/lib/actions/authAction";
 
 /* ───── 상수 맵핑 ───── */
 

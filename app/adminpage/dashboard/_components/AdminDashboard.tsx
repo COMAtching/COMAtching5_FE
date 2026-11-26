@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import {
   type FailedGrant,
@@ -14,6 +15,7 @@ import {
 import { useAdminOrderSocket } from "@/hooks/admin/useAdminOrderSocket";
 import { RefundNotice } from "./RefundNotice";
 import OrderCard, { RefundOrderCard } from "./OrderCard";
+import BankApprovalPanel, { useBankStatus } from "./BankApprovalPanel";
 import FailedGrantCard from "./FailedGrantCard";
 import {
   ArrowLeft,
@@ -26,6 +28,7 @@ import {
 } from "lucide-react";
 
 const dashboardTabs = {
+  bank: "자동 승인",
   orders: "입금 승인 대기",
   grants: "지급 실패",
   IN_PROGRESS: "환불 진행 중",
@@ -34,13 +37,20 @@ const dashboardTabs = {
 type DashboardTab = keyof typeof dashboardTabs;
 
 export default function AdminDashboard() {
+  const [ordersPage, setOrdersPage] = React.useState(0);
   const {
     data: ordersData,
     isLoading,
+    isError: ordersError,
     refetch,
     isRefetching,
-  } = useAdminOrders();
-  const [tab, setTab] = React.useState<DashboardTab>("orders");
+  } = useAdminOrders(ordersPage);
+  const bank = useBankStatus();
+  const [selectedBankOrder, setSelectedBankOrder] = React.useState<
+    number | null
+  >(null);
+  const [tab, setTab] = React.useState<DashboardTab>("bank");
+  const client = useQueryClient();
   const [page, setPage] = React.useState(0);
   const [tracked, setTracked] = React.useState<FailedGrant[]>([]);
   const failed = useFailedGrants(page, tab === "grants");
@@ -109,22 +119,18 @@ export default function AdminDashboard() {
     ),
   ];
   const activeList = refundTab ? refunds : failed;
-  const refreshing = tab === "orders" ? isRefetching : activeList.isFetching;
+  const refreshing =
+    tab === "bank"
+      ? bank.isFetching
+      : tab === "orders"
+        ? isRefetching
+        : activeList.isFetching;
   const { status: socketStatus } = useAdminOrderSocket();
 
-  // useAdminOrders가 이미 content 배열만 추출하여 반환하므로 바로 사용
-  const orders = ordersData ?? [];
-
-  // PENDING 주문을 먼저, 나머지는 뒤에
-  const sortedOrders = [...orders].sort((a, b) => {
-    if (a.status === "PENDING" && b.status !== "PENDING") return -1;
-    if (a.status !== "PENDING" && b.status === "PENDING") return 1;
-    return (
-      new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
-    );
-  });
-
-  const pendingCount = orders.filter((o) => o.status === "PENDING").length;
+  const orders = ordersData?.content ?? [];
+  const lastOrdersPage = ordersData && Math.max(0, ordersData.totalPages - 1);
+  if (lastOrdersPage !== undefined && ordersPage > lastOrdersPage)
+    setOrdersPage(lastOrdersPage);
 
   return (
     <div className="mx-auto min-h-dvh max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -133,7 +139,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-3">
           <Link
             href="/adminpage/main"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] transition-colors duration-200 hover:border-[#ff4d61]/40 hover:text-white"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200 hover:border-[#ff4d61]/40"
           >
             <ArrowLeft size={18} />
           </Link>
@@ -142,13 +148,13 @@ export default function AdminDashboard() {
               <CreditCard size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white sm:text-xl">
+              <h1 className="text-admin-ink text-lg font-bold sm:text-xl">
                 결제 승인 관리
               </h1>
-              <p className="text-xs text-[#6b7094]">
+              <p className="text-admin-muted text-xs">
                 대기 중인 요청{" "}
-                <span className="font-semibold text-[#ff4d61]">
-                  {pendingCount}
+                <span className="text-admin-danger font-semibold">
+                  {ordersData?.totalElements.toLocaleString("ko-KR") ?? "—"}
                 </span>
                 건
               </p>
@@ -160,11 +166,20 @@ export default function AdminDashboard() {
           {/* 새로고침 */}
           <button
             aria-label="새로고침"
-            onClick={() =>
-              tab === "orders" ? refetch() : activeList.refetch()
-            }
+            onClick={() => {
+              if (tab === "bank") {
+                for (const key of [
+                  "bankStatus",
+                  "bankReview",
+                  "bankRecentObservations",
+                ]) {
+                  void client.invalidateQueries({ queryKey: [key] });
+                }
+              } else if (tab === "orders") void refetch();
+              else void activeList.refetch();
+            }}
             disabled={refreshing}
-            className="flex items-center gap-2 rounded-xl border border-[#2a2d42] bg-[#161827] px-3 py-2.5 text-xs font-medium text-[#8b8fa3] transition-all duration-200 hover:border-[#ff4d61]/40 hover:text-white disabled:opacity-50 sm:px-4 sm:text-sm"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium transition-all duration-200 hover:border-[#ff4d61]/40 disabled:opacity-50 sm:px-4 sm:text-sm"
           >
             <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
             <span className="hidden sm:inline">새로고침</span>
@@ -174,10 +189,10 @@ export default function AdminDashboard() {
           <div
             className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium sm:px-4 sm:text-sm ${
               socketStatus === "connected"
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                ? "text-admin-success border-emerald-500/30 bg-emerald-500/10"
                 : socketStatus === "reconnecting"
-                  ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                  : "border-red-500/30 bg-red-500/10 text-red-400"
+                  ? "text-admin-warning border-amber-500/30 bg-amber-500/10"
+                  : "text-admin-danger border-red-500/30 bg-red-500/10"
             }`}
           >
             {socketStatus === "connected" ? (
@@ -202,7 +217,7 @@ export default function AdminDashboard() {
       </header>
 
       {failureCount > 0 && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="text-admin-danger mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm">
           <p role="alert">
             {onlyFailedOrder
               ? `주문 #${onlyFailedOrder.orderId}의 입금은 승인됐지만 아이템 지급에 실패했습니다.`
@@ -221,7 +236,7 @@ export default function AdminDashboard() {
       )}
 
       <div
-        className="mb-6 flex flex-wrap gap-2 border-b border-[#2a2d42] pb-3"
+        className="border-admin-line mb-6 flex flex-wrap gap-2 border-b pb-3"
         aria-label="결제 관리 목록"
         role="group"
       >
@@ -230,7 +245,7 @@ export default function AdminDashboard() {
             key={value}
             aria-pressed={tab === value}
             onClick={() => selectTab(value)}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-[#a4a8bc] aria-pressed:bg-[#2a2d42] aria-pressed:text-white"
+            className="text-admin-secondary aria-pressed:bg-admin-subtle aria-pressed:text-admin-ink rounded-lg px-4 py-2 text-sm font-semibold"
           >
             {dashboardTabs[value]}
             {value === "grants" &&
@@ -240,35 +255,110 @@ export default function AdminDashboard() {
         ))}
       </div>
       {notice && <RefundNotice result={notice} />}
-      <section hidden={tab !== "orders"} aria-label="입금 승인 대기">
-        {/* 주문 목록 */}
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-24">
-            <Loader2 size={32} className="animate-spin text-[#6b7094]" />
-            <p className="mt-4 text-sm text-[#6b7094]">
-              주문 목록 불러오는 중...
-            </p>
-          </div>
-        ) : sortedOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#161827]">
-              <Inbox size={28} className="text-[#4a4e69]" />
-            </div>
-            <p className="text-base font-medium text-[#6b7094]">
-              대기 중인 결제 요청이 없습니다
-            </p>
-            <p className="mt-1 text-sm text-[#4a4e69]">
-              새로운 요청이 들어오면 실시간으로 표시됩니다
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {sortedOrders.map((order) => (
-              <OrderCard key={order.requestId} order={order} />
-            ))}
+      <section hidden={tab !== "bank"} aria-label="자동 승인">
+        {bank.isPending && (
+          <p role="status">계좌 자동 승인 상태를 조회하고 있습니다.</p>
+        )}
+        {bank.isError && (
+          <div
+            role="alert"
+            className="bg-admin-panel border-admin-line flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4"
+          >
+            <span className="text-admin-danger">
+              계좌 자동 승인 상태를 확인할 수 없습니다.
+            </span>
+            <button
+              className="border-admin-line text-admin-secondary hover:bg-admin-hover inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold"
+              disabled={bank.isFetching}
+              onClick={() => void bank.refetch()}
+            >
+              <RefreshCw
+                size={14}
+                aria-hidden="true"
+                className={bank.isFetching ? "animate-spin" : ""}
+              />
+              다시 조회
+            </button>
           </div>
         )}
+        {bank.isSuccess && !bank.data && (
+          <p className="text-admin-secondary">
+            이 서버에서는 계좌 자동 승인 기능을 사용하지 않습니다.
+          </p>
+        )}
+        {bank.isSuccess && bank.data && (
+          <BankApprovalPanel
+            active={tab === "bank"}
+            status={bank.data}
+            orders={orders}
+            selectedOrder={selectedBankOrder}
+            onSelect={setSelectedBankOrder}
+            orderPages={
+              ordersData && (
+                <ListPages
+                  data={ordersData}
+                  label="연결할 대기 주문 페이지"
+                  setPage={setOrdersPage}
+                />
+              )
+            }
+          />
+        )}
       </section>
+      {tab === "orders" && (
+        <section aria-label="입금 승인 대기">
+          {/* 주문 목록 */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-24">
+              <Loader2 size={32} className="text-admin-muted animate-spin" />
+              <p className="text-admin-muted mt-4 text-sm">
+                주문 목록 불러오는 중...
+              </p>
+            </div>
+          ) : ordersError ? (
+            <p role="alert">
+              대기 주문을 불러오지 못했습니다.{" "}
+              <button onClick={() => void refetch()}>다시 조회</button>
+            </p>
+          ) : orders.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="bg-admin-panel mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+                <Inbox size={28} className="text-admin-muted" />
+              </div>
+              <p className="text-admin-muted text-base font-medium">
+                대기 중인 결제 요청이 없습니다
+              </p>
+              <p className="text-admin-muted mt-1 text-sm">
+                새로운 요청이 들어오면 실시간으로 표시됩니다
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {orders.map((order) => (
+                <OrderCard
+                  key={order.requestId}
+                  order={order}
+                  onSelectDeposit={
+                    bank.data?.enabled
+                      ? () => {
+                          setSelectedBankOrder(order.requestId);
+                          selectTab("bank");
+                        }
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          )}
+          {ordersData && (
+            <ListPages
+              data={ordersData}
+              label="승인 대기 주문 페이지"
+              setPage={setOrdersPage}
+            />
+          )}
+        </section>
+      )}
       <section hidden={tab !== "grants"} aria-label="지급 실패 주문">
         {failed.isPending && <p role="status">지급 실패 목록을 불러오는 중…</p>}
         {failed.isError && (
@@ -278,7 +368,7 @@ export default function AdminDashboard() {
           </p>
         )}
         {failed.isSuccess && failed.data.totalElements === 0 && (
-          <p className="mb-4 text-sm text-[#a4a8bc]">
+          <p className="text-admin-secondary mb-4 text-sm">
             현재 지급 실패 주문이 없습니다.
           </p>
         )}
@@ -286,12 +376,12 @@ export default function AdminDashboard() {
           {grantRows.map((order, index) => (
             <React.Fragment key={order.orderId}>
               {tracked.length > 0 && index === 0 && (
-                <h2 className="col-span-full text-sm font-semibold text-[#a4a8bc]">
+                <h2 className="text-admin-secondary col-span-full text-sm font-semibold">
                   재시도한 주문
                 </h2>
               )}
               {tracked.length > 0 && index === tracked.length && (
-                <h2 className="col-span-full text-sm font-semibold text-[#a4a8bc]">
+                <h2 className="text-admin-secondary col-span-full text-sm font-semibold">
                   그 밖의 지급 실패 주문
                 </h2>
               )}
@@ -322,14 +412,14 @@ export default function AdminDashboard() {
             </p>
           )}
           {refunds.isSuccess && refunds.data.totalElements === 0 && (
-            <p className="text-sm text-[#a4a8bc]">
+            <p className="text-admin-secondary text-sm">
               {dashboardTabs[tab]} 주문이 없습니다.
             </p>
           )}
           {refunds.data && (
             <>
               {refunds.data.totalElements > 0 && (
-                <p className="mb-3 text-sm text-[#a4a8bc]">
+                <p className="text-admin-secondary mb-3 text-sm">
                   전체 {refunds.data.totalElements.toLocaleString("ko-KR")}건
                 </p>
               )}

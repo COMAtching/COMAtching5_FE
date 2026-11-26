@@ -1,4 +1,5 @@
 "use client";
+import { useVerificationMailTimer } from "@/hooks/useVerificationMailTimer";
 
 import React, { useState, useEffect, startTransition } from "react";
 
@@ -14,8 +15,8 @@ const ScreenVerificationPage = () => {
   const { isPending: isSending } = sendCodeMutation;
 
   const [verificationCode, setVerificationCode] = useState("");
-  const [timeLeft, setTimeLeft] = useState(300);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const { timeLeft, resendCooldown, markSent, onFailure } =
+    useVerificationMailTimer();
   const [errorMessage, setErrorMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -30,35 +31,20 @@ const ScreenVerificationPage = () => {
     }
 
     try {
-      const { email: emailToVerify } = JSON.parse(savedData);
+      const { email: emailToVerify, sentAt } = JSON.parse(savedData);
       if (!emailToVerify) {
         alert("잘못된 접근입니다.");
         router.replace("/reset/password");
       } else {
         startTransition(() => {
+          if (typeof sentAt === "number") markSent(sentAt);
           setIsAuthorized(true);
         });
       }
     } catch {
       router.replace("/reset/password");
     }
-  }, [router]);
-
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const cooldownTimer = setInterval(() => {
-      setResendCooldown((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(cooldownTimer);
-  }, [resendCooldown]);
+  }, [router, markSent]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -79,18 +65,21 @@ const ScreenVerificationPage = () => {
     const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
     if (!savedData) return;
     const { email } = JSON.parse(savedData);
-    if (!email) return;
+    if (!email || isSending || resendCooldown > 0) return;
 
     sendCodeMutation.mutate(email, {
       onSuccess: () => {
-        setTimeLeft(300);
-        setResendCooldown(180);
+        const sentAt = Date.now();
+        markSent(sentAt);
+        setVerificationCode("");
+        sessionStorage.setItem(
+          "COMATCHING_PW_RESET",
+          JSON.stringify({ email, sentAt, authCode: "", isVerified: false }),
+        );
         setErrorMessage("");
       },
       onError: (error) => {
-        setErrorMessage(
-          error.message || "재전송에 실패했습니다. 다시 시도해 주세요.",
-        );
+        setErrorMessage(onFailure(error));
       },
     });
   };

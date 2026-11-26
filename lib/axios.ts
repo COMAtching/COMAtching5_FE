@@ -1,81 +1,88 @@
 import axios from "axios";
 
-// 1. 공통 설정 (URL, 헤더 등)
-// 개발 환경에서는 프록시(rewrites)를 타도록 빈 문자열 지정 (브라우저가 알아서 localhost:3000으로 보냄)
-const API_URL =
-  process.env.NODE_ENV === "development"
-    ? ""
-    : process.env.NEXT_PUBLIC_API_URL || "https://srv.comatching.site";
+import {
+  BROWSER_API_URL,
+  handleBrowserSessionEnd,
+  confirmBrowserSession,
+  EXPECTED_SESSION,
+  forgetBrowserSession,
+  requestSessionOwner,
+} from "@/lib/browser-session";
+import { useFeatureStates } from "@/stores/features";
 
-const axiosConfig = {
-  baseURL: API_URL,
+export const api = axios.create({
+  baseURL: BROWSER_API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
-};
+});
 
-// 2. 클라이언트용(CSR) 인스턴스 생성 및 export
-export const api = axios.create(axiosConfig);
+function isProtected(path: string | undefined) {
+  const route = path?.split(/[?#]/, 1)[0] ?? "";
+  return (
+    /^\/api\/(?:members|items|matching|chat|fcm|notices|v1)(?:\/|$)/.test(
+      route,
+    ) ||
+    /^\/api\/auth\/(?:session|signup\/profile|password\/change|withdraw|logout)$/.test(
+      route,
+    )
+  );
+}
 
-// 🚨 토큰 재발급 중복 요청 방지를 위한 변수 및 대기 큐
-let isRefreshing = false;
-let refreshSubscribers: (() => void)[] = [];
-
-const subscribeTokenRefresh = (cb: () => void) => {
-  refreshSubscribers.push(cb);
-};
-
-const onRefreshed = () => {
-  refreshSubscribers.forEach((cb) => cb());
-  refreshSubscribers = [];
-};
-
-// 3. 응답 인터셉터: 401 에러 시 토큰 자동 재발급
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // 401 에러 && 재발급 시도 전 && 재발급 API가 아닐 때
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/reissue") &&
-      originalRequest.url !== "/api/auth/logout"
-    ) {
-      originalRequest._retry = true;
-
-      // 이미 재발급 요청이 진행 중이라면, 완료될 때까지 대기 큐에서 기다린 후 원래 요청 재시도
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh(() => {
-            resolve(api(originalRequest));
-          });
-        });
-      }
-
-      isRefreshing = true;
-
-      try {
-        // refreshToken으로 새 accessToken 발급 (withCredentials로 쿠키 자동 전송)
-        await api.post("/api/auth/reissue");
-        isRefreshing = false;
-
-        // 대기 중인 모든 요청 재실행
-        onRefreshed();
-
-        // 원래 요청 재시도
-        return api(originalRequest);
-      } catch (reissueError) {
-        isRefreshing = false;
-        refreshSubscribers = []; // 대기 큐 비우기
-
-        // 재발급 실패 → 로그인 페이지로 리다이렉트
-        alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-        window.location.href = "/";
-        return Promise.reject(reissueError);
-      }
+api.interceptors.request.use(async (config) => {
+  if (
+    typeof window !== "undefined" &&
+    isProtected(config.url) &&
+    !config.headers.has(EXPECTED_SESSION)
+  ) {
+    try {
+      config.headers.set(EXPECTED_SESSION, await requestSessionOwner());
+    } catch (error) {
+      handleBrowserSessionEnd(error);
+      throw error;
     }
+  }
+  return config;
+});
 
-    return Promise.reject(error);
+api.interceptors.response.use(
+  (response) => {
+    if (
+      response.config.url === "/api/auth/logout" ||
+      response.config.url === "/api/auth/withdraw"
+    ) {
+      const owner = response.config.headers.get(EXPECTED_SESSION);
+      if (typeof owner === "string") forgetBrowserSession(owner);
+    }
+    return response;
+  },
+  async (error) => {
+    if (
+      error.response?.data?.code === "FEATURE_CLOSED" &&
+      error.response.data.data
+    )
+      useFeatureStates.getState().update([error.response.data.data]);
+
+    const original = error.config;
+    const expected = original?.headers?.get?.(EXPECTED_SESSION);
+    if (
+      typeof expected !== "string" ||
+      original._retry ||
+      (error.response?.status !== 401 && error.response?.status !== 403)
+    )
+      throw error;
+    original._retry = true;
+    try {
+      await confirmBrowserSession(expected);
+    } catch (sessionError) {
+      handleBrowserSessionEnd(sessionError);
+      throw sessionError;
+    }
+    if (
+      error.response.status === 403 ||
+      original.url === "/api/auth/logout" ||
+      original.signal?.aborted
+    )
+      throw error;
+    return api(original);
   },
 );

@@ -38,17 +38,17 @@ export default function GiftCardItem({ giftCard }: GiftCardItemProps) {
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border border-amber-500/20 bg-[#161827]/80 shadow-amber-500/5 transition-all duration-300 hover:bg-[#1a1d32]`}
+      className={`bg-admin-panel/80 hover:bg-admin-hover relative flex flex-col rounded-2xl border border-amber-500/20 shadow-amber-500/5 transition-all duration-300`}
     >
       {/* 상단: 상태 배지 */}
       <div className="flex items-center justify-between px-5 pt-5">
         <span
-          className={`inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-wider text-amber-400 uppercase`}
+          className={`text-admin-warning inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase`}
         >
           <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
           미지급
         </span>
-        <span className="text-[11px] font-bold text-[#ec4899]">
+        <span className="text-admin-pink text-[11px] font-bold">
           {giftCard.rouletteType === "SPECIAL" ? "스페셜 룰렛" : "무료 룰렛"}
         </span>
       </div>
@@ -57,10 +57,10 @@ export default function GiftCardItem({ giftCard }: GiftCardItemProps) {
       <div className="flex flex-col gap-3 px-5 py-4">
         {/* 상품명 */}
         <div className="flex items-start gap-2.5">
-          <Gift size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+          <Gift size={15} className="text-admin-muted mt-0.5 shrink-0" />
           <div>
-            <p className="text-[11px] text-[#4a4e69]">당첨 상품</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-admin-muted text-[11px]">당첨 상품</p>
+            <p className="text-admin-ink text-sm font-semibold">
               {giftCard.rewardName}
             </p>
           </div>
@@ -68,12 +68,12 @@ export default function GiftCardItem({ giftCard }: GiftCardItemProps) {
 
         {/* 당첨자 정보 */}
         <div className="flex items-start gap-2.5">
-          <User size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+          <User size={15} className="text-admin-muted mt-0.5 shrink-0" />
           <div>
-            <p className="text-[11px] text-[#4a4e69]">당첨자</p>
-            <p className="text-sm font-medium text-white">
+            <p className="text-admin-muted text-[11px]">당첨자</p>
+            <p className="text-admin-ink text-sm font-medium">
               {giftCard.realName}
-              <span className="ml-1.5 text-xs text-[#6b7094]">
+              <span className="text-admin-muted ml-1.5 text-xs">
                 ({giftCard.nickname})
               </span>
             </p>
@@ -82,31 +82,31 @@ export default function GiftCardItem({ giftCard }: GiftCardItemProps) {
 
         {/* 이메일 */}
         <div className="flex items-start gap-2.5">
-          <AtSign size={15} className="mt-0.5 shrink-0 text-[#6b7094]" />
+          <AtSign size={15} className="text-admin-muted mt-0.5 shrink-0" />
           <div>
-            <p className="text-[11px] text-[#4a4e69]">이메일</p>
-            <p className="text-sm font-medium text-[#8b8fa3]">
+            <p className="text-admin-muted text-[11px]">이메일</p>
+            <p className="text-admin-secondary text-sm font-medium">
               {giftCard.email}
             </p>
           </div>
         </div>
 
         {/* 당첨 시간 */}
-        <div className="mt-1 flex items-center gap-2.5 text-[11px] text-[#4a4e69]">
+        <div className="text-admin-muted mt-1 flex items-center gap-2.5 text-[11px]">
           <Clock size={12} className="shrink-0" />
           <span>{formatDateTime(giftCard.participatedAt)} 당첨</span>
         </div>
       </div>
 
       {/* 액션 버튼 */}
-      <div className="flex gap-2 border-t border-[#1e2030] px-5 py-4">
+      <div className="border-admin-edge flex gap-2 border-t px-5 py-4">
         <button
           onClick={handleGrant}
           disabled={isProcessing}
           className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all duration-200 ${
             confirmAction
               ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-              : "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+              : "text-admin-success border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
           } disabled:cursor-not-allowed disabled:opacity-50`}
         >
           <Check size={16} />

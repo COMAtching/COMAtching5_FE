@@ -1,4 +1,5 @@
 "use client";
+import { verificationMailError } from "@/hooks/useVerificationMailTimer";
 import { BackButton } from "@/components/ui/BackButton";
 import { useSendEmail } from "@/hooks/useSendEmail";
 import { useSignUp } from "@/hooks/useSignUp";
@@ -17,24 +18,23 @@ export const ScreenRegister = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
 
-  const { mutate: sendEmail, isPending: isSendingEmail } = useSendEmail();
+  const {
+    mutate: sendEmail,
+    mutateAsync: resendEmail,
+    isPending: isSendingEmail,
+  } = useSendEmail();
   const { verify, isPending: isVerifyingEmail } = useVerifyEmail();
   const { mutate: signUp, isPending: isSigningUp } = useSignUp();
 
   const handleEmailSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setVerificationCode("");
-    setStep(2);
-
+    if (isSendingEmail) return;
     sendEmail(email, {
-      onError: (error) => {
-        const message =
-          axios.isAxiosError(error) && error.response?.data?.message
-            ? error.response.data.message
-            : "이메일 전송에 실패했습니다. 다시 시도해주세요.";
-        alert(message);
-        setStep(1);
+      onSuccess: () => {
+        setVerificationCode("");
+        setStep(2);
       },
+      onError: (error) => alert(verificationMailError(error)),
     });
   };
 
@@ -91,12 +91,6 @@ export const ScreenRegister = () => {
     );
   };
 
-  const handleResendCode = () => {
-    sendEmail(email, {
-      onError: () => alert("재전송에 실패했습니다. 다시 시도해주세요."),
-    });
-  };
-
   return (
     <main className="flex min-h-dvh flex-col items-start px-4 pt-2 pb-[6.2vh]">
       <BackButton text="회원가입" />
@@ -114,7 +108,7 @@ export const ScreenRegister = () => {
           verificationCode={verificationCode}
           onVerificationCodeChange={setVerificationCode}
           onVerify={handleVerify}
-          onResend={handleResendCode}
+          onResend={() => resendEmail(email)}
           isSending={isSendingEmail}
           isVerifying={isVerifyingEmail}
         />

@@ -72,6 +72,15 @@ const MENU_ITEMS = [
     active: true,
     gradient: "from-[#ec4899] to-[#be185d]",
   },
+  {
+    id: "operations",
+    title: "기능 운영",
+    description: "서비스 전체와 채팅·매칭·상점 운영 상태를 변경합니다",
+    icon: Shield,
+    href: "/adminpage/operations",
+    active: true,
+    gradient: "from-slate-600 to-slate-800",
+  },
 ];
 
 export default function AdminMainScreen() {
@@ -101,10 +110,10 @@ export default function AdminMainScreen() {
             <Shield size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <h1 className="text-admin-ink text-xl font-bold tracking-tight sm:text-2xl">
               관리자 콘솔
             </h1>
-            <p className="text-xs text-[#6b7094] sm:text-sm">
+            <p className="text-admin-muted text-xs sm:text-sm">
               COMAtching Admin Dashboard
             </p>
           </div>
@@ -114,7 +123,7 @@ export default function AdminMainScreen() {
           onClick={handleLogout}
           disabled={loggingOut}
           aria-label="로그아웃"
-          className="flex items-center gap-2 rounded-xl border border-[#2a2d42] bg-[#161827] px-4 py-2.5 text-sm font-medium text-[#8b8fa3] transition-all duration-200 hover:border-[#ff4d61]/40 hover:text-[#ff4d61]"
+          className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-danger flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:border-[#ff4d61]/40"
         >
           <LogOut size={16} />
           <span className="hidden sm:inline">
@@ -124,14 +133,14 @@ export default function AdminMainScreen() {
       </header>
 
       {logoutFailed && (
-        <p role="alert" className="mb-4 text-sm text-red-300">
+        <p role="alert" className="text-admin-danger mb-4 text-sm">
           로그아웃하지 못했습니다. 다시 시도해주세요.
         </p>
       )}
 
       {/* 메뉴 그리드 */}
       <section>
-        <h2 className="mb-5 text-sm font-semibold tracking-wider text-[#6b7094] uppercase">
+        <h2 className="text-admin-muted mb-5 text-sm font-semibold tracking-wider uppercase">
           관리 메뉴
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

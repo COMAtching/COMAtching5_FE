@@ -1,5 +1,13 @@
 import type { NextConfig } from "next";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+const developmentSources = isDevelopment
+  ? " http://localhost:8080 http://127.0.0.1:8080"
+  : "";
+const developmentSockets = isDevelopment
+  ? " ws://localhost:8080 ws://127.0.0.1:8080 ws://localhost:3000 ws://127.0.0.1:3000"
+  : "";
+
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
@@ -26,10 +34,14 @@ const nextConfig: NextConfig = {
           // 외부 사이트로 이동할 때 Referer 헤더에 전체 URL 노출 방지
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           // HTTPS만 허용 (1년), 서브도메인 포함
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains",
-          },
+          ...(isDevelopment
+            ? []
+            : [
+                {
+                  key: "Strict-Transport-Security",
+                  value: "max-age=31536000; includeSubDomains",
+                },
+              ]),
           // 브라우저 기능 권한 제한 (카메라·마이크·위치 등 불필요한 기능 차단)
           {
             key: "Permissions-Policy",
@@ -44,9 +56,12 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
               "style-src 'self' 'unsafe-inline'",
               // 이미지: S3, NCP, 백엔드, Google Analytics 도메인 허용
-              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.googletagmanager.com",
+              "img-src 'self' data: blob: https://comatching.site https://srv.comatching.site https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.googletagmanager.com" +
+                developmentSources,
               // API, WebSocket, 스토리지(S3/NCP), Google Analytics 직접 통신 허용 도메인
-              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+              "connect-src 'self' https://comatching.site https://srv.comatching.site wss://srv.comatching.site https://*.googleapis.com https://*.firebaseio.com https://comatching5.s3.ap-northeast-2.amazonaws.com https://*.amazonaws.com https://*.ncloudstorage.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" +
+                developmentSources +
+                developmentSockets,
               // Firebase FCM
               "worker-src 'self' blob:",
               "frame-ancestors 'none'",
@@ -64,8 +79,7 @@ const nextConfig: NextConfig = {
     // 프로덕션 배포 환경에서는 rewrites 불필요 (백엔드와 직접 통신)
     if (process.env.NODE_ENV === "production") return [];
 
-    const backendUrl =
-      process.env.SERVER_API_URL || "https://srv.comatching.site";
+    const backendUrl = process.env.SERVER_API_URL || "http://localhost:8080";
 
     return [
       {
@@ -79,7 +93,16 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    dangerouslyAllowLocalIP: isDevelopment,
     remotePatterns: [
+      ...(isDevelopment
+        ? ["localhost", "127.0.0.1"].map((hostname) => ({
+            protocol: "http" as const,
+            hostname,
+            port: "8080",
+            pathname: "/api/public/profile-images/**",
+          }))
+        : []),
       {
         protocol: "https",
         hostname: "comatching.site",

@@ -15,7 +15,7 @@ export default function AdminLoginForm() {
       <div className="flex flex-col gap-2">
         <label
           htmlFor="admin-email"
-          className="text-sm font-medium text-[#a0a3bd]"
+          className="text-admin-secondary text-sm font-medium"
         >
           아이디
         </label>
@@ -26,7 +26,7 @@ export default function AdminLoginForm() {
           placeholder="아이디 입력"
           required
           autoComplete="username"
-          className="h-12 w-full rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 text-sm font-medium text-white placeholder-[#4a4e69] transition-all duration-200 outline-none focus:border-[#ff4d61] focus:ring-1 focus:ring-[#ff4d61]/30"
+          className="border-admin-line bg-admin-canvas text-admin-ink placeholder:text-admin-muted h-12 w-full rounded-xl border px-4 text-sm font-medium transition-all duration-200 outline-none focus:border-[#ff4d61] focus:ring-1 focus:ring-[#ff4d61]/30"
         />
       </div>
 
@@ -34,7 +34,7 @@ export default function AdminLoginForm() {
       <div className="relative flex flex-col gap-2">
         <label
           htmlFor="admin-password"
-          className="text-sm font-medium text-[#a0a3bd]"
+          className="text-admin-secondary text-sm font-medium"
         >
           비밀번호
         </label>
@@ -45,10 +45,10 @@ export default function AdminLoginForm() {
           placeholder="비밀번호 입력"
           required
           autoComplete="current-password"
-          className="h-12 w-full rounded-xl border border-[#2a2d42] bg-[#0f1117] px-4 text-sm font-medium text-white placeholder-[#4a4e69] transition-all duration-200 outline-none focus:border-[#ff4d61] focus:ring-1 focus:ring-[#ff4d61]/30"
+          className="border-admin-line bg-admin-canvas text-admin-ink placeholder:text-admin-muted h-12 w-full rounded-xl border px-4 text-sm font-medium transition-all duration-200 outline-none focus:border-[#ff4d61] focus:ring-1 focus:ring-[#ff4d61]/30"
         />
         {!state.success && state.message && (
-          <span className="absolute -bottom-5 left-0 text-xs font-medium text-[#ff4d61]">
+          <span className="text-admin-danger absolute -bottom-5 left-0 text-xs font-medium">
             * {state.message}
           </span>
         )}

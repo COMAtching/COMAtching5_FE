@@ -17,6 +17,6 @@ const sendEmail = async (email: string): Promise<SendEmailResponse> => {
 export const useSendEmail = () => {
   return useMutation({
     mutationFn: sendEmail,
-    retry: 1,
+    retry: false,
   });
 };

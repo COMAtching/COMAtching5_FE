@@ -146,7 +146,7 @@ export default function AdminStats() {
         <div className="flex items-center gap-3">
           <Link
             href="/adminpage/main"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#2a2d42] bg-[#161827] text-[#8b8fa3] transition-colors duration-200 hover:border-[#f59e0b]/40 hover:text-white"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200 hover:border-[#f59e0b]/40"
           >
             <ArrowLeft size={18} />
           </Link>
@@ -155,10 +155,10 @@ export default function AdminStats() {
               <TrendingUp size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="font-sans text-lg font-bold text-white sm:text-xl">
+              <h1 className="text-admin-ink font-sans text-lg font-bold sm:text-xl">
                 서비스 이용 통계
               </h1>
-              <p className="text-xs text-[#6b7094]">
+              <p className="text-admin-muted text-xs">
                 전체 가입자 분석 및 성비 데이터 현황
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function AdminStats() {
           <button
             onClick={() => refetch()}
             disabled={isLoading || isRefetching}
-            className="flex items-center gap-2 rounded-xl border border-[#2a2d42] bg-[#161827] px-3.5 py-2.5 text-xs font-semibold text-[#8b8fa3] transition-all duration-200 hover:border-[#f59e0b]/40 hover:text-white disabled:opacity-50"
+            className="border-admin-line bg-admin-panel text-admin-secondary hover:text-admin-ink flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 hover:border-[#f59e0b]/40 disabled:opacity-50"
           >
             <RefreshCw
               size={14}
@@ -183,8 +183,8 @@ export default function AdminStats() {
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-32">
-          <Loader2 size={40} className="animate-spin text-[#f59e0b]" />
-          <p className="mt-4 text-sm text-[#8b8fa3]">
+          <Loader2 size={40} className="text-admin-warning animate-spin" />
+          <p className="text-admin-secondary mt-4 text-sm">
             실시간 전체 가입자 데이터를 가공 중입니다...
           </p>
         </div>
@@ -193,70 +193,76 @@ export default function AdminStats() {
           {/* 주요 지표 요약 (Key Metrics) */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* 전체 사용자 카드 */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-5 transition-all duration-300 hover:border-[#2a2d42] hover:bg-[#1a1d32]">
+            <div className="border-admin-edge bg-admin-panel/80 hover:border-admin-line hover:bg-admin-hover relative overflow-hidden rounded-2xl border p-5 transition-all duration-300">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-[#6b7094] uppercase">
+                <span className="text-admin-muted text-xs font-bold tracking-wider uppercase">
                   전체 사용자
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+                <div className="text-admin-warning flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
                   <Users size={16} />
                 </div>
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-white sm:text-3xl">
+                <span className="text-admin-ink text-2xl font-extrabold sm:text-3xl">
                   {stats.total}
                 </span>
-                <span className="text-sm font-semibold text-[#8b8fa3]">명</span>
+                <span className="text-admin-secondary text-sm font-semibold">
+                  명
+                </span>
               </div>
-              <p className="mt-1 text-[11px] text-[#4a4e69]">
+              <p className="text-admin-muted mt-1 text-[11px]">
                 COMAtching 가입완료 및 등록 이용자 수
               </p>
             </div>
 
             {/* 남성 사용자 카드 */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-5 transition-all duration-300 hover:border-[#2a2d42] hover:bg-[#1a1d32]">
+            <div className="border-admin-edge bg-admin-panel/80 hover:border-admin-line hover:bg-admin-hover relative overflow-hidden rounded-2xl border p-5 transition-all duration-300">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-[#6b7094] uppercase">
+                <span className="text-admin-muted text-xs font-bold tracking-wider uppercase">
                   남성 사용자
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+                <div className="text-admin-info flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
                   <User size={16} />
                 </div>
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-white sm:text-3xl">
+                <span className="text-admin-ink text-2xl font-extrabold sm:text-3xl">
                   {stats.maleCount}
                 </span>
-                <span className="text-sm font-semibold text-[#8b8fa3]">명</span>
-                <span className="ml-auto text-sm font-bold text-blue-400">
+                <span className="text-admin-secondary text-sm font-semibold">
+                  명
+                </span>
+                <span className="text-admin-info ml-auto text-sm font-bold">
                   {stats.maleRatio}%
                 </span>
               </div>
-              <p className="mt-1 text-[11px] text-[#4a4e69]">
+              <p className="text-admin-muted mt-1 text-[11px]">
                 남성 가입자 인원 및 비율 현황
               </p>
             </div>
 
             {/* 여성 사용자 카드 */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-5 transition-all duration-300 hover:border-[#2a2d42] hover:bg-[#1a1d32]">
+            <div className="border-admin-edge bg-admin-panel/80 hover:border-admin-line hover:bg-admin-hover relative overflow-hidden rounded-2xl border p-5 transition-all duration-300">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-[#6b7094] uppercase">
+                <span className="text-admin-muted text-xs font-bold tracking-wider uppercase">
                   여성 사용자
                 </span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
+                <div className="text-admin-danger flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10">
                   <User size={16} />
                 </div>
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-white sm:text-3xl">
+                <span className="text-admin-ink text-2xl font-extrabold sm:text-3xl">
                   {stats.femaleCount}
                 </span>
-                <span className="text-sm font-semibold text-[#8b8fa3]">명</span>
-                <span className="ml-auto text-sm font-bold text-rose-400">
+                <span className="text-admin-secondary text-sm font-semibold">
+                  명
+                </span>
+                <span className="text-admin-danger ml-auto text-sm font-bold">
                   {stats.femaleRatio}%
                 </span>
               </div>
-              <p className="mt-1 text-[11px] text-[#4a4e69]">
+              <p className="text-admin-muted mt-1 text-[11px]">
                 여성 가입자 인원 및 비율 현황
               </p>
             </div>
@@ -265,12 +271,12 @@ export default function AdminStats() {
           {/* 메인 차트 및 세부 통계 레이아웃 */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* 1. 성비 시각화 차트 카드 */}
-            <div className="rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-6 shadow-2xl lg:col-span-2">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-white sm:text-base">
-                <CircleDot size={18} className="text-[#f59e0b]" />
+            <div className="border-admin-edge bg-admin-panel/80 rounded-2xl border p-6 shadow-2xl lg:col-span-2">
+              <h2 className="text-admin-ink flex items-center gap-2 text-sm font-bold sm:text-base">
+                <CircleDot size={18} className="text-admin-warning" />
                 가입자 성비 현황 (Gender Ratio)
               </h2>
-              <p className="mt-1 text-xs text-[#6b7094]">
+              <p className="text-admin-muted mt-1 text-xs">
                 남성과 여성 사용자 비율의 그래픽 도넛 분석표
               </p>
 
@@ -284,7 +290,7 @@ export default function AdminStats() {
                       cy="60"
                       r={radius}
                       fill="transparent"
-                      stroke="#1e2030"
+                      stroke="var(--admin-subtle)"
                       strokeWidth="12"
                     />
 
@@ -328,15 +334,15 @@ export default function AdminStats() {
 
                   {/* 중앙 성비 요약 라벨 */}
                   <div className="absolute flex flex-col items-center justify-center text-center">
-                    <span className="typo-10-700 tracking-wider text-[#6b7094] uppercase">
+                    <span className="typo-10-700 text-admin-muted tracking-wider uppercase">
                       Dominant
                     </span>
-                    <span className="text-xl font-extrabold text-white">
+                    <span className="text-admin-ink text-xl font-extrabold">
                       {stats.maleCount >= stats.femaleCount
                         ? "남성 우세"
                         : "여성 우세"}
                     </span>
-                    <span className="mt-0.5 text-[11px] font-medium text-[#8b8fa3]">
+                    <span className="text-admin-secondary mt-0.5 text-[11px] font-medium">
                       차이: {Math.abs(stats.maleCount - stats.femaleCount)}명
                     </span>
                   </div>
@@ -349,15 +355,15 @@ export default function AdminStats() {
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-                        <span className="font-semibold text-white">
+                        <span className="text-admin-ink font-semibold">
                           남성 (MALE)
                         </span>
                       </div>
-                      <span className="font-bold text-blue-400">
+                      <span className="text-admin-info font-bold">
                         {stats.maleCount}명 ({stats.maleRatio}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#1e2030]">
+                    <div className="bg-admin-subtle h-2 w-full overflow-hidden rounded-full">
                       <div
                         className="h-full rounded-full bg-blue-500 transition-all duration-1000 ease-out"
                         style={{ width: `${stats.maleRatio}%` }}
@@ -370,15 +376,15 @@ export default function AdminStats() {
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-                        <span className="font-semibold text-white">
+                        <span className="text-admin-ink font-semibold">
                           여성 (FEMALE)
                         </span>
                       </div>
-                      <span className="font-bold text-rose-400">
+                      <span className="text-admin-danger font-bold">
                         {stats.femaleCount}명 ({stats.femaleRatio}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#1e2030]">
+                    <div className="bg-admin-subtle h-2 w-full overflow-hidden rounded-full">
                       <div
                         className="h-full rounded-full bg-rose-500 transition-all duration-1000 ease-out"
                         style={{ width: `${stats.femaleRatio}%` }}
@@ -387,12 +393,12 @@ export default function AdminStats() {
                   </div>
 
                   {/* 팁 박스 */}
-                  <div className="mt-4 flex items-start gap-2 rounded-xl border border-[#2a2d42]/30 bg-[#1e2030]/30 p-3">
+                  <div className="border-admin-line/30 bg-admin-subtle/30 mt-4 flex items-start gap-2 rounded-xl border p-3">
                     <Sparkles
                       size={14}
-                      className="mt-0.5 shrink-0 text-[#f59e0b]"
+                      className="text-admin-warning mt-0.5 shrink-0"
                     />
-                    <p className="text-[11px] leading-relaxed text-[#8b8fa3]">
+                    <p className="text-admin-secondary text-[11px] leading-relaxed">
                       상단의 남성/여성 통계 카드를 클릭하거나 하단 탭을 조작하여
                       성별에 해당하는 가입자들을 즉시 추려내고 티켓 조정이나
                       회원 관리를 진행하실 수 있습니다.
@@ -403,19 +409,19 @@ export default function AdminStats() {
             </div>
 
             {/* 2. 티켓 보유 통계 분석 카드 */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-6 shadow-2xl">
+            <div className="border-admin-edge bg-admin-panel/80 flex flex-col justify-between rounded-2xl border p-6 shadow-2xl">
               <div>
-                <h2 className="flex items-center gap-2 text-sm font-bold text-white sm:text-base">
-                  <Award size={18} className="text-[#f59e0b]" />
+                <h2 className="text-admin-ink flex items-center gap-2 text-sm font-bold sm:text-base">
+                  <Award size={18} className="text-admin-warning" />
                   성별 아이템(티켓) 통계
                 </h2>
-                <p className="mt-1 text-xs text-[#6b7094]">
+                <p className="text-admin-muted mt-1 text-xs">
                   남성과 여성의 평균 티켓 소유 현황 비교
                 </p>
 
                 <div className="mt-6 space-y-5">
                   {/* 매칭권 분석 */}
-                  <div className="space-y-2 rounded-xl border border-[#2a2d42]/40 bg-[#1e2030]/40 p-4">
+                  <div className="border-admin-line/40 bg-admin-subtle/40 space-y-2 rounded-xl border p-4">
                     <div className="flex items-center gap-2">
                       <Image
                         src="/main/ticket.png"
@@ -423,24 +429,24 @@ export default function AdminStats() {
                         width={18}
                         height={18}
                       />
-                      <span className="text-xs font-bold text-white">
+                      <span className="text-admin-ink text-xs font-bold">
                         평균 보유 매칭권
                       </span>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-4">
                       <div>
-                        <span className="typo-10-500 block text-[#6b7094]">
+                        <span className="typo-10-500 text-admin-muted block">
                           남성 평균
                         </span>
-                        <span className="text-sm font-extrabold text-blue-400">
+                        <span className="text-admin-info text-sm font-extrabold">
                           {stats.avgMaleMatchingTickets}개
                         </span>
                       </div>
                       <div>
-                        <span className="typo-10-500 block text-[#6b7094]">
+                        <span className="typo-10-500 text-admin-muted block">
                           여성 평균
                         </span>
-                        <span className="text-sm font-extrabold text-rose-400">
+                        <span className="text-admin-danger text-sm font-extrabold">
                           {stats.avgFemaleMatchingTickets}개
                         </span>
                       </div>
@@ -448,7 +454,7 @@ export default function AdminStats() {
                   </div>
 
                   {/* 옵션권 분석 */}
-                  <div className="space-y-2 rounded-xl border border-[#2a2d42]/40 bg-[#1e2030]/40 p-4">
+                  <div className="border-admin-line/40 bg-admin-subtle/40 space-y-2 rounded-xl border p-4">
                     <div className="flex items-center gap-2">
                       <Image
                         src="/main/option.png"
@@ -456,24 +462,24 @@ export default function AdminStats() {
                         width={18}
                         height={18}
                       />
-                      <span className="text-xs font-bold text-white">
+                      <span className="text-admin-ink text-xs font-bold">
                         평균 보유 옵션권
                       </span>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-4">
                       <div>
-                        <span className="typo-10-500 block text-[#6b7094]">
+                        <span className="typo-10-500 text-admin-muted block">
                           남성 평균
                         </span>
-                        <span className="text-sm font-extrabold text-blue-400">
+                        <span className="text-admin-info text-sm font-extrabold">
                           {stats.avgMaleOptionTickets}개
                         </span>
                       </div>
                       <div>
-                        <span className="typo-10-500 block text-[#6b7094]">
+                        <span className="typo-10-500 text-admin-muted block">
                           여성 평균
                         </span>
-                        <span className="text-sm font-extrabold text-rose-400">
+                        <span className="text-admin-danger text-sm font-extrabold">
                           {stats.avgFemaleOptionTickets}개
                         </span>
                       </div>
@@ -483,16 +489,16 @@ export default function AdminStats() {
               </div>
 
               {/* 하단 총 유통량 */}
-              <div className="mt-6 flex items-center justify-between border-t border-[#1e2030] pt-4 text-xs text-[#8b8fa3]">
+              <div className="border-admin-edge text-admin-secondary mt-6 flex items-center justify-between border-t pt-4 text-xs">
                 <div>
                   총 유통 매칭권:{" "}
-                  <span className="font-bold text-white">
+                  <span className="text-admin-ink font-bold">
                     {stats.totalMatchingTickets}개
                   </span>
                 </div>
                 <div>
                   총 유통 옵션권:{" "}
-                  <span className="font-bold text-white">
+                  <span className="text-admin-ink font-bold">
                     {stats.totalOptionTickets}개
                   </span>
                 </div>

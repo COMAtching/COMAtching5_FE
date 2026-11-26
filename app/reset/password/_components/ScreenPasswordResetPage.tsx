@@ -1,4 +1,5 @@
 "use client";
+import { verificationMailError } from "@/hooks/useVerificationMailTimer";
 import React, { useState } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import Button from "@/components/ui/Button";
@@ -33,14 +34,18 @@ const ScreenPasswordResetPage = () => {
         // 인증 프로세스 시작: 이메일 저장 및 상태 초기화
         sessionStorage.setItem(
           "COMATCHING_PW_RESET",
-          JSON.stringify({ email, authCode: "", isVerified: false }),
+          JSON.stringify({
+            email,
+            sentAt: Date.now(),
+            authCode: "",
+            isVerified: false,
+          }),
         );
         router.replace("/reset/password/verification");
       },
       onError: (error) => {
         setMessage({
-          text:
-            error.message || "이메일 전송에 실패했습니다. 다시 시도해 주세요.",
+          text: verificationMailError(error),
         });
       },
     });

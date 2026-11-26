@@ -33,7 +33,7 @@ export function RefundNotice({ result }: { result: RefundResult }) {
   return (
     <p
       role="status"
-      className="mb-4 rounded-xl border border-[#393e58] bg-[#161827] p-3 text-sm text-white"
+      className="border-admin-line bg-admin-panel text-admin-ink mb-4 rounded-xl border p-3 text-sm"
     >
       {message}
     </p>

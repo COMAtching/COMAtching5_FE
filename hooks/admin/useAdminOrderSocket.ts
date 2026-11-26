@@ -1,109 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Client } from "@stomp/stompjs";
+import {
+  activateSessionSocket,
+  handleSessionClose,
+} from "@/lib/socket-session";
 import SockJS from "sockjs-client";
-import type { AdminOrder } from "./useAdminOrders";
-
-/* ── STOMP 이벤트 타입 ── */
-interface OrderCreatedPayload {
-  orderId: number;
-  memberId: number;
-  requestedItemName: string;
-  requesterRealName: string;
-  requesterUsername: string;
-  optionTicketQty: number;
-  matchingTicketQty: number;
-  requestedPrice: number;
-  expectedPrice: number;
-  status: string;
-  requestedAt: string;
-  expiresAt: string;
-}
-
-interface OrderStatusChangedPayload {
-  orderId: number;
-  fromStatus: string;
-  toStatus: string;
-  decidedAt: string;
-  decidedByAdminId: number;
-  reason: string | null;
-}
-
-interface StompEvent {
-  eventId: number;
-  eventType: "ORDER_CREATED" | "ORDER_STATUS_CHANGED";
-  occurredAt: string;
-  payload: OrderCreatedPayload | OrderStatusChangedPayload;
-}
-
+import {
+  BrowserSessionEnded,
+  handleBrowserSessionEnd,
+} from "@/lib/browser-session";
 export type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
-
-/* ── API 응답 래퍼 ── */
-interface AdminOrdersResponse {
-  code: string;
-  status: number;
-  message: string;
-  data: AdminOrder[];
-}
 
 /**
  * STOMP over SockJS 실시간 주문 모니터링 훅
  */
 export function useAdminOrderSocket() {
   const queryClient = useQueryClient();
-  const clientRef = useRef<Client | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
-
-  const handleOrderCreated = useCallback(
-    (payload: OrderCreatedPayload) => {
-      queryClient.setQueryData<AdminOrder[]>(["adminOrders"], (old) => {
-        if (!old) return old;
-
-        const exists = old.some((order) => order.requestId === payload.orderId);
-        if (exists) return old;
-
-        const newOrder: AdminOrder = {
-          requestId: payload.orderId,
-          memberId: payload.memberId,
-          productId: -1, // Web Socket 페이로드에 없는 경우 기본값
-          productCode: "UNKNOWN",
-          requestedItemName: payload.requestedItemName,
-          requesterRealName: payload.requesterRealName,
-          requesterUsername: payload.requesterUsername,
-          optionTicketQty: payload.optionTicketQty,
-          matchingTicketQty: payload.matchingTicketQty,
-          requestedPrice: payload.requestedPrice,
-          expectedPrice: payload.expectedPrice,
-          status: payload.status as AdminOrder["status"],
-          requestedAt: payload.requestedAt,
-          expiresAt: payload.expiresAt,
-        };
-
-        return [newOrder, ...old];
-      });
-    },
-    [queryClient],
-  );
-
-  const handleOrderStatusChanged = useCallback(
-    (payload: OrderStatusChangedPayload) => {
-      queryClient.setQueryData<AdminOrder[]>(["adminOrders"], (old) => {
-        if (!old) return old;
-
-        return old.map((order) =>
-          order.requestId === payload.orderId
-            ? {
-                ...order,
-                status: payload.toStatus as AdminOrder["status"],
-              }
-            : order,
-        );
-      });
-    },
-    [queryClient],
-  );
 
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -112,6 +28,18 @@ export function useAdminOrderSocket() {
       return;
     }
 
+    let active = true;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const refreshOrders = () => {
+      if (refreshTimer !== undefined) return;
+      refreshTimer = setTimeout(() => {
+        refreshTimer = undefined;
+        void queryClient.invalidateQueries(
+          { queryKey: ["adminOrders"] },
+          { cancelRefetch: false },
+        );
+      }, 500);
+    };
     const wsUrl = `${API_URL}/ws/payment`;
 
     const client = new Client({
@@ -124,22 +52,15 @@ export function useAdminOrderSocket() {
         console.log("✅ [STOMP] Connected");
         setStatus("connected");
 
+        refreshOrders();
         client.subscribe("/topic/admin/orders", (message) => {
           try {
-            const event: StompEvent = JSON.parse(message.body);
-            console.log("[STOMP] Event received:", event.eventType, event);
-
-            switch (event.eventType) {
-              case "ORDER_CREATED":
-                handleOrderCreated(event.payload as OrderCreatedPayload);
-                break;
-              case "ORDER_STATUS_CHANGED":
-                handleOrderStatusChanged(
-                  event.payload as OrderStatusChangedPayload,
-                );
-                break;
-              default:
-                console.warn("[STOMP] Unknown event type:", event.eventType);
+            const event = JSON.parse(message.body);
+            if (
+              event.eventType === "ORDER_CREATED" ||
+              event.eventType === "ORDER_STATUS_CHANGED"
+            ) {
+              refreshOrders();
             }
           } catch (err) {
             console.error("[STOMP] Failed to parse message:", err);
@@ -157,21 +78,29 @@ export function useAdminOrderSocket() {
         setStatus("disconnected");
       },
 
-      onWebSocketClose: () => {
-        console.log("🔄 [STOMP] WebSocket closed, reconnecting...");
-        setStatus("reconnecting");
+      onWebSocketClose: (event) => {
+        if (!active) return;
+        const ended = handleSessionClose(client, event.code);
+        setStatus(ended ? "disconnected" : "reconnecting");
       },
     });
 
-    client.activate();
-    clientRef.current = client;
+    const stopWatching = activateSessionSocket(
+      client,
+      () => active,
+      (changed) => {
+        setStatus("disconnected");
+        handleBrowserSessionEnd(new BrowserSessionEnded(changed));
+      },
+    );
 
     return () => {
-      if (clientRef.current?.connected) {
-        clientRef.current.deactivate();
-      }
+      active = false;
+      clearTimeout(refreshTimer);
+      stopWatching();
+      void client.deactivate();
     };
-  }, [handleOrderCreated, handleOrderStatusChanged]);
+  }, [queryClient]);
 
   return { status };
 }

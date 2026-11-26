@@ -1,0 +1,55 @@
+@theme inline {
+  --color-admin-canvas: var(--admin-canvas);
+  --color-admin-panel: var(--admin-panel);
+  --color-admin-subtle: var(--admin-subtle);
+  --color-admin-hover: var(--admin-hover);
+  --color-admin-edge: var(--admin-edge);
+  --color-admin-line: var(--admin-line);
+  --color-admin-ink: var(--admin-ink);
+  --color-admin-secondary: var(--admin-secondary);
+  --color-admin-muted: var(--admin-muted);
+  --color-admin-success: var(--admin-success);
+  --color-admin-danger: var(--admin-danger);
+  --color-admin-warning: var(--admin-warning);
+  --color-admin-info: var(--admin-info);
+  --color-admin-violet: var(--admin-violet);
+  --color-admin-pink: var(--admin-pink);
+}
+
+.admin-layout {
+  color-scheme: light;
+  --admin-canvas: #f5f6f8;
+  --admin-panel: #ffffff;
+  --admin-subtle: #ebedf2;
+  --admin-hover: #f1f3f7;
+  --admin-edge: #dce0e8;
+  --admin-line: #c5cbd6;
+  --admin-ink: #202431;
+  --admin-secondary: #424b5b;
+  --admin-muted: #606a7b;
+  --admin-success: #166545;
+  --admin-danger: #a52e44;
+  --admin-warning: #855100;
+  --admin-info: #235e9c;
+  --admin-violet: #523fb0;
+  --admin-pink: #9d326d;
+}
+
+.admin-layout[data-theme="dark"] {
+  color-scheme: dark;
+  --admin-canvas: #0f1117;
+  --admin-panel: #161827;
+  --admin-subtle: #1e2030;
+  --admin-hover: #22253a;
+  --admin-edge: #282c40;
+  --admin-line: #3c4058;
+  --admin-ink: #f5f6fa;
+  --admin-secondary: #c1c5d7;
+  --admin-muted: #a2a6bc;
+  --admin-success: #80e0ac;
+  --admin-danger: #ff9aa6;
+  --admin-warning: #f7c16b;
+  --admin-info: #91c6fe;
+  --admin-violet: #b7adff;
+  --admin-pink: #f6a7d4;
+}

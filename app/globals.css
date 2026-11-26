@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./tokens.css";
+@import "./adminpage/theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -192,7 +193,7 @@
   div:has(> .admin-layout) {
     max-width: none !important;
     box-shadow: none !important;
-    background: #0f1117 !important;
+    background: transparent !important;
   }
 }
 

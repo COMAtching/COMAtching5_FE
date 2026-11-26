@@ -23,13 +23,8 @@ const BubbleDiv = ({
   textColor?: string;
   className?: string;
 }) => {
-  const { data: participantsData } = useParticipantsCount();
-  const count = participantsData?.data?.count ?? 775;
-
-  React.useEffect(() => {
-    console.log("💬 [BubbleDiv] participantsData changed:", participantsData);
-    console.log("💬 [BubbleDiv] Resolved count:", count);
-  }, [participantsData, count]);
+  const { data: participantsData, isPending } = useParticipantsCount();
+  const count = participantsData?.data?.count;
 
   const shadowClass = shadow ? "drop-shadow-md" : "";
 
@@ -54,16 +49,21 @@ const BubbleDiv = ({
         )}
         style={{ transform: `translateY(${top}px)` }}
       >
-        <div>
-          {children || (
-            <>
-              현재{" "}
-              <span className="text-bubble-text-highight">
-                {count.toLocaleString()}명
-              </span>{" "}
-              참여중이에요!
-            </>
-          )}
+        <div aria-live="polite" aria-busy={!children && isPending}>
+          {children ||
+            (isPending ? (
+              <span>참여 인원 불러오는 중...</span>
+            ) : count != null ? (
+              <>
+                현재{" "}
+                <span className="text-bubble-text-highight">
+                  {count.toLocaleString()}명
+                </span>{" "}
+                참여중이에요!
+              </>
+            ) : (
+              <span>참여 인원을 불러오지 못했어요</span>
+            ))}
         </div>
       </div>
       <Image

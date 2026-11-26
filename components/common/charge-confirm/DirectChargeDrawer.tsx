@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeatureStates } from "@/stores/features";
 import React from "react";
 import { AxiosError } from "axios";
 import { X, Check } from "lucide-react";
@@ -22,8 +23,8 @@ interface DirectChargeDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   productId: number;
+  maxOrderQuantity: number;
   amount: number;
-  productName?: string;
   depositorName?: string;
   onSwitchToToss?: () => void;
 }
@@ -32,8 +33,8 @@ export default function DirectChargeDrawer({
   open,
   onOpenChange,
   productId,
+  maxOrderQuantity,
   amount,
-  productName,
   depositorName,
   onSwitchToToss,
 }: DirectChargeDrawerProps) {
@@ -46,7 +47,8 @@ export default function DirectChargeDrawer({
     depositorName || realNameData?.data?.realName || "",
   );
   const [agreed, setAgreed] = React.useState(false);
-  const [quantity, setQuantity] = React.useState(1);
+  const [selection, setQuantity] = React.useState(1);
+  const quantity = Math.min(selection, maxOrderQuantity);
 
   // 실명이 로드되면 이름 업데이트
   React.useEffect(() => {
@@ -78,6 +80,8 @@ export default function DirectChargeDrawer({
 
   /* 충전 완료 알림 */
   const handleConfirmAction = () => {
+    if (!useFeatureStates.getState().states.SHOP_PAYMENT?.open || quantity < 1)
+      return;
     if (!name) {
       alert("먼저 입금자명을 설정해 주세요.");
       onOpenChange(false);
@@ -122,8 +126,7 @@ export default function DirectChargeDrawer({
     );
   };
 
-  const isQuantityItem =
-    productName?.includes("옵션권") || productName?.includes("뽑기권");
+  const isQuantityItem = maxOrderQuantity > 1;
   const totalAmount = amount * quantity;
 
   return (
@@ -186,7 +189,7 @@ export default function DirectChargeDrawer({
                     <div className="flex items-center gap-3 rounded-md border border-[#E5E5E5] bg-white px-2 py-1">
                       <button
                         type="button"
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         disabled={quantity <= 1}
                         className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
                       >
@@ -197,8 +200,10 @@ export default function DirectChargeDrawer({
                       </span>
                       <button
                         type="button"
-                        onClick={() => setQuantity((q) => Math.min(3, q + 1))}
-                        disabled={quantity >= 3}
+                        onClick={() =>
+                          setQuantity(Math.min(maxOrderQuantity, quantity + 1))
+                        }
+                        disabled={quantity >= maxOrderQuantity}
                         className="flex h-6 w-6 items-center justify-center text-[#777777] disabled:opacity-30"
                       >
                         +

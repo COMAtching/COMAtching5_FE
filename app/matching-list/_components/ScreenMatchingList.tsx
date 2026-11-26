@@ -1,6 +1,5 @@
 "use client";
 
-import { BackButton } from "@/components/ui/BackButton";
 import React, { useMemo, useEffect } from "react";
 import {
   useMatchingHistory,
@@ -8,10 +7,18 @@ import {
 } from "@/hooks/useMatchingHistory";
 import NoMatchingList from "./NoMatchingList";
 import YesMatchingList from "./YesMatchingList";
+import MatchingListLoading from "../loading";
 
 const ScreenMatchingList = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useMatchingHistory();
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMatchingHistory();
   const { mutate: toggleFavorite } = useUpdateFavorite();
 
   const handleFavoriteToggle = (
@@ -34,31 +41,41 @@ const ScreenMatchingList = () => {
     }
   }, [data, allHistory]);
 
-  return (
-    <main className="relative flex min-h-screen flex-col items-center px-4 py-2 pb-30">
-      <BackButton text="조회하기" />
-      <span className="typo-14-500 mt-2 text-center leading-[17px] text-[#858585]">
-        내가 뽑은 상대들을 여기서 확인할 수 있어요.
-        <br />
-        용기내서 연락해보세요!
-      </span>
+  if (isPending) return <MatchingListLoading />;
 
-      {allHistory.length === 0 ? (
-        <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <NoMatchingList nickname="겨울이오길" />
-        </div>
-      ) : (
-        <div className="mt-6 flex w-full flex-col items-center">
-          <YesMatchingList
-            history={allHistory}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-            onFavoriteToggle={handleFavoriteToggle}
-          />
-        </div>
-      )}
-    </main>
+  if (allHistory.length === 0) {
+    return (
+      <div className="flex w-full flex-1 flex-col items-center justify-center gap-3">
+        {isError ? (
+          <>
+            <p role="alert" className="typo-14-500 text-color-gray-500">
+              매칭 내역을 불러오지 못했어요.
+            </p>
+            <button
+              type="button"
+              className="typo-14-600 underline"
+              onClick={() => void refetch()}
+            >
+              다시 시도
+            </button>
+          </>
+        ) : (
+          <NoMatchingList />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 flex w-full flex-col items-center">
+      <YesMatchingList
+        history={allHistory}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onFavoriteToggle={handleFavoriteToggle}
+      />
+    </div>
   );
 };
 

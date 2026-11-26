@@ -43,6 +43,8 @@ export const usePurchaseProduct = () => {
     onSuccess: (data) => {
       console.log("✅ 주문 생성 성공:", data);
       queryClient.invalidateQueries({ queryKey: ["requestStatus"] });
+      queryClient.invalidateQueries({ queryKey: ["shopProducts"] });
+      queryClient.invalidateQueries({ queryKey: ["purchaseLimits"] });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       const errorData = error.response?.data;

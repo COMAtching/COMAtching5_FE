@@ -57,6 +57,15 @@ export async function loginAction(
 
     if (isAxiosError(error)) {
       const status = error.response?.status;
+      if (status === 409 || status === 503) {
+        return {
+          success: false,
+          message:
+            error.response?.data?.data?.message ||
+            error.response?.data?.message ||
+            "운영 상태를 확인할 수 없습니다.",
+        };
+      }
       if (status === 400 || status === 401) {
         return { success: false, message: "이메일 혹은 비밀번호가 틀립니다" };
       }

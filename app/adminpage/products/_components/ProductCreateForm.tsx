@@ -113,23 +113,23 @@ export default function ProductCreateForm({
   };
 
   const inputClass =
-    "h-10 w-full rounded-lg border border-[#2a2d42] bg-[#0f1117] px-3 text-sm text-white placeholder-[#4a4e69] outline-none transition-all focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]/30";
+    "h-10 w-full rounded-lg border border-admin-line bg-admin-canvas px-3 text-sm text-admin-ink placeholder:text-admin-muted outline-none transition-all focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]/30";
   const selectClass =
-    "h-10 rounded-lg border border-[#2a2d42] bg-[#0f1117] px-3 text-sm text-white outline-none transition-all focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]/30";
+    "h-10 rounded-lg border border-admin-line bg-admin-canvas px-3 text-sm text-admin-ink outline-none transition-all focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]/30";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-[#1e2030] bg-[#161827]/80 p-6"
+      className="border-admin-edge bg-admin-panel/80 rounded-2xl border p-6"
     >
-      <h2 className="mb-5 text-base font-bold text-white">새 상품 등록</h2>
+      <h2 className="text-admin-ink mb-5 text-base font-bold">새 상품 등록</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* 상품명 */}
         <div className="flex flex-col gap-1.5 sm:col-span-2">
           <label
             htmlFor={nameId}
-            className="text-xs font-medium text-[#a0a3bd]"
+            className="text-admin-secondary text-xs font-medium"
           >
             상품명
           </label>
@@ -148,7 +148,7 @@ export default function ProductCreateForm({
         <div className="flex flex-col gap-1.5 sm:col-span-2">
           <label
             htmlFor={descriptionId}
-            className="text-xs font-medium text-[#a0a3bd]"
+            className="text-admin-secondary text-xs font-medium"
           >
             설명 (50자 이하)
           </label>
@@ -168,7 +168,7 @@ export default function ProductCreateForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={priceId}
-            className="text-xs font-medium text-[#a0a3bd]"
+            className="text-admin-secondary text-xs font-medium"
           >
             가격 (원)
           </label>
@@ -187,7 +187,7 @@ export default function ProductCreateForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={displayOrderId}
-            className="text-xs font-medium text-[#a0a3bd]"
+            className="text-admin-secondary text-xs font-medium"
           >
             표시 순서 (낮을수록 먼저)
           </label>
@@ -204,21 +204,21 @@ export default function ProductCreateForm({
 
         {/* 토글: 활성 / 번들 */}
         <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm text-[#a0a3bd]">
+          <label className="text-admin-secondary flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              className="h-4 w-4 rounded border-[#2a2d42] bg-[#0f1117] accent-[#6366f1]"
+              className="border-admin-line bg-admin-canvas h-4 w-4 rounded accent-[#6366f1]"
             />
             판매 활성
           </label>
-          <label className="flex items-center gap-2 text-sm text-[#a0a3bd]">
+          <label className="text-admin-secondary flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={isBundle}
               onChange={(e) => setIsBundle(e.target.checked)}
-              className="h-4 w-4 rounded border-[#2a2d42] bg-[#0f1117] accent-[#6366f1]"
+              className="border-admin-line bg-admin-canvas h-4 w-4 rounded accent-[#6366f1]"
             />
             번들 상품
           </label>
@@ -228,13 +228,13 @@ export default function ProductCreateForm({
       {/* 구성품 (rewards) */}
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs font-medium text-[#a0a3bd]">
+          <label className="text-admin-secondary text-xs font-medium">
             구성품 (실제 지급)
           </label>
           <button
             type="button"
             onClick={() => setRewards([...rewards, { ...EMPTY_REWARD }])}
-            className="flex items-center gap-1 text-xs font-medium text-[#6366f1] hover:text-[#818cf8]"
+            className="text-admin-violet hover:text-admin-violet flex items-center gap-1 text-xs font-medium"
           >
             <Plus size={12} /> 추가
           </button>
@@ -273,14 +273,14 @@ export default function ProductCreateForm({
                 min={1}
                 className={inputClass + " !w-20"}
               />
-              <span className="text-xs text-[#4a4e69]">개</span>
+              <span className="text-admin-muted text-xs">개</span>
               {rewards.length > 1 && (
                 <button
                   type="button"
                   onClick={() =>
                     setRewards(rewards.filter((_, idx) => idx !== i))
                   }
-                  className="text-red-400 hover:text-red-300"
+                  className="text-admin-danger hover:text-admin-danger"
                 >
                   <Minus size={14} />
                 </button>
@@ -293,7 +293,7 @@ export default function ProductCreateForm({
       {/* 보너스 구성품 */}
       <div className="mt-5">
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs font-medium text-[#a0a3bd]">
+          <label className="text-admin-secondary text-xs font-medium">
             보너스 구성품 (표시용)
           </label>
           <button
@@ -301,13 +301,13 @@ export default function ProductCreateForm({
             onClick={() =>
               setBonusRewards([...bonusRewards, { ...EMPTY_REWARD }])
             }
-            className="flex items-center gap-1 text-xs font-medium text-amber-400 hover:text-amber-300"
+            className="text-admin-warning hover:text-admin-warning flex items-center gap-1 text-xs font-medium"
           >
             <Plus size={12} /> 추가
           </button>
         </div>
         {bonusRewards.length === 0 ? (
-          <p className="text-xs text-[#4a4e69]">보너스 구성품 없음</p>
+          <p className="text-admin-muted text-xs">보너스 구성품 없음</p>
         ) : (
           <div className="flex flex-col gap-2">
             {bonusRewards.map((r, i) => (
@@ -343,13 +343,13 @@ export default function ProductCreateForm({
                   min={1}
                   className={inputClass + " !w-20"}
                 />
-                <span className="text-xs text-[#4a4e69]">개</span>
+                <span className="text-admin-muted text-xs">개</span>
                 <button
                   type="button"
                   onClick={() =>
                     setBonusRewards(bonusRewards.filter((_, idx) => idx !== i))
                   }
-                  className="text-red-400 hover:text-red-300"
+                  className="text-admin-danger hover:text-admin-danger"
                 >
                   <Minus size={14} />
                 </button>
@@ -361,7 +361,7 @@ export default function ProductCreateForm({
 
       {/* 에러 메시지 */}
       {error && (
-        <p className="mt-4 text-sm font-medium text-red-400">* {error}</p>
+        <p className="text-admin-danger mt-4 text-sm font-medium">* {error}</p>
       )}
 
       {/* 제출 */}

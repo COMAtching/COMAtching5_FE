@@ -3,10 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Blur from "@/components/common/Blur";
 import { QueryProvider } from "@/providers/query-provider";
-// import { ServiceStatusProvider } from "@/providers/service-status-provider";
-// import { getInitialMaintenanceStatus } from "@/lib/status";
+import { ServiceStatusProvider } from "@/providers/service-status-provider";
 import FcmInitializer from "@/components/common/FcmInitializer";
 import PwaInitializer from "@/components/common/PwaInitializer";
+import ServiceBoundary from "@/components/common/ServiceBoundary";
+import DraftBoundary from "@/components/common/DraftBoundary";
 import ToastContainer from "@/components/common/ToastContainer";
 
 const pretendard = localFont({
@@ -74,30 +75,27 @@ export const viewport = {
   interactiveWidget: "resizes-content",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const initialMaintenanceMode = await getInitialMaintenanceStatus();
-
   return (
     <html lang="ko" className={pretendard.variable}>
       <body
         className={`${pretendard.className} flex justify-center bg-white antialiased`}
       >
         <QueryProvider>
-          {/* <ServiceStatusProvider
-            initialMaintenanceMode={initialMaintenanceMode}
-          > */}
           <div className="bg-background-app-base relative isolate min-h-dvh w-full overflow-x-hidden text-black md:max-w-[430px] md:shadow-lg">
             <Blur />
-            <FcmInitializer />
+            <ServiceStatusProvider />
             <PwaInitializer />
             <ToastContainer />
-            {children}
+            <ServiceBoundary>
+              <FcmInitializer />
+              <DraftBoundary>{children}</DraftBoundary>
+            </ServiceBoundary>
           </div>
-          {/* </ServiceStatusProvider> */}
         </QueryProvider>
       </body>
     </html>

@@ -1,11 +1,16 @@
-export default function AdminLayout({
+import { cookies } from "next/headers";
+import AdminFrame from "./_components/AdminFrame";
+import { adminThemeCookie } from "./theme";
+
+export default async function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const saved = (await cookies()).get(adminThemeCookie)?.value;
   return (
-    <div className="admin-layout min-h-dvh w-full bg-[#0f1117] text-white">
+    <AdminFrame initialTheme={saved === "dark" ? "dark" : "light"}>
       {children}
-    </div>
+    </AdminFrame>
   );
 }

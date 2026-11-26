@@ -36,14 +36,14 @@ export default function FailedGrantCard({
   const busy = retry.isPending || refundBusy || (tracking && grant.isFetching);
 
   return (
-    <article className="rounded-2xl border border-[#2a2d42] bg-[#161827] p-5">
-      <p className="text-xs text-[#a4a8bc]">주문 #{order.orderId}</p>
-      <h3 className="mt-1 font-semibold text-white">
+    <article className="border-admin-line bg-admin-panel rounded-2xl border p-5">
+      <p className="text-admin-secondary text-xs">주문 #{order.orderId}</p>
+      <h3 className="text-admin-ink mt-1 font-semibold">
         {order.requestedItemName}
       </h3>
       <div aria-live="polite" className="mt-3 space-y-1 text-sm">
         {retry.data === "accepted" && (
-          <p className="text-sky-300">재시도 접수</p>
+          <p className="text-admin-info">재시도 접수</p>
         )}
         {retry.data === "conflict" && (
           <p>이미 처리 중이거나 처리된 주문입니다.</p>
@@ -79,7 +79,7 @@ export default function FailedGrantCard({
         canAct && (
           <div className="flex flex-wrap gap-2">
             <button
-              className="mt-4 rounded-lg border border-amber-500/40 px-3 py-2 text-sm font-semibold text-amber-300 hover:bg-amber-500/10 disabled:opacity-50"
+              className="text-admin-warning mt-4 rounded-lg border border-amber-500/40 px-3 py-2 text-sm font-semibold hover:bg-amber-500/10 disabled:opacity-50"
               disabled={busy}
               onClick={() => {
                 onTrack(order);
@@ -89,7 +89,7 @@ export default function FailedGrantCard({
               {retry.isPending ? "재시도 요청 중…" : "지급 재시도"}
             </button>
             <button
-              className="mt-4 rounded-lg border border-[#666b86] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="border-admin-line text-admin-ink mt-4 rounded-lg border px-3 py-2 text-sm font-semibold disabled:opacity-50"
               disabled={busy}
               onClick={() => onStartRefund(order.orderId)}
             >

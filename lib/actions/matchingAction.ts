@@ -21,6 +21,7 @@ export type MatchingActionResult = {
  */
 export async function postMatchingAction(
   payload: MatchingRequest,
+  owner: string,
 ): Promise<MatchingActionResult> {
   // Next.js Server Action의 undefined 직렬화("$undefined") 및 빈 값 정제
   const sanitizedPayload = Object.fromEntries(
@@ -43,6 +44,7 @@ export async function postMatchingAction(
   try {
     const response = await serverApi.post<ApiResponse<MatchingResult>>({
       path: "/api/matching",
+      headers: { "X-Expected-Session": owner },
       body: parsed.data,
     });
 
@@ -50,11 +52,12 @@ export async function postMatchingAction(
   } catch (error) {
     if (isAxiosError(error)) {
       const message =
-        error.response?.data?.message || "매칭 시스템 오류가 발생했습니다.";
+        error.response?.data?.data?.message ||
+        error.response?.data?.message ||
+        "매칭 시스템 오류가 발생했습니다.";
       console.error("[postMatchingAction] API Error:", {
         status: error.response?.status,
         message,
-        payload,
       });
       return { success: false, message };
     }

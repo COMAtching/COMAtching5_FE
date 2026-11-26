@@ -1,5 +1,6 @@
 "use server";
 
+import { unstable_rethrow } from "next/navigation";
 import { serverApi, isAxiosError } from "@/lib/server-api";
 import {
   type CreateNoticeBody,
@@ -17,6 +18,7 @@ export async function createNoticeAction(body: CreateNoticeBody) {
     });
     return response.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (isAxiosError(error)) {
       throw error;
     }
@@ -38,6 +40,7 @@ export async function updateNoticeAction(
     });
     return response.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (isAxiosError(error)) {
       throw error;
     }
@@ -55,6 +58,7 @@ export async function deleteNoticeAction(noticeId: number) {
     });
     return response.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (isAxiosError(error)) {
       throw error;
     }

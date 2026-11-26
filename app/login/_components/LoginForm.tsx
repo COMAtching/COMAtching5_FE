@@ -6,6 +6,7 @@ import { User } from "lucide-react";
 import React, { useActionState, useState } from "react";
 import Link from "next/link";
 import { loginAction } from "@/lib/actions/loginAction";
+import { useFeature, featureMessage } from "@/stores/features";
 import { alertIfLoginBlocked } from "@/lib/constants/date";
 
 export const LoginForm = () => {
@@ -15,6 +16,7 @@ export const LoginForm = () => {
     message: "",
   });
 
+  const login = useFeature("LOGIN");
   const [email, setEmail] = useState("");
 
   return (
@@ -60,7 +62,14 @@ export const LoginForm = () => {
             </span>
           )}
         </div>
-        <Button shadow={true} type="submit" disabled={isPending}>
+        {login && !login.open && (
+          <p role="status">{featureMessage("LOGIN", login)}</p>
+        )}
+        <Button
+          shadow={true}
+          type="submit"
+          disabled={isPending || !login?.open}
+        >
           {isPending ? "로그인 중..." : "로그인"}
         </Button>
       </form>

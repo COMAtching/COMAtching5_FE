@@ -14,7 +14,6 @@ import {
   useNicknameAvailability,
   NicknameAvailabilityResponse,
 } from "@/hooks/useNicknameAvailability";
-import { useRouter } from "next/navigation";
 import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 import { removeEmoji } from "@/lib/utils";
 
@@ -27,7 +26,6 @@ interface TermsDrawerProps {
 type ViewMode = "list" | "terms" | "privacy";
 
 const TermsDrawer = ({ children }: TermsDrawerProps) => {
-  const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
   const clearProfile = useProfileStore((state) => state.clearProfile);
   const [isOpen, setIsOpen] = useState(false);
@@ -98,7 +96,8 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
   };
 
   const handleComplete = async () => {
-    if (isSubmitting) return;
+    const owner = useProfileStore.getState().owner;
+    if (isSubmitting || !owner) return;
 
     if (!allAgreed) {
       setAgreements({ terms: true, privacy: true });
@@ -151,16 +150,12 @@ const TermsDrawer = ({ children }: TermsDrawerProps) => {
       // 3. Server Action 호출 및 결과 처리
       startTransition(async () => {
         // useTransition을 사용하므로 prevState 자리에 null을 전달합니다.
-        const result = await profileSignUpAction(null, submitData);
+        const result = await profileSignUpAction(null, submitData, owner);
 
         if (result.success) {
           setIsOpen(false);
-          // 페이지 이동이 완료되기 전에 프로필 데이터가 비워져서 '여성 강아지(female_dog)' 기본 이미지로 화면이 깜빡이는 현상을 방지하기 위해,
-          // 먼저 이동하고 약간의 딜레이(500ms) 후에 프로필 저장소를 클리어합니다.
-          router.push("/main");
-          setTimeout(() => {
-            clearProfile();
-          }, 500);
+          clearProfile();
+          window.location.replace("/main");
         } else {
           alert(result.message);
         }

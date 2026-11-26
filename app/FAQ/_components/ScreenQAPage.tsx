@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { QA_LIST } from "@/lib/constants/qa";
 import { useRouter } from "next/navigation";
-import { withdrawAction } from "@/lib/actions/authAction";
+import { api } from "@/lib/axios";
+import { confirmBrowserSession, EXPECTED_SESSION } from "@/lib/browser-session";
 import { useUpdateMyProfile } from "@/hooks/useProfile";
 import PwaInstallCard from "@/components/common/PwaInstallCard";
 
@@ -12,6 +13,20 @@ const ScreenQAPage = () => {
   const router = useRouter();
   const [isSubmitting, startWithdrawTransition] = useTransition();
   const { mutateAsync: updateProfile } = useUpdateMyProfile();
+  const [owner, setOwner] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    // The FAQ is public. A signed-in visitor can act only on the account present when the page opened.
+    void confirmBrowserSession().then(
+      (session) => {
+        if (active) setOwner(session);
+      },
+      () => {},
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col px-4 pb-10">
@@ -58,8 +73,9 @@ const ScreenQAPage = () => {
         <button
           type="button"
           className="typo-14-500 mt-4 cursor-pointer text-[#B3B3B3] underline disabled:opacity-50"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !owner}
           onClick={() => {
+            if (!owner) return;
             if (
               confirm(
                 "정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.",
@@ -73,23 +89,28 @@ const ScreenQAPage = () => {
                 // Yes -> 매칭 비활성화 (isMatchable: false)
                 startWithdrawTransition(async () => {
                   try {
+                    await confirmBrowserSession(owner);
                     await updateProfile({ isMatchable: false });
                     alert(
                       "매칭 비활성화 설정이 완료되었습니다. 이제 다른 사람에게 더 이상 뽑히지 않습니다.",
                     );
-                  } catch (error) {
+                  } catch {
                     alert("설정 중 오류가 발생했습니다. 다시 시도해 주세요.");
                   }
                 });
               } else {
                 // No -> 실제 탈퇴 진행
                 startWithdrawTransition(async () => {
-                  const result = await withdrawAction();
-                  if (result.success) {
-                    alert(result.message);
+                  try {
+                    await api.delete("/api/auth/withdraw", {
+                      headers: { [EXPECTED_SESSION]: owner },
+                    });
+                    alert("회원 탈퇴가 완료되었습니다.");
                     router.replace("/");
-                  } else {
-                    alert(result.message);
+                  } catch {
+                    alert(
+                      "탈퇴 요청을 완료하지 못했습니다. 로그인 계정을 다시 확인해주세요.",
+                    );
                   }
                 });
               }

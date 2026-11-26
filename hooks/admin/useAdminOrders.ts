@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios";
+import { adminOrderPageKey, adminOrderPagePath } from "@/lib/admin-order-page";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -38,25 +39,6 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-/* ── 대기 주문 목록 조회 ── */
-const fetchAdminOrders = async (): Promise<AdminOrder[]> => {
-  let allOrders: AdminOrder[] = [];
-  let page = 0;
-  let hasNext = true;
-
-  while (hasNext) {
-    const { data } = await api.get<ApiResponse<PaginatedResponse<AdminOrder>>>(
-      "/api/v1/admin/payment/requests",
-      { params: { page, size: 100, sort: "requestedAt,desc" } },
-    );
-    allOrders = [...allOrders, ...data.data.content];
-    hasNext = data.data.hasNext;
-    page += 1;
-  }
-
-  return allOrders;
-};
-
 /* ── 승인 ── */
 const approveOrder = async (requestId: number): Promise<ApiResponse<null>> => {
   const { data } = await api.post<ApiResponse<null>>(
@@ -74,10 +56,15 @@ const rejectOrder = async (requestId: number): Promise<ApiResponse<null>> => {
 };
 
 /* ── 대기 주문 목록 훅 ── */
-export const useAdminOrders = () => {
+export const useAdminOrders = (page: number) => {
   return useQuery({
-    queryKey: ["adminOrders"],
-    queryFn: fetchAdminOrders,
+    queryKey: adminOrderPageKey(page),
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<
+        ApiResponse<PaginatedResponse<AdminOrder>>
+      >(adminOrderPagePath(page), { signal });
+      return data.data;
+    },
     refetchInterval: 30_000, // 30초 간격 백그라운드 갱신 (STOMP 보완)
   });
 };

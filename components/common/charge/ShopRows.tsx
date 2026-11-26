@@ -16,6 +16,7 @@ export function ShopItemRow({ product }: ShopItemRowProps) {
         trigger={
           <button
             type="button"
+            disabled={product.maxOrderQuantity === 0}
             className="typo-16-600 bg-color-flame-700 flex h-10 w-24 items-center justify-center rounded-lg text-white"
           >
             {product.price.toLocaleString()}원
@@ -23,6 +24,10 @@ export function ShopItemRow({ product }: ShopItemRowProps) {
         }
         amount={product.price}
         productId={product.id}
+        maxOrderQuantity={
+          product.maxOrderQuantity ??
+          Math.min(1, product.remainingPurchaseCount ?? 1)
+        }
         productName={product.name}
       />
     </div>
@@ -61,7 +66,7 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
               >
                 {product.remainingPurchaseCount === 0
                   ? "구매 완료"
-                  : `${product.remainingPurchaseCount}회 남음`}
+                  : `${product.remainingPurchaseCount}개 남음`}
               </span>
             )}
         </div>
@@ -84,7 +89,10 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         trigger={
           <button
             type="button"
-            disabled={product.remainingPurchaseCount === 0}
+            disabled={
+              product.maxOrderQuantity === 0 ||
+              product.remainingPurchaseCount === 0
+            }
             className={`typo-16-600 flex h-10 w-24 shrink-0 items-center justify-center rounded-lg text-white transition-colors ${
               product.remainingPurchaseCount === 0
                 ? "bg-color-gray-200 text-color-gray-400 cursor-not-allowed"
@@ -98,6 +106,10 @@ export function ShopBundleRow({ product }: ShopBundleRowProps) {
         }
         amount={product.price}
         productId={product.id}
+        maxOrderQuantity={
+          product.maxOrderQuantity ??
+          Math.min(1, product.remainingPurchaseCount ?? 1)
+        }
         productName={product.name}
       />
     </div>

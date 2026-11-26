@@ -20,6 +20,7 @@ export interface ShopProduct {
   firstPurchaseOnly?: boolean;
   usedPurchaseCount?: number;
   remainingPurchaseCount?: number | null;
+  maxOrderQuantity?: number;
   purchaseCountPurchasable?: boolean;
   purchaseBlockReason?: string;
   rewards: ShopReward[];
