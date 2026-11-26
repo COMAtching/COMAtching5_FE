@@ -35,39 +35,22 @@ export const getProfileImageUrl = (
   if (!url || url === "default" || url === "/default-profile.png")
     return "/profile/default-profile.svg";
 
-  // 파일명 부분 추출 (URL인 경우 마지막 세그먼트)
-  const filename = url.split("/").pop() || "";
+  const localAnimal = url.match(
+    /^\/animal\/([a-z]+)(?:_(male|female))?(?:(?: |%20)?1)?\.png$/i,
+  );
+  const preset = url.match(
+    /^(?:(?:https?:\/\/[^/]+)?\/api\/public\/profile-images\/)?(?:animal_|default_)([a-z]+)(?:_(male|female))?1?(?:\.png)?$/i,
+  );
+  const match = localAnimal ?? preset;
+  if (!match) return url;
 
-  // animal_ 또는 default_ 접두사가 붙은 경우 로컬 에셋에서 찾음
-  if (
-    url.startsWith("animal_") ||
-    url.startsWith("default_") ||
-    filename.startsWith("animal_") ||
-    filename.startsWith("default_")
-  ) {
-    const animalId = filename
-      .replace("animal_", "")
-      .replace("default_", "")
-      .replace(/_(male|female)/i, "") // _male 또는 _female 접미사 제거
-      .replace(/\d+.*$/, "") // animal_dinosaur1.png -> dinosaur
-      .replace(/\..*$/, ""); // 확장자 제거
+  const asset = DEFAULT_PROFILE_ASSETS.find(
+    (item) => item.id === match[1].toLowerCase(),
+  );
+  if (!asset) return url;
 
-    const asset = DEFAULT_PROFILE_ASSETS.find(
-      (p) => p.id.toLowerCase() === animalId.toLowerCase(),
-    );
-
-    if (asset) {
-      if (gender === "MALE" && asset.maleImage) return asset.maleImage;
-      if (gender === "FEMALE" && asset.femaleImage) return asset.femaleImage;
-      return (
-        asset.fallbackImage ||
-        asset.maleImage ||
-        asset.femaleImage ||
-        "/profile/default-profile.svg"
-      );
-    }
-  }
-
-  // 그 외에는 서버 URL 그대로 사용
-  return url;
+  const variant = match[2]?.toUpperCase() ?? gender;
+  if (variant === "FEMALE" && asset.femaleImage) return asset.femaleImage;
+  if (variant === "MALE" && asset.maleImage) return asset.maleImage;
+  return asset.fallbackImage ?? asset.maleImage ?? asset.femaleImage ?? url;
 };

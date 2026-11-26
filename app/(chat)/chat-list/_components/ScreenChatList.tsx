@@ -1,14 +1,13 @@
 "use client";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
-import Image from "next/image";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/BackButton";
 import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
 import { useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useChatViewer } from "@/hooks/useChatViewer";
-import { getProfileImageUrl } from "@/lib/utils/profile";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -24,7 +23,8 @@ type ChatListItem = {
   time: string;
   unread?: boolean;
   unreadCount?: number;
-  avatar: string;
+  avatar?: string | null;
+  gender?: string;
 };
 
 function ChatListRow({ item }: { item: ChatListItem }) {
@@ -36,11 +36,10 @@ function ChatListRow({ item }: { item: ChatListItem }) {
       className="flex w-full items-center gap-4 border-b border-[#E5E5E5] py-5 text-left"
     >
       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.06)]">
-        <Image
-          src={item.avatar}
+        <ProfileThumbnail
+          url={item.avatar}
+          gender={item.gender}
           alt={item.name}
-          fill
-          className="object-cover"
         />
       </div>
 
@@ -169,10 +168,8 @@ export default function ScreenChatList() {
         : "방금",
       unread: (room.unreadCount || 0) > 0,
       unreadCount: room.unreadCount || 0,
-      avatar: getProfileImageUrl(
-        room.otherUser?.profileImageUrl,
-        room.otherUser?.gender,
-      ),
+      avatar: room.otherUser?.profileImageUrl,
+      gender: room.otherUser?.gender,
     }));
   }, [rooms]);
 

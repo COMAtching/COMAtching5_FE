@@ -243,6 +243,13 @@
       transparent calc(100% - env(safe-area-inset-bottom, 0px))
     );
   }
+  html[data-pwa-keyboard="open"] .chat-viewport {
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100% - 5rem),
+      var(--background-app-base) 100%
+    );
+  }
 }
 
 html:has(.chat-viewport),
@@ -267,10 +274,6 @@ body:has(.chat-viewport) {
   }
 }
 
-.chat-messages > * {
-  flex-shrink: 0;
-}
-
 .chat-composer {
   padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
 }
@@ -279,9 +282,9 @@ html[data-pwa-keyboard="open"] .chat-composer {
   padding-bottom: 8px;
 }
 
-/* Keep the background page in place while the shop sheet scrolls. */
-html:has([data-shop-sheet][data-state="open"]),
-body:has([data-shop-sheet][data-state="open"]) {
+/* Keep the underlying page in place while the sheet scrolls. */
+html:has(:is([data-shop-sheet], [data-interest-sheet])[data-state="open"]),
+body:has(:is([data-shop-sheet], [data-interest-sheet])[data-state="open"]) {
   overflow-y: hidden;
   scrollbar-width: none;
 }

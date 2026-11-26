@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -58,12 +59,13 @@ const AdvantageEditDrawer = ({
   }, [isOpen, initialTags]);
 
   const toggleAdvantage = (name: string) => {
+    if (selected.length >= 5 && !selected.includes(name)) {
+      showAppAlert("최대 5개까지 선택할 수 있어요.");
+      return;
+    }
     setSelected((prev) => {
       if (prev.includes(name)) return prev.filter((t) => t !== name);
-      if (prev.length >= 5) {
-        alert("최대 5개까지 선택할 수 있어요.");
-        return prev;
-      }
+
       return [...prev, name];
     });
   };

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 
@@ -17,25 +17,32 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
-import { HOBBIES, HobbyCategory } from "@/lib/constants/hobbies";
 
 interface MatchingHobbySectionProps {
   onSelect: (category: MatchingInterestCategory) => void;
   selectedCategory?: MatchingInterestCategory | "";
 }
 
-const CATEGORIES = Object.keys(HOBBIES) as HobbyCategory[];
-
 export default function MatchingHobbySection({
   onSelect,
   selectedCategory,
 }: MatchingHobbySectionProps) {
+  const trigger = useRef<HTMLButtonElement>(null);
+  const pageScroll = useRef(0);
   return (
-    <Drawer>
+    <Drawer
+      onOpenChange={(open) => {
+        if (open) pageScroll.current = window.scrollY;
+      }}
+    >
       <div className="border-color-gray-100 flex w-full flex-col gap-4 border-b pb-5">
         <div className="flex w-full items-center justify-between">
           <DrawerTrigger asChild>
-            <button className="flex flex-1 items-center justify-between text-left">
+            <button
+              type="button"
+              ref={trigger}
+              className="flex flex-1 items-center justify-between text-left"
+            >
               <div className="flex flex-col gap-1">
                 <h2 className="typo-20-700 text-color-text-black">관심사</h2>
                 <p className="typo-14-500 text-color-text-caption3">
@@ -56,8 +63,20 @@ export default function MatchingHobbySection({
         )}
       </div>
 
-      <DrawerContent className="pb-10">
-        <DrawerHeader className="px-5 text-left">
+      <DrawerContent
+        data-interest-sheet=""
+        showHandle
+        className="overflow-hidden pb-[max(1rem,env(safe-area-inset-bottom))] data-[vaul-drawer-direction=bottom]:max-h-[calc(100dvh-env(safe-area-inset-top)-12px)]"
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          requestAnimationFrame(() => {
+            if (!trigger.current?.isConnected) return;
+            trigger.current.focus({ preventScroll: true });
+            window.scrollTo({ top: pageScroll.current, behavior: "instant" });
+          });
+        }}
+      >
+        <DrawerHeader data-vaul-no-drag className="shrink-0 px-5 text-left">
           <div className="flex items-center justify-between">
             <DrawerTitle className="typo-20-700 text-color-text-black">
               관심사 선택
@@ -65,7 +84,7 @@ export default function MatchingHobbySection({
             <DrawerClose asChild>
               <button
                 type="button"
-                className="typo-16-500 text-color-text-caption3 flex items-center text-center"
+                className="typo-16-500 text-color-text-caption3 flex min-h-11 min-w-11 touch-manipulation items-center justify-center"
               >
                 닫기
               </button>
@@ -76,10 +95,14 @@ export default function MatchingHobbySection({
             중분류만 선택할 수 있어요.
           </p>
         </DrawerHeader>
-        <div className="mt-4 grid grid-cols-2 place-items-center gap-x-4 gap-y-6 px-4">
+        <div
+          data-vaul-no-drag
+          className="mt-4 grid min-h-0 grid-cols-2 place-items-center gap-x-4 gap-y-6 overflow-y-auto overscroll-contain px-4 pb-3"
+        >
           {MATCHING_INTEREST_ITEMS.map(({ category, imageSrc }) => (
             <DrawerClose key={category} asChild>
               <button
+                type="button"
                 onClick={() => onSelect(category)}
                 className={cn(
                   "flex h-[148px] w-[148px] flex-col items-center justify-center gap-2 rounded-full border transition-all",
@@ -93,6 +116,7 @@ export default function MatchingHobbySection({
                     src={imageSrc}
                     alt={category}
                     fill
+                    sizes="64px"
                     className="object-contain"
                   />
                 </div>

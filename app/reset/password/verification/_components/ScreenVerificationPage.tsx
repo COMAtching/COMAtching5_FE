@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useVerificationMailTimer } from "@/hooks/useVerificationMailTimer";
@@ -27,16 +28,18 @@ const ScreenVerificationPage = () => {
   useEffect(() => {
     const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
     if (!savedData) {
-      alert("잘못된 접근입니다.");
-      router.replace("/reset/password");
+      showAppAlert("잘못된 접근입니다.", () =>
+        router.replace("/reset/password"),
+      );
       return;
     }
 
     try {
       const { email: emailToVerify, sentAt } = JSON.parse(savedData);
       if (!emailToVerify) {
-        alert("잘못된 접근입니다.");
-        router.replace("/reset/password");
+        showAppAlert("잘못된 접근입니다.", () =>
+          router.replace("/reset/password"),
+        );
       } else {
         startTransition(() => {
           if (typeof sentAt === "number") markSent(sentAt);

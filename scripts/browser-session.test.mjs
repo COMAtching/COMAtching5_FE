@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { appAlerts, acknowledgeAppAlert } from "../lib/app-alert.js";
 
 test("expired sessions return to the login for the current screen only once", async (t) => {
   const calls = [];
@@ -10,7 +11,6 @@ test("expired sessions return to the login for the current screen only once", as
       replace: (url) => calls.push(url),
       reload: () => calls.push("reload"),
     },
-    alert() {},
   };
   t.after(() => {
     if (previous) Object.defineProperty(globalThis, "window", previous);
@@ -29,6 +29,11 @@ test("expired sessions return to the login for the current screen only once", as
     session.handleBrowserSessionEnd(new Error("network"));
     session.handleBrowserSessionEnd(new session.BrowserSessionEnded());
     session.handleBrowserSessionEnd(new session.BrowserSessionEnded());
+    if (expected === "/") {
+      assert.deepEqual(calls, []);
+      assert.equal(appAlerts.getState().length, 1);
+      acknowledgeAppAlert(appAlerts.getState()[0]);
+    }
     assert.deepEqual(calls.splice(0), expected ? [expected] : []);
   }
   const changed = await import("../lib/browser-session.ts?changed");

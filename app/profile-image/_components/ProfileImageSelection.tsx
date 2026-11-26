@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 import React from "react";
 import Image from "next/image";
 import { IMAGE_ACCEPT, IMAGE_MIB, prepareImage } from "@/lib/image-upload";
@@ -83,7 +84,7 @@ const ProfileImageSelection = ({
       onCustomImageChange(URL.createObjectURL(targetFile));
     } catch (error) {
       console.error("Image processing failed:", error);
-      alert(
+      showAppAlert(
         error instanceof Error
           ? error.message
           : "이미지를 처리하지 못했습니다.",
@@ -140,6 +141,7 @@ const ProfileImageSelection = ({
                   src={customImage}
                   alt="업로드된 프로필 이미지"
                   fill
+                  sizes="90px"
                   className="object-cover"
                 />
               ) : (
@@ -147,6 +149,7 @@ const ProfileImageSelection = ({
                   src="/profile/default-profile.svg"
                   alt="기본 프로필 이미지"
                   fill
+                  sizes="90px"
                   className="object-cover"
                 />
               )}

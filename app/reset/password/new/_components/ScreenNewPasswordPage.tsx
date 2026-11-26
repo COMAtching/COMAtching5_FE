@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -29,10 +30,10 @@ const ScreenNewPasswordPage = () => {
   useEffect(() => {
     const savedData = sessionStorage.getItem("COMATCHING_PW_RESET");
     if (!savedData) {
-      alert(
+      showAppAlert(
         "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+        () => router.replace("/reset/password"),
       );
-      router.replace("/reset/password");
       return;
     }
 
@@ -40,10 +41,10 @@ const ScreenNewPasswordPage = () => {
       const { email, authCode, isVerified: verified } = JSON.parse(savedData);
 
       if (verified !== true || !email || !authCode) {
-        alert(
+        showAppAlert(
           "잘못된 접근이거나 인증 정보가 만료되었습니다. 다시 시도해 주세요.",
+          () => router.replace("/reset/password"),
         );
-        router.replace("/reset/password");
       } else {
         startTransition(() => {
           setIsVerified(true);

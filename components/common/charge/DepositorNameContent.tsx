@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -34,11 +35,13 @@ export default function DepositorNameContent() {
   const handleSave = () => {
     updateName(name, {
       onSuccess: () => {
-        alert("입금자명이 성공적으로 설정되었습니다.");
+        showAppAlert("입금자명이 성공적으로 설정되었습니다.");
       },
       onError: (error: AxiosError<{ message: string }>) => {
         const errorData = error.response?.data;
-        alert(errorData?.message || "입금자명 설정 중 오류가 발생했습니다.");
+        showAppAlert(
+          errorData?.message || "입금자명 설정 중 오류가 발생했습니다.",
+        );
       },
     });
   };

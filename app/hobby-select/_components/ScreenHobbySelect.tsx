@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import React, { useState, useMemo } from "react";
 import HobbyButton from "./HobbyButton";
@@ -49,16 +50,15 @@ const ScreenHobbySelect = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const toggleHobby = (hobbyName: string, category?: HobbyCategory) => {
+    if (selected.length >= 10 && !selected.some((h) => h.name === hobbyName)) {
+      showAppAlert("최대 10개까지 선택할 수 있어요.");
+      return;
+    }
     setSelected((prev) => {
       const isAlreadySelected = prev.some((h) => h.name === hobbyName);
 
       if (isAlreadySelected) {
         return prev.filter((h) => h.name !== hobbyName);
-      }
-
-      if (prev.length >= 10) {
-        alert("최대 10개까지 선택할 수 있어요.");
-        return prev;
       }
 
       let finalCategory = category;

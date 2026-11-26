@@ -2,12 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import { X, Star, Send } from "lucide-react";
 import { MatchingPartner } from "@/hooks/useMatchingHistory";
-import {
-  getProfileImageUrl,
-  getContactFrequencyLabel,
-} from "@/lib/utils/profile";
+import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { cn } from "@/lib/utils";
 import {
   findWithEmoji,
@@ -70,14 +68,10 @@ const PartnerProfileModal = ({
                 <div className="flex w-full items-center gap-4">
                   <div className="border-color-gray-0 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white/0 p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_-1px_rgba(0,0,0,0.1)]">
                     <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
-                      <Image
-                        src={getProfileImageUrl(
-                          partner.profileImageUrl,
-                          partner.gender,
-                        )}
+                      <ProfileThumbnail
+                        url={partner.profileImageUrl}
+                        gender={partner.gender}
                         alt="프로필"
-                        fill
-                        className="object-cover"
                       />
                     </div>
                   </div>

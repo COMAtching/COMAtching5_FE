@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -19,7 +20,7 @@ import {
   type ChatMessagePayload,
 } from "@/hooks/useChatMessages";
 import { useChatViewer } from "@/hooks/useChatViewer";
-import { getProfileImageUrl } from "@/lib/utils/profile";
+import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import {
   useUpdateFavorite,
   type MatchingPartner,
@@ -88,13 +89,15 @@ const IncomingMessage = ({
   message,
   nickname,
   profileImageUrl,
+  gender,
   onProfileClick,
   first,
   last,
 }: {
   message: ChatMessage;
   nickname?: string;
-  profileImageUrl?: string;
+  profileImageUrl?: string | null;
+  gender?: string;
   onProfileClick?: () => void;
   first: boolean;
   last: boolean;
@@ -108,12 +111,13 @@ const IncomingMessage = ({
           className="relative h-8 w-8 shrink-0 cursor-pointer overflow-hidden rounded-full bg-white transition-opacity hover:opacity-80"
           onClick={onProfileClick}
         >
-          <Image
-            src={getProfileImageUrl(profileImageUrl, "FEMALE")}
-            alt="프로필"
-            fill
-            className="object-cover"
-          />
+          {profileImageUrl !== undefined && (
+            <ProfileThumbnail
+              url={profileImageUrl}
+              gender={gender}
+              alt="프로필"
+            />
+          )}
         </button>
       ) : (
         <span aria-hidden="true" className="w-8 shrink-0" />
@@ -168,7 +172,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const viewportRef = React.useRef<HTMLElement>(null);
   const hasInitiallyScrolledRef = React.useRef(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
   const lastMessageIdRef = React.useRef<string | null>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -197,17 +200,27 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   useEffect(() => {
     const list = scrollContainerRef.current;
     if (!list) return;
-    let previousHeight = list.clientHeight;
+    let height = list.clientHeight;
+    let position = list.scrollTop;
+    const rememberPosition = () => {
+      if (list.clientHeight === height) position = list.scrollTop;
+    };
     const observer = new ResizeObserver(() => {
-      if (previousHeight === list.clientHeight) return;
-      const wasAtEnd =
-        list.scrollHeight - list.scrollTop - previousHeight <= 24;
-      previousHeight = list.clientHeight;
-      if (wasAtEnd) list.scrollTop = list.scrollHeight;
+      const nextHeight = list.clientHeight;
+      if (nextHeight === height) return;
+      // At zero the browser already pins the newest message. Keep the top of
+      // older messages in view if the keyboard resizes the reading area.
+      if (position < -24) list.scrollTop = position + nextHeight - height;
+      height = nextHeight;
+      position = list.scrollTop;
     });
+    list.addEventListener("scroll", rememberPosition);
     observer.observe(list);
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      list.removeEventListener("scroll", rememberPosition);
+    };
+  }, [chatId]);
 
   const { viewer, failed: viewerFailed, retry: retryViewer } = useChatViewer();
   const currentUserId = viewer?.memberId;
@@ -223,6 +236,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
   // 0-2. 상대방 경량 프로필 API 호출
   const { data: profileRes } = useChatMemberProfile(partnerMemberId);
   const opponentProfile = profileRes?.data;
+
+  const partnerImageUrl = opponentProfile
+    ? opponentProfile.profileImageUrl
+    : currentRoom?.otherUser && (currentRoom.otherUser.profileImageUrl ?? null);
 
   const mergedPartner = useMemo(() => {
     const rawFreq = opponentProfile?.contactFrequency || "NORMAL";
@@ -252,10 +269,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       university: currentRoom?.otherUser.university || "가톨릭대학교",
       mbti: opponentProfile?.mbti || "ENTP",
       contactFrequency: mappedFreq,
-      profileImageUrl:
-        opponentProfile?.profileImageUrl ||
-        currentRoom?.otherUser.profileImageUrl ||
-        "animal_cat",
+      profileImageUrl: partnerImageUrl ?? null,
       profileImageKey: null,
       intro: opponentProfile?.intro || "친하게 지내요! 😆",
       song: opponentProfile?.song || null,
@@ -265,7 +279,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       socialType: opponentProfile?.socialType || "INSTAGRAM",
       socialAccountId: opponentProfile?.socialAccountId || "",
     } as MatchingPartner;
-  }, [opponentProfile, currentRoom, partnerMemberId]);
+  }, [opponentProfile, currentRoom, partnerMemberId, partnerImageUrl]);
 
   const handleFavoriteToggle = () => {
     if (!opponentProfile?.historyId) return;
@@ -293,8 +307,9 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     if (isError && error) {
       const axiosError = error as AxiosError;
       if (axiosError.response?.status === 404) {
-        alert("존재하지 않거나 참여할 수 없는 채팅방입니다.");
-        router.replace("/chat-list");
+        showAppAlert("존재하지 않거나 참여할 수 없는 채팅방입니다.", () =>
+          router.replace("/chat-list"),
+        );
       }
     }
   }, [isError, error, router]);
@@ -401,7 +416,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     if (!hasInitiallyScrolledRef.current) {
       // 처음 진입했을 때는 즉시 가장 아래로 이동 (빠른 속도감)
-      list.scrollTop = list.scrollHeight;
+      list.scrollTop = 0;
       hasInitiallyScrolledRef.current = true;
       lastMessageIdRef.current = lastId;
       return;
@@ -409,7 +424,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     // 마지막 메시지 ID가 변경되었을 때만 (실시간 새 메시지 송수신 시) 하단으로 부드럽게 스크롤
     if (lastId !== lastMessageIdRef.current) {
-      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+      list.scrollTo({ top: 0, behavior: "smooth" });
       lastMessageIdRef.current = lastId;
     }
   }, [messages]);
@@ -419,18 +434,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     // 첫 진입 시 자동으로 맨 아래로 가기 전에는 작동하지 않도록 방어
     if (!hasInitiallyScrolledRef.current) return;
 
-    // 맨 위에서 300px 이내로 들어오면 선제적으로 다음 페이지(더 오래된 메시지)를 미리 가져옵니다.
-    if (container.scrollTop < 300 && hasNextPage && !isFetchingNextPage) {
-      // 1. 스크롤 위치 보존을 위한 높이 저장
-      const previousScrollHeight = container.scrollHeight;
-
-      // 2. 다음 페이지 불러오기
-      fetchNextPage().then(() => {
-        // 3. 데이터를 불러온 후 스크롤 위치 복원
-        requestAnimationFrame(() => {
-          container.scrollTop = container.scrollHeight - previousScrollHeight;
-        });
-      });
+    // In a bottom-anchored list scrollTop is zero at the newest message and negative above it.
+    const distanceFromOldest =
+      container.scrollHeight - container.clientHeight + container.scrollTop;
+    if (
+      container.scrollTop < 0 &&
+      distanceFromOldest < 300 &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
+      void fetchNextPage();
     }
   };
 
@@ -535,7 +548,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         ref={scrollContainerRef}
         onScroll={handleScroll}
         style={{ overflowAnchor: "none" }}
-        className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-contain px-4 pt-5 pb-4"
+        className="chat-messages scrollbar-hide relative z-0 flex min-h-0 w-full flex-1 flex-col-reverse overflow-y-auto overscroll-contain px-4"
       >
         {viewerFailed ||
         (isError &&
@@ -588,7 +601,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             )}
           </div>
         ) : (
-          <>
+          <div className="shrink-0 pt-5 pb-4">
             {messages.map((message, index) => {
               const prevMessage = index > 0 ? messages[index - 1] : null;
 
@@ -628,17 +641,15 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                         opponentProfile?.nickname ||
                         currentRoom?.otherUser.nickname
                       }
-                      profileImageUrl={
-                        opponentProfile?.profileImageUrl ||
-                        currentRoom?.otherUser.profileImageUrl
-                      }
+                      profileImageUrl={partnerImageUrl}
+                      gender={currentRoom?.otherUser.gender}
                       onProfileClick={() => setIsProfileModalOpen(true)}
                     />
                   )}
                 </div>
               );
             })}
-          </>
+          </div>
         )}
       </section>
 
@@ -694,9 +705,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 aria-label={`채팅 이미지 첨부 · 최대 ${IMAGE_MIB.chat} MiB`}
               />
             </label>
-            <input
-              ref={inputRef}
-              type="text"
+            <textarea
+              rows={1}
+              aria-label="채팅 메시지"
+              enterKeyHint="send"
               autoComplete="off"
               disabled={!chat?.open}
               placeholder={
@@ -707,15 +719,12 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
               value={messageText}
               onChange={(event) => setMessageText(event.target.value)}
               onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !e.nativeEvent.isComposing &&
-                  isSendEnabled
-                ) {
-                  handleSendMessage();
+                if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  if (isSendEnabled) handleSendMessage();
                 }
               }}
-              className="min-w-0 flex-1 bg-transparent text-base text-[#1A1A1A] outline-none placeholder:text-[#999999]"
+              className="min-w-0 flex-1 resize-none bg-transparent text-base text-[#1A1A1A] outline-none placeholder:text-[#999999]"
             />
             <button
               type="button"

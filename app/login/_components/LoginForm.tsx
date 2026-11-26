@@ -1,4 +1,5 @@
 "use client";
+import { showAppAlert } from "@/lib/app-alert";
 
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import BubbleDiv from "@/app/_components/BubbleDiv";
@@ -81,7 +82,7 @@ export const LoginForm = () => {
       </form>
       <div className="typo-14-500 text-color-text-caption2 flex w-full justify-center">
         <span
-          onClick={() => alert("미지원 서비스입니다.")}
+          onClick={() => showAppAlert("미지원 서비스입니다.")}
           className="cursor-pointer"
         >
           이메일 찾기
