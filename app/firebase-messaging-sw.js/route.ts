@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { BROWSER_API_URL } from "@/lib/browser-session";
 import { SDK_VERSION } from "firebase/app";
 import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 
@@ -27,6 +28,7 @@ self.installComatchingPushPrivacy(${JSON.stringify(process.env.NEXT_PUBLIC_FIREB
 
   const script = `
 const firebaseConfig = ${JSON.stringify(firebaseConfig)};
+importScripts("/chat-push-title.js");
 ${guard}
 importScripts("https://www.gstatic.com/firebasejs/${SDK_VERSION}/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/${SDK_VERSION}/firebase-messaging-compat.js");
@@ -45,11 +47,12 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage(async (payload) => {
   if (String(payload.from) !== firebaseConfig.messagingSenderId || payload.notification ||
       !["CHAT", "ITEMS_GRANTED"].includes(payload.data?.type)) return;
   const grant = payload.data?.type === "ITEMS_GRANTED";
-  return self.registration.showNotification("코매칭", {
+  const title = grant ? "코매칭" : await self.chatPushTitle(${JSON.stringify(BROWSER_API_URL)}, payload.data.chatRef);
+  return self.registration.showNotification(title, {
     body: grant ? "아이템 지급이 완료되었습니다." : "새 메시지가 있습니다.",
     icon: "/logo/icon.png",
     tag: grant ? "comatching-grant" : payload.data.chatRef || "comatching-chat",

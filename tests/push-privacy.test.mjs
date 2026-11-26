@@ -194,3 +194,42 @@ test("new chat notifications open a scoped reference on cold and warm launches",
   await click(ref);
   assert.equal(opened.at(-1), path);
 });
+
+test("chat titles resolve the sender for the receiving installation with a generic fallback", async () => {
+  const source = fs.readFileSync(
+    new URL("../public/chat-push-title.js", import.meta.url),
+    "utf8",
+  );
+  const ref = "b1773f5e-88bf-423e-a34c-bfae5f671e4d";
+  let calls = 0;
+  let response = new Response("향기나는 동백꽃");
+  const worker = {
+    self: {},
+    AbortSignal,
+    fetch: async (url, options) => {
+      calls++;
+      assert.equal(
+        url,
+        "https://api.example/api/fcm/chat-links/" + ref + "/sender",
+      );
+      assert.equal(options.credentials, "include");
+      assert.equal(options.cache, "no-store");
+      if (!response) throw new Error("offline");
+      return response;
+    },
+  };
+  vm.runInNewContext(source, worker);
+  const title = (reference) =>
+    worker.self.chatPushTitle("https://api.example", reference);
+  assert.equal(await title(""), "새 채팅");
+  assert.equal(calls, 0);
+  assert.equal(await title(ref), "향기나는 동백꽃");
+  for (const value of [
+    new Response(null, { status: 204 }),
+    new Response(null, { status: 401 }),
+    null,
+  ]) {
+    response = value;
+    assert.equal(await title(ref), "새 채팅");
+  }
+});

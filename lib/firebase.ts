@@ -10,6 +10,8 @@ import {
 } from "firebase/messaging";
 import type { Unsubscribe } from "firebase/messaging";
 import { useToastStore } from "@/stores/toast-store";
+import { chatPushTitle } from "@/public/chat-push-title.js";
+import { BROWSER_API_URL } from "@/lib/browser-session";
 import { chatPushPath } from "@/lib/push-routes";
 import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 
@@ -105,7 +107,8 @@ export async function registerServiceWorkerAndGetToken(rotate = false) {
 export function setupForegroundMessageHandler(): Unsubscribe | null {
   if (!app || typeof window === "undefined") return null;
   try {
-    return onMessage(getMessaging(app), (payload) => {
+    let subscribed = true;
+    const unsubscribe = onMessage(getMessaging(app), async (payload) => {
       if (
         String(payload.from) !== firebaseConfig.messagingSenderId ||
         payload.notification ||
@@ -114,12 +117,20 @@ export function setupForegroundMessageHandler(): Unsubscribe | null {
         return;
       const grant = payload.data?.type === "ITEMS_GRANTED";
       if (!grant) window.dispatchEvent(new Event("fcm-chat-received"));
+      const title = grant
+        ? "코매칭"
+        : await chatPushTitle(BROWSER_API_URL, payload.data?.chatRef);
+      if (!subscribed) return;
       useToastStore.getState().showToast({
-        title: "코매칭",
+        title,
         body: grant ? "아이템 지급이 완료되었습니다." : "새 메시지가 있습니다.",
         link: grant ? "/main" : chatPushPath(payload.data?.chatRef),
       });
     });
+    return () => {
+      subscribed = false;
+      unsubscribe();
+    };
   } catch (error) {
     console.error("[FCM] 포그라운드 리스너 등록 실패", error);
     return null;
