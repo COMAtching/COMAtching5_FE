@@ -49,7 +49,7 @@ export default function ChargeDrawer({ trigger }: ChargeDrawerProps) {
   };
 
   return (
-    <Drawer open={open} onOpenChange={handleOpenChange}>
+    <Drawer open={open} onOpenChange={handleOpenChange} autoFocus>
       <DrawerTrigger ref={triggerRef} asChild>
         {trigger}
       </DrawerTrigger>
