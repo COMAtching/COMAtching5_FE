@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { api } from "@/lib/axios";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { discardLegacyProfile, useProfileStore } from "@/stores/profile-store";
 
 const steps = [
@@ -79,17 +80,16 @@ export default function DraftBoundary({
   if (!onboarding) return children;
   return (
     <>
-      {(!ready || !owner) && (
-        <div role="status">
-          {failed ? (
+      {(!ready || !owner) &&
+        (failed ? (
+          <div role="status">
             <button onClick={() => retry(attempt + 1)}>
               가입 세션 다시 확인
             </button>
-          ) : (
-            "가입 세션 확인 중…"
-          )}
-        </div>
-      )}
+          </div>
+        ) : (
+          <LoadingSpinner variant="screen" label="가입 세션 확인 중" />
+        ))}
       {owner && (
         <div key={owner} hidden={!ready} inert={!ready || undefined}>
           {children}

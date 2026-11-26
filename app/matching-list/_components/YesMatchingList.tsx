@@ -8,7 +8,8 @@ import React, {
   useCallback,
 } from "react";
 import { MatchingHistoryItem } from "@/hooks/useMatchingHistory";
-import { Search, ArrowUpNarrowWide, Loader2 } from "lucide-react";
+import { Search, ArrowUpNarrowWide } from "lucide-react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import MatchingListCard from "./MatchingListCard";
 import { getAge } from "@/lib/utils/date";
 import SortDrawer, { SortOrder } from "./SortDrawer";
@@ -187,7 +188,7 @@ const YesMatchingList = ({
       {/* 무한 스크롤 sentinel + 로딩 인디케이터 */}
       <div ref={sentinelRef} className="flex w-full justify-center py-4">
         {isFetchingNextPage && (
-          <Loader2 size={24} className="text-color-gray-400 animate-spin" />
+          <LoadingSpinner variant="inline" label="매칭 내역 더 불러오는 중" />
         )}
         {!hasNextPage && filteredHistory.length > 0 && (
           <span className="typo-12-500 text-color-gray-400">

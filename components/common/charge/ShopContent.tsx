@@ -7,7 +7,7 @@ import QuickBundleCard from "./QuickBundleCard";
 import { ShopItemRow } from "./ShopRows";
 import { ShopBundleRow } from "./ShopRows";
 import { USAGE_INFO, BUSINESS_INFO } from "@/lib/constants/charge";
-import { Loader2 } from "lucide-react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ShopContent() {
   const { data: productsData, isLoading: isProductsLoading } =
@@ -57,9 +57,7 @@ export default function ShopContent() {
       <ChargeInventoryCard />
 
       {isProductsLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 size={24} className="text-color-gray-400 animate-spin" />
-        </div>
+        <LoadingSpinner label="상품 불러오는 중" />
       ) : (
         <>
           {/* ── 빠른 구매 ── */}
