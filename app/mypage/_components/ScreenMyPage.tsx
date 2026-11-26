@@ -1,5 +1,6 @@
 "use client";
 
+import PushPreference from "@/components/common/PushPreference";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 import React, { useState, useEffect, useMemo, useTransition } from "react";
@@ -640,6 +641,8 @@ const ScreenMyPage = ({ initialProfile }: ScreenMyPageProps) => {
         <br />
         연락처 등은 신중하게 기입 해주세요.
       </p>
+
+      <PushPreference />
 
       {/* ===== 프로필 이미지 영역 ===== */}
       <section className="mt-6 px-4">

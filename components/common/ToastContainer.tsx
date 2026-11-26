@@ -13,14 +13,16 @@ export default function ToastContainer() {
 
   const handleToastClick = () => {
     if (toast.link) {
-      router.push(toast.link);
+      if (toast.link.startsWith("/chat-list#push="))
+        window.location.assign(toast.link);
+      else router.push(toast.link);
     }
     hideToast();
   };
 
   return (
     <div
-      className="animate-in slide-in-from-top fixed top-4 left-1/2 z-[9999] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 transform transition-all duration-300 ease-out"
+      className="animate-in slide-in-from-top fixed top-[calc(env(safe-area-inset-top)+1rem)] left-1/2 z-[9999] w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 transform transition-all duration-300 ease-out"
       onClick={handleToastClick}
     >
       <div className="flex w-full cursor-pointer items-start gap-3 rounded-[20px] border border-gray-100 bg-white/95 p-4 shadow-[0px_10px_30px_rgba(0,0,0,0.15)] backdrop-blur-md transition-transform active:scale-[0.98]">

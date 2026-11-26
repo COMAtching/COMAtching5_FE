@@ -2,12 +2,8 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import {
-  registerServiceWorkerAndGetToken,
-  setupForegroundMessageHandler,
-} from "@/lib/firebase";
-import { api } from "@/lib/axios";
-import { isAxiosError } from "axios";
+import { setupForegroundMessageHandler } from "@/lib/firebase";
+import { refreshPushToken } from "@/lib/push-preference";
 import { IS_FIREBASE_ENABLED } from "@/lib/runtime-config";
 import { isPushRoute } from "@/lib/push-routes";
 
@@ -28,24 +24,8 @@ export default function FcmInitializer() {
       if (busy || document.visibilityState !== "visible") return;
       busy = true;
       try {
-        await api.post("/api/members/push-installation");
-        if (!active || (await Notification.requestPermission()) !== "granted")
-          return;
-        const token = await registerServiceWorkerAndGetToken();
-        if (!active || !token) return;
-        try {
-          await api.post("/api/fcm/token", { token });
-        } catch (error) {
-          if (
-            !active ||
-            !isAxiosError(error) ||
-            error.response?.data?.code !== "PUSH_TOKEN_IN_USE"
-          )
-            throw error;
-          const fresh = await registerServiceWorkerAndGetToken(true);
-          if (active && fresh)
-            await api.post("/api/fcm/token", { token: fresh });
-        }
+        if (active && Notification.permission === "granted")
+          await refreshPushToken();
       } catch {
         // The next protected navigation or focus retries with the current login cookies.
       } finally {

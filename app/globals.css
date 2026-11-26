@@ -199,7 +199,39 @@
 
 /* 오직 아이폰(iOS Safari)에서만 적용되는 전역 스크롤 바운스 방지 */
 @supports (-webkit-touch-callout: none) {
-  html, body {
+  html,
+  body {
     overscroll-behavior-y: none;
   }
+}
+
+.app-shell {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+
+html:has(.chat-viewport),
+body:has(.chat-viewport) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.chat-viewport {
+  position: fixed;
+  inset-inline: 0;
+  top: var(--chat-viewport-top, 0px);
+  height: var(--chat-viewport-height, 100dvh);
+  margin-inline: auto;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+
+@media (min-width: 768px) {
+  .chat-viewport {
+    max-width: 430px;
+  }
+}
+
+.chat-messages > * {
+  flex-shrink: 0;
 }

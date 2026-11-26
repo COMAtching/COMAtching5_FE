@@ -52,8 +52,8 @@ messaging.onBackgroundMessage((payload) => {
   return self.registration.showNotification("코매칭", {
     body: grant ? "아이템 지급이 완료되었습니다." : "새 메시지가 있습니다.",
     icon: "/logo/icon.png",
-    tag: grant ? "comatching-grant" : "comatching-chat",
-    data: { comatchingPush: true, grant }
+    tag: grant ? "comatching-grant" : payload.data.chatRef || "comatching-chat",
+    data: { comatchingPush: true, grant, chatRef: grant ? undefined : payload.data.chatRef }
   });
 });
   `;

@@ -54,7 +54,13 @@ self.installComatchingPushPrivacy = function (senderId) {
     event.stopImmediatePropagation();
     event.notification.close();
     const grant = old ? old.data?.type === "ITEMS_GRANTED" : data.grant;
-    const path = grant ? "/main" : "/chat-list";
+    const reference = !old && data.chatRef;
+    const path = grant
+      ? "/main"
+      : typeof reference === "string" &&
+          /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(reference)
+        ? "/chat-list#push=" + reference
+        : "/chat-list";
     event.waitUntil(
       self.clients
         .matchAll({ type: "window", includeUncontrolled: true })
@@ -63,8 +69,13 @@ self.installComatchingPushPrivacy = function (senderId) {
             (client) => new URL(client.url).origin === self.location.origin,
           );
           if (!existing) return self.clients.openWindow(path);
-          const navigated = await existing.navigate(path);
-          return navigated?.focus();
+          try {
+            const navigated = await existing.navigate(path);
+            if (navigated) return await navigated.focus();
+          } catch {
+            /* The window may have closed between matchAll and navigate. */
+          }
+          return self.clients.openWindow(path);
         }),
     );
   });

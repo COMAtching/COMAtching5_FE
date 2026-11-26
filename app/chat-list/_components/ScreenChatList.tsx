@@ -10,6 +10,8 @@ import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import { useMyProfile } from "@/hooks/useProfile";
 import { useChatRooms, type ChatRoom } from "@/hooks/useChatRooms";
 import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import ChatPushDestination from "./ChatPushDestination";
 import NoMatchingList from "@/app/matching-list/_components/NoMatchingList";
 
 type ChatListItem = {
@@ -112,6 +114,7 @@ const formatChatTime = (isoString: string | null) => {
 };
 
 export default function ScreenChatList() {
+  const router = useRouter();
   const chat = useFeature("CHAT");
   const profile = useMyProfile({
     refetchOnMount: "always",
@@ -189,7 +192,15 @@ export default function ScreenChatList() {
 
   return (
     <main className="flex min-h-screen flex-col items-center px-4 py-2 pb-30">
-      <BackButton text="채팅하기" />
+      <BackButton
+        text="채팅하기"
+        onClick={() => {
+          if (history.state?.comatchingPushEntry || history.length < 2)
+            router.replace("/main");
+          else router.back();
+        }}
+      />
+      <ChatPushDestination />
       {chat?.open === false ? (
         <div className="mt-3 w-full">
           <ChatReadOnlyNotice message={chat.message} />

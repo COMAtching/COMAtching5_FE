@@ -2,7 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
-import { isPushRoute } from "../lib/push-routes.ts";
+import {
+  isPushRoute,
+  chatPushPath,
+  chatPushReference,
+} from "../lib/push-routes.ts";
 
 const script = fs.readFileSync(
   new URL("../public/push-privacy.js", import.meta.url),
@@ -17,6 +21,7 @@ function serviceWorker() {
       events[name] = callback;
     },
     registration: { getNotifications: async () => shown },
+    location: { origin: "https://comatching.example" },
     clients: {
       matchAll: async () => [],
       openWindow: async (path) => opened.push(path),
@@ -24,7 +29,7 @@ function serviceWorker() {
   };
   vm.runInNewContext(script, { self, URL });
   self.installComatchingPushPrivacy("123");
-  return { events, shown, opened };
+  return { events, shown, opened, clients: self.clients };
 }
 const oldChat = {
   notification: { title: "private fixture", body: "private message" },
@@ -137,4 +142,55 @@ test("Firebase only registers on signed-in screens", () => {
   ]) {
     assert.equal(isPushRoute(path), true, path);
   }
+});
+
+test("new chat notifications open a scoped reference on cold and warm launches", async () => {
+  const { events, opened, clients } = serviceWorker();
+  const ref = "b1773f5e-88bf-423e-a34c-bfae5f671e4d";
+  const path = chatPushPath(ref);
+  assert.equal(chatPushReference(path.slice(path.indexOf("#"))), ref);
+  async function click(chatRef) {
+    let done;
+    events.notificationclick({
+      notification: {
+        data: { comatchingPush: true, grant: false, chatRef },
+        close() {},
+      },
+      stopImmediatePropagation() {},
+      waitUntil(promise) {
+        done = promise;
+      },
+    });
+    await done;
+  }
+  await click(ref);
+  await click("https://elsewhere.invalid/");
+  assert.deepEqual(opened, [path, "/chat-list"]);
+  let focused = false;
+  clients.matchAll = async () => [
+    {
+      url: "https://comatching.example/main",
+      async navigate(next) {
+        assert.equal(next, path);
+        return {
+          async focus() {
+            focused = true;
+          },
+        };
+      },
+    },
+  ];
+  await click(ref);
+  assert.ok(focused);
+  assert.equal(opened.length, 2);
+  clients.matchAll = async () => [
+    {
+      url: "https://comatching.example/",
+      async navigate() {
+        return null;
+      },
+    },
+  ];
+  await click(ref);
+  assert.equal(opened.at(-1), path);
 });
