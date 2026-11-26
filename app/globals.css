@@ -232,6 +232,17 @@
     height: auto;
     min-height: 100lvh;
   }
+
+  /* The system paints the edges with the app base. Fade the chat glow into that same color. */
+  .app-shell:has(.chat-viewport) > .app-backdrop {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent env(safe-area-inset-top, 0px),
+      black calc(env(safe-area-inset-top, 0px) + 3rem),
+      black calc(100% - env(safe-area-inset-bottom, 0px) - 6rem),
+      transparent calc(100% - env(safe-area-inset-bottom, 0px))
+    );
+  }
 }
 
 html:has(.chat-viewport),
