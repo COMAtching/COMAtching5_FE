@@ -154,9 +154,8 @@ export default function TossChargeDrawer({
         onError: (error: AxiosError<{ code?: string; message?: string }>) => {
           const errorData = error.response?.data;
           if (errorData?.code === "PAY-003") {
-            showAppAlert("이미 입금 확인 대기 중인 주문이 존재합니다.", () => {
-              onOpenChange(false);
-            });
+            onOpenChange(false);
+            drawerContext?.showPendingOrder();
           } else if (
             errorData?.code === "PAY-004" ||
             errorData?.message?.includes("사용자명") ||

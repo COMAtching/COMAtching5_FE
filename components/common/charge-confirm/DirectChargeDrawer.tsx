@@ -15,9 +15,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 
-import { useQueryClient } from "@tanstack/react-query";
 import Button from "@/components/ui/Button";
-import { BANK_INFO } from "@/lib/constants/charge";
 import { usePurchaseProduct } from "@/hooks/usePurchaseProduct";
 import { useRealName } from "@/hooks/useRealName";
 import { ChargeDrawerContext } from "@/components/common/ChargeDrawer";
@@ -41,7 +39,6 @@ export default function DirectChargeDrawer({
   depositorName,
   onSwitchToToss,
 }: DirectChargeDrawerProps) {
-  const queryClient = useQueryClient();
   const drawerContext = React.useContext(ChargeDrawerContext);
   const { mutate: purchase, isPending } = usePurchaseProduct();
   const { data: realNameData } = useRealName();
@@ -69,18 +66,6 @@ export default function DirectChargeDrawer({
     }
   }, [open]);
 
-  /* 계좌번호 복사 */
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(
-        `${BANK_INFO.bank} ${BANK_INFO.account}`,
-      );
-      showAppAlert("계좌 정보가 복사되었습니다.");
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
-
   /* 충전 완료 알림 */
   const handleConfirmAction = () => {
     if (!useFeatureStates.getState().states.SHOP_PAYMENT?.open || quantity < 1)
@@ -96,23 +81,15 @@ export default function DirectChargeDrawer({
     purchase(
       { productId, quantity },
       {
-        onSuccess: async () => {
-          try {
-            await navigator.clipboard.writeText(BANK_INFO.account);
-          } catch (err) {
-            console.error("Failed to copy account number: ", err);
-          }
-          showAppAlert("계좌번호가 복사되었습니다.", () => {
-            onOpenChange(false);
-            queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-          });
+        onSuccess: () => {
+          onOpenChange(false);
+          drawerContext?.showPendingOrder();
         },
         onError: (error: AxiosError<{ code?: string; message?: string }>) => {
           const errorData = error.response?.data;
           if (errorData?.code === "PAY-003") {
-            showAppAlert("이미 입금 확인 대기 중인 주문이 존재합니다.", () => {
-              onOpenChange(false);
-            });
+            onOpenChange(false);
+            drawerContext?.showPendingOrder();
           } else if (
             errorData?.code === "PAY-004" ||
             errorData?.message?.includes("사용자명") ||
@@ -163,33 +140,6 @@ export default function DirectChargeDrawer({
             <div className="flex w-full flex-col gap-6">
               {/* ── 입금 정보 카드 ── */}
               <div className="bg-color-gray-50 flex flex-col gap-4 rounded-2xl p-4">
-                {/* 입금계좌 라벨 + 복사 */}
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="typo-16-600 text-[#777777]">입금계좌</span>
-                    <button
-                      type="button"
-                      onClick={handleCopy}
-                      className="bg-color-gray-64 border-color-gray-100 typo-10-500 text-color-gray-300 flex items-center justify-center rounded-full border px-2 py-1 backdrop-blur-[50px]"
-                    >
-                      복사
-                    </button>
-                  </div>
-
-                  {/* 계좌 정보 박스 */}
-                  <div className="flex flex-col items-center gap-2 rounded-lg bg-white py-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
-                    <span className="typo-16-500 text-color-gray-900 text-center">
-                      {BANK_INFO.bank}
-                    </span>
-                    <span className="typo-20-700 text-color-text-black text-center">
-                      {BANK_INFO.account}
-                    </span>
-                    <span className="typo-14-500 text-center text-[#808080]">
-                      예금주: {BANK_INFO.holder}
-                    </span>
-                  </div>
-                </div>
-
                 {/* 구매 수량 (조건부) */}
                 {isQuantityItem && (
                   <div className="mt-2 flex items-center justify-start gap-4">
@@ -269,7 +219,7 @@ export default function DirectChargeDrawer({
                   )}
                 </button>
                 <span className="typo-16-700 text-black">
-                  상기 계좌로 입금을 완료했습니다.
+                  신청할 상품과 입금액을 확인했습니다.
                 </span>
               </div>
             </div>
@@ -283,7 +233,7 @@ export default function DirectChargeDrawer({
                 {isPending ? (
                   <LoadingSpinner variant="inline" label="요청 중" />
                 ) : (
-                  "충전 확인 요청하기"
+                  "충전 신청하고 입금 정보 보기"
                 )}
               </Button>
               {onSwitchToToss && (
