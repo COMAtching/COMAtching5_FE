@@ -51,16 +51,18 @@ export default function MatchingAgeOption({
         ? `${minAge}~${maxAge}살`
         : "";
 
-  // 선택된 상태: Delete 버튼은 Drawer 밖에서 독립적으로 동작
-  if (isSelected) {
-    return (
-      <div className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5">
-        <AgeRangeDrawer
-          minAge={minAge ?? DEFAULT_MIN}
-          maxAge={maxAge ?? DEFAULT_MAX}
-          onConfirm={handleConfirm}
-          trigger={
-            <button className="flex flex-col gap-1 text-left outline-none">
+  return (
+    <div className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5">
+      <AgeRangeDrawer
+        minAge={minAge ?? DEFAULT_MIN}
+        maxAge={maxAge ?? DEFAULT_MAX}
+        onConfirm={handleConfirm}
+        trigger={
+          <button
+            type="button"
+            className="flex min-h-11 flex-1 items-center justify-between text-left outline-none"
+          >
+            <div className="flex flex-col gap-1">
               <div className="flex items-end gap-1">
                 <h2 className="typo-20-700 text-color-text-black">
                   나이 구간 선택하기
@@ -70,12 +72,29 @@ export default function MatchingAgeOption({
                 </span>
               </div>
               <p className="typo-14-500 text-color-text-caption3">
-                선택됨: {displayText}
+                {isSelected
+                  ? `선택됨: ${displayText}`
+                  : "원하는 나이 범위를 설정해 보세요!"}
               </p>
-            </button>
-          }
-        />
-        {/* Delete 버튼: Drawer 트리거 밖에 위치 */}
+            </div>
+            {!isSelected && (
+              <div className="border-color-gray-100 flex h-9 w-[86px] items-center justify-center gap-[5px] rounded-[36px] border bg-white px-2">
+                <Image
+                  src="/main/option.png"
+                  alt="bulb"
+                  width={20}
+                  height={20}
+                  className="shrink-0"
+                />
+                <span className="typo-16-700 text-color-text-black leading-[19px]">
+                  1
+                </span>
+              </div>
+            )}
+          </button>
+        }
+      />
+      {isSelected && (
         <button
           className="bg-pink-gradient border-color-pink-700 relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[32px] border transition-transform active:scale-95 disabled:opacity-50"
           onClick={handleDelete}
@@ -102,45 +121,7 @@ export default function MatchingAgeOption({
             <Delete className="text-color-pink-700 h-5 w-5" strokeWidth={2} />
           </div>
         </button>
-      </div>
-    );
-  }
-
-  // 미선택 상태: 전체가 Drawer 트리거
-  return (
-    <AgeRangeDrawer
-      minAge={DEFAULT_MIN}
-      maxAge={DEFAULT_MAX}
-      onConfirm={handleConfirm}
-      trigger={
-        <button className="border-color-gray-100 flex w-full items-center justify-between border-b pb-5 text-left outline-none">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-end gap-1">
-              <h2 className="typo-20-700 text-color-text-black">
-                나이 구간 선택하기
-              </h2>
-              <span className="typo-10-600 text-color-gray-400 mb-[3px] leading-[12px]">
-                선택
-              </span>
-            </div>
-            <p className="typo-14-500 text-color-text-caption3">
-              원하는 나이 범위를 설정해 보세요!
-            </p>
-          </div>
-          <div className="border-color-gray-100 flex h-9 w-[86px] items-center justify-center gap-[5px] rounded-[36px] border bg-white px-2">
-            <Image
-              src="/main/option.png"
-              alt="bulb"
-              width={20}
-              height={20}
-              className="shrink-0"
-            />
-            <span className="typo-16-700 text-color-text-black leading-[19px]">
-              1
-            </span>
-          </div>
-        </button>
-      }
-    />
+      )}
+    </div>
   );
 }

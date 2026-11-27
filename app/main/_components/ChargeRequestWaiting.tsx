@@ -27,7 +27,29 @@ export default function ChargeRequestWaiting() {
       className="w-full rounded-3xl border border-white/30 bg-white/50 px-5 py-4 shadow-[0px_0px_8px_rgba(0,0,0,0.08)] backdrop-blur-[50px]"
     >
       <div className="flex items-center justify-between gap-2">
-        <h2 className="typo-16-600">내 충전 요청</h2>
+        <h2 className="typo-16-600 flex items-center gap-3">
+          {(first?.status === "AWAITING_DEPOSIT" ||
+            first?.status === "GRANTING") && (
+            <span
+              aria-hidden="true"
+              className="relative size-8 shrink-0 motion-safe:animate-spin"
+            >
+              {Array.from({ length: 7 }, (_, i) => (
+                <span
+                  key={i}
+                  className="absolute inset-0 flex justify-center"
+                  style={{ transform: `rotate(${(i * 360) / 7}deg)` }}
+                >
+                  <span
+                    className="h-2 w-1 rounded-full bg-[#FCCD00]"
+                    style={{ opacity: 1 - i * 0.12 }}
+                  />
+                </span>
+              ))}
+            </span>
+          )}
+          내 충전 요청
+        </h2>
         <button
           type="button"
           aria-label="입금 상태 새로고침"
