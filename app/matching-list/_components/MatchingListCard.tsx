@@ -6,6 +6,7 @@ import {
   MatchingPartner,
 } from "@/hooks/useMatchingHistory";
 import Image from "next/image";
+import PartnerMenu from "@/components/common/PartnerMenu";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import { Send, Star, ChevronDown } from "lucide-react";
 import React, { useRef, useState } from "react";
@@ -89,16 +90,7 @@ const CardHeader = ({
           <Send size={16} className="text-color-gray-500" />
         </button>
       )}
-      <button
-        type="button"
-        aria-label="더 보기"
-        className="flex h-4 w-4 flex-col items-center justify-center gap-0.5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-      </button>
+      <PartnerMenu partner={partner} />
     </div>
   </div>
 );

@@ -6,6 +6,7 @@ import { api } from "@/lib/axios";
 import MenuCard from "./MenuCard";
 import {
   CreditCard,
+  Flag,
   Package,
   Users,
   BarChart3,
@@ -16,6 +17,15 @@ import {
 } from "lucide-react";
 
 const MENU_ITEMS = [
+  {
+    id: "reports",
+    title: "신고 관리",
+    description: "매칭 상대 신고를 검토하고 경고 또는 이용 정지를 처리합니다.",
+    icon: Flag,
+    href: "/adminpage/reports",
+    active: true,
+    gradient: "from-rose-600 to-red-500",
+  },
   {
     id: "payment",
     title: "결제 승인 관리",

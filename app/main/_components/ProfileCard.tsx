@@ -1,8 +1,9 @@
 "use client";
 import { showAppAlert } from "@/lib/app-alert";
 
-import { Hobby, ProfileData, ContactFrequency } from "@/lib/types/profile";
+import type { ProfileData } from "@/lib/types/profile";
 import Image from "next/image";
+import PartnerMenu from "@/components/common/PartnerMenu";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import { Send, Star } from "lucide-react";
 import React, { useRef } from "react";
@@ -95,16 +96,7 @@ const ProfileHeader = ({
       >
         <Send size={16} className="text-color-gray-800" />
       </button>
-      <button
-        type="button"
-        aria-label="더 보기"
-        className="flex h-4 w-4 flex-col items-center justify-center gap-0.5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
-        <div className="bg-color-gray-800 h-[2.57px] w-[2.57px] rounded-full" />
-      </button>
+      <PartnerMenu partner={profile} />
     </div>
   </div>
 );

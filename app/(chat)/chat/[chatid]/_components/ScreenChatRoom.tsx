@@ -6,13 +6,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  ArrowUp,
-  ChevronLeft,
-  MoreVertical,
-  Paperclip,
-  UserRound,
-} from "lucide-react";
+import { ArrowUp, ChevronLeft, Paperclip, UserRound } from "lucide-react";
 import { featureMessage, useFeature } from "@/stores/features";
 import { useChatRoomSocket } from "@/hooks/useChatRoomSocket";
 import {
@@ -21,14 +15,11 @@ import {
 } from "@/hooks/useChatMessages";
 import { useChatViewer } from "@/hooks/useChatViewer";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
-import {
-  useUpdateFavorite,
-  type MatchingPartner,
-} from "@/hooks/useMatchingHistory";
+import { useUpdateFavorite } from "@/hooks/useMatchingHistory";
 import { cn } from "@/lib/utils";
 import { IMAGE_ACCEPT, IMAGE_MIB, uploadChatImage } from "@/lib/image-upload";
 import ChatReadOnlyNotice from "@/components/common/ChatReadOnlyNotice";
-import PartnerProfileModal from "./PartnerProfileModal";
+import PartnerMenu from "@/components/common/PartnerMenu";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
 import { sameChatMinute } from "@/lib/chat-message-group";
@@ -242,44 +233,18 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     : currentRoom?.otherUser && (currentRoom.otherUser.profileImageUrl ?? null);
 
   const mergedPartner = useMemo(() => {
-    const rawFreq = opponentProfile?.contactFrequency || "NORMAL";
-    const mappedFreq =
-      rawFreq === "자주"
-        ? "FREQUENT"
-        : rawFreq === "보통"
-          ? "NORMAL"
-          : rawFreq === "적음"
-            ? "RARE"
-            : rawFreq;
-
+    if (!currentRoom?.otherUser) return null;
+    const other = currentRoom.otherUser;
     return {
-      memberId: opponentProfile?.memberId || partnerMemberId || 999,
-      email: "winter@example.com",
-      nickname:
-        opponentProfile?.nickname ||
-        currentRoom?.otherUser.nickname ||
-        "겨울이오길",
-      age: opponentProfile?.age || currentRoom?.otherUser.age || 20,
-      gender: currentRoom?.otherUser.gender || "FEMALE",
-      birthDate: "2004-01-01",
-      major:
-        opponentProfile?.major ||
-        currentRoom?.otherUser.major ||
-        "정보통신전자공학부",
-      university: currentRoom?.otherUser.university || "가톨릭대학교",
-      mbti: opponentProfile?.mbti || "ENTP",
-      contactFrequency: mappedFreq,
-      profileImageUrl: partnerImageUrl ?? null,
-      profileImageKey: null,
-      intro: opponentProfile?.intro || "친하게 지내요! 😆",
-      song: opponentProfile?.song || null,
-      hobbies: opponentProfile?.hobbies || [],
-      tags: opponentProfile?.tags || [],
-      intros: [],
-      socialType: opponentProfile?.socialType || "INSTAGRAM",
-      socialAccountId: opponentProfile?.socialAccountId || "",
-    } as MatchingPartner;
-  }, [opponentProfile, currentRoom, partnerMemberId, partnerImageUrl]);
+      ...other,
+      ...opponentProfile,
+      memberId: other.memberId,
+      nickname: opponentProfile?.nickname || other.nickname,
+      age: opponentProfile?.age ?? other.age,
+      major: opponentProfile?.major || other.major,
+      profileImageUrl: partnerImageUrl,
+    };
+  }, [opponentProfile, currentRoom, partnerImageUrl]);
 
   const handleFavoriteToggle = () => {
     if (!opponentProfile?.historyId) return;
@@ -526,15 +491,29 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             </div>
           </div>
 
-          <button
-            type="button"
-            aria-label="상대 사용자 정보 열기"
-            onClick={() => setIsProfileModalOpen(true)}
-            className="flex h-12 items-center gap-3 rounded-full border border-white/30 bg-white/60 px-4 text-[#1A1A1A] shadow-[0px_4px_8px_rgba(0,0,0,0.08),0px_0px_16px_rgba(0,0,0,0.1)] backdrop-blur-[15px]"
-          >
-            <UserRound size={20} />
-            <MoreVertical className="h-5 w-5" />
-          </button>
+          {mergedPartner && (
+            <div className="flex items-center rounded-full border border-white/30 bg-white/60 px-1 shadow-md">
+              <button
+                type="button"
+                aria-label="상대 프로필 보기"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex size-11 items-center justify-center"
+              >
+                <UserRound size={20} />
+              </button>
+              <PartnerMenu
+                key={mergedPartner.memberId}
+                partner={mergedPartner}
+                source="CHAT"
+                profileOpen={isProfileModalOpen}
+                onProfileOpenChange={setIsProfileModalOpen}
+                favorite={opponentProfile?.favorite}
+                onFavoriteToggle={
+                  opponentProfile?.historyId ? handleFavoriteToggle : undefined
+                }
+              />
+            </div>
+          )}
         </div>
       </header>
 
@@ -747,15 +726,6 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           </div>
           <span className="sr-only">chatId: {chatId}</span>
         </div>
-      )}
-      {opponentProfile && (
-        <PartnerProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setIsProfileModalOpen(false)}
-          partner={mergedPartner}
-          isFavorite={opponentProfile.favorite}
-          onFavoriteToggle={handleFavoriteToggle}
-        />
       )}
     </main>
   );
