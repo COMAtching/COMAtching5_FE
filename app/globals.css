@@ -308,8 +308,8 @@ html[data-pwa-keyboard="open"] .chat-composer {
 }
 
 /* Keep the underlying page in place while the sheet scrolls. */
-html:has(:is([data-shop-sheet], [data-interest-sheet])[data-state="open"]),
-body:has(:is([data-shop-sheet], [data-interest-sheet])[data-state="open"]) {
+html:has([data-shop-sheet][data-state="open"], [data-matching-sheet]),
+body:has([data-shop-sheet][data-state="open"], [data-matching-sheet]) {
   overflow-y: hidden;
   scrollbar-width: none;
 }

@@ -1,22 +1,19 @@
 "use client";
 
-import { useRef } from "react";
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 import {
   MATCHING_INTEREST_ITEMS,
   type MatchingInterestCategory,
 } from "@/lib/constants/matchingInterests";
-import {
-  DrawerClose,
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { DrawerClose, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
+
+import {
+  MatchingPreferenceDrawer,
+  MatchingDrawerClose,
+} from "./MatchingPreferenceDrawer";
 
 interface MatchingHobbySectionProps {
   onSelect: (category: MatchingInterestCategory) => void;
@@ -27,68 +24,59 @@ export default function MatchingHobbySection({
   onSelect,
   selectedCategory,
 }: MatchingHobbySectionProps) {
-  const trigger = useRef<HTMLButtonElement>(null);
-  const pageScroll = useRef(0);
   return (
-    <Drawer
-      onOpenChange={(open) => {
-        if (open) pageScroll.current = window.scrollY;
-      }}
-    >
-      <div className="border-color-gray-100 flex w-full flex-col gap-4 border-b pb-5">
-        <div className="flex w-full items-center justify-between">
-          <DrawerTrigger asChild>
-            <button
-              type="button"
-              ref={trigger}
-              className="flex flex-1 items-center justify-between text-left"
-            >
-              <div className="flex flex-col gap-1">
-                <h2 className="typo-20-700 text-color-text-black">관심사</h2>
-                <p className="typo-14-500 text-color-text-caption3">
-                  상대방이 가졌음 하는 관심사를 골라주세요.
-                </p>
-              </div>
-              <ChevronRight className="text-color-text-caption3 h-5 w-5" />
-            </button>
-          </DrawerTrigger>
-        </div>
-
-        {selectedCategory && (
-          <div className="flex flex-wrap gap-2">
-            <span className="typo-14-500 bg-color-gray-50 text-color-gray-800 rounded-full px-3 py-1">
-              {selectedCategory}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <DrawerContent
-        data-interest-sheet=""
+    <div className="border-color-gray-100 w-full border-b pb-5">
+      <MatchingPreferenceDrawer
         showHandle
-        className="overflow-hidden pb-[max(1rem,env(safe-area-inset-bottom))] data-[vaul-drawer-direction=bottom]:max-h-[calc(100dvh-env(safe-area-inset-top)-12px)]"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          requestAnimationFrame(() => {
-            if (!trigger.current?.isConnected) return;
-            trigger.current.focus({ preventScroll: true });
-            window.scrollTo({ top: pageScroll.current, behavior: "instant" });
-          });
-        }}
+        className="pb-[max(1rem,env(safe-area-inset-bottom))]"
+        trigger={
+          <button
+            type="button"
+            className="flex min-h-[52px] w-full items-center justify-between gap-3 text-left"
+          >
+            <span>
+              <span
+                className={cn(
+                  "text-color-text-black block",
+                  selectedCategory ? "typo-18-700" : "typo-20-700",
+                )}
+              >
+                관심사
+              </span>
+              {!selectedCategory && (
+                <span className="typo-14-500 text-color-text-caption3 mt-1 block">
+                  상대방이 가졌음 하는 관심사를 골라주세요.
+                </span>
+              )}
+            </span>
+            <span className="flex shrink-0 items-center gap-2">
+              {selectedCategory && (
+                <>
+                  <Check
+                    aria-hidden="true"
+                    size={18}
+                    className="text-color-flame-700"
+                  />
+                  <span className="typo-16-600 text-color-text-black">
+                    {selectedCategory}
+                  </span>
+                </>
+              )}
+              <ChevronRight
+                aria-hidden="true"
+                size={20}
+                className="text-color-text-caption3"
+              />
+            </span>
+          </button>
+        }
       >
         <DrawerHeader data-vaul-no-drag className="shrink-0 px-5 text-left">
           <div className="flex items-center justify-between">
             <DrawerTitle className="typo-20-700 text-color-text-black">
               관심사 선택
             </DrawerTitle>
-            <DrawerClose asChild>
-              <button
-                type="button"
-                className="typo-16-500 text-color-text-caption3 flex min-h-11 min-w-11 touch-manipulation items-center justify-center"
-              >
-                닫기
-              </button>
-            </DrawerClose>
+            <MatchingDrawerClose />
           </div>
           <p className="typo-14-500 text-color-text-caption3 mt-1 leading-tight">
             상대방이 가졌음 하는 관심사를 골라주세요. <br />
@@ -127,7 +115,7 @@ export default function MatchingHobbySection({
             </DrawerClose>
           ))}
         </div>
-      </DrawerContent>
-    </Drawer>
+      </MatchingPreferenceDrawer>
+    </div>
   );
 }

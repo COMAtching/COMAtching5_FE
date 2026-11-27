@@ -12,7 +12,7 @@ interface MatchingOptionCardProps {
   onPointerDown?: (e: React.PointerEvent, value: ImportantOption) => void;
   onPointerMove?: (e: React.PointerEvent) => void;
   onPointerUp?: (e: React.PointerEvent) => void;
-  onClick?: (value: ImportantOption) => void;
+  onPointerCancel?: () => void;
 }
 
 export default function MatchingOptionCard({
@@ -23,15 +23,16 @@ export default function MatchingOptionCard({
   onPointerDown,
   onPointerMove,
   onPointerUp,
-  onClick,
+  onPointerCancel,
 }: MatchingOptionCardProps) {
   return (
     <button
       onPointerDown={(e) => onPointerDown?.(e, value)}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
       className={cn(
-        "flex h-[75px] w-full cursor-grab touch-pan-y items-center justify-between gap-1 rounded-lg border px-[17px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] active:cursor-grabbing",
+        "flex h-[75px] w-full cursor-grab touch-none items-center justify-between gap-1 rounded-lg border px-[17px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] active:cursor-grabbing",
         isSelected
           ? "border-color-main-700 ring-color-main-700 bg-white ring-1"
           : "border-color-gray-64 bg-color-gray-50",

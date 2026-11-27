@@ -3,16 +3,13 @@ import { showAppAlert } from "@/lib/app-alert";
 import { ArrowUpToLine } from "lucide-react";
 import React from "react";
 import { createPortal } from "react-dom";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { DrawerClose, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ImportantOption } from "@/lib/types/matching";
 import { cn } from "@/lib/utils";
+import {
+  MatchingPreferenceDrawer,
+  MatchingDrawerClose,
+} from "./MatchingPreferenceDrawer";
 import MatchingOptionCard from "./MatchingOptionCard";
 
 interface ImportantOptionDrawerProps {
@@ -27,6 +24,17 @@ const OPTIONS: { label: string; value: ImportantOption }[] = [
   { label: "관심사", value: "HOBBY" },
   { label: "연락빈도", value: "CONTACT" },
 ];
+
+const idleDrag = {
+  option: null as ImportantOption | null,
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+  offsetX: 0,
+  offsetY: 0,
+  isOverZone: false,
+};
 
 function TypingText({
   text,
@@ -85,25 +93,7 @@ export default function ImportantOptionDrawer({
     CONTACT: "",
   },
 }: ImportantOptionDrawerProps) {
-  const [dragState, setDragState] = React.useState<{
-    option: ImportantOption | null;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    offsetX: number;
-    offsetY: number;
-    isOverZone: boolean;
-  }>({
-    option: null,
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-    offsetX: 0,
-    offsetY: 0,
-    isOverZone: false,
-  });
+  const [dragState, setDragState] = React.useState(idleDrag);
   const [typingStep, setTypingStep] = React.useState(0);
   const isMounted = React.useRef(false);
 
@@ -155,20 +145,14 @@ export default function ImportantOptionDrawer({
       onSelect(dragState.option);
     }
 
-    setDragState({
-      option: null,
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      offsetX: 0,
-      offsetY: 0,
-      isOverZone: false,
-    });
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    setDragState(idleDrag);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   const handlePointerDown = (e: React.PointerEvent, value: ImportantOption) => {
+    e.stopPropagation(); // Keep pointer capture on the option while dragging it.
     const selection = selections[value];
     if (!selection || selection === "" || selection === "선택 전") {
       showAppAlert(
@@ -200,150 +184,146 @@ export default function ImportantOptionDrawer({
   };
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent
-        className="h-[782px] pb-16 outline-none"
-        showHandle={false}
-      >
-        <div className="relative flex h-full flex-col px-6 select-none">
-          <DrawerHeader className="gap-4 px-0 pt-6 pb-0">
-            <div className="relative flex items-center justify-between">
-              <div className="w-10" />
-              <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
-                중요한 옵션 선택
-              </DrawerTitle>
-              <DrawerClose className="typo-16-500 text-color-text-caption3 w-10 text-right">
-                닫기
-              </DrawerClose>
-            </div>
-            <p className="typo-14-500 text-color-text-caption3 text-center">
-              가장 중요하게 생각하는 옵션을 하나 선택하세요.
-              <br />
-              선택한 조건을 반드시 만족하는 사람만 추천해 줄 거에요!
-            </p>
-          </DrawerHeader>
+    <MatchingPreferenceDrawer
+      trigger={trigger}
+      className="h-[782px] pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+    >
+      <div className="relative flex min-h-0 flex-1 flex-col px-6 select-none">
+        <DrawerHeader className="shrink-0 gap-4 px-0 pt-4 pb-0">
+          <div className="flex items-center justify-between">
+            <div aria-hidden="true" className="w-11" />
+            <DrawerTitle className="typo-16-700 text-color-text-black flex-1 text-center">
+              중요한 옵션 선택
+            </DrawerTitle>
+            <MatchingDrawerClose />
+          </div>
+          <p className="typo-14-500 text-color-text-caption3 text-center">
+            가장 중요하게 생각하는 옵션을 하나 선택하세요.
+            <br />
+            선택한 조건을 반드시 만족하는 사람만 추천해 줄 거에요!
+          </p>
+        </DrawerHeader>
 
-          <div className="scrollbar-hide flex-1 touch-pan-y overflow-y-auto px-0 pb-4">
-            <div
-              ref={dropZoneRef}
-              className={cn(
-                "relative mt-6 mb-6 flex h-[166px] flex-col items-center rounded-2xl transition-all duration-200",
-                !selectedOption ? "justify-center" : "justify-start pt-3",
-                dragState.isOverZone ? "bg-black/10" : "bg-transparent",
-              )}
-            >
-              {!selectedOption ? (
-                <div className="pointer-events-none flex flex-col items-center gap-3">
-                  <ArrowUpToLine
-                    className="text-color-text-disabled h-6 w-6"
-                    strokeWidth={2}
-                  />
-                  <span className="typo-14-500 text-color-text-disabled text-center">
-                    중요한 옵션인 버튼을 끌어올려 보세요!
-                  </span>
-                </div>
-              ) : (
-                <div className="relative mx-auto flex w-[calc(100%-12px)] flex-col items-end gap-1 pt-3">
-                  {typingStep >= 1 && (
-                    <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-3 shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-                      <span className="typo-14-500 text-right text-white">
-                        <TypingText
-                          key={selectedOption}
-                          text="Comatching AI 야, 이 옵션은 꼭 지켜줘!"
-                          onComplete={handleStep1Complete}
-                        />
-                      </span>
-                    </div>
-                  )}
-                  {typingStep >= 2 && (
-                    <div className="bg-button-primary mt-1 flex items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-5 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]">
-                      <span className="typo-18-600 text-right text-white">
-                        <TypingText
-                          key={selectedOption}
-                          text={
-                            selectedOption === "MBTI"
-                              ? `MBTI는 ${formatMBTISelection(selections.MBTI)} 이면 좋겠어!`
-                              : `${selectedItem?.label}는 ${selections[selectedOption]} 이면 좋겠어!`
-                          }
-                        />
-                      </span>
-                    </div>
-                  )}
-                  {typingStep >= 2 && (
-                    <button
-                      onClick={() => onSelect(null)}
-                      className="animate-in fade-in bg-color-gray-100 typo-12-700 text-color-text-caption2 mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] px-3 py-1.5 transition-colors duration-500 active:bg-gray-300"
-                    >
-                      선택 취소
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {remainingOptions.map((option) => (
-                <MatchingOptionCard
-                  key={option.value}
-                  label={option.label}
-                  value={option.value}
-                  isSelected={false}
-                  selectionLabel={selections[option.value]}
-                  onPointerDown={handlePointerDown}
-                  onPointerMove={handlePointerMove}
-                  onPointerUp={handlePointerUp}
+        <div
+          data-vaul-no-drag
+          className="scrollbar-hide min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-0 pb-4"
+        >
+          <div
+            ref={dropZoneRef}
+            className={cn(
+              "relative mt-6 mb-6 flex h-[166px] flex-col items-center rounded-2xl transition-all duration-200",
+              !selectedOption ? "justify-center" : "justify-start pt-3",
+              dragState.isOverZone ? "bg-black/10" : "bg-transparent",
+            )}
+          >
+            {!selectedOption ? (
+              <div className="pointer-events-none flex flex-col items-center gap-3">
+                <ArrowUpToLine
+                  className="text-color-text-disabled h-6 w-6"
+                  strokeWidth={2}
                 />
-              ))}
-            </div>
-          </div>
-
-          <div className="touch-pan-y">
-            <DrawerClose asChild>
-              <button className="bg-color-main-900 typo-20-700 flex h-12 w-full items-center justify-center rounded-2xl border-[0.8px] border-white/30 text-white transition-transform active:scale-[0.98]">
-                NEXT
-              </button>
-            </DrawerClose>
-          </div>
-
-          {/* Ghost Element (Dragging) */}
-          {dragState.option &&
-            typeof document !== "undefined" &&
-            createPortal(
-              <div
-                className="pointer-events-none fixed z-[9999]"
-                style={{
-                  left: dragState.x - dragState.offsetX,
-                  top: dragState.y - dragState.offsetY,
-                  transform: "scale(1.05)",
-                  width: `${dragState.width}px`,
-                }}
-              >
-                <div
-                  className="border-color-brand-primary-flame flex w-full flex-col items-start justify-center gap-1 rounded-lg border-2 bg-white px-[17px] opacity-95 shadow-[0px_10px_30px_rgba(0,0,0,0.25)]"
-                  style={{ height: `${dragState.height}px` }}
-                >
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex items-end gap-2">
-                      <span className="typo-20-700 text-color-text-black">
-                        {
-                          OPTIONS.find((o) => o.value === dragState.option)
-                            ?.label
+                <span className="typo-14-500 text-color-text-disabled text-center">
+                  중요한 옵션인 버튼을 끌어올려 보세요!
+                </span>
+              </div>
+            ) : (
+              <div className="relative mx-auto flex w-[calc(100%-12px)] flex-col items-end gap-1 pt-3">
+                {typingStep >= 1 && (
+                  <div className="bg-button-primary flex items-center justify-center rounded-t-[16px] rounded-br-[8px] rounded-bl-[16px] px-3 py-3 shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
+                    <span className="typo-14-500 text-right text-white">
+                      <TypingText
+                        key={selectedOption}
+                        text="Comatching AI 야, 이 옵션은 꼭 지켜줘!"
+                        onComplete={handleStep1Complete}
+                      />
+                    </span>
+                  </div>
+                )}
+                {typingStep >= 2 && (
+                  <div className="bg-button-primary mt-1 flex items-center justify-center rounded-l-[16px] rounded-tr-[8px] rounded-br-[16px] px-5 py-[15px] shadow-[5px_5px_5px_rgba(0,0,0,0.25),0px_5px_20px_rgba(0,0,0,0.12)]">
+                    <span className="typo-18-600 text-right text-white">
+                      <TypingText
+                        key={selectedOption}
+                        text={
+                          selectedOption === "MBTI"
+                            ? `MBTI는 ${formatMBTISelection(selections.MBTI)} 이면 좋겠어!`
+                            : `${selectedItem?.label}는 ${selections[selectedOption]} 이면 좋겠어!`
                         }
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
-                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
-                      <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
-                    </div>
+                      />
+                    </span>
+                  </div>
+                )}
+                {typingStep >= 2 && (
+                  <button
+                    onClick={() => onSelect(null)}
+                    className="animate-in fade-in bg-color-gray-100 typo-12-700 text-color-text-caption2 mx-auto mt-4 flex h-[26px] items-center justify-center rounded-[99px] px-3 py-1.5 transition-colors duration-500 active:bg-gray-300"
+                  >
+                    선택 취소
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {remainingOptions.map((option) => (
+              <MatchingOptionCard
+                key={option.value}
+                label={option.label}
+                value={option.value}
+                isSelected={false}
+                selectionLabel={selections[option.value]}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={() => setDragState(idleDrag)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div data-vaul-no-drag className="shrink-0">
+          <DrawerClose asChild>
+            <button className="bg-color-main-900 typo-20-700 flex h-12 w-full items-center justify-center rounded-2xl border-[0.8px] border-white/30 text-white transition-transform active:scale-[0.98]">
+              NEXT
+            </button>
+          </DrawerClose>
+        </div>
+
+        {/* Ghost Element (Dragging) */}
+        {dragState.option &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div
+              className="pointer-events-none fixed z-[9999]"
+              style={{
+                left: dragState.x - dragState.offsetX,
+                top: dragState.y - dragState.offsetY,
+                transform: "scale(1.05)",
+                width: `${dragState.width}px`,
+              }}
+            >
+              <div
+                className="border-color-brand-primary-flame flex w-full flex-col items-start justify-center gap-1 rounded-lg border-2 bg-white px-[17px] opacity-95 shadow-[0px_10px_30px_rgba(0,0,0,0.25)]"
+                style={{ height: `${dragState.height}px` }}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-end gap-2">
+                    <span className="typo-20-700 text-color-text-black">
+                      {OPTIONS.find((o) => o.value === dragState.option)?.label}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+                    <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
+                    <div className="bg-color-gray-200 h-0.5 w-4 rounded-[1px]" />
                   </div>
                 </div>
-              </div>,
-              document.body,
-            )}
-        </div>
-      </DrawerContent>
-    </Drawer>
+              </div>
+            </div>,
+            document.body,
+          )}
+      </div>
+    </MatchingPreferenceDrawer>
   );
 }
