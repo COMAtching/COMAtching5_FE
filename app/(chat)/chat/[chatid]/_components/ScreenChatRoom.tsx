@@ -24,6 +24,7 @@ import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatMemberProfile } from "@/hooks/useChatMemberProfile";
 import { sameChatMinute } from "@/lib/chat-message-group";
 import { isIosWebApp } from "@/lib/pwa-viewport";
+import { useChatReportRange } from "./useChatReportRange";
 import { AxiosError } from "axios";
 
 type ScreenChatRoomProps = {
@@ -76,8 +77,44 @@ const MessageBody = ({ message }: { message: ChatMessage }) =>
     message.text
   );
 
+type BubbleSelection = { selected: boolean; tap: () => void };
+function MessageBubble({
+  message,
+  selection,
+}: {
+  message: ChatMessage;
+  selection?: BubbleSelection;
+}) {
+  const style = cn(
+    "max-w-[244px] break-words p-3 leading-[140%] shadow-[0_4px_16px_rgba(0,0,0,0.12)]",
+    message.sender === "me"
+      ? "rounded-[16px_16px_8px_16px] bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] text-white"
+      : "rounded-[16px_16px_16px_8px] bg-white text-[#1A1A1A]",
+    selection
+      ? "min-h-11 min-w-11 cursor-pointer text-left text-base focus-visible:outline-2"
+      : "text-sm",
+    selection?.selected && "ring-2 ring-[#9f2944] ring-offset-2",
+  );
+  return selection ? (
+    <button
+      type="button"
+      className={style}
+      aria-pressed={selection.selected}
+      onClick={selection.tap}
+      aria-label={`${message.sender === "me" ? "나" : "상대방"} · ${message.image ? "사진" : message.text} · ${message.time} 선택`}
+    >
+      <MessageBody message={message} />
+    </button>
+  ) : (
+    <div className={style}>
+      <MessageBody message={message} />
+    </div>
+  );
+}
+
 const IncomingMessage = ({
   message,
+  selection,
   nickname,
   profileImageUrl,
   gender,
@@ -86,6 +123,7 @@ const IncomingMessage = ({
   last,
 }: {
   message: ChatMessage;
+  selection?: BubbleSelection;
   nickname?: string;
   profileImageUrl?: string | null;
   gender?: string;
@@ -100,6 +138,7 @@ const IncomingMessage = ({
           type="button"
           aria-label="상대 프로필 열기"
           className="relative h-8 w-8 shrink-0 cursor-pointer overflow-hidden rounded-full bg-white transition-opacity hover:opacity-80"
+          disabled={!!selection}
           onClick={onProfileClick}
         >
           {profileImageUrl !== undefined && (
@@ -120,9 +159,7 @@ const IncomingMessage = ({
           </span>
         )}
         <div className="flex items-end gap-2">
-          <div className="max-w-[244px] rounded-[16px_16px_16px_8px] bg-white p-3 text-sm leading-[140%] text-[#1A1A1A] shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-            <MessageBody message={message} />
-          </div>
+          <MessageBubble message={message} selection={selection} />
           <div className="typo-10-500 flex items-center gap-2 leading-[130%]">
             {last && <span className="text-[#B3B3B3]">{message.time}</span>}
             {message.readCount === 1 && (
@@ -137,9 +174,11 @@ const IncomingMessage = ({
 
 const OutgoingMessage = ({
   message,
+  selection,
   last,
 }: {
   message: ChatMessage;
+  selection?: BubbleSelection;
   last: boolean;
 }) => {
   return (
@@ -148,9 +187,7 @@ const OutgoingMessage = ({
         {message.readCount === 1 && <span className="text-[#999999]">1</span>}
         {last && <span className="text-[#B3B3B3]">{message.time}</span>}
       </div>
-      <div className="max-w-[244px] rounded-[16px_16px_8px_16px] bg-[linear-gradient(125.6deg,#FF4D61_22.6%,#FF775E_88.94%)] p-3 text-sm leading-[140%] text-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)]">
-        <MessageBody message={message} />
-      </div>
+      <MessageBubble message={message} selection={selection} />
     </div>
   );
 };
@@ -351,26 +388,35 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
     const pages = historyData?.pages || [];
     const combined = [...pages].reverse().flatMap((page) => page.data || []);
 
-    // 소켓으로 온 메시지 중 이미 내역에 있는 건 제외하고 추가
-    socketMessages.forEach((socketMsg) => {
-      if (!combined.some((m) => m.id === socketMsg.id)) {
-        combined.push(socketMsg);
-      }
-    });
-
-    // 화면 표시용 타입으로 변환
-    return combined.map((m) => ({
-      id: m.id,
-      senderId: m.senderId,
-      type: m.type,
-      sender: m.senderId === currentUserId ? "me" : "other",
-      text: m.content,
-      image: m.type === "IMAGE",
-      time: formatMessageTime(m.createdAt),
-      readCount: m.readCount,
-      createdAt: m.createdAt,
-    })) as ChatMessage[];
+    const unique = new Map<string, ChatMessagePayload>();
+    for (const message of [...combined, ...socketMessages]) {
+      if (message.id && message.type !== "READ" && !unique.has(message.id))
+        unique.set(message.id, message);
+    }
+    return [...unique.values()]
+      .sort(
+        (a, b) =>
+          Date.parse(a.createdAt) - Date.parse(b.createdAt) ||
+          a.id.localeCompare(b.id),
+      )
+      .map((m) => ({
+        id: m.id,
+        senderId: m.senderId,
+        type: m.type,
+        sender: m.senderId === currentUserId ? "me" : "other",
+        text: m.content,
+        image: m.type === "IMAGE",
+        time: formatMessageTime(m.createdAt),
+        readCount: m.readCount,
+        createdAt: m.createdAt,
+      })) as ChatMessage[];
   }, [historyData, socketMessages, currentUserId]);
+  const indices = useMemo(
+    () => new Map(messages.map((m, i) => [m.id, i])),
+    [messages],
+  );
+  const selection = useChatReportRange(chatId, currentUserId, indices);
+  const choosing = selection.choosing;
 
   useEffect(() => {
     const list = scrollContainerRef.current;
@@ -389,10 +435,10 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
 
     // 마지막 메시지 ID가 변경되었을 때만 (실시간 새 메시지 송수신 시) 하단으로 부드럽게 스크롤
     if (lastId !== lastMessageIdRef.current) {
-      list.scrollTo({ top: 0, behavior: "smooth" });
+      if (!choosing) list.scrollTo({ top: 0, behavior: "smooth" });
       lastMessageIdRef.current = lastId;
     }
-  }, [messages]);
+  }, [messages, choosing]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -462,7 +508,25 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
       className="chat-viewport flex w-full flex-col overflow-hidden"
     >
       <header className="relative z-20 shrink-0 px-4 py-2">
-        <div className="mx-auto flex h-12 w-full max-w-93.75 items-center gap-4">
+        {choosing && (
+          <div className="mx-auto flex min-h-12 w-full max-w-93.75 items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold">신고할 채팅 선택</h2>
+            <button
+              id="cancel-chat-selection"
+              type="button"
+              className="min-h-11 px-3 text-base"
+              onClick={selection.cancel}
+            >
+              취소
+            </button>
+          </div>
+        )}
+        <div
+          className={cn(
+            "mx-auto flex h-12 w-full max-w-93.75 items-center gap-4",
+            choosing && "hidden",
+          )}
+        >
           <button
             type="button"
             aria-label="뒤로 가기"
@@ -506,17 +570,13 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                   chatId + ":" + currentUserId + ":" + mergedPartner.memberId
                 }
                 partner={mergedPartner}
-                chatHistory={{
-                  roomId: chatId,
+                chatReport={{
                   viewerId: currentUserId,
-                  messages,
-                  hasEarlier: !!hasNextPage,
-                  loading: isPending || isFetchingNextPage,
-                  failed: isError,
-                  loadEarlier: () => {
-                    if (isError) void refetchHistory();
-                    else void fetchNextPage();
-                  },
+                  choosing,
+                  hasMessages: messages.length > 0,
+                  range: selection.confirmed,
+                  begin: selection.begin,
+                  clear: selection.clear,
                 }}
                 profileOpen={isProfileModalOpen}
                 onProfileOpenChange={setIsProfileModalOpen}
@@ -594,6 +654,16 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
           </div>
         ) : (
           <div className="shrink-0 pt-5 pb-4">
+            {choosing && hasNextPage && (
+              <button
+                type="button"
+                disabled={isFetchingNextPage}
+                onClick={() => void fetchNextPage()}
+                className="mx-auto mb-3 block min-h-11 rounded-full bg-white px-4 text-base font-medium text-[#454545] shadow-sm"
+              >
+                이전 대화 더 보기
+              </button>
+            )}
             {messages.map((message, index) => {
               const prevMessage = index > 0 ? messages[index - 1] : null;
 
@@ -612,6 +682,14 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
               const first = !sameChatMinute(messages[index - 1], message);
               const last = !sameChatMinute(message, messages[index + 1]);
 
+              const bubbleSelection = choosing
+                ? {
+                    selected:
+                      index >= selection.startIndex &&
+                      index <= selection.endIndex,
+                    tap: () => selection.tap(message.id),
+                  }
+                : undefined;
               return (
                 <div
                   key={message.id}
@@ -623,9 +701,14 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                     </div>
                   )}
                   {message.sender === "me" ? (
-                    <OutgoingMessage message={message} last={last} />
+                    <OutgoingMessage
+                      message={message}
+                      last={last}
+                      selection={bubbleSelection}
+                    />
                   ) : (
                     <IncomingMessage
+                      selection={bubbleSelection}
                       first={first}
                       last={last}
                       message={message}
@@ -645,7 +728,27 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
         )}
       </section>
 
-      {readOnly ? (
+      {choosing ? (
+        <footer className="shrink-0 border-t border-black/5 bg-white px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+          <p role="status" className="mb-3 text-base text-gray-800">
+            {selection.count > 50
+              ? "최대 50개까지 선택할 수 있어요. 범위를 다시 골라주세요."
+              : selection.count === 0
+                ? "처음이나 마지막 말풍선을 눌러주세요."
+                : selection.waitingForEnd
+                  ? "다른 끝의 말풍선을 누르거나 1개로 완료하세요."
+                  : "두 말풍선 사이의 대화가 모두 선택됐어요."}
+          </p>
+          <button
+            type="button"
+            onClick={selection.finish}
+            disabled={!selection.valid}
+            className="min-h-12 w-full rounded-full bg-[#c62f4c] px-4 text-base font-semibold text-white disabled:bg-gray-200 disabled:text-gray-600"
+          >
+            {selection.count ? `${selection.count}개 선택 완료` : "선택 완료"}
+          </button>
+        </footer>
+      ) : readOnly ? (
         <footer
           className="max-h-[38dvh] w-full shrink-0 overflow-y-auto px-4 py-3"
           style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}

@@ -22,9 +22,6 @@ import PartnerProfileModal, {
   type PartnerDetails,
 } from "./PartnerProfileModal";
 
-import ChatReportRangePicker, {
-  type ChatReportHistory,
-} from "./ChatReportRangePicker";
 import ReportConversation, {
   type ChatRange,
   type ReportChatEvidence,
@@ -32,7 +29,14 @@ import ReportConversation, {
 
 interface Props {
   partner: PartnerDetails;
-  chatHistory?: ChatReportHistory;
+  chatReport?: {
+    viewerId: number;
+    range: ChatRange | null;
+    choosing: boolean;
+    hasMessages: boolean;
+    begin: () => void;
+    clear: () => void;
+  };
   profileOpen?: boolean;
   onProfileOpenChange?: (open: boolean) => void;
   favorite?: boolean;
@@ -41,7 +45,7 @@ interface Props {
 
 export default function PartnerMenu({
   partner,
-  chatHistory,
+  chatReport,
   profileOpen,
   onProfileOpenChange,
   favorite,
@@ -54,16 +58,17 @@ export default function PartnerMenu({
   const [localProfile, setLocalProfile] = useState(false);
   const [category, setCategory] = useState<ReportCategory | null>(null);
   const [reason, setReason] = useState("");
-  const source = chatHistory ? "CHAT" : "PROFILE";
-  const [range, setRange] = useState<ChatRange | null>(null);
+  const source = chatReport ? "CHAT" : "PROFILE";
+  const range = chatReport?.range ?? null;
   const preview = useQuery({
     queryKey: [
       "reportChatPreview",
-      chatHistory?.viewerId,
+      chatReport?.viewerId,
       partner.memberId,
       range,
     ],
-    enabled: sheet === "report" && !!chatHistory && !!range,
+    enabled:
+      sheet === "report" && !!chatReport && !chatReport.choosing && !!range,
     gcTime: 0,
     retry: false,
     queryFn: async ({ signal }) =>
@@ -75,7 +80,7 @@ export default function PartnerMenu({
         )
       ).data.data,
   });
-  const ready = !chatHistory || (!!range && !!preview.data && !preview.isError);
+  const ready = !chatReport || (!!range && !!preview.data && !preview.isError);
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const pending = useRef(false);
@@ -119,7 +124,7 @@ export default function PartnerMenu({
       await api.post("/api/members/reports", {
         targetId: partner.memberId,
         source,
-        ...(chatHistory && { chatRange: range }),
+        ...(chatReport && { chatRange: range }),
         category,
         reason: detail,
         requestId: request.current.id,
@@ -127,7 +132,7 @@ export default function PartnerMenu({
       request.current = null;
       setReason("");
       setCategory(null);
-      setRange(null);
+      chatReport?.clear();
       setSheet("received");
       void client.invalidateQueries({ queryKey: inboxKey });
     } catch (err) {
@@ -148,10 +153,10 @@ export default function PartnerMenu({
       onKeyDown={(e) => e.stopPropagation()}
     >
       <Drawer
-        open={sheet !== null}
+        open={sheet !== null && !chatReport?.choosing}
         onOpenChange={(open) => {
           if (open) openMenu();
-          else if (!pending.current) setSheet(null);
+          else if (!pending.current && !chatReport?.choosing) setSheet(null);
         }}
         autoFocus
         noBodyStyles
@@ -172,7 +177,11 @@ export default function PartnerMenu({
           className="max-h-[90dvh] gap-4 overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-6 pb-[max(24px,env(safe-area-inset-bottom))]"
           onCloseAutoFocus={(event) => {
             event.preventDefault();
-            if (!openingProfile.current)
+            if (chatReport?.choosing)
+              document
+                .getElementById("cancel-chat-selection")
+                ?.focus({ preventScroll: true });
+            else if (!openingProfile.current)
               trigger.current?.focus({ preventScroll: true });
           }}
         >
@@ -231,16 +240,25 @@ export default function PartnerMenu({
               <DrawerDescription>
                 {nickname}님을 신고하는 이유를 운영자에게 알려주세요.
               </DrawerDescription>
-              {chatHistory && (
+              {chatReport && (
                 <fieldset disabled={sending} className="min-w-0 space-y-3">
-                  <ChatReportRangePicker
-                    history={chatHistory}
-                    range={range}
-                    onChange={(next) => {
-                      setRange(next);
+                  <legend className="typo-16-600 mb-2">신고할 대화</legend>
+                  <button
+                    type="button"
+                    disabled={!chatReport.hasMessages}
+                    onClick={() => {
                       setError("");
+                      chatReport.begin();
                     }}
-                  />
+                    className="border-color-gray-200 flex min-h-12 w-full items-center justify-center rounded-xl border bg-white px-4 text-base font-semibold disabled:opacity-50"
+                  >
+                    {range ? "채팅 다시 선택하기" : "채팅 선택하기"}
+                  </button>
+                  <p className="text-color-gray-600 text-sm">
+                    {chatReport.hasMessages
+                      ? "선택한 범위와 앞뒤 대화가 각각 최대 3개씩 함께 전달돼요."
+                      : "대화가 있어야 채팅을 선택할 수 있어요."}
+                  </p>
                   {range &&
                     (preview.isError ? (
                       <div role="alert" className="text-sm text-rose-700">
@@ -257,7 +275,7 @@ export default function PartnerMenu({
                     ) : preview.data ? (
                       <ReportConversation
                         evidence={preview.data}
-                        reporterId={chatHistory.viewerId}
+                        reporterId={chatReport.viewerId}
                       />
                     ) : (
                       <p role="status" className="text-sm">
