@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import InboxLink from "./InboxLink";
 import FloatingButton from "./FloatingButton";
 import Link from "next/link";
 
@@ -18,7 +19,10 @@ const MainHeader = () => {
           priority
         />
       </Link>
-      <FloatingButton />
+      <div className="flex items-center gap-1.5">
+        <InboxLink />
+        <FloatingButton />
+      </div>
     </header>
   );
 };

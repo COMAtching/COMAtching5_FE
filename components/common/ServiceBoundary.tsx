@@ -15,6 +15,7 @@ import { useFeature } from "@/stores/features";
 const publicRoutes = [
   "/",
   "/login",
+  "/oauth2/callback/failure",
   "/register",
   "/reset",
   "/FAQ",

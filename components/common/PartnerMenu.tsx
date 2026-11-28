@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
+import { inboxKey } from "@/hooks/useMemberSession";
 import { useRef, useState } from "react";
 import { Flag, MoreVertical, UserRound } from "lucide-react";
 import { isAxiosError } from "axios";
@@ -32,6 +35,7 @@ export default function PartnerMenu({
   favorite,
   onFavoriteToggle,
 }: Props) {
+  const client = useQueryClient();
   const [sheet, setSheet] = useState<"menu" | "report" | "received" | null>(
     null,
   );
@@ -71,6 +75,7 @@ export default function PartnerMenu({
       request.current = null;
       setReason("");
       setSheet("received");
+      void client.invalidateQueries({ queryKey: inboxKey });
     } catch (err) {
       setError(
         (isAxiosError(err) && err.response?.data?.message) ||
@@ -200,9 +205,18 @@ export default function PartnerMenu({
             </form>
           )}
           {sheet === "received" && (
-            <DrawerDescription role="status">
-              운영자가 신고 내용을 검토할게요.
-            </DrawerDescription>
+            <>
+              <DrawerDescription role="status">
+                처리 결과는 알림함에서 확인할 수 있어요.
+              </DrawerDescription>
+              <Link
+                href="/inbox"
+                className="typo-14-600 min-h-11 self-start py-2 underline underline-offset-4"
+                onClick={() => setSheet(null)}
+              >
+                내 알림함 보기
+              </Link>
+            </>
           )}
         </DrawerContent>
       </Drawer>

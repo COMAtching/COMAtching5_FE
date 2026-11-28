@@ -57,6 +57,9 @@ export async function loginAction(
 
     if (isAxiosError(error)) {
       const status = error.response?.status;
+      if (status === 403 && error.response?.data?.code === "AUTH-004") {
+        redirect("/login/restricted");
+      }
       if (status === 409 || status === 503) {
         return {
           success: false,

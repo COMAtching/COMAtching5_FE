@@ -18,15 +18,6 @@ import {
 
 const MENU_ITEMS = [
   {
-    id: "reports",
-    title: "신고 관리",
-    description: "매칭 상대 신고를 검토하고 경고 또는 이용 정지를 처리합니다.",
-    icon: Flag,
-    href: "/adminpage/reports",
-    active: true,
-    gradient: "from-rose-600 to-red-500",
-  },
-  {
     id: "payment",
     title: "결제 승인 관리",
     description: "사용자 결제 요청을 실시간으로 확인하고 승인/거절합니다",
@@ -90,6 +81,15 @@ const MENU_ITEMS = [
     href: "/adminpage/operations",
     active: true,
     gradient: "from-slate-600 to-slate-800",
+  },
+  {
+    id: "reports",
+    title: "신고 관리",
+    description: "매칭 상대 신고를 검토하고 경고 또는 이용 정지를 처리합니다.",
+    icon: Flag,
+    href: "/adminpage/reports",
+    active: true,
+    gradient: "from-rose-600 to-red-500",
   },
 ];
 

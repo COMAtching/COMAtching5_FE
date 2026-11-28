@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Flag } from "lucide-react";
+import {
+  ArrowLeft,
+  Flag,
+  RotateCw,
+  Smartphone,
+  ChevronRight,
+  Inbox,
+} from "lucide-react";
 import { isAxiosError } from "axios";
+import MemberModerationNotice from "@/components/common/MemberModerationNotice";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { api } from "@/lib/axios";
@@ -49,6 +57,61 @@ const button =
   "rounded-xl border border-admin-line px-4 py-2 text-sm disabled:opacity-40";
 const card = "rounded-2xl border border-admin-edge bg-admin-panel p-5";
 const date = (value: string) => value.replace("T", " ").slice(0, 16);
+
+const statusColor: Record<Status, string> = {
+  OPEN: "bg-sky-500/10 text-admin-info",
+  WARNED: "bg-amber-500/10 text-admin-warning",
+  SUSPENDED: "bg-rose-500/10 text-admin-danger",
+  DISMISSED: "bg-admin-subtle text-admin-secondary",
+};
+
+function MemberPreview() {
+  const [kind, setKind] = useState<"warning" | "suspension">("warning");
+  return (
+    <details className={card}>
+      <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 font-semibold">
+        <Smartphone size={18} aria-hidden="true" />
+        회원 화면 미리보기
+        <ChevronRight
+          size={16}
+          className="ml-auto in-[[open]]:rotate-90"
+          aria-hidden="true"
+        />
+      </summary>
+      <div className="mt-3 flex gap-2" role="group" aria-label="안내 종류">
+        {(["warning", "suspension"] as const).map((v) => (
+          <button
+            type="button"
+            key={v}
+            aria-pressed={kind === v}
+            className={
+              button +
+              " aria-pressed:bg-admin-ink aria-pressed:text-admin-panel"
+            }
+            onClick={() => setKind(v)}
+          >
+            {v === "warning" ? "경고 · 홈" : "정지 · 로그인"}
+          </button>
+        ))}
+      </div>
+      <div className="mt-4 max-w-sm">
+        {kind === "warning" ? (
+          <MemberModerationNotice
+            kind="warning"
+            message="서로를 존중하는 표현을 사용해 주세요."
+          />
+        ) : (
+          <MemberModerationNotice kind="suspension" />
+        )}
+      </div>
+      <p className="text-admin-muted mt-2 text-xs">
+        {kind === "warning"
+          ? "예시 경고 문구입니다. 실제 회원에게는 운영자가 입력한 내용이 표시됩니다."
+          : "회원이 정지된 계정으로 다시 로그인할 때 표시됩니다."}
+      </p>
+    </details>
+  );
+}
 
 function ReportReview({ id }: { id: number }) {
   const client = useQueryClient();
@@ -175,6 +238,17 @@ function ReportReview({ id }: { id: number }) {
                   />
                 </label>
               )}
+              {action === "WARN" && note.trim() && (
+                <div className="max-w-sm">
+                  <p className="text-admin-muted mb-2 text-xs">
+                    회원에게 보이는 내용
+                  </p>
+                  <MemberModerationNotice
+                    kind="warning"
+                    message={note.trim()}
+                  />
+                </div>
+              )}
               {action === "SUSPEND" && (
                 <p className="text-admin-danger text-sm">
                   회원의 현재 세션이 종료되고 로그인이 제한됩니다.
@@ -207,6 +281,7 @@ function ReportReview({ id }: { id: number }) {
 }
 
 export default function ReportsPage() {
+  const client = useQueryClient();
   const [status, setStatus] = useState<Status | "">("OPEN");
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -228,10 +303,13 @@ export default function ReportsPage() {
         <ArrowLeft size={16} />
         관리자 콘솔
       </Link>
-      <h1 className="flex items-center gap-2 text-2xl font-bold">
-        <Flag size={24} />
-        신고 관리
-      </h1>
+      <header className="flex items-center gap-3">
+        <span className="text-admin-danger flex size-11 items-center justify-center rounded-xl bg-rose-500/10">
+          <Flag size={21} aria-hidden="true" />
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight">신고 관리</h1>
+      </header>
+      <MemberPreview />
       <div className="grid gap-4 md:grid-cols-2 md:items-start">
         <section className={card}>
           <div className="mb-3 flex items-center justify-between">
@@ -254,16 +332,37 @@ export default function ReportsPage() {
                 ))}
               </select>
             </label>
-            <button className={button} onClick={() => void list.refetch()}>
-              새로고침
+            <button
+              type="button"
+              title="신고 새로고침"
+              aria-label="신고 새로고침"
+              disabled={list.isFetching}
+              className="border-admin-edge text-admin-secondary hover:bg-admin-hover inline-flex size-11 items-center justify-center rounded-xl border disabled:opacity-60"
+              onClick={() =>
+                void client.invalidateQueries({ queryKey: ["adminReports"] })
+              }
+            >
+              <RotateCw
+                aria-hidden="true"
+                size={17}
+                className={
+                  list.isFetching ? "motion-safe:animate-spin" : undefined
+                }
+              />
             </button>
           </div>
+          {list.data && !list.isError && (
+            <p className="border-admin-edge text-admin-muted border-t py-3 text-xs font-medium">
+              {status ? labels[status] : "전체"} · {list.data.totalElements}건
+            </p>
+          )}
           {list.isLoading ? (
             <LoadingSpinner label="신고 불러오는 중" />
           ) : list.isError ? (
             <p role="alert">신고 목록을 불러오지 못했습니다.</p>
           ) : !list.data?.content.length ? (
-            <p className="text-admin-muted py-8 text-center">
+            <p className="text-admin-muted flex flex-col items-center gap-3 py-8 text-center">
+              <Inbox size={24} aria-hidden="true" />
               해당하는 신고가 없습니다.
             </p>
           ) : (
@@ -274,10 +373,21 @@ export default function ReportsPage() {
                 aria-pressed={selected === r.id}
                 className="border-admin-edge aria-pressed:bg-admin-subtle block w-full border-b p-3 text-left"
               >
-                <span className="text-admin-muted text-sm">
-                  #{r.id} · {labels[r.status]} · {date(r.createdAt)}
+                <span
+                  className={
+                    statusColor[r.status] +
+                    " inline-flex rounded-full px-2 py-1 text-xs font-semibold"
+                  }
+                >
+                  {labels[r.status]}
                 </span>
-                <strong className="block">{r.nickname || "닉네임 없음"}</strong>
+                <strong className="my-1.5 block">
+                  {r.nickname || "닉네임 없음"}
+                </strong>
+                <span className="text-admin-muted text-xs">
+                  #{r.id} · {r.source === "CHAT" ? "채팅" : "프로필"} ·{" "}
+                  {date(r.createdAt)}
+                </span>
               </button>
             ))
           )}
