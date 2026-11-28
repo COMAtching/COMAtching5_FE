@@ -491,7 +491,7 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
             </div>
           </div>
 
-          {mergedPartner && (
+          {mergedPartner && currentUserId != null && (
             <div className="flex items-center rounded-full border border-white/30 bg-white/60 px-1 shadow-md">
               <button
                 type="button"
@@ -502,9 +502,22 @@ export default function ScreenChatRoom({ chatId }: ScreenChatRoomProps) {
                 <UserRound size={20} />
               </button>
               <PartnerMenu
-                key={mergedPartner.memberId}
+                key={
+                  chatId + ":" + currentUserId + ":" + mergedPartner.memberId
+                }
                 partner={mergedPartner}
-                source="CHAT"
+                chatHistory={{
+                  roomId: chatId,
+                  viewerId: currentUserId,
+                  messages,
+                  hasEarlier: !!hasNextPage,
+                  loading: isPending || isFetchingNextPage,
+                  failed: isError,
+                  loadEarlier: () => {
+                    if (isError) void refetchHistory();
+                    else void fetchNextPage();
+                  },
+                }}
                 profileOpen={isProfileModalOpen}
                 onProfileOpenChange={setIsProfileModalOpen}
                 favorite={opponentProfile?.favorite}

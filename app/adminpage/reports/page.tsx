@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Select } from "radix-ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -20,6 +20,9 @@ import {
 } from "@/lib/constants/reportCategories";
 import { isAxiosError } from "axios";
 import MemberModerationNotice from "@/components/common/MemberModerationNotice";
+import ReportConversation, {
+  type ReportChatEvidence,
+} from "@/components/common/ReportConversation";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { api } from "@/lib/axios";
@@ -46,6 +49,7 @@ type Summary = {
 type Detail = {
   report: Summary;
   reporterId: number;
+  chatEvidence?: ReportChatEvidence | null;
   reason: string;
   intro: string | null;
   imageUrl: string | null;
@@ -111,7 +115,7 @@ function MemberPreview() {
             message="서로를 존중하는 표현을 사용해 주세요."
           />
         ) : (
-          <MemberModerationNotice kind="suspension" />
+          <MemberModerationNotice kind="suspension" preview />
         )}
       </div>
       <p className="text-admin-muted mt-2 text-xs">
@@ -129,6 +133,7 @@ function ReportReview({ id }: { id: number }) {
   const [note, setNote] = useState("");
   const detail = useQuery({
     queryKey: ["adminReports", "detail", id],
+    gcTime: 0,
     queryFn: async ({ signal }) =>
       (await api.get<{ data: Detail }>(base + "/" + id, { signal })).data.data,
   });
@@ -152,7 +157,7 @@ function ReportReview({ id }: { id: number }) {
   });
   if (detail.isLoading) return <LoadingSpinner label="신고 상세 불러오는 중" />;
   const row = detail.data;
-  if (!row)
+  if (!row || detail.isError)
     return (
       <button className={button} onClick={() => void detail.refetch()}>
         신고 상세 다시 불러오기
@@ -193,6 +198,22 @@ function ReportReview({ id }: { id: number }) {
           {row.reporterId} · {date(row.report.createdAt)}
         </p>
       </div>
+      {row.report.source === "CHAT" && (
+        <section aria-label="신고에 첨부된 대화">
+          <h3 className="mb-2 font-semibold">신고에 첨부된 대화</h3>
+          {row.chatEvidence ? (
+            <ReportConversation
+              evidence={row.chatEvidence}
+              reporterId={row.reporterId}
+              admin
+            />
+          ) : (
+            <p className="text-admin-muted text-sm">
+              이 신고에는 첨부된 대화가 없습니다.
+            </p>
+          )}
+        </section>
+      )}
       {row.reviewedAt && (
         <div>
           <h3 className="font-semibold">{labels[row.report.status]}</h3>
@@ -300,6 +321,7 @@ export default function ReportsPage() {
   const client = useQueryClient();
   const [status, setStatus] = useState<StatusFilter>("OPEN");
   const [page, setPage] = useState(0);
+  const detailPanel = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const list = useQuery({
     queryKey: ["adminReports", "list", status, page],
@@ -421,26 +443,38 @@ export default function ReportsPage() {
             list.data.content.map((r) => (
               <button
                 key={r.id}
-                onClick={() => setSelected(r.id)}
+                type="button"
+                onClick={() => {
+                  setSelected(r.id);
+                  if (window.matchMedia("(max-width: 767px)").matches)
+                    requestAnimationFrame(() => detailPanel.current?.focus());
+                }}
+                aria-controls="report-detail"
                 aria-pressed={selected === r.id}
-                className="border-admin-edge aria-pressed:bg-admin-subtle block w-full border-b p-3 text-left"
+                className="group border-admin-edge text-admin-ink hover:bg-admin-hover focus-visible:outline-admin-ink aria-pressed:bg-admin-subtle border-b-admin-edge aria-pressed:border-admin-line flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-transparent p-3 text-left focus-visible:outline-2"
               >
-                <span
-                  className={
-                    statusColor[r.status] +
-                    " inline-flex rounded-full px-2 py-1 text-xs font-semibold"
-                  }
-                >
-                  {labels[r.status]}
+                <span className="min-w-0">
+                  <span
+                    className={
+                      statusColor[r.status] +
+                      " inline-flex rounded-full px-2 py-1 text-xs font-semibold"
+                    }
+                  >
+                    {labels[r.status]}
+                  </span>
+                  <strong className="my-1.5 block">
+                    {r.nickname || "닉네임 없음"}
+                  </strong>
+                  <span className="text-admin-muted text-xs">
+                    #{r.id} ·{" "}
+                    {r.category ? reportCategories[r.category] : "미분류"} ·{" "}
+                    {r.source === "CHAT" ? "채팅" : "프로필"} ·{" "}
+                    {date(r.createdAt)}
+                  </span>
                 </span>
-                <strong className="my-1.5 block">
-                  {r.nickname || "닉네임 없음"}
-                </strong>
-                <span className="text-admin-muted text-xs">
-                  #{r.id} ·{" "}
-                  {r.category ? reportCategories[r.category] : "미분류"} ·{" "}
-                  {r.source === "CHAT" ? "채팅" : "프로필"} ·{" "}
-                  {date(r.createdAt)}
+                <span className="border-admin-line text-admin-secondary group-hover:text-admin-ink group-aria-pressed:border-admin-ink group-aria-pressed:bg-admin-ink group-aria-pressed:text-admin-panel inline-flex min-h-8 shrink-0 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
+                  {selected === r.id ? "보는 중" : "상세 보기"}{" "}
+                  <ChevronRight size={14} aria-hidden="true" />
                 </span>
               </button>
             ))
@@ -471,7 +505,15 @@ export default function ReportsPage() {
             </nav>
           )}
         </section>
-        {selected !== null && <ReportReview key={selected} id={selected} />}
+        <div
+          id="report-detail"
+          ref={detailPanel}
+          tabIndex={-1}
+          aria-label="선택한 신고 상세"
+          className="min-w-0 scroll-mt-4"
+        >
+          {selected !== null && <ReportReview key={selected} id={selected} />}
+        </div>
       </div>
     </main>
   );

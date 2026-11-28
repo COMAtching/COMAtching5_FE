@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { inboxKey } from "@/hooks/useMemberSession";
 import { useRef, useState } from "react";
 import {
@@ -22,9 +22,17 @@ import PartnerProfileModal, {
   type PartnerDetails,
 } from "./PartnerProfileModal";
 
+import ChatReportRangePicker, {
+  type ChatReportHistory,
+} from "./ChatReportRangePicker";
+import ReportConversation, {
+  type ChatRange,
+  type ReportChatEvidence,
+} from "./ReportConversation";
+
 interface Props {
   partner: PartnerDetails;
-  source?: "PROFILE" | "CHAT";
+  chatHistory?: ChatReportHistory;
   profileOpen?: boolean;
   onProfileOpenChange?: (open: boolean) => void;
   favorite?: boolean;
@@ -33,7 +41,7 @@ interface Props {
 
 export default function PartnerMenu({
   partner,
-  source = "PROFILE",
+  chatHistory,
   profileOpen,
   onProfileOpenChange,
   favorite,
@@ -46,6 +54,28 @@ export default function PartnerMenu({
   const [localProfile, setLocalProfile] = useState(false);
   const [category, setCategory] = useState<ReportCategory | null>(null);
   const [reason, setReason] = useState("");
+  const source = chatHistory ? "CHAT" : "PROFILE";
+  const [range, setRange] = useState<ChatRange | null>(null);
+  const preview = useQuery({
+    queryKey: [
+      "reportChatPreview",
+      chatHistory?.viewerId,
+      partner.memberId,
+      range,
+    ],
+    enabled: sheet === "report" && !!chatHistory && !!range,
+    gcTime: 0,
+    retry: false,
+    queryFn: async ({ signal }) =>
+      (
+        await api.post<{ data: ReportChatEvidence }>(
+          "/api/chat/reports/preview",
+          range,
+          { params: { targetId: partner.memberId }, signal },
+        )
+      ).data.data,
+  });
+  const ready = !chatHistory || (!!range && !!preview.data && !preview.isError);
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const pending = useRef(false);
@@ -53,6 +83,7 @@ export default function PartnerMenu({
     id: string;
     reason: string;
     category: ReportCategory;
+    range: ChatRange | null;
   } | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const openingProfile = useRef(false);
@@ -68,12 +99,19 @@ export default function PartnerMenu({
 
   async function submit() {
     const detail = reason.trim();
-    if (!category || !detail || pending.current) return;
+    if (!category || !detail || !ready || pending.current) return;
     if (
       request.current?.reason !== detail ||
-      request.current.category !== category
+      request.current.category !== category ||
+      request.current.range?.firstMessageId !== range?.firstMessageId ||
+      request.current.range?.lastMessageId !== range?.lastMessageId
     )
-      request.current = { id: crypto.randomUUID(), reason: detail, category };
+      request.current = {
+        id: crypto.randomUUID(),
+        reason: detail,
+        category,
+        range,
+      };
     pending.current = true;
     setSending(true);
     setError("");
@@ -81,6 +119,7 @@ export default function PartnerMenu({
       await api.post("/api/members/reports", {
         targetId: partner.memberId,
         source,
+        ...(chatHistory && { chatRange: range }),
         category,
         reason: detail,
         requestId: request.current.id,
@@ -88,6 +127,7 @@ export default function PartnerMenu({
       request.current = null;
       setReason("");
       setCategory(null);
+      setRange(null);
       setSheet("received");
       void client.invalidateQueries({ queryKey: inboxKey });
     } catch (err) {
@@ -191,6 +231,41 @@ export default function PartnerMenu({
               <DrawerDescription>
                 {nickname}님을 신고하는 이유를 운영자에게 알려주세요.
               </DrawerDescription>
+              {chatHistory && (
+                <fieldset disabled={sending} className="min-w-0 space-y-3">
+                  <ChatReportRangePicker
+                    history={chatHistory}
+                    range={range}
+                    onChange={(next) => {
+                      setRange(next);
+                      setError("");
+                    }}
+                  />
+                  {range &&
+                    (preview.isError ? (
+                      <div role="alert" className="text-sm text-rose-700">
+                        선택한 대화를 확인하지 못했어요. 범위를 다시 고르거나{" "}
+                        <button
+                          type="button"
+                          className="min-h-11 underline"
+                          onClick={() => void preview.refetch()}
+                        >
+                          다시 확인
+                        </button>
+                        해 주세요.
+                      </div>
+                    ) : preview.data ? (
+                      <ReportConversation
+                        evidence={preview.data}
+                        reporterId={chatHistory.viewerId}
+                      />
+                    ) : (
+                      <p role="status" className="text-sm">
+                        첨부될 대화를 확인하고 있어요.
+                      </p>
+                    ))}
+                </fieldset>
+              )}
               <fieldset disabled={sending} className="min-w-0">
                 <legend className="typo-14-600 mb-2">신고 분류</legend>
                 <div className="grid grid-cols-2 gap-2" data-vaul-no-drag>
@@ -234,7 +309,7 @@ export default function PartnerMenu({
               )}
               <button
                 type="submit"
-                disabled={!category || !reason.trim() || sending}
+                disabled={!category || !reason.trim() || !ready || sending}
                 className="min-h-12 rounded-2xl bg-[#d63652] font-semibold text-white disabled:opacity-50"
               >
                 {sending ? "접수 중…" : "신고 접수"}
