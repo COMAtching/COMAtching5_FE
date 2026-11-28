@@ -1,5 +1,4 @@
 import Button from "@/components/ui/Button";
-import { Flag, ShieldX } from "lucide-react";
 
 type Props =
   | { kind: "suspension" }
@@ -13,19 +12,15 @@ type Props =
 
 export default function MemberModerationNotice(props: Props) {
   const warning = props.kind === "warning";
-  const Icon = warning ? Flag : ShieldX;
   const title = warning ? "운영자 경고" : "계정 이용이 정지되었어요";
   return (
     <section
       aria-label={title}
       className="text-color-text-black w-full rounded-3xl border border-white/30 bg-white/80 p-5 text-left shadow-[0_0_8px_rgba(0,0,0,0.08)]"
     >
-      <div className="border-color-gray-100 mb-3 flex items-center gap-2 border-b pb-3">
-        <span aria-hidden="true" className="text-color-flame-700 shrink-0">
-          <Icon size={19} />
-        </span>
-        <h2 className="typo-16-600">{title}</h2>
-      </div>
+      <h2 className="typo-16-600 border-color-gray-100 mb-3 border-b pb-3">
+        {title}
+      </h2>
       <p className="typo-14-500 text-color-gray-600 leading-relaxed break-words whitespace-pre-wrap">
         {warning
           ? props.message
