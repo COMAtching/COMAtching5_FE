@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import MemberWarnings from "./MemberWarnings";
 import MainHeader from "./MainHeader";
 import {
   QAButton,
@@ -86,6 +87,7 @@ const ScreenMainPage = () => {
   return (
     <section className="flex min-h-dvh flex-col items-center gap-4 px-4 pb-4">
       <MainHeader />
+      <MemberWarnings />
       <MyCoinSection />
       <ProfileProgressCard />
       <ChargeRequestWaiting />

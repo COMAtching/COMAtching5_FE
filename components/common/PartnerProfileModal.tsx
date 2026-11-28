@@ -3,8 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
-import { X, Star, Send } from "lucide-react";
-import { MatchingPartner } from "@/hooks/useMatchingHistory";
+import { X, Star, Send, MoreVertical } from "lucide-react";
+import type { ProfileData } from "@/lib/types/profile";
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
 import { cn } from "@/lib/utils";
 import {
@@ -21,10 +21,28 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+export type PartnerDetails = {
+  memberId: number;
+  nickname?: string | null;
+  age?: number | null;
+  major?: string | null;
+  gender?: string | null;
+  mbti?: string | null;
+  intro?: string | null;
+  contactFrequency?: string | null;
+  profileImageUrl?: string | null;
+  hobbies?: ProfileData["hobbies"] | null;
+  tags?: ProfileData["tags"];
+  song?: string | null;
+  socialType?: string | null;
+  socialAccountId?: string | null;
+};
+
 interface PartnerProfileModalProps {
+  onMore: () => void;
   isOpen: boolean;
   onClose: () => void;
-  partner: MatchingPartner;
+  partner: PartnerDetails;
   isFavorite?: boolean;
   onFavoriteToggle?: () => void;
 }
@@ -32,6 +50,7 @@ interface PartnerProfileModalProps {
 const PartnerProfileModal = ({
   isOpen,
   onClose,
+  onMore,
   partner,
   isFavorite,
   onFavoriteToggle,
@@ -70,7 +89,7 @@ const PartnerProfileModal = ({
                     <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[#D9D9D9]">
                       <ProfileThumbnail
                         url={partner.profileImageUrl}
-                        gender={partner.gender}
+                        gender={partner.gender ?? undefined}
                         alt="프로필"
                       />
                     </div>
@@ -81,28 +100,34 @@ const PartnerProfileModal = ({
                     </span>
                   </div>
                   <div className="flex items-center gap-6">
+                    {onFavoriteToggle && (
+                      <button
+                        aria-label="즐겨찾기"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onFavoriteToggle?.();
+                        }}
+                        className="flex h-4 w-4 items-center justify-center"
+                      >
+                        <Star
+                          size={16}
+                          className={cn(
+                            "transition-colors",
+                            isFavorite
+                              ? "fill-[#FF4D61] text-[#FF4D61]"
+                              : "text-color-gray-500",
+                          )}
+                        />
+                      </button>
+                    )}
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFavoriteToggle?.();
-                      }}
-                      className="flex h-4 w-4 items-center justify-center"
+                      type="button"
+                      onClick={onMore}
+                      className="flex size-11 items-center justify-center"
+                      aria-label="상대 더 보기"
                     >
-                      <Star
-                        size={16}
-                        className={cn(
-                          "transition-colors",
-                          isFavorite
-                            ? "fill-[#FF4D61] text-[#FF4D61]"
-                            : "text-color-gray-500",
-                        )}
-                      />
+                      <MoreVertical size={18} />
                     </button>
-                    <div className="flex h-4 w-4 flex-col items-center justify-center gap-0.5">
-                      <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-                      <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-                      <div className="bg-color-gray-500 h-[2.57px] w-[2.57px] rounded-full" />
-                    </div>
                   </div>
                 </div>
 
@@ -121,13 +146,13 @@ const PartnerProfileModal = ({
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="typo-12-600 text-[#777777]">나이</span>
                     <span className="typo-16-700 text-color-text-black">
-                      {partner.age || "??"}
+                      {partner.age ?? "미설정"}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="typo-12-600 text-[#777777]">MBTI</span>
                     <span className="typo-16-700 text-color-text-black">
-                      {partner.mbti}
+                      {partner.mbti || "미설정"}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-1">
@@ -135,7 +160,9 @@ const PartnerProfileModal = ({
                       연락빈도
                     </span>
                     <span className="typo-16-700 text-color-text-black">
-                      {getContactFrequencyLabel(partner.contactFrequency)}
+                      {partner.contactFrequency
+                        ? getContactFrequencyLabel(partner.contactFrequency)
+                        : "미설정"}
                     </span>
                   </div>
                 </div>
@@ -147,11 +174,14 @@ const PartnerProfileModal = ({
                     <div className="flex flex-wrap gap-1">
                       {partner.hobbies?.map((h) => (
                         <div
-                          key={h.name}
+                          key={typeof h === "string" ? h : h.name}
                           className="flex h-8 items-center justify-center gap-1.5 rounded-full border border-[#DFDFDF] bg-[#B3B3B31A] px-3 py-2 backdrop-blur-[50px]"
                         >
                           <span className="typo-14-500 text-color-text-black whitespace-nowrap">
-                            {findWithEmoji(ALL_HOBBIES, h.name)}
+                            {findWithEmoji(
+                              ALL_HOBBIES,
+                              typeof h === "string" ? h : h.name,
+                            )}
                           </span>
                         </div>
                       ))}

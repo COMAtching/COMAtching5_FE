@@ -5,6 +5,7 @@ import {
   ALL_HOBBIES,
   findWithEmoji,
 } from "@/lib/utils/matching";
+import PartnerMenu from "@/components/common/PartnerMenu";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
 import React, { useState } from "react";
 import { getContactFrequencyLabel } from "@/lib/utils/profile";
@@ -99,6 +100,9 @@ const MatchingResult = ({ data }: MatchingResultProps) => {
             <span className="typo-16-600 flex items-center text-black">
               {data.nickname}
             </span>
+          </div>
+          <div className="ml-auto">
+            <PartnerMenu partner={data} />
           </div>
         </div>
 

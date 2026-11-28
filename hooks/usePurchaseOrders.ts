@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { orderKey, useMemberSession } from "./useMemberSession";
+export { orderKey } from "./useMemberSession";
 import {
   useQuery,
   useInfiniteQuery,
   useQueryClient,
-  type QueryClient,
 } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
-import {
-  BrowserSessionEnded,
-  confirmBrowserSession,
-  EXPECTED_SESSION,
-  handleBrowserSessionEnd,
-} from "@/lib/browser-session";
+import { EXPECTED_SESSION } from "@/lib/browser-session";
 
 export const statusLabels = {
   AWAITING_DEPOSIT: "입금 확인 대기",
@@ -43,74 +38,6 @@ interface OrdersPage {
   currentPage: number;
   totalElements: number;
   hasNext: boolean;
-}
-
-const sessionKey = ["purchaseSession"] as const;
-export const orderKey = ["purchaseOrders"] as const;
-
-export function usePurchaseSessionBoundary(client: QueryClient) {
-  useEffect(() => {
-    const clear = () => {
-      client.removeQueries({ queryKey: orderKey });
-      void client.resetQueries({ queryKey: sessionKey });
-    };
-    const channel =
-      typeof BroadcastChannel === "undefined"
-        ? null
-        : new BroadcastChannel("comatching-auth-change");
-    if (channel)
-      channel.onmessage = ({ data }) => {
-        if (data?.signedOut) clear();
-        else if (data === "check")
-          void client.invalidateQueries({ queryKey: sessionKey });
-      };
-    const restore = (event: PageTransitionEvent) => {
-      if (event.persisted) {
-        void client.invalidateQueries({ queryKey: sessionKey });
-        void client.invalidateQueries({ queryKey: orderKey });
-      }
-    };
-    window.addEventListener("comatching-session-ended", clear);
-    window.addEventListener("pageshow", restore);
-    return () => {
-      channel?.close();
-      window.removeEventListener("comatching-session-ended", clear);
-      window.removeEventListener("pageshow", restore);
-    };
-  }, [client]);
-}
-
-function usePurchaseSession() {
-  const client = useQueryClient();
-  const session = useQuery({
-    queryKey: sessionKey,
-    queryFn: async () => {
-      try {
-        return await confirmBrowserSession();
-      } catch (error) {
-        if (error instanceof BrowserSessionEnded) {
-          client.removeQueries({ queryKey: orderKey });
-          handleBrowserSessionEnd(error);
-        }
-        throw error;
-      }
-    },
-    staleTime: Infinity,
-    refetchOnWindowFocus: "always",
-    refetchOnMount: "always",
-    retry: (count, error) =>
-      !(error instanceof BrowserSessionEnded) && count < 1,
-  });
-  const owner =
-    session.error instanceof BrowserSessionEnded ? undefined : session.data;
-  async function retry(refetch: () => Promise<unknown>) {
-    if (session.isError || !owner) {
-      const checked = await session.refetch();
-      if (!checked.isSuccess || checked.data !== owner) return;
-    }
-    await refetch();
-  }
-  return { owner, isError: session.isError, retry };
 }
 
 async function fetchOrders(
@@ -143,7 +70,7 @@ function changed(previous: OrdersPage, next: OrdersPage) {
 
 export function useActiveOrders(poll = false) {
   const client = useQueryClient();
-  const session = usePurchaseSession();
+  const session = useMemberSession();
   const { owner } = session;
   const key = [...orderKey, owner, "ACTIVE"];
   const query = useQuery({
@@ -183,7 +110,7 @@ export function useActiveOrders(poll = false) {
 }
 
 export function useOrderHistory() {
-  const session = usePurchaseSession();
+  const session = useMemberSession();
   const { owner } = session;
   const query = useInfiniteQuery({
     queryKey: [...orderKey, owner, "ALL"],
