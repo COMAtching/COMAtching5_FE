@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Select } from "radix-ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -9,6 +10,8 @@ import {
   RotateCw,
   Smartphone,
   ChevronRight,
+  ChevronDown,
+  Check,
   Inbox,
 } from "lucide-react";
 import { isAxiosError } from "axios";
@@ -25,6 +28,8 @@ const labels = {
   DISMISSED: "조치 없이 종결",
 };
 type Status = keyof typeof labels;
+const filterLabels = { ALL: "전체", ...labels };
+type StatusFilter = keyof typeof filterLabels;
 type Summary = {
   id: number;
   nickname: string | null;
@@ -282,7 +287,7 @@ function ReportReview({ id }: { id: number }) {
 
 export default function ReportsPage() {
   const client = useQueryClient();
-  const [status, setStatus] = useState<Status | "">("OPEN");
+  const [status, setStatus] = useState<StatusFilter>("OPEN");
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const list = useQuery({
@@ -291,7 +296,10 @@ export default function ReportsPage() {
       (
         await api.get<{
           data: { content: Summary[]; hasNext: boolean; totalElements: number };
-        }>(base, { params: { page, status: status || undefined }, signal })
+        }>(base, {
+          params: { page, status: status === "ALL" ? undefined : status },
+          signal,
+        })
       ).data.data,
   });
   return (
@@ -313,25 +321,58 @@ export default function ReportsPage() {
       <div className="grid gap-4 md:grid-cols-2 md:items-start">
         <section className={card}>
           <div className="mb-3 flex items-center justify-between">
-            <label className="text-sm">
-              처리 상태{" "}
-              <select
+            <div className="flex min-w-0 items-center gap-3">
+              <label
+                htmlFor="report-status"
+                className="text-admin-secondary shrink-0 text-sm font-medium"
+              >
+                처리 상태
+              </label>
+              <Select.Root
                 value={status}
-                className={button + " bg-admin-panel"}
-                onChange={(e) => {
-                  setStatus(e.target.value as Status | "");
+                onValueChange={(value: StatusFilter) => {
+                  setStatus(value);
                   setPage(0);
                   setSelected(null);
                 }}
               >
-                <option value="">전체</option>
-                {Object.entries(labels).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <Select.Trigger
+                  id="report-status"
+                  className="group border-admin-line bg-admin-panel text-admin-ink hover:bg-admin-hover data-[state=open]:border-admin-muted focus-visible:ring-admin-info flex h-11 w-36 items-center justify-between gap-2 rounded-xl border px-3 text-sm font-semibold outline-none focus-visible:ring-2"
+                >
+                  <Select.Value />
+                  <Select.Icon asChild>
+                    <ChevronDown
+                      size={15}
+                      aria-hidden="true"
+                      className="text-admin-muted group-data-[state=open]:rotate-180 motion-safe:transition-transform"
+                    />
+                  </Select.Icon>
+                </Select.Trigger>
+                <Select.Content
+                  position="popper"
+                  align="start"
+                  sideOffset={5}
+                  collisionPadding={8}
+                  className="border-admin-edge bg-admin-panel text-admin-ink z-50 max-h-[var(--radix-select-content-available-height)] w-44 overflow-y-auto rounded-xl border p-1 shadow-md"
+                >
+                  <Select.Viewport>
+                    {Object.entries(filterLabels).map(([value, label]) => (
+                      <Select.Item
+                        key={value}
+                        value={value}
+                        className="data-[highlighted]:bg-admin-hover data-[state=checked]:text-admin-ink text-admin-secondary flex min-h-11 cursor-pointer items-center justify-between rounded-lg px-3 text-sm outline-none select-none data-[state=checked]:font-semibold"
+                      >
+                        <Select.ItemText>{label}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} aria-hidden="true" />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Root>
+            </div>
             <button
               type="button"
               title="신고 새로고침"
@@ -353,7 +394,7 @@ export default function ReportsPage() {
           </div>
           {list.data && !list.isError && (
             <p className="border-admin-edge text-admin-muted border-t py-3 text-xs font-medium">
-              {status ? labels[status] : "전체"} · {list.data.totalElements}건
+              {filterLabels[status]} · {list.data.totalElements}건
             </p>
           )}
           {list.isLoading ? (
