@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { inboxKey } from "@/hooks/useMemberSession";
 import { useRef, useState } from "react";
+import {
+  reportCategories,
+  type ReportCategory,
+} from "@/lib/constants/reportCategories";
 import { Flag, MoreVertical, UserRound } from "lucide-react";
 import { isAxiosError } from "axios";
 import { api } from "@/lib/axios";
@@ -40,11 +44,16 @@ export default function PartnerMenu({
     null,
   );
   const [localProfile, setLocalProfile] = useState(false);
+  const [category, setCategory] = useState<ReportCategory | null>(null);
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const pending = useRef(false);
-  const request = useRef<{ id: string; reason: string } | null>(null);
+  const request = useRef<{
+    id: string;
+    reason: string;
+    category: ReportCategory;
+  } | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const openingProfile = useRef(false);
   const showProfile = onProfileOpenChange ?? setLocalProfile;
@@ -59,9 +68,12 @@ export default function PartnerMenu({
 
   async function submit() {
     const detail = reason.trim();
-    if (!detail || pending.current) return;
-    if (request.current?.reason !== detail)
-      request.current = { id: crypto.randomUUID(), reason: detail };
+    if (!category || !detail || pending.current) return;
+    if (
+      request.current?.reason !== detail ||
+      request.current.category !== category
+    )
+      request.current = { id: crypto.randomUUID(), reason: detail, category };
     pending.current = true;
     setSending(true);
     setError("");
@@ -69,11 +81,13 @@ export default function PartnerMenu({
       await api.post("/api/members/reports", {
         targetId: partner.memberId,
         source,
+        category,
         reason: detail,
         requestId: request.current.id,
       });
       request.current = null;
       setReason("");
+      setCategory(null);
       setSheet("received");
       void client.invalidateQueries({ queryKey: inboxKey });
     } catch (err) {
@@ -115,7 +129,7 @@ export default function PartnerMenu({
           </button>
         </DrawerTrigger>
         <DrawerContent
-          className="gap-4 overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-6 pb-[max(24px,env(safe-area-inset-bottom))]"
+          className="max-h-[90dvh] gap-4 overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-6 pb-[max(24px,env(safe-area-inset-bottom))]"
           onCloseAutoFocus={(event) => {
             event.preventDefault();
             if (!openingProfile.current)
@@ -177,6 +191,29 @@ export default function PartnerMenu({
               <DrawerDescription>
                 {nickname}님을 신고하는 이유를 운영자에게 알려주세요.
               </DrawerDescription>
+              <fieldset disabled={sending} className="min-w-0">
+                <legend className="typo-14-600 mb-2">신고 분류</legend>
+                <div className="grid grid-cols-2 gap-2" data-vaul-no-drag>
+                  {(Object.keys(reportCategories) as ReportCategory[]).map(
+                    (value) => (
+                      <label key={value} className="relative">
+                        <input
+                          className="peer sr-only"
+                          type="radio"
+                          name="report-category"
+                          required
+                          checked={category === value}
+                          onChange={() => setCategory(value)}
+                          value={value}
+                        />
+                        <span className="typo-14-500 border-color-gray-100 text-color-gray-700 peer-checked:border-color-flame-700 peer-checked:text-color-flame-700 peer-focus-visible:ring-color-flame-700 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border px-2 py-2 text-center peer-checked:bg-rose-50 peer-focus-visible:ring-2">
+                          {reportCategories[value]}
+                        </span>
+                      </label>
+                    ),
+                  )}
+                </div>
+              </fieldset>
               <label className="flex flex-col gap-2 text-sm font-semibold">
                 신고 사유
                 <textarea
@@ -197,7 +234,7 @@ export default function PartnerMenu({
               )}
               <button
                 type="submit"
-                disabled={!reason.trim() || sending}
+                disabled={!category || !reason.trim() || sending}
                 className="min-h-12 rounded-2xl bg-[#d63652] font-semibold text-white disabled:opacity-50"
               >
                 {sending ? "접수 중…" : "신고 접수"}

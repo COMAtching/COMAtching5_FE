@@ -14,6 +14,10 @@ import {
   Check,
   Inbox,
 } from "lucide-react";
+import {
+  reportCategories,
+  type ReportCategory,
+} from "@/lib/constants/reportCategories";
 import { isAxiosError } from "axios";
 import MemberModerationNotice from "@/components/common/MemberModerationNotice";
 import ProfileThumbnail from "@/components/common/ProfileThumbnail";
@@ -35,6 +39,7 @@ type Summary = {
   nickname: string | null;
   targetId: number;
   source: "CHAT" | "PROFILE";
+  category: ReportCategory | null;
   status: Status;
   createdAt: string;
 };
@@ -175,6 +180,12 @@ function ReportReview({ id }: { id: number }) {
         {row.intro || "등록한 자기소개가 없습니다."}
       </p>
       <div className="bg-admin-subtle rounded-xl p-4">
+        <p className="text-admin-muted mb-2 text-xs">
+          신고 분류 ·{" "}
+          {row.report.category
+            ? reportCategories[row.report.category]
+            : "미분류"}
+        </p>
         <h3 className="font-semibold">신고 사유</h3>
         <p className="my-2 break-words whitespace-pre-wrap">{row.reason}</p>
         <p className="text-admin-muted text-xs">
@@ -426,7 +437,9 @@ export default function ReportsPage() {
                   {r.nickname || "닉네임 없음"}
                 </strong>
                 <span className="text-admin-muted text-xs">
-                  #{r.id} · {r.source === "CHAT" ? "채팅" : "프로필"} ·{" "}
+                  #{r.id} ·{" "}
+                  {r.category ? reportCategories[r.category] : "미분류"} ·{" "}
+                  {r.source === "CHAT" ? "채팅" : "프로필"} ·{" "}
                   {date(r.createdAt)}
                 </span>
               </button>

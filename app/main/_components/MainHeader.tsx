@@ -20,8 +20,8 @@ const MainHeader = () => {
         />
       </Link>
       <div className="flex items-center gap-1.5">
-        <InboxLink />
         <FloatingButton />
+        <InboxLink />
       </div>
     </header>
   );
